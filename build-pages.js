@@ -1727,17 +1727,18 @@ ${sharedMarquee()}
         </div>
 
         <!-- 2-STEP REGISTRATION: CREDENTIALS -> OTP VERIFICATION -->
+        <!-- REGISTRATION FORM -->
         <div id="regFlowContainer">
           <!-- STEP 1: FILL CREDENTIALS -->
           <form id="registerForm">
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="regFullName">FULL NAME / ALIAS *</label>
-              <input type="text" id="regFullName" class="form-input-brutal" placeholder="e.g. Raihan Pratama" required>
+              <input type="text" id="regFullName" class="form-input-brutal" placeholder="Masukan Nama Anda" required>
             </div>
 
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="regPhone">WHATSAPP / PHONE NUMBER</label>
-              <input type="tel" id="regPhone" class="form-input-brutal" placeholder="e.g. 081234567890">
+              <input type="tel" id="regPhone" class="form-input-brutal" placeholder="Masukan Nomer Anda">
             </div>
 
             <div class="form-group-brutal">
@@ -1745,7 +1746,7 @@ ${sharedMarquee()}
               <input type="email" id="regEmail" class="form-input-brutal" placeholder="contoh: nama@email.com" required autocomplete="email">
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
               <div class="form-group-brutal" style="margin-bottom:0;">
                 <label class="form-label-brutal" for="regPassword">PASSWORD *</label>
                 <input type="password" id="regPassword" class="form-input-brutal" placeholder="••••••••" minlength="6" required autocomplete="new-password">
@@ -1756,16 +1757,12 @@ ${sharedMarquee()}
               </div>
             </div>
 
-            <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;display:block;margin-bottom:14px;line-height:1.4;">
-              ⚡ Kode OTP verifikasi 6-digit akan dikirimkan ke email Anda untuk mengaktifkan akun baru.
-            </span>
-
-            <button type="submit" id="btnSubmitRegister" class="btn-brutal-yellow" style="width:100%;padding:15px;font-size:1.05rem;">
-              DAFTAR & KIRIM KODE OTP KE EMAIL →
+            <button type="submit" id="btnSubmitRegister" class="btn-brutal-yellow" style="width:100%;padding:16px;font-size:1.05rem;">
+              DAFTAR & BUAT AKUN SEKARANG →
             </button>
           </form>
 
-          <!-- STEP 2: VERIFY REGISTRATION OTP (Revealed once registration is submitted) -->
+          <!-- STEP 2: VERIFY REGISTRATION OTP (Fallback if Supabase requires confirmation) -->
           <form id="regOtpVerifyForm" style="display:none;">
             <div style="background:#161616;border:2px solid var(--accent-yellow);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
               <span style="font-size:1.4rem;">✉️</span>
