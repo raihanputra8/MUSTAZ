@@ -800,15 +800,15 @@ ${sharedMarquee()}
           <div style="display:flex;gap:18px;flex-wrap:wrap;">
             <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;">
               <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:var(--accent-yellow);text-transform:uppercase;">TOTAL ORDERS</span>
-              <span style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;font-weight:900;">3</span>
+              <span style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;font-weight:900;" id="metricTotalOrders">0</span>
             </div>
             <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;">
               <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:var(--accent-pink);text-transform:uppercase;">WISHLIST</span>
-              <span style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;font-weight:900;">2</span>
+              <span style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;font-weight:900;" id="metricWishlist">0</span>
             </div>
             <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;">
               <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:#AAA;text-transform:uppercase;">TOTAL SPENT</span>
-              <span style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-yellow);font-weight:900;">Rp 930.000</span>
+              <span style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-yellow);font-weight:900;" id="metricTotalSpent">Rp 0</span>
             </div>
           </div>
 
@@ -824,7 +824,7 @@ ${sharedMarquee()}
             <button class="account-nav-item active" data-tab="orders">
               <span class="material-symbols-outlined">package_2</span>
               <span>ORDER HISTORY</span>
-              <span class="account-nav-badge">3</span>
+              <span class="account-nav-badge" id="navBadgeOrders">0</span>
             </button>
             <button class="account-nav-item" data-tab="profile">
               <span class="material-symbols-outlined">person</span>
@@ -837,7 +837,7 @@ ${sharedMarquee()}
             <button class="account-nav-item" data-tab="wishlist">
               <span class="material-symbols-outlined">favorite</span>
               <span>SAVED VISORS</span>
-              <span class="account-nav-badge">2</span>
+              <span class="account-nav-badge" id="navBadgeWishlist">0</span>
             </button>
             <button class="account-nav-item" data-tab="security">
               <span class="material-symbols-outlined">lock</span>
@@ -873,145 +873,14 @@ ${sharedMarquee()}
           <div class="account-tab-panel active" id="panel-orders">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
               <h2 class="editorial-title" style="font-size:2rem;margin:0;">ORDER HISTORY</h2>
-              <span style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;">
-                SHOWING 3 OF 3 RECENT DISPATCHES
+              <span id="orderHistoryCount" style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;">
+                SHOWING 0 DISPATCHES
               </span>
             </div>
 
-            <!-- Order 1: ACTIVE / IN TRANSIT -->
-            <div class="account-order-card" style="border-color:var(--accent-yellow);">
-              <div class="order-header-bar">
-                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-                  <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;letter-spacing:0.04em;">
-                    ORDER #MSTZ-9942
-                  </span>
-                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">
-                    PLACED ON 2 SEP 2026
-                  </span>
-                </div>
-                <div>
-                  <span class="status-badge-transit">
-                    <span class="material-symbols-outlined" style="font-size:16px;">local_shipping</span>
-                    IN TRANSIT // J&T EXPRESS [JT-992144]
-                  </span>
-                </div>
-              </div>
-
-              <div class="order-items-list">
-                <!-- Item 1 -->
-                <div class="order-item-row">
-                  <img src="assets/images/pet_visor_yellow_flame.png" alt="Y-Two Roof Visor" class="order-item-thumb">
-                  <div style="flex:1;">
-                    <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
-                      Y-TWO ROOF VISOR // SPIKED
-                    </h4>
-                    <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
-                      COLOR: ACID YELLOW ACRYLIC • 3-SNAP MOUNT
-                    </p>
-                    <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
-                      QTY: 1 × Rp 350.000
-                    </span>
-                  </div>
-                  <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
-                    Rp 350.000
-                  </div>
-                </div>
-
-                <!-- Item 2 -->
-                <div class="order-item-row">
-                  <img src="assets/images/retro_checkered_helmet.png" alt="Checker Racer Pet" class="order-item-thumb">
-                  <div style="flex:1;">
-                    <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
-                      CHECKER RACER PET // DUCKBILL
-                    </h4>
-                    <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
-                      COLOR: MONOCHROME CHECKERED • RETRO 70S
-                    </p>
-                    <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
-                      QTY: 1 × Rp 280.000
-                    </span>
-                  </div>
-                  <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
-                    Rp 280.000
-                  </div>
-                </div>
-              </div>
-
-              <div class="order-footer-bar">
-                <div>
-                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;display:block;">TOTAL TRANSACTION</span>
-                  <span style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-yellow);font-weight:900;">
-                    Rp 630.000
-                  </span>
-                </div>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                  <button class="btn-brutal-yellow btn-brutal-sm" onclick="alert('Lacak Resi: J&T Express [JT-992144]\nPaket sedang dalam perjalanan menuju Hub Jakarta Selatan.')">
-                    TRACK RESI
-                  </button>
-                  <a href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT%2C%20saya%20ingin%20cek%20resi%20order%20%23MSTZ-9942" target="_blank" class="btn-brutal-ghost btn-brutal-sm">
-                    WHATSAPP SUPPORT
-                  </a>
-                </div>
-              </div>
+            <div id="orderHistoryContainer">
+              <!-- Rendered dynamically for logged-in user -->
             </div>
-
-            <!-- Order 2: COMPLETED -->
-            <div class="account-order-card">
-              <div class="order-header-bar">
-                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-                  <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;letter-spacing:0.04em;">
-                    ORDER #MSTZ-8812
-                  </span>
-                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">
-                    PLACED ON 18 AUG 2026
-                  </span>
-                </div>
-                <div>
-                  <span class="status-badge-delivered">
-                    <span class="material-symbols-outlined" style="font-size:16px;">check_circle</span>
-                    DELIVERED // 20 AUG 2026
-                  </span>
-                </div>
-              </div>
-
-              <div class="order-items-list">
-                <div class="order-item-row">
-                  <img src="assets/images/mustaz_booth_event.png" alt="MUSTAZ Drop Bundle" class="order-item-thumb">
-                  <div style="flex:1;">
-                    <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
-                      MUSTAZ CRAFT DROP BUNDLE
-                    </h4>
-                    <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
-                      INCLUDES: VISOR + ZIP POUCH + ZINE + STICKER PACK
-                    </p>
-                    <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
-                      QTY: 1 × Rp 300.000
-                    </span>
-                  </div>
-                  <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
-                    Rp 300.000
-                  </div>
-                </div>
-              </div>
-
-              <div class="order-footer-bar">
-                <div>
-                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;display:block;">TOTAL TRANSACTION</span>
-                  <span style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;font-weight:900;">
-                    Rp 300.000
-                  </span>
-                </div>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                  <button class="btn-brutal-pink btn-brutal-sm" data-add-to-cart="pet-3">
-                    BUY AGAIN
-                  </button>
-                  <button class="btn-brutal-ghost btn-brutal-sm" onclick="alert('Terima kasih! Ulasan bintang 5 Anda telah tersimpan.')">
-                    REVIEW ITEM
-                  </button>
-                </div>
-              </div>
-            </div>
-
           </div>
 
           <!-- ══════════════════════════════════════════════════════════════ -->
@@ -1076,51 +945,13 @@ ${sharedMarquee()}
                   DROP COORDINATES FOR EXPEDITION SHIPPING & DISPATCHES.
                 </p>
               </div>
-              <button class="btn-brutal-yellow btn-brutal-sm" onclick="alert('Form tambah alamat baru akan terbuka.')">
+              <button class="btn-brutal-yellow btn-brutal-sm" id="btnAddAddressBtn">
                 + ADD NEW ADDRESS
               </button>
             </div>
 
-            <!-- Address 1: DEFAULT -->
-            <div style="background:#111;border:2px solid var(--accent-pink);padding:24px;margin-bottom:20px;box-shadow:4px 4px 0px #000;">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;">HOME & GARAGE</span>
-                  <span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">DEFAULT ADDRESS</span>
-                </div>
-                <div style="display:flex;gap:8px;">
-                  <button class="btn-brutal-ghost btn-brutal-sm" style="padding:6px 12px;font-size:0.75rem;">EDIT</button>
-                </div>
-              </div>
-              <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#FFF;font-weight:700;margin-bottom:4px;">
-                Raihan Pratama (+62 812-3456-7890)
-              </p>
-              <p style="font-size:0.9rem;color:#AAA;line-height:1.5;margin-bottom:8px;">
-                Jl. Senopati Raya No. 42B, RT 04 / RW 02, Kel. Selong, Kec. Kebayoran Baru<br>
-                Kota Jakarta Selatan, DKI Jakarta 12190
-              </p>
-              <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-yellow);">
-                NOTES: TITIPKAN KE SECURITY JIKA BENGKEL TUTUP
-              </span>
-            </div>
-
-            <!-- Address 2 -->
-            <div style="background:#111;border:2px solid #282828;padding:24px;box-shadow:4px 4px 0px #000;">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;">WORKSHOP DROP POINT</span>
-                </div>
-                <div style="display:flex;gap:8px;">
-                  <button class="btn-brutal-yellow btn-brutal-sm" style="padding:6px 12px;font-size:0.75rem;">SET AS DEFAULT</button>
-                  <button class="btn-brutal-ghost btn-brutal-sm" style="padding:6px 12px;font-size:0.75rem;">EDIT</button>
-                </div>
-              </div>
-              <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#FFF;font-weight:700;margin-bottom:4px;">
-                Raihan Pratama (Mustaz Drop Point Bandung)
-              </p>
-              <p style="font-size:0.9rem;color:#AAA;line-height:1.5;margin:0;">
-                Jl. Wasteland Kustom Hub No. 7, Coblong, Kota Bandung, Jawa Barat 40115
-              </p>
+            <div id="addressesContainer">
+              <!-- Rendered dynamically for logged-in user -->
             </div>
           </div>
 
@@ -1140,48 +971,8 @@ ${sharedMarquee()}
               </a>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:24px;">
-              <!-- Wishlist Item 1 -->
-              <div class="card-brutal-dark" style="padding:16px;">
-                <div style="aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;">
-                  <img src="assets/images/pet_visor_yellow_flame.png" alt="Y-Two Roof Visor" style="width:100%;height:100%;object-fit:cover;object-position:center;">
-                </div>
-                <h3 style="font-family:var(--font-headline);font-size:1.3rem;color:#FFF;margin-bottom:4px;">
-                  Y-TWO ROOF VISOR
-                </h3>
-                <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;margin-bottom:12px;">
-                  SPEC: ACID YELLOW // 3-SNAP
-                </p>
-                <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #333;padding-top:12px;">
-                  <span style="font-family:var(--font-headline);font-size:1.3rem;color:var(--accent-pink);">
-                    Rp 350.000
-                  </span>
-                  <button class="btn-brutal-pink btn-brutal-sm" data-add-to-cart="pet-1">
-                    + ADD TO CART
-                  </button>
-                </div>
-              </div>
-
-              <!-- Wishlist Item 2 -->
-              <div class="card-brutal-dark" style="padding:16px;">
-                <div style="aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;">
-                  <img src="assets/images/retro_checkered_helmet.png" alt="Checker Racer Pet" style="width:100%;height:100%;object-fit:cover;object-position:center;">
-                </div>
-                <h3 style="font-family:var(--font-headline);font-size:1.3rem;color:#FFF;margin-bottom:4px;">
-                  CHECKER RACER PET
-                </h3>
-                <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;margin-bottom:12px;">
-                  SPEC: RETRO MONOCHROME MOTO
-                </p>
-                <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #333;padding-top:12px;">
-                  <span style="font-family:var(--font-headline);font-size:1.3rem;color:var(--accent-yellow);">
-                    Rp 280.000
-                  </span>
-                  <button class="btn-brutal-yellow btn-brutal-sm" data-add-to-cart="pet-2">
-                    + ADD TO CART
-                  </button>
-                </div>
-              </div>
+            <div id="wishlistContainer" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:24px;">
+              <!-- Rendered dynamically for logged-in user -->
             </div>
           </div>
 
@@ -1246,6 +1037,7 @@ ${sharedMarquee()}
 <script type="module">
   import { saveCloudAccount, fetchCloudAccount } from './js/services/supabaseService.js';
   import { initAccountAuth } from './js/services/authService.js';
+  import { getUserOrders, getUserWishlist, getUserAddresses, saveUserAddress, formatRupiah } from './js/services/cartService.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // 0. Robust Auth Guard: handles Google OAuth tokens from URL hash & active sessions
@@ -1359,17 +1151,264 @@ ${sharedMarquee()}
       }
     }
 
+    // 3. User-Scoped Order History Renderer
+    function renderAccountOrders(email) {
+      const container = document.getElementById('orderHistoryContainer');
+      const countEl = document.getElementById('orderHistoryCount');
+      const metricOrders = document.getElementById('metricTotalOrders');
+      const metricSpent = document.getElementById('metricTotalSpent');
+      const navBadge = document.getElementById('navBadgeOrders');
+
+      const orders = getUserOrders(email);
+      const totalSpent = orders.reduce((sum, ord) => sum + (ord.total || 0), 0);
+
+      if (metricOrders) metricOrders.textContent = orders.length;
+      if (navBadge) navBadge.textContent = orders.length;
+      if (metricSpent) metricSpent.textContent = formatRupiah(totalSpent);
+      if (countEl) countEl.textContent = \`SHOWING \${orders.length} DISPATCHES\`;
+
+      if (!container) return;
+
+      if (orders.length === 0) {
+        container.innerHTML = \`
+          <div style="background:#111;border:2px dashed #333;padding:48px 24px;text-align:center;margin-top:10px;">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#555;display:block;margin-bottom:12px;">package_2</span>
+            <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;margin:0 0 6px;letter-spacing:0.04em;">BELUM ADA RIWAYAT PESANAN</h3>
+            <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#888;max-width:420px;margin:0 auto 20px;line-height:1.5;">
+              Akun Anda belum memiliki transaksi pesanan visor atau part helm. Mulai belanja sekarang untuk mengisi riwayat pesanan Anda!
+            </p>
+            <a href="parts.html" class="btn-brutal-yellow btn-brutal-sm" style="display:inline-flex;">
+              JELAJAHI KATALOG PRODUK →
+            </a>
+          </div>
+        \`;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => {
+        const isTransit = order.status === 'IN TRANSIT';
+        const statusClass = isTransit ? 'status-badge-transit' : 'status-badge-delivered';
+        const statusIcon = isTransit ? 'local_shipping' : 'check_circle';
+        const borderColor = isTransit ? 'var(--accent-yellow)' : '#282828';
+
+        const itemsHtml = (order.items || []).map(item => \`
+          <div class="order-item-row">
+            <img src="\${item.image || 'assets/images/pet_visor_yellow_flame.png'}" alt="\${item.name}" class="order-item-thumb">
+            <div style="flex:1;">
+              <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
+                \${item.name}
+              </h4>
+              <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
+                \${item.spec || 'CUSTOM MUSTAZ SPEC'}
+              </p>
+              <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
+                QTY: \${item.qty || 1} × \${formatRupiah(item.price || 0)}
+              </span>
+            </div>
+            <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
+              \${formatRupiah((item.price || 0) * (item.qty || 1))}
+            </div>
+          </div>
+        \`).join('');
+
+        return \`
+          <div class="account-order-card" style="border-color:\${borderColor};margin-bottom:20px;">
+            <div class="order-header-bar">
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;letter-spacing:0.04em;">
+                  ORDER #\${order.id}
+                </span>
+                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">
+                  PLACED ON \${order.date || 'RECENT'}
+                </span>
+              </div>
+              <div>
+                <span class="\${statusClass}">
+                  <span class="material-symbols-outlined" style="font-size:16px;">\${statusIcon}</span>
+                  \${order.status} // \${order.tracking || 'KURIR EKSPEDISI'}
+                </span>
+              </div>
+            </div>
+
+            <div class="order-items-list">
+              \${itemsHtml}
+            </div>
+
+            <div class="order-footer-bar">
+              <div>
+                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;display:block;">TOTAL TRANSACTION</span>
+                <span style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-yellow);font-weight:900;">
+                  \${formatRupiah(order.total || 0)}
+                </span>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <a href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT%2C%20saya%20ingin%20cek%20status%20order%20%23\${order.id}" target="_blank" class="btn-brutal-ghost btn-brutal-sm">
+                  WHATSAPP SUPPORT
+                </a>
+              </div>
+            </div>
+          </div>
+        \`;
+      }).join('');
+    }
+
+    // 4. User-Scoped Wishlist Renderer
+    function renderAccountWishlist(email) {
+      const container = document.getElementById('wishlistContainer');
+      const metricWish = document.getElementById('metricWishlist');
+      const navBadge = document.getElementById('navBadgeWishlist');
+
+      const wishlist = getUserWishlist(email);
+      if (metricWish) metricWish.textContent = wishlist.length;
+      if (navBadge) navBadge.textContent = wishlist.length;
+
+      if (!container) return;
+
+      if (wishlist.length === 0) {
+        container.innerHTML = \`
+          <div style="grid-column:1/-1;background:#111;border:2px dashed #333;padding:48px 24px;text-align:center;">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#555;display:block;margin-bottom:12px;">favorite</span>
+            <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;margin:0 0 6px;">WISHLIST MASIH KOSONG</h3>
+            <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#888;max-width:420px;margin:0 auto 20px;line-height:1.5;">
+              Simpan pet visor atau custom helmet favorit Anda untuk dibeli kemudian.
+            </p>
+            <a href="parts.html" class="btn-brutal-pink btn-brutal-sm" style="display:inline-flex;">
+              LIHAT DAFTAR VISOR →
+            </a>
+          </div>
+        \`;
+        return;
+      }
+
+      container.innerHTML = wishlist.map(item => \`
+        <div class="card-brutal-dark" style="padding:16px;">
+          <div style="aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;">
+            <img src="\${item.image || 'assets/images/pet_visor_yellow_flame.png'}" alt="\${item.name}" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+          </div>
+          <h3 style="font-family:var(--font-headline);font-size:1.3rem;color:#FFF;margin-bottom:4px;">
+            \${item.name}
+          </h3>
+          <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;margin-bottom:12px;">
+            \${item.sub || item.category || 'CUSTOM PET VISOR'}
+          </p>
+          <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #333;padding-top:12px;">
+            <span style="font-family:var(--font-headline);font-size:1.3rem;color:var(--accent-yellow);">
+              \${formatRupiah(item.price || 0)}
+            </span>
+            <button class="btn-brutal-pink btn-brutal-sm" data-add-to-cart="\${item.id}">
+              + ADD TO CART
+            </button>
+          </div>
+        </div>
+      \`).join('');
+    }
+
+    // 5. User-Scoped Delivery Addresses Renderer
+    function renderAccountAddresses(email, fullName, phone) {
+      const container = document.getElementById('addressesContainer');
+      if (!container) return;
+
+      const addresses = getUserAddresses(email, fullName, phone);
+
+      if (addresses.length === 0) {
+        container.innerHTML = \`
+          <div style="background:#111;border:2px dashed #333;padding:40px 24px;text-align:center;">
+            <span class="material-symbols-outlined" style="font-size:40px;color:#555;display:block;margin-bottom:12px;">location_on</span>
+            <h3 style="font-family:var(--font-headline);font-size:1.3rem;color:#FFF;margin:0 0 6px;">BELUM ADA ALAMAT TERSIMPAN</h3>
+            <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#888;max-width:400px;margin:0 auto 16px;">
+              Tambahkan alamat tujuan drop barang untuk mempercepat proses order dan checkout via WhatsApp.
+            </p>
+            <button class="btn-brutal-yellow btn-brutal-sm" id="btnAddNewAddrEmpty">
+              + TAMBAH ALAMAT BARU
+            </button>
+          </div>
+        \`;
+        const btn = document.getElementById('btnAddNewAddrEmpty');
+        if (btn) btn.onclick = () => openAddAddressModal(email, fullName);
+        return;
+      }
+
+      container.innerHTML = addresses.map((addr) => \`
+        <div style="background:#111;border:2px solid \${addr.isDefault ? 'var(--accent-pink)' : '#282828'};padding:24px;margin-bottom:20px;box-shadow:4px 4px 0px #000;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;">\${addr.title || 'ALAMAT DROP'}</span>
+              \${addr.isDefault ? '<span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">DEFAULT ADDRESS</span>' : ''}
+            </div>
+          </div>
+          <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#FFF;font-weight:700;margin-bottom:4px;">
+            \${addr.recipient || fullName || 'Penerima'}
+          </p>
+          <p style="font-size:0.9rem;color:#AAA;line-height:1.5;margin-bottom:8px;">
+            \${addr.address || '-'}
+          </p>
+          \${addr.notes ? \`<span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-yellow);">NOTES: \${addr.notes}</span>\` : ''}
+        </div>
+      \`).join('');
+    }
+
+    function openAddAddressModal(email, fullName) {
+      const title = prompt('Label Alamat (contoh: RUMAH / KANTOR / BENGKEL):', 'RUMAH');
+      if (!title) return;
+      const address = prompt('Alamat Lengkap & Kota Pengiriman:');
+      if (!address) return;
+      const notes = prompt('Catatan Kurir (opsional):', '');
+
+      const newAddr = {
+        id: 'addr-' + Date.now(),
+        title: title.trim().toUpperCase(),
+        isDefault: true,
+        recipient: fullName || 'MEMBER',
+        address: address.trim(),
+        notes: (notes || '').trim()
+      };
+      saveUserAddress(email, newAddr);
+      renderAccountAddresses(email, fullName);
+    }
+
+    const btnAddAddrHeader = document.getElementById('btnAddAddressBtn');
+    if (btnAddAddrHeader) {
+      btnAddAddrHeader.addEventListener('click', () => {
+        const cur = loadProfile();
+        openAddAddressModal(cur.email, cur.fullName);
+      });
+    }
+
+    // 6. Master Sync Function
+    function syncAllUserData(data) {
+      const email = data.email || '';
+      renderProfile(data);
+      renderAccountOrders(email);
+      renderAccountWishlist(email);
+      renderAccountAddresses(email, data.fullName, data.phone);
+    }
+
     // Initial load on page view from local cache
     const initialData = loadProfile();
-    renderProfile(initialData);
+    syncAllUserData(initialData);
 
     // Sync from Supabase Cloud database
     if (initialData.email) {
       try {
         const cloudData = await fetchCloudAccount(initialData.email);
-        if (cloudData) renderProfile(cloudData);
+        if (cloudData) syncAllUserData(cloudData);
       } catch {}
     }
+
+    // Listen for cross-component auth or order updates
+    window.addEventListener('mustaz:auth_synced', (e) => {
+      if (e.detail) syncAllUserData(e.detail);
+    });
+
+    window.addEventListener('mustaz:orders_updated', () => {
+      const cur = loadProfile();
+      renderAccountOrders(cur.email);
+    });
+
+    window.addEventListener('mustaz:wishlist_updated', () => {
+      const cur = loadProfile();
+      renderAccountWishlist(cur.email);
+    });
 
     // Save Changes Handler
     const profileForm = document.getElementById('profileForm');
@@ -1392,8 +1431,8 @@ ${sharedMarquee()}
           console.error('Storage quota error:', e);
         }
 
-        // Live update header banner & avatar immediately
-        renderProfile(updated);
+        // Live update header banner, avatar, and data immediately
+        syncAllUserData(updated);
 
         // Sync to Supabase Cloud database
         saveCloudAccount(updated).catch(() => {});
@@ -1415,11 +1454,11 @@ ${sharedMarquee()}
     if (btnReset) {
       btnReset.addEventListener('click', () => {
         const stored = loadProfile();
-        renderProfile(stored);
+        syncAllUserData(stored);
       });
     }
 
-    // 3. Logout / Exit Protocol
+    // 7. Logout / Exit Protocol
     const btnNavLogout = document.getElementById('btnNavLogout');
     if (btnNavLogout) {
       btnNavLogout.addEventListener('click', async (e) => {
@@ -2125,7 +2164,7 @@ ${sharedMarquee()}
 </main>
 
 <script type="module">
-  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart } from './js/services/cartService.js';
+  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder } from './js/services/cartService.js';
   import { saveCloudOrder } from './js/services/supabaseService.js';
 
   function renderPageCheckout() {
@@ -2190,6 +2229,23 @@ ${sharedMarquee()}
         total: total,
         status: 'PROCESSING'
       }).catch(() => {});
+
+      // Save to user's localized order history
+      const orderRecord = {
+        id: 'MSTZ-' + Math.floor(1000 + Math.random() * 9000),
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase(),
+        status: 'IN TRANSIT',
+        tracking: 'J&T EXPRESS [PENDING DISPATCH]',
+        items: items.map(i => ({
+          name: i.name,
+          spec: i.category || i.sub || 'CUSTOM MUSTAZ PART',
+          qty: i.quantity,
+          price: i.price,
+          image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
+        })),
+        total: total
+      };
+      saveUserOrder(null, orderRecord);
 
       const url = generateWhatsAppUrl({ name, phone, address, payment }, items, total);
       window.open(url, '_blank');

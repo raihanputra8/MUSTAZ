@@ -288,6 +288,10 @@ export async function syncUserSession(user, fallbackEmail = '') {
   localStorage.setItem('mustaz_auth_logged_in', 'true');
   localStorage.setItem('mustaz_user_profile_data', JSON.stringify(profile));
 
+  // Notify components across the app that user session changed
+  window.dispatchEvent(new CustomEvent('mustaz:auth_synced', { detail: profile }));
+  window.dispatchEvent(new CustomEvent('cart:updated', { detail: [] }));
+
   // Sync to Supabase Cloud in background (non-blocking)
   import('./supabaseService.js').then(({ saveCloudAccount, fetchCloudAccount }) => {
     fetchCloudAccount(email).then(cloudAcc => {
@@ -297,6 +301,7 @@ export async function syncUserSession(user, fallbackEmail = '') {
         profile.phone = cloudAcc.phone || profile.phone;
         if (cloudAcc.avatarUrl) profile.avatarUrl = cloudAcc.avatarUrl;
         localStorage.setItem('mustaz_user_profile_data', JSON.stringify(profile));
+        window.dispatchEvent(new CustomEvent('mustaz:auth_synced', { detail: profile }));
       } else {
         saveCloudAccount(profile).catch(() => {});
       }

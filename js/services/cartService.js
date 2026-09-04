@@ -178,23 +178,24 @@ export const PARTS_DATA = getDynamicParts();
 
 // ─── Cart State Management (User-Scoped & Auth-Tied) ───────────────────────
 
-function getActiveCartKey() {
-  const isLoggedIn = localStorage.getItem('mustaz_auth_logged_in') === 'true';
-  if (!isLoggedIn) {
-    // Purge any orphan/guest cart data from legacy keys
-    try {
-      localStorage.removeItem(CART_KEY);
-      localStorage.removeItem('mustaz_cart');
-    } catch {}
-    return null;
-  }
+export function getActiveUserEmail() {
+  const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
+  if (!isLoggedIn) return null;
   try {
     const profile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
-    const email = profile.email || 'active_user';
-    return `mustaz_cart_${email.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+    const email = (profile.email || '').toLowerCase().trim();
+    return email || null;
   } catch {
-    return 'mustaz_cart_user';
+    return null;
   }
+}
+
+function getActiveCartKey() {
+  const email = getActiveUserEmail();
+  if (!email) {
+    return null;
+  }
+  return `mustaz_cart_${email.replace(/[^a-z0-9]/g, '_')}`;
 }
 
 function readCart() {
@@ -221,7 +222,7 @@ export function getCart() {
 }
 
 export function addToCart(product) {
-  const isLoggedIn = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+  const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
   if (!isLoggedIn) {
     alert('⚠️ AKSES DIBATASI // MASUK KE GARASI\n\nSilakan Login atau Buat Akun terlebih dahulu sebelum menambahkan barang ke keranjang.');
     window.location.href = 'login.html';
@@ -272,6 +273,122 @@ export function getCartTotal() {
 
 export function getCartCount() {
   return readCart().reduce((sum, i) => sum + i.quantity, 0);
+}
+
+// ─── User-Scoped Order History Management ──────────────────────────────────
+
+export function getUserOrders(userEmail) {
+  const email = (userEmail || getActiveUserEmail() || '').toLowerCase().trim();
+  if (!email) return [];
+  const key = `mustaz_orders_${email.replace(/[^a-z0-9]/g, '_')}`;
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+
+  // Initial seed orders ONLY for owner email (for showroom demo)
+  if (email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com') {
+    const ownerOrders = [
+      {
+        id: 'MSTZ-9942',
+        date: '2 SEP 2026',
+        status: 'IN TRANSIT',
+        tracking: 'J&T EXPRESS [JT-992144]',
+        items: [
+          { name: 'Y-TWO ROOF VISOR // SPIKED', spec: 'COLOR: ACID YELLOW ACRYLIC • 3-SNAP MOUNT', qty: 1, price: 350000, image: 'assets/images/pet_visor_yellow_flame.png' },
+          { name: 'CHECKER RACER PET // DUCKBILL', spec: 'COLOR: MONOCHROME CHECKERED • RETRO 70S', qty: 1, price: 280000, image: 'assets/images/retro_checkered_helmet.png' }
+        ],
+        total: 630000
+      }
+    ];
+    localStorage.setItem(key, JSON.stringify(ownerOrders));
+    return ownerOrders;
+  }
+
+  return [];
+}
+
+export function saveUserOrder(userEmail, newOrder) {
+  const email = (userEmail || getActiveUserEmail() || '').toLowerCase().trim();
+  if (!email) return false;
+  const key = `mustaz_orders_${email.replace(/[^a-z0-9]/g, '_')}`;
+  const orders = getUserOrders(email);
+  orders.unshift(newOrder);
+  try {
+    localStorage.setItem(key, JSON.stringify(orders));
+    window.dispatchEvent(new CustomEvent('mustaz:orders_updated', { detail: orders }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ─── User-Scoped Wishlist (Saved Visors) ────────────────────────────────────
+
+export function getUserWishlist(userEmail) {
+  const email = (userEmail || getActiveUserEmail() || '').toLowerCase().trim();
+  if (!email) return [];
+  const key = `mustaz_wishlist_${email.replace(/[^a-z0-9]/g, '_')}`;
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return [];
+}
+
+export function toggleWishlist(userEmail, product) {
+  const email = (userEmail || getActiveUserEmail() || '').toLowerCase().trim();
+  if (!email) return [];
+  const key = `mustaz_wishlist_${email.replace(/[^a-z0-9]/g, '_')}`;
+  let list = getUserWishlist(email);
+  const exists = list.some(p => p.id === product.id);
+  if (exists) {
+    list = list.filter(p => p.id !== product.id);
+  } else {
+    list.push(product);
+  }
+  localStorage.setItem(key, JSON.stringify(list));
+  window.dispatchEvent(new CustomEvent('mustaz:wishlist_updated', { detail: list }));
+  return list;
+}
+
+// ─── User-Scoped Delivery Addresses ────────────────────────────────────────
+
+export function getUserAddresses(userEmail, defaultName = '', defaultPhone = '') {
+  const email = (userEmail || getActiveUserEmail() || '').toLowerCase().trim();
+  if (!email) return [];
+  const key = `mustaz_addresses_${email.replace(/[^a-z0-9]/g, '_')}`;
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+
+  // Only demo default address for owner
+  if (email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com') {
+    return [
+      {
+        id: 'addr-1',
+        title: 'HOME & GARAGE',
+        isDefault: true,
+        recipient: `${defaultName || 'Raihan Putra'} (${defaultPhone || '+62 812-3456-7890'})`,
+        address: 'Jl. Senopati Raya No. 42B, RT 04 / RW 02, Kebayoran Baru, Kota Jakarta Selatan, DKI Jakarta 12190',
+        notes: 'TITIPKAN KE SECURITY JIKA BENGKEL TUTUP'
+      }
+    ];
+  }
+
+  return [];
+}
+
+export function saveUserAddress(userEmail, newAddress) {
+  const email = (userEmail || getActiveUserEmail() || '').toLowerCase().trim();
+  if (!email) return false;
+  const key = `mustaz_addresses_${email.replace(/[^a-z0-9]/g, '_')}`;
+  const addresses = getUserAddresses(email);
+  addresses.push(newAddress);
+  localStorage.setItem(key, JSON.stringify(addresses));
+  window.dispatchEvent(new CustomEvent('mustaz:addresses_updated', { detail: addresses }));
+  return true;
 }
 
 // ─── Utilities ─────────────────────────────────────────────────────────────

@@ -293,7 +293,7 @@ export function initCart() {
     const total = getCartTotal();
     const url = generateWhatsAppUrl({ name, phone, address, payment }, cartItems, total);
 
-    // Save order to Supabase Cloud in background
+    // Save order to Supabase Cloud & User Order History in background
     import('../services/supabaseService.js').then(({ saveCloudOrder }) => {
       saveCloudOrder({
         customer: name,
@@ -301,6 +301,17 @@ export function initCart() {
         total: total,
         status: 'PROCESSING'
       }).catch(() => {});
+    }).catch(() => {});
+
+    import('../services/cartService.js').then(({ saveUserOrder }) => {
+      saveUserOrder(null, {
+        id: 'MSTZ-' + Math.floor(1000 + Math.random() * 9000),
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+        status: 'PROCESSING',
+        tracking: 'VERIFIKASI ADMIN',
+        items: cartItems.map(i => ({ name: i.name, spec: i.sub || 'Custom Visor', qty: i.quantity, price: i.price, image: i.image })),
+        total: total
+      });
     }).catch(() => {});
 
     window.open(url, '_blank');
@@ -311,8 +322,9 @@ export function initCart() {
     document.getElementById('checkoutForm').reset();
   });
 
-  // Listen to cart updates and logout events from any page
+  // Listen to cart updates, auth changes, and logout events from any page
   window.addEventListener('cart:updated', () => renderCartItems());
+  window.addEventListener('mustaz:auth_synced', () => renderCartItems());
   window.addEventListener('mustaz:logout', () => {
     renderCartItems();
     closeCart();

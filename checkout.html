@@ -196,7 +196,7 @@
 </main>
 
 <script type="module">
-  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart } from './js/services/cartService.js';
+  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder } from './js/services/cartService.js';
   import { saveCloudOrder } from './js/services/supabaseService.js';
 
   function renderPageCheckout() {
@@ -261,6 +261,23 @@
         total: total,
         status: 'PROCESSING'
       }).catch(() => {});
+
+      // Save to user's localized order history
+      const orderRecord = {
+        id: 'MSTZ-' + Math.floor(1000 + Math.random() * 9000),
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase(),
+        status: 'IN TRANSIT',
+        tracking: 'J&T EXPRESS [PENDING DISPATCH]',
+        items: items.map(i => ({
+          name: i.name,
+          spec: i.category || i.sub || 'CUSTOM MUSTAZ PART',
+          qty: i.quantity,
+          price: i.price,
+          image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
+        })),
+        total: total
+      };
+      saveUserOrder(null, orderRecord);
 
       const url = generateWhatsAppUrl({ name, phone, address, payment }, items, total);
       window.open(url, '_blank');
