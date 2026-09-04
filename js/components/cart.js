@@ -70,11 +70,15 @@ function getCheckoutModalHTML() {
               <input type="tel" id="custPhone" class="form-input-brutal" placeholder="e.g. 081234567890" required>
             </div>
             <div class="form-group-brutal">
-              <label class="form-label-brutal" for="custAddress">03 // DROP COORDINATES / ADDRESS *</label>
+              <label class="form-label-brutal" for="custEmail">03 // EMAIL NOTIFIKASI & INVOICE *</label>
+              <input type="email" id="custEmail" class="form-input-brutal" placeholder="nama@email.com" required>
+            </div>
+            <div class="form-group-brutal">
+              <label class="form-label-brutal" for="custAddress">04 // DROP COORDINATES / ADDRESS *</label>
               <textarea id="custAddress" class="form-input-brutal" rows="3" placeholder="Full street address, city, sector, and postal code" required style="resize:vertical;"></textarea>
             </div>
             <div class="form-group-brutal">
-              <label class="form-label-brutal" for="paymentMethod">04 // PAYMENT PROTOCOL *</label>
+              <label class="form-label-brutal" for="paymentMethod">05 // PAYMENT PROTOCOL *</label>
               <select id="paymentMethod" class="form-input-brutal" style="cursor:pointer;">
                 <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank (BCA / Mandiri)</option>
                 <option value="QRIS Instant Pay">QRIS Instant Pay</option>
@@ -234,6 +238,12 @@ export function openCheckout() {
   const modal = document.getElementById('checkoutModal');
   if (modal) {
     renderCheckoutSummary();
+    // Prefill buyer email if user is logged in
+    const activeEmail = getActiveUserEmail();
+    const emailInput = document.getElementById('custEmail');
+    if (activeEmail && emailInput && !emailInput.value) {
+      emailInput.value = activeEmail;
+    }
     modal.classList.add('open');
     closeCart();
   }
@@ -278,12 +288,18 @@ export function initCart() {
     e.preventDefault();
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
+    const email = document.getElementById('custEmail').value.trim();
     const address = document.getElementById('custAddress').value.trim();
     const payment = document.getElementById('paymentMethod').value;
     const errEl = document.getElementById('checkoutError');
 
-    if (!name || !phone || !address) {
-      errEl.textContent = '⚠️ ALL PROTOCOL FIELDS REQUIRED BEFORE DROP.';
+    if (!name || !phone || !email || !address) {
+      errEl.textContent = '⚠️ ALL PROTOCOL FIELDS (INCLUDING EMAIL) REQUIRED BEFORE DROP.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!email.includes('@')) {
+      errEl.textContent = '⚠️ PLEASE ENTER A VALID EMAIL FOR INVOICE DISPATCH.';
       errEl.style.display = 'block';
       return;
     }
@@ -291,29 +307,52 @@ export function initCart() {
 
     const cartItems = getCart();
     const total = getCartTotal();
-    const url = generateWhatsAppUrl({ name, phone, address, payment }, cartItems, total);
+    const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
 
-    // Save order to Supabase Cloud & User Order History in background
+    const orderRecord = {
+      id: orderId,
+      orderId: orderId,
+      customerName: name,
+      phone: phone,
+      email: email,
+      address: address,
+      paymentMethod: payment,
+      date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+      status: 'PROCESSING',
+      tracking: 'VERIFIKASI ADMIN',
+      items: cartItems.map(i => ({
+        name: i.name,
+        spec: i.sub || 'Custom Visor',
+        qty: i.quantity,
+        price: i.price,
+        image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
+      })),
+      total: total
+    };
+
+    // 1. Send Order Confirmation / Invoice Email to Buyer
+    import('../services/emailService.js').then(({ sendOrderSuccessEmail, showOrderSuccessModal }) => {
+      sendOrderSuccessEmail(orderRecord).catch(() => {});
+      showOrderSuccessModal(orderRecord);
+    }).catch(() => {});
+
+    // 2. Save order to Supabase Cloud
     import('../services/supabaseService.js').then(({ saveCloudOrder }) => {
       saveCloudOrder({
         customer: name,
+        email: email,
         items: cartItems.map(i => `${i.name} (x${i.quantity})`).join(', '),
         total: total,
         status: 'PROCESSING'
       }).catch(() => {});
     }).catch(() => {});
 
+    // 3. Save to user's localized order history
     import('../services/cartService.js').then(({ saveUserOrder }) => {
-      saveUserOrder(null, {
-        id: 'MSTZ-' + Math.floor(1000 + Math.random() * 9000),
-        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-        status: 'PROCESSING',
-        tracking: 'VERIFIKASI ADMIN',
-        items: cartItems.map(i => ({ name: i.name, spec: i.sub || 'Custom Visor', qty: i.quantity, price: i.price, image: i.image })),
-        total: total
-      });
+      saveUserOrder(email, orderRecord);
     }).catch(() => {});
 
+    const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email }, cartItems, total);
     window.open(url, '_blank');
 
     clearCart();

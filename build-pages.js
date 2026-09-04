@@ -1521,7 +1521,7 @@ ${sharedMarquee()}
           AUTHENTICATE
         </h2>
         <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#777;margin:0 0 20px;">
-          CHOOSE YOUR AUTHENTICATION PROTOCOL TO ACCESS THE GARAGE.
+          MASUK SECARA INSTAN MENGGUNAKAN GOOGLE ATAU EMAIL OTP (KODE MASUK).
         </p>
 
         <!-- Status / Alert Message -->
@@ -1539,77 +1539,64 @@ ${sharedMarquee()}
           <span id="btnGoogleText">CONTINUE WITH GOOGLE</span>
         </button>
 
-        <div style="display:flex;align-items:center;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;margin-bottom:22px;">
           <div style="flex:1;height:1px;background:#282828;"></div>
-          <span style="padding:0 12px;font-family:var(--font-mono-sub);font-size:0.68rem;color:#777;letter-spacing:0.1em;">OR USE EMAIL</span>
+          <span style="padding:0 12px;font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;letter-spacing:0.12em;">ATAU MASUK VIA EMAIL OTP</span>
           <div style="flex:1;height:1px;background:#282828;"></div>
         </div>
 
-        <!-- AUTH TABS: PASSWORD VS OTP -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">
-          <button type="button" id="tabBtnPassword" class="btn-brutal-yellow btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
-            EMAIL & PASSWORD
-          </button>
-          <button type="button" id="tabBtnOtp" class="btn-brutal-dark btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
-            EMAIL OTP (KODE MASUK)
-          </button>
-        </div>
-
-        <!-- TAB 1: PASSWORD FORM -->
-        <form id="passwordLoginForm">
-          <div class="form-group-brutal">
-            <label class="form-label-brutal">CREDENTIAL ID / EMAIL</label>
-            <input type="email" id="loginEmail" class="form-input-brutal" placeholder="your@frequency.net" required autocomplete="email">
-          </div>
-          <div class="form-group-brutal" style="margin-bottom:14px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <label class="form-label-brutal" style="margin-bottom:0;">SECURITY PASSCODE</label>
-              <a href="forgot-password.html" style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-pink);text-decoration:none;">LUPA PASSWORD?</a>
-            </div>
-            <input type="password" id="loginPassword" class="form-input-brutal" placeholder="••••••••" required autocomplete="current-password">
-          </div>
-          <button type="submit" id="btnSubmitPassword" class="btn-brutal-pink" style="width:100%;padding:14px;font-size:1.05rem;">
-            ENTER GARAGE →
-          </button>
-        </form>
-
-        <!-- TAB 2: EMAIL OTP FORM -->
-        <form id="otpLoginForm" style="display:none;">
-          <!-- Step 1: Request OTP -->
-          <div id="otpStep1">
+        <!-- UNIFIED EMAIL OTP FLOW -->
+        <div id="unifiedAuthContainer">
+          <!-- STEP 1: Enter Email -->
+          <form id="otpEmailForm">
             <div class="form-group-brutal">
-              <label class="form-label-brutal">YOUR EMAIL ADDRESS</label>
-              <input type="email" id="otpEmail" class="form-input-brutal" placeholder="your@frequency.net">
-              <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;display:block;margin-top:6px;">
-                Kode 6-digit rahasia akan dikirimkan langsung ke inbox email Anda.
+              <label class="form-label-brutal" for="loginEmail">ALAMAT EMAIL ANDA</label>
+              <input type="email" id="loginEmail" class="form-input-brutal" placeholder="contoh: nama@email.com" required autocomplete="email">
+              <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;display:block;margin-top:6px;line-height:1.4;">
+                Kode rahasia 6-digit akan dikirim langsung ke inbox email Anda. Tanpa perlu mengingat password!
               </span>
             </div>
-            <button type="button" id="btnRequestOtp" class="btn-brutal-yellow" style="width:100%;padding:14px;font-size:1.05rem;">
+            <button type="submit" id="btnRequestOtp" class="btn-brutal-pink" style="width:100%;padding:15px;font-size:1.05rem;">
               KIRIM KODE OTP KE EMAIL →
             </button>
-          </div>
+          </form>
 
-          <!-- Step 2: Verify OTP -->
-          <div id="otpStep2" style="display:none;">
+          <!-- STEP 2: Enter 6-digit OTP (Revealed after code sent) -->
+          <form id="otpVerifyForm" style="display:none;">
+            <div style="background:#161616;border:2px solid var(--accent-yellow);padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:1.2rem;">✉️</span>
+              <div style="flex:1;">
+                <div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;text-transform:uppercase;">KODE DIKIRIM KE:</div>
+                <div id="targetEmailDisplay" style="font-family:var(--font-headline);font-size:0.95rem;color:var(--accent-yellow);word-break:break-all;"></div>
+              </div>
+            </div>
+
             <div class="form-group-brutal">
-              <label class="form-label-brutal">MASUKKAN 6-DIGIT KODE OTP</label>
-              <input type="text" id="otpCode" class="form-input-brutal" placeholder="123456" maxlength="6" style="letter-spacing:0.3em;text-align:center;font-size:1.3rem;font-family:var(--font-headline);">
-              <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;display:block;margin-top:6px;" id="otpSentNotice">
-                Cek inbox atau spam email Anda.
+              <label class="form-label-brutal" for="otpCode">MASUKKAN 6-DIGIT KODE OTP</label>
+              <input type="text" id="otpCode" class="form-input-brutal" placeholder="123456" maxlength="6" style="letter-spacing:0.35em;text-align:center;font-size:1.4rem;font-family:var(--font-headline);font-weight:900;" autocomplete="one-time-code">
+              <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;display:block;margin-top:6px;">
+                Cek kotak masuk atau folder spam/junk email Anda.
               </span>
             </div>
-            <button type="button" id="btnVerifyOtp" class="btn-brutal-pink" style="width:100%;padding:14px;font-size:1.05rem;margin-bottom:10px;">
-              VERIFIKASI & MASUK →
+
+            <button type="submit" id="btnVerifyOtp" class="btn-brutal-yellow" style="width:100%;padding:15px;font-size:1.05rem;margin-bottom:12px;">
+              VERIFIKASI & MASUK KE GARASI →
             </button>
-            <button type="button" id="btnBackToOtpStep1" class="btn-brutal-dark btn-brutal-sm" style="width:100%;text-align:center;">
-              ← GANTI EMAIL
-            </button>
-          </div>
-        </form>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <button type="button" id="btnResendOtp" class="btn-brutal-dark btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
+                ↻ KIRIM ULANG
+              </button>
+              <button type="button" id="btnChangeEmail" class="btn-brutal-dark btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
+                ← GANTI EMAIL
+              </button>
+            </div>
+          </form>
+        </div>
 
         <div style="margin-top:24px;text-align:center;border-top:1px dashed #282828;padding-top:18px;">
-          <span style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#888;">
-            BELUM MEMILIKI AKUN? <a href="register.html" style="color:var(--accent-yellow);font-weight:700;text-decoration:none;">DAFTAR AKUN SEKARANG →</a>
+          <span style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;line-height:1.5;display:block;">
+            ⚡ <strong>SISTEM AKSES OTOMATIS:</strong> Belum punya akun? Cukup masukkan email di atas, akun baru Anda akan otomatis dibuat saat verifikasi kode pertama kali.
           </span>
         </div>
       </div>
@@ -1619,7 +1606,7 @@ ${sharedMarquee()}
 </main>
 
 <script type="module">
-  import { loginWithPassword, sendEmailOtp, verifyEmailOtp, loginWithGoogle, initAccountAuth } from './js/services/authService.js';
+  import { sendEmailOtp, verifyEmailOtp, loginWithGoogle, initAccountAuth } from './js/services/authService.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // If returning from Google OAuth or already logged in, redirect directly to account
@@ -1649,7 +1636,7 @@ ${sharedMarquee()}
       }
     }
 
-    // 1. Google OAuth
+    // 1. Google OAuth Direct
     const btnGoogle = document.getElementById('btnGoogleLogin');
     btnGoogle?.addEventListener('click', async () => {
       const btnText = document.getElementById('btnGoogleText');
@@ -1675,108 +1662,104 @@ ${sharedMarquee()}
       }
     });
 
-    // 2. Tab Toggles
-    const tabBtnPassword = document.getElementById('tabBtnPassword');
-    const tabBtnOtp = document.getElementById('tabBtnOtp');
-    const passwordForm = document.getElementById('passwordLoginForm');
-    const otpForm = document.getElementById('otpLoginForm');
-
-    tabBtnPassword?.addEventListener('click', () => {
-      tabBtnPassword.className = 'btn-brutal-yellow btn-brutal-sm';
-      tabBtnOtp.className = 'btn-brutal-dark btn-brutal-sm';
-      passwordForm.style.display = 'block';
-      otpForm.style.display = 'none';
-      if (alertBox) alertBox.style.display = 'none';
-    });
-
-    tabBtnOtp?.addEventListener('click', () => {
-      tabBtnOtp.className = 'btn-brutal-yellow btn-brutal-sm';
-      tabBtnPassword.className = 'btn-brutal-dark btn-brutal-sm';
-      otpForm.style.display = 'block';
-      passwordForm.style.display = 'none';
-      if (alertBox) alertBox.style.display = 'none';
-    });
-
-    // 3. Password Login
-    passwordForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPassword').value;
-      const btn = document.getElementById('btnSubmitPassword');
-
-      try {
-        btn.textContent = 'AUTHENTICATING...';
-        btn.disabled = true;
-        await loginWithPassword(email, pass);
-        showAlert('✓ Login Berhasil! Membuka garasi...', true);
-        setTimeout(() => {
-          window.location.href = 'account.html';
-        }, 800);
-      } catch (err) {
-        btn.textContent = 'ENTER GARAGE →';
-        btn.disabled = false;
-        showAlert('Gagal Masuk: ' + (err.message || 'Periksa kembali email dan password Anda'));
-      }
-    });
-
-    // 4. OTP Request & Verification
+    // 2. Unified Email OTP Flow
+    const otpEmailForm = document.getElementById('otpEmailForm');
+    const otpVerifyForm = document.getElementById('otpVerifyForm');
+    const loginEmailInput = document.getElementById('loginEmail');
+    const otpCodeInput = document.getElementById('otpCode');
     const btnRequestOtp = document.getElementById('btnRequestOtp');
     const btnVerifyOtp = document.getElementById('btnVerifyOtp');
-    const otpStep1 = document.getElementById('otpStep1');
-    const otpStep2 = document.getElementById('otpStep2');
-    const otpEmailInput = document.getElementById('otpEmail');
-    const otpCodeInput = document.getElementById('otpCode');
+    const btnResendOtp = document.getElementById('btnResendOtp');
+    const btnChangeEmail = document.getElementById('btnChangeEmail');
+    const targetEmailDisplay = document.getElementById('targetEmailDisplay');
 
-    btnRequestOtp?.addEventListener('click', async () => {
-      const email = otpEmailInput.value.trim();
-      if (!email) {
-        showAlert('Silakan masukkan alamat email Anda.');
+    let currentEmail = '';
+
+    // Step 1: Submit Email to send OTP
+    otpEmailForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = loginEmailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        showAlert('Silakan masukkan alamat email yang valid.');
         return;
       }
 
       try {
-        btnRequestOtp.textContent = 'MENGIRIM KODE...';
+        btnRequestOtp.textContent = 'MENGIRIM KODE OTP...';
         btnRequestOtp.disabled = true;
+        if (alertBox) alertBox.style.display = 'none';
+
         await sendEmailOtp(email);
-        showAlert('✓ Kode OTP 6-digit berhasil dikirim ke ' + email, true);
-        otpStep1.style.display = 'none';
-        otpStep2.style.display = 'block';
-        document.getElementById('otpSentNotice').textContent = 'Kode OTP dikirim ke: ' + email;
+        currentEmail = email;
+
+        if (targetEmailDisplay) targetEmailDisplay.textContent = email;
+        showAlert('✓ Kode 6-digit berhasil dikirim ke ' + email + '. Cek kotak masuk Anda!', true);
+
+        otpEmailForm.style.display = 'none';
+        otpVerifyForm.style.display = 'block';
+        otpCodeInput.value = '';
+        otpCodeInput.focus();
       } catch (err) {
         btnRequestOtp.textContent = 'KIRIM KODE OTP KE EMAIL →';
         btnRequestOtp.disabled = false;
-        showAlert('Gagal mengirim OTP: ' + err.message);
+        showAlert('Gagal mengirim kode: ' + (err.message || 'Periksa koneksi Anda'));
       }
     });
 
-    btnVerifyOtp?.addEventListener('click', async () => {
-      const email = otpEmailInput.value.trim();
+    // Step 2: Submit OTP Code to verify
+    otpVerifyForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
       const token = otpCodeInput.value.trim();
       if (!token || token.length < 6) {
-        showAlert('Masukkan 6-digit kode OTP lengkap.');
+        showAlert('Silakan masukkan 6-digit kode OTP lengkap.');
         return;
       }
 
       try {
-        btnVerifyOtp.textContent = 'MEMVERIFIKASI...';
+        btnVerifyOtp.textContent = 'MEMVERIFIKASI KODE...';
         btnVerifyOtp.disabled = true;
-        await verifyEmailOtp(email, token);
-        showAlert('✓ Verifikasi OTP Berhasil! Mengalihkan...', true);
+        if (alertBox) alertBox.style.display = 'none';
+
+        await verifyEmailOtp(currentEmail, token);
+        showAlert('✓ Verifikasi Berhasil! Selamat datang di Garasi MUSTAZ...', true);
+
         setTimeout(() => {
           window.location.href = 'account.html';
-        }, 800);
+        }, 750);
       } catch (err) {
-        btnVerifyOtp.textContent = 'VERIFIKASI & MASUK →';
+        btnVerifyOtp.textContent = 'VERIFIKASI & MASUK KE GARASI →';
         btnVerifyOtp.disabled = false;
-        showAlert('Kode OTP Salah atau Kadaluarsa: ' + err.message);
+        showAlert('Kode OTP Salah atau Kadaluarsa: ' + (err.message || 'Coba kirim ulang kode baru.'));
       }
     });
 
-    document.getElementById('btnBackToOtpStep1')?.addEventListener('click', () => {
-      otpStep2.style.display = 'none';
-      otpStep1.style.display = 'block';
+    // Resend OTP button
+    btnResendOtp?.addEventListener('click', async () => {
+      if (!currentEmail) return;
+      try {
+        btnResendOtp.textContent = 'MENGIRIM...';
+        btnResendOtp.disabled = true;
+        await sendEmailOtp(currentEmail);
+        showAlert('✓ Kode baru telah dikirimkan ke ' + currentEmail, true);
+        setTimeout(() => {
+          btnResendOtp.textContent = '↻ KIRIM ULANG';
+          btnResendOtp.disabled = false;
+        }, 5000);
+      } catch (err) {
+        btnResendOtp.textContent = '↻ KIRIM ULANG';
+        btnResendOtp.disabled = false;
+        showAlert('Gagal mengirim ulang kode: ' + err.message);
+      }
+    });
+
+    // Change Email button
+    btnChangeEmail?.addEventListener('click', () => {
+      otpVerifyForm.style.display = 'none';
+      otpEmailForm.style.display = 'block';
       btnRequestOtp.textContent = 'KIRIM KODE OTP KE EMAIL →';
       btnRequestOtp.disabled = false;
+      loginEmailInput.focus();
+      if (alertBox) alertBox.style.display = 'none';
     });
   });
 </script>
@@ -2189,6 +2172,13 @@ ${sharedMarquee()}
               <input type="tel" id="chkPhone" class="form-input-brutal" placeholder="08xxxxxxxxxx" required>
             </div>
             <div class="form-group-brutal">
+              <label class="form-label-brutal">EMAIL NOTIFIKASI & INVOICE *</label>
+              <input type="email" id="chkEmail" class="form-input-brutal" placeholder="nama@email.com" required autocomplete="email">
+              <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;display:block;margin-top:4px;">
+                Bukti pesanan & rincian invoice resmi akan dikirim otomatis ke email ini.
+              </span>
+            </div>
+            <div class="form-group-brutal">
               <label class="form-label-brutal">DELIVERY COORDINATES (STREET & SECTOR) *</label>
               <textarea id="chkAddress" class="form-input-brutal" rows="3" placeholder="Full street address, city, postal code" required></textarea>
             </div>
@@ -2214,8 +2204,9 @@ ${sharedMarquee()}
 </main>
 
 <script type="module">
-  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder } from './js/services/cartService.js';
+  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail } from './js/services/cartService.js';
   import { saveCloudOrder } from './js/services/supabaseService.js';
+  import { sendOrderSuccessEmail, showOrderSuccessModal } from './js/services/emailService.js';
 
   function renderPageCheckout() {
     const list = document.getElementById('checkoutPageItemsList');
@@ -2259,7 +2250,14 @@ ${sharedMarquee()}
   document.addEventListener('DOMContentLoaded', () => {
     renderPageCheckout();
 
-    document.getElementById('directCheckoutForm')?.addEventListener('submit', (e) => {
+    // Prefill active user email if logged in
+    const activeEmail = getActiveUserEmail();
+    const emailInput = document.getElementById('chkEmail');
+    if (activeEmail && emailInput && !emailInput.value) {
+      emailInput.value = activeEmail;
+    }
+
+    document.getElementById('directCheckoutForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const items = getCart();
       if (!items || items.length === 0) {
@@ -2268,24 +2266,24 @@ ${sharedMarquee()}
       }
       const name = document.getElementById('chkName').value.trim();
       const phone = document.getElementById('chkPhone').value.trim();
+      const email = document.getElementById('chkEmail').value.trim();
       const address = document.getElementById('chkAddress').value.trim();
       const payment = document.getElementById('chkPayment').value;
       const total = getCartTotal();
 
-      // Log order to Supabase Cloud Orders in background
-      saveCloudOrder({
-        customer: name,
-        items: items.map(i => \`\${i.name} (x\${i.quantity})\`).join(', '),
-        total: total,
-        status: 'PROCESSING'
-      }).catch(() => {});
+      const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
 
-      // Save to user's localized order history
       const orderRecord = {
-        id: 'MSTZ-' + Math.floor(1000 + Math.random() * 9000),
+        id: orderId,
+        orderId: orderId,
+        customerName: name,
+        phone: phone,
+        email: email,
+        address: address,
+        paymentMethod: payment,
         date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase(),
-        status: 'IN TRANSIT',
-        tracking: 'J&T EXPRESS [PENDING DISPATCH]',
+        status: 'PROCESSING',
+        tracking: 'MENUNGGU PICKUP KURIR',
         items: items.map(i => ({
           name: i.name,
           spec: i.category || i.sub || 'CUSTOM MUSTAZ PART',
@@ -2295,12 +2293,28 @@ ${sharedMarquee()}
         })),
         total: total
       };
-      saveUserOrder(null, orderRecord);
 
-      const url = generateWhatsAppUrl({ name, phone, address, payment }, items, total);
+      // 1. Send Order Confirmation Email to Buyer
+      sendOrderSuccessEmail(orderRecord).catch(() => {});
+
+      // 2. Log order to Supabase Cloud Orders
+      saveCloudOrder({
+        customer: name,
+        email: email,
+        items: items.map(i => \`\${i.name} (x\${i.quantity})\`).join(', '),
+        total: total,
+        status: 'PROCESSING'
+      }).catch(() => {});
+
+      // 3. Save to user's localized order history
+      saveUserOrder(email || activeEmail, orderRecord);
+
+      // 4. Show Instant In-App Order Success Modal with Email Delivery Confirmation
+      showOrderSuccessModal(orderRecord);
+
+      const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email }, items, total);
       window.open(url, '_blank');
       clearCart();
-      window.location.href = 'shipping.html';
     });
   });
 </script>
