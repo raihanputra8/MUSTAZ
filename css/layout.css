@@ -1,0 +1,502 @@
+/* ==========================================================================
+   MUSTAZ GARAGE ZINE - LAYOUT & CONTAINER SYSTEM
+   ========================================================================== */
+
+.wrap {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.wrap-tight {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── HEADER / NAVIGATION BAR ── */
+/* ── HEADER / NAVIGATION BAR ── */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--accent-pink);
+  height: 70px;
+  display: flex;
+  align-items: center;
+}
+
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Brand Identity */
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.brand-badge:hover {
+  transform: scale(1.02);
+}
+
+.brand-logo-img {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.9));
+  transition: transform 0.15s ease;
+}
+
+.brand-badge:hover .brand-logo-img {
+  transform: scale(1.04);
+}
+
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-sub {
+  font-family: var(--font-mono-sub);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--accent-yellow);
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* Nav Menu: Zine Console Tabs */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #111111;
+  border: 1px solid #282828;
+  padding: 4px 6px;
+  box-shadow: 3px 3px 0px #000000;
+}
+
+.nav-link {
+  font-family: var(--font-headline);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #D4D4D4;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 6px 18px;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-link.active {
+  color: #000000;
+  background: var(--accent-pink);
+  font-weight: 900;
+  box-shadow: 2px 2px 0px #000000;
+}
+
+.nav-link.active::after {
+  display: none;
+}
+
+/* Nav Controls */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn-icon {
+  width: 40px;
+  height: 40px;
+  background: #141414;
+  border: 2px solid #2A2A2A;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #000000;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.nav-btn-icon:hover {
+  border-color: var(--accent-pink);
+  color: var(--accent-pink);
+  transform: translateY(-1px);
+}
+
+.nav-cart-btn {
+  background: var(--accent-pink);
+  border: 2px solid #000000;
+  color: #000000;
+  height: 40px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px #FFFFFF;
+  transition: all 0.15s ease;
+  font-family: var(--font-headline);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  position: relative;
+}
+
+.nav-cart-btn:hover {
+  background: var(--accent-yellow);
+  box-shadow: 3px 3px 0px var(--accent-pink);
+}
+
+.nav-cart-btn .material-symbols-outlined {
+  font-size: 20px;
+  color: #000000;
+}
+
+.nav-cart-btn .cart-label {
+  display: inline;
+}
+
+@media (max-width: 900px) {
+  .nav-cart-btn .cart-label {
+    display: none;
+  }
+}
+
+.cart-count-badge {
+  background: #000000;
+  color: #FFFFFF;
+  font-family: var(--font-headline);
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  line-height: 1;
+}
+
+/* Mobile Hamburger Menu */
+.mobile-menu-toggle {
+  display: none;
+  background: #141414;
+  border: 2px solid var(--accent-pink);
+  color: var(--accent-pink);
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Mobile Nav Drawer */
+.mobile-nav-drawer {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #080808;
+  border-top: 2px solid var(--accent-pink);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 490;
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-nav-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-nav-link {
+  font-family: var(--font-headline);
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  color: var(--paper-white);
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-nav-link.active,
+.mobile-nav-link:hover {
+  color: var(--accent-pink);
+  padding-left: 8px;
+}
+
+/* ── MARQUEE RUNNER ── */
+.marquee-bar {
+  background: var(--accent-pink);
+  color: #000;
+  overflow: hidden;
+  padding: 8px 0;
+  white-space: nowrap;
+  user-select: none;
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+
+.marquee-content {
+  display: inline-flex;
+  animation: marqueeRoll 28s linear infinite;
+}
+
+.marquee-item {
+  font-family: var(--font-headline);
+  font-weight: 900;
+  font-size: 1.15rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0 24px;
+}
+
+@keyframes marqueeRoll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── FOOTER ── */
+.site-footer {
+  background: #060606;
+  border-top: 3px solid var(--border-white);
+  margin-top: var(--section-gap);
+}
+
+.footer-manifesto {
+  padding: 72px 24px;
+  background: #0a0a0a;
+  border-bottom: 2px solid var(--border-subtle);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-bottom {
+  padding: 32px 24px;
+  background: #040404;
+}
+
+.footer-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  font-family: var(--font-mono-sub);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.footer-link:hover {
+  color: var(--accent-pink);
+}
+
+/* ── RESPONSIVE BREAKPOINTS & PHOTO RATIO PROTECTION ── */
+@media (max-width: 992px) {
+  .nav-menu {
+    display: none;
+  }
+  .mobile-menu-toggle {
+    display: flex;
+  }
+  .hero-photo-frame {
+    max-width: 100% !important;
+    transform: rotate(0deg) !important;
+    margin: 20px auto 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrap, .wrap-tight {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .site-header-inner {
+    padding: 0 16px;
+  }
+  .hero-sub-badge {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin-top: 14px !important;
+    transform: rotate(-1deg) !important;
+    box-shadow: 4px 4px 0px var(--accent-pink) !important;
+    width: 100% !important;
+    max-width: 320px !important;
+  }
+  .kulture-mini-frame {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin-top: 14px !important;
+    transform: rotate(-1deg) !important;
+    width: 100% !important;
+    max-width: 240px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-logo-img {
+    height: 38px;
+  }
+  .brand-sub {
+    font-size: 0.58rem;
+  }
+  .card-img-box {
+    aspect-ratio: 4 / 5;
+  }
+  .btn-brutal-yellow, .btn-brutal-pink, .btn-brutal-ghost {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── LOGIN PAGE RESPONSIVE ARCHITECTURE ── */
+.login-split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 120px);
+  background: #080808;
+}
+
+.login-visual-pane {
+  position: relative;
+  background: #000000;
+  border-right: 3px solid var(--accent-pink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 56px 48px;
+  min-height: 520px;
+}
+
+.login-visual-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  filter: contrast(120%) brightness(0.85);
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.login-visual-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.92) 80%, #080808 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.login-visual-content {
+  position: relative;
+  z-index: 2;
+  max-width: 480px;
+}
+
+.login-form-pane {
+  background: #0c0c0c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 36px;
+}
+
+.login-card-inner {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Tablet & Mobile Breakpoints for Login */
+@media (max-width: 900px) {
+  .login-split-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .login-visual-pane {
+    border-right: none;
+    border-bottom: 3px solid var(--accent-pink);
+    padding: 28px 20px 24px;
+    min-height: 240px;
+    height: 240px;
+    justify-content: flex-end;
+  }
+  .login-visual-img {
+    object-position: center 20%;
+  }
+  .login-visual-content {
+    max-width: 100%;
+  }
+  .login-visual-content h1 {
+    font-size: clamp(2rem, 5.5vw, 2.6rem) !important;
+  }
+  .login-visual-content p {
+    display: none; /* Keep mobile banner uncluttered */
+  }
+  .login-form-pane {
+    padding: 36px 20px 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-visual-pane {
+    padding: 20px 16px;
+    min-height: 200px;
+    height: 200px;
+  }
+  .login-visual-content h1 {
+    font-size: 1.85rem !important;
+  }
+  .login-form-pane {
+    padding: 28px 16px 50px;
+  }
+}
+

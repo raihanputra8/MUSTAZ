@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping — Drop Location | MUSTAZ CRAFT</title>
+  
+  <!-- Google Fonts: Editorial Brutalist Grotesk & Headings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  
+  <!-- Master Stylesheet (Variables, Base, Layout, Components, Ecommerce) -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <!-- Brand Logo: Official MUSTAZ CRAFT Identity -->
+    <a href="index.html" class="brand-badge">
+      <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="brand-logo-img">
+      <div class="brand-text-block">
+        <span class="brand-name" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;letter-spacing:0.06em;color:#FFF;line-height:1;">
+          CRAFT
+        </span>
+        <span class="brand-sub" style="color:var(--accent-yellow);font-weight:800;font-size:0.65rem;letter-spacing:0.16em;">
+          PET HELM // VISORS
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="nav-menu">
+      
+        <a href="index.html" class="nav-link ">
+          HOME
+        </a>
+      
+        <a href="parts.html" class="nav-link ">
+          PRODUCT
+        </a>
+      
+        <a href="account.html" class="nav-link active">
+          ACCOUNT
+        </a>
+      
+        <a href="kulture.html" class="nav-link ">
+          ABOUT
+        </a>
+      
+    </nav>
+
+    <!-- Nav Controls (Search, Account, Cart, Mobile Menu) -->
+    <div class="nav-actions">
+      <button class="nav-btn-icon" id="headerSearchBtn" aria-label="Search visors" title="Search Pet Helm">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+      
+      <a href="account.html" class="nav-btn-icon" aria-label="My Account" title="My Account">
+        <span class="material-symbols-outlined">person</span>
+      </a>
+
+      <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="View Arsenal">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="cart-label">CART</span>
+        <span class="cart-count-badge mustaz-cart-badge" id="headerCartBadge">0</span>
+      </button>
+
+      <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+        <span class="material-symbols-outlined" id="hamburgerIcon">menu</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-nav-drawer" id="mobileNavDrawer">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--accent-pink);">
+    <span class="zine-tag-yellow">PET HELM DIRECTORY</span>
+    <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">ISSUE 04</span>
+  </div>
+  
+    <a href="index.html" class="mobile-nav-link ">
+      HOME
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+    <a href="parts.html" class="mobile-nav-link ">
+      PRODUCT
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+    <a href="account.html" class="mobile-nav-link active">
+      ACCOUNT
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+    <a href="kulture.html" class="mobile-nav-link ">
+      ABOUT
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+  <div style="margin-top:auto;padding-top:20px;border-top:1px dashed #333;display:flex;justify-content:space-between;align-items:center;">
+    <span class="barcode-decor" style="height:24px;width:110px;"></span>
+    <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;">
+      MEMBER LOGIN →
+    </a>
+  </div>
+</div>
+
+<div class="marquee-bar">
+  <div class="marquee-content">
+    <span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span><span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span><span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span><span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span>
+  </div>
+</div>
+
+<main style="padding-top:70px;background:#080808;min-height:calc(100vh - 70px);">
+  <section style="padding:60px 0 100px;">
+    <div class="wrap">
+      
+      <!-- Shipping Header -->
+      <div style="border-bottom:2px solid #282828;padding-bottom:32px;margin-bottom:48px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <span class="zine-tag-pink">DEPLOYMENT ZONE</span>
+          <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">COORDINATES // PROTOCOL 02</span>
+        </div>
+        <h1 class="editorial-title" style="font-size:clamp(3rem, 7vw, 6rem);margin-bottom:8px;color:var(--accent-pink);">
+          DROP LOCATION
+        </h1>
+        <p class="editorial-desc">
+          Lock your coordinates. We deploy immediately upon confirmation. Ensure comms line is live.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:48px;align-items:start;">
+        
+        <!-- Form -->
+        <div class="card-brutal-dark" style="border-color:var(--accent-pink);padding:32px;">
+          <h2 style="font-family:var(--font-headline);font-size:1.6rem;color:#FFF;margin-bottom:24px;border-bottom:1px solid #333;padding-bottom:12px;">
+            CONSIGNEE COORDINATES
+          </h2>
+          <form id="shippingForm">
+            <div class="form-group-brutal">
+              <label class="form-label-brutal">FULL NAME / ALIAS *</label>
+              <input type="text" class="form-input-brutal" placeholder="Your name or alias" required value="Raihan">
+            </div>
+            <div class="form-group-brutal">
+              <label class="form-label-brutal">STREET / ALLEY / GARAGE *</label>
+              <input type="text" class="form-input-brutal" placeholder="Jl. Nowhere No.7" required value="Jl. Wasteland No.7">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="form-group-brutal">
+                <label class="form-label-brutal">CITY / SECTOR *</label>
+                <input type="text" class="form-input-brutal" placeholder="Depok / Sector 7G" required value="Depok">
+              </div>
+              <div class="form-group-brutal">
+                <label class="form-label-brutal">POSTAL CODE *</label>
+                <input type="text" class="form-input-brutal" placeholder="16424" required value="16424">
+              </div>
+            </div>
+            <div class="form-group-brutal" style="margin-bottom:28px;">
+              <label class="form-label-brutal">REGION / PROVINCE *</label>
+              <input type="text" class="form-input-brutal" placeholder="Jawa Barat" required value="Jawa Barat">
+            </div>
+            <button type="submit" class="btn-brutal-pink" style="width:100%;padding:18px;font-size:1.15rem;">
+              LOCK IT IN ✓
+            </button>
+          </form>
+        </div>
+
+        <!-- Warning & Coordinates Diagram -->
+        <div>
+          <!-- Warning Notice -->
+          <div style="border:3px dashed var(--accent-pink);padding:32px;background:rgba(255,0,140,0.05);margin-bottom:24px;box-shadow:6px 6px 0px #000;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <span class="material-symbols-outlined" style="color:var(--accent-pink);font-size:32px;">warning</span>
+              <h3 style="font-family:var(--font-headline);font-size:1.6rem;color:#FFF;">SECURITY NOTICE</h3>
+            </div>
+            <p style="color:#BBB;line-height:1.6;font-size:0.9rem;">
+              Double check your drop coordinates. We are not responsible for lost packages in uncharted zones or intercepted drops. All shipments are sealed in heavy industrial packaging.
+            </p>
+          </div>
+
+          <!-- Order Status Protocol -->
+          <div class="card-brutal-white">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:2px solid #000;padding-bottom:10px;">
+              <span style="font-family:var(--font-headline);font-size:1.2rem;color:#000;">DISPATCH PROTOCOL</span>
+              <span class="zine-tag-pink">ARMED</span>
+            </div>
+            <p style="font-size:0.85rem;color:#444;line-height:1.5;margin-bottom:16px;">
+              Courier lines are dispatched through JNE / J&T Cargo or Direct Courier for custom chopper builds. Tracking codes transmitted via WhatsApp.
+            </p>
+            <a href="parts.html" class="btn-brutal-dark" style="background:#000;color:#FFF;width:100%;text-align:center;display:block;padding:12px;">
+              CONTINUE BROWSING HARDWARE →
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+  document.getElementById('shippingForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('COORDINATES LOCKED IN. PROTOCOL DISPATCHED.');
+    window.location.href = 'index.html';
+  });
+</script>
+
+
+<!-- Newsletter & Underground Manifesto -->
+<div class="footer-manifesto">
+  <div class="wrap-tight">
+    <div style="display:inline-block;margin-bottom:12px;">
+      <span class="zine-tag-pink">COMMS FREQUENCY</span>
+    </div>
+    <h2 class="editorial-title" style="font-size:clamp(2.5rem, 5.5vw, 4.5rem);margin-bottom:12px;">
+      JOIN THE UNDERGROUND
+    </h2>
+    <p style="max-width:540px;margin:0 auto 28px;color:#A0A0A0;font-size:1rem;line-height:1.6;">
+      Drop your comms line below. We only send dispatch intel on new builds, limited hardware drops, and garage parties. No spam. Pure combustion.
+    </p>
+    <form class="newsletter-form" id="newsletterForm" style="display:flex;gap:12px;justify-content:center;max-width:500px;margin:0 auto;flex-wrap:wrap;">
+      <input type="email" class="form-input-brutal" placeholder="ENTER YOUR EMAIL FREQUENCY..." required style="flex:1;min-width:260px;">
+      <button type="submit" class="btn-brutal-pink">SUBSCRIBE →</button>
+    </form>
+  </div>
+</div>
+
+<!-- Bottom Footer Bar -->
+<footer class="footer-bottom">
+  <div class="wrap">
+    <div class="footer-bottom-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <a href="index.html" class="brand-badge">
+          <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" style="height:36px;width:auto;object-fit:contain;">
+        </a>
+        <span class="barcode-decor" style="height:20px;width:90px;"></span>
+      </div>
+
+      <nav class="footer-links">
+        <a href="index.html" class="footer-link">HOME</a>
+        <a href="parts.html" class="footer-link">PRODUCT</a>
+        <a href="account.html" class="footer-link">ACCOUNT</a>
+        <a href="kulture.html" class="footer-link">ABOUT</a>
+        <a href="admin.html" class="footer-link" style="color:var(--accent-yellow);font-weight:700;">ADMIN</a>
+      </nav>
+
+      <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#555;letter-spacing:0.1em;text-transform:uppercase;">
+        © 2026 MUSTAZ CRAFT. ALL RIGHTS RESERVED.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

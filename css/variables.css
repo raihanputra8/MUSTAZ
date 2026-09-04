@@ -1,0 +1,69 @@
+/* ==========================================================================
+   MUSTAZ GARAGE ZINE - DESIGN TOKENS & VARIABLES
+   Aesthetic: Garage Zine / Kustom Helmet Visor (PET) Culture / Acid Punk
+   ========================================================================== */
+
+:root {
+  /* --- Primary Color Palette --- */
+  --bg-deep: #080808;
+  --bg-surface: #101010;
+  --bg-surface-elevated: #161616;
+  --bg-surface-card: #141414;
+  --bg-surface-bright: #222222;
+
+  /* Primary Accent: Hot Pink / Magenta */
+  --accent-pink: #FF008C;
+  --accent-pink-hover: #ff2a9d;
+  --accent-pink-dim: rgba(255, 0, 140, 0.15);
+  --accent-pink-glow: rgba(255, 0, 140, 0.35);
+
+  /* Secondary Accent: High-Voltage Acid / Flame Yellow (Matching Visor & Gloves) */
+  --accent-yellow: #FFE600;
+  --accent-yellow-hover: #fff033;
+  --accent-yellow-dim: rgba(255, 230, 0, 0.15);
+
+  /* Tertiary Accent: Flame Red */
+  --accent-flame: #FF2B00;
+
+  /* Contrast / Paper Whites */
+  --paper-white: #FFFFFF;
+  --paper-offwhite: #F2F0E8;
+  --paper-aged: #E5E1D8;
+  --ink-black: #000000;
+
+  /* Text Colors */
+  --text-primary: #F2F0E8;
+  --text-secondary: #A0A0A0;
+  --text-muted: #666666;
+  --text-inverse: #080808;
+
+  /* Borders */
+  --border-subtle: #202020;
+  --border-light: rgba(255, 255, 255, 0.15);
+  --border-white: #FFFFFF;
+  --border-pink: #FF008C;
+  --border-yellow: #FFE600;
+  --border-black: #000000;
+
+  /* Typography */
+  --font-headline: 'Chivo', 'Bebas Neue', 'Anton', sans-serif;
+  --font-mono-sub: 'Hanken Grotesk', 'Space Grotesk', monospace;
+  --font-body: 'Hanken Grotesk', sans-serif;
+
+  /* Shadows (Brutalist Hard Offsets) */
+  --shadow-hard-sm: 3px 3px 0px #000000;
+  --shadow-hard-md: 6px 6px 0px #000000;
+  --shadow-hard-lg: 8px 8px 0px #000000;
+  --shadow-pink-sm: 3px 3px 0px #FF008C;
+  --shadow-pink-md: 6px 6px 0px #FF008C;
+  --shadow-pink-lg: 8px 8px 0px #FF008C;
+  --shadow-yellow-sm: 3px 3px 0px #FFE600;
+  --shadow-yellow-md: 6px 6px 0px #FFE600;
+  --shadow-yellow-lg: 8px 8px 0px #FFE600;
+  --shadow-white-md: 6px 6px 0px #FFFFFF;
+
+  /* Spacing */
+  --gutter: 24px;
+  --section-gap: 88px;
+  --container-max: 1320px;
+}

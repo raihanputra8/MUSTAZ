@@ -1,5 +1,31 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+
 # Object file
 *.o
 
 # Ada Library Information
 *.ali
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Agent / Tool directories
+.agents/
+.antigravity-ide/
+stitch_raw/

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console — MUSTAZ CRAFT Workshop | MUSTAZ CRAFT</title>
+  
+  <!-- Google Fonts: Editorial Brutalist Grotesk & Headings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  
+  <!-- Master Stylesheet (Variables, Base, Layout, Components, Ecommerce) -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <!-- Brand Logo: Official MUSTAZ CRAFT Identity -->
+    <a href="index.html" class="brand-badge">
+      <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="brand-logo-img">
+      <div class="brand-text-block">
+        <span class="brand-name" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;letter-spacing:0.06em;color:#FFF;line-height:1;">
+          CRAFT
+        </span>
+        <span class="brand-sub" style="color:var(--accent-yellow);font-weight:800;font-size:0.65rem;letter-spacing:0.16em;">
+          PET HELM // VISORS
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="nav-menu">
+      
+        <a href="index.html" class="nav-link ">
+          HOME
+        </a>
+      
+        <a href="parts.html" class="nav-link ">
+          PRODUCT
+        </a>
+      
+        <a href="account.html" class="nav-link active">
+          ACCOUNT
+        </a>
+      
+        <a href="kulture.html" class="nav-link ">
+          ABOUT
+        </a>
+      
+    </nav>
+
+    <!-- Nav Controls (Search, Account, Cart, Mobile Menu) -->
+    <div class="nav-actions">
+      <button class="nav-btn-icon" id="headerSearchBtn" aria-label="Search visors" title="Search Pet Helm">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+      
+      <a href="account.html" class="nav-btn-icon" aria-label="My Account" title="My Account">
+        <span class="material-symbols-outlined">person</span>
+      </a>
+
+      <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="View Arsenal">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="cart-label">CART</span>
+        <span class="cart-count-badge mustaz-cart-badge" id="headerCartBadge">0</span>
+      </button>
+
+      <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+        <span class="material-symbols-outlined" id="hamburgerIcon">menu</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-nav-drawer" id="mobileNavDrawer">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--accent-pink);">
+    <span class="zine-tag-yellow">PET HELM DIRECTORY</span>
+    <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">ISSUE 04</span>
+  </div>
+  
+    <a href="index.html" class="mobile-nav-link ">
+      HOME
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+    <a href="parts.html" class="mobile-nav-link ">
+      PRODUCT
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+    <a href="account.html" class="mobile-nav-link active">
+      ACCOUNT
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+    <a href="kulture.html" class="mobile-nav-link ">
+      ABOUT
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  
+  <div style="margin-top:auto;padding-top:20px;border-top:1px dashed #333;display:flex;justify-content:space-between;align-items:center;">
+    <span class="barcode-decor" style="height:24px;width:110px;"></span>
+    <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;">
+      MEMBER LOGIN →
+    </a>
+  </div>
+</div>
+
+<div class="marquee-bar">
+  <div class="marquee-content">
+    <span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span><span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span><span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span><span class="marquee-item">★ MUSTAZ CRAFT // KUSTOM PET</span><span class="marquee-item">★ ACID YELLOW</span><span class="marquee-item">★ Y-TWO ROOF VISOR</span><span class="marquee-item">★ HOT PINK & DIRTY OIL</span><span class="marquee-item">★ KUSTOM HELMET ACCESSORIES</span><span class="marquee-item">★ 3-SNAP RETRO PEAKS</span><span class="marquee-item">★ STUDDED LEATHER</span><span class="marquee-item">★ NO FACTORY STERILITY</span><span class="marquee-item">★ UNDERGROUND HELMET KULTURE</span><span class="marquee-item">★ HAND CRAFTED IN INDONESIA</span><span class="marquee-item">★ SERIES 01 RUN</span>
+  </div>
+</div>
+
+<main style="padding-top:70px;background:#080808;min-height:calc(100vh - 70px);">
+  <section style="padding:40px 0 90px;">
+    <div class="wrap">
+      
+      <!-- Top Admin Greeting & Overview Card (Harmonized with account.html) -->
+      <div class="card-brutal-dark" style="margin-bottom:36px;border-color:var(--accent-yellow);padding:28px 32px;background:#0f0f0f;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+          
+          <!-- Avatar + Member Bio -->
+          <div style="display:flex;align-items:center;gap:20px;">
+            <div style="width:72px;height:72px;background:var(--accent-yellow);border:3px solid #000000;box-shadow:4px 4px 0px var(--accent-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span style="font-family:var(--font-headline);font-size:2.2rem;font-weight:900;color:#000000;line-height:1;">M</span>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                <h1 class="editorial-title" style="font-size:clamp(1.8rem, 3.5vw, 2.5rem);margin:0;color:#FFF;line-height:1;">
+                  MUSTAZ CRAFT ADMIN
+                </h1>
+                <span class="zine-tag-yellow" style="font-size:0.65rem;padding:2px 8px;">MASTER DESK</span>
+                <span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">INVENTORY PROTOCOL</span>
+              </div>
+              <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#AAA;letter-spacing:0.08em;margin:0;">
+                CONTROL DESK // PET VISOR CATALOG & REAL-TIME DISPATCH DISCIPLINE
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Metrics Bar -->
+          <div style="display:flex;gap:14px;flex-wrap:wrap;">
+            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:100px;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:var(--accent-yellow);text-transform:uppercase;">TOTAL VISORS</span>
+              <span id="statTotalProducts" style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;font-weight:900;">8</span>
+            </div>
+            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:100px;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:#4ade80;text-transform:uppercase;">READY STOCK</span>
+              <span id="statTotalStock" style="font-family:var(--font-headline);font-size:1.4rem;color:#4ade80;font-weight:900;">106</span>
+            </div>
+            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:100px;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:var(--accent-pink);text-transform:uppercase;">LOW STOCK</span>
+              <span id="statLowStock" style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-pink);font-weight:900;">1</span>
+            </div>
+            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:130px;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:#AAA;text-transform:uppercase;">TOTAL ASSET</span>
+              <span id="statInventoryValue" style="font-family:var(--font-headline);font-size:1.3rem;color:var(--accent-yellow);font-weight:900;">Rp 32.880.000</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Account Dashboard Grid (Sidebar + Main Content Panels) -->
+      <div class="account-grid">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside>
+          <nav class="account-sidebar-nav" id="adminNav">
+            <button class="account-nav-item active" data-tab="inventory">
+              <span class="material-symbols-outlined">inventory_2</span>
+              <span>PRODUCT INVENTORY</span>
+              <span class="account-nav-badge" id="navBadgeProducts">8</span>
+            </button>
+            <button class="account-nav-item" data-tab="add">
+              <span class="material-symbols-outlined">add_circle</span>
+              <span>+ ADD NEW PRODUCT</span>
+            </button>
+            <button class="account-nav-item" data-tab="orders">
+              <span class="material-symbols-outlined">receipt_long</span>
+              <span>CUSTOMER ORDERS</span>
+              <span class="account-nav-badge">3</span>
+            </button>
+            <button class="account-nav-item" data-tab="settings">
+              <span class="material-symbols-outlined">tune</span>
+              <span>SYSTEM & BACKUP</span>
+            </button>
+            <hr style="border:none;border-top:1px dashed #333;margin:8px 0;">
+            <a href="parts.html" target="_blank" class="account-nav-item" style="color:var(--accent-yellow);">
+              <span class="material-symbols-outlined" style="color:var(--accent-yellow);">open_in_new</span>
+              <span>VIEW LIVE STORE ↗</span>
+            </a>
+            <a href="index.html" class="account-nav-item" style="color:#FF4444;">
+              <span class="material-symbols-outlined" style="color:#FF4444;">logout</span>
+              <span>EXIT TO GARAGE</span>
+            </a>
+          </nav>
+
+          <!-- Status / Synchronization Box -->
+          <div style="background:#121212;border:2px solid #222;padding:20px;margin-top:20px;box-shadow:4px 4px 0px #000;">
+            <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:var(--accent-yellow);letter-spacing:0.15em;text-transform:uppercase;display:block;margin-bottom:6px;">
+              SHOP SYNCHRONIZATION
+            </span>
+            <p style="font-size:0.85rem;color:#AAA;line-height:1.4;margin-bottom:14px;">
+              Semua penambahan visor, perubahan stok, dan harga akan langsung tersinkronisasi di katalog toko secara real-time.
+            </p>
+            <button id="btnSidebarQuickAdd" class="btn-brutal-yellow btn-brutal-sm" style="width:100%;text-align:center;">
+              + QUICK ADD PRODUCT
+            </button>
+          </div>
+        </aside>
+
+        <!-- MAIN CONTENT PANELS -->
+        <div>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- PANEL 1: PRODUCT INVENTORY TABLE -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <div class="account-tab-panel active" id="panel-inventory">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:14px;">
+              <div>
+                <h2 class="editorial-title" style="font-size:2rem;margin:0 0 4px;">PRODUCT INVENTORY</h2>
+                <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;margin:0;">
+                  MANAGE STOCK QUANTITIES, EDIT SPECS, OR REMOVE CATALOG ITEMS.
+                </p>
+              </div>
+
+              <button id="btnSwitchToAdd" class="btn-brutal-yellow btn-brutal-sm" style="display:inline-flex;align-items:center;gap:6px;">
+                <span class="material-symbols-outlined" style="font-size:18px;">add</span>
+                <span>+ ADD NEW VISOR</span>
+              </button>
+            </div>
+
+            <!-- Search & Filter Controls -->
+            <div style="background:#111;border:2px solid #282828;padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:4px 4px 0px #000;">
+              <div style="position:relative;flex:1;min-width:240px;">
+                <input type="text" id="adminSearchInput" class="form-input-brutal" placeholder="Search product name, SKU..." style="padding-left:38px;padding-top:10px;padding-bottom:10px;font-size:0.85rem;margin-bottom:0;">
+                <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#888;font-size:20px;">search</span>
+              </div>
+              <select id="adminCategoryFilter" class="form-input-brutal" style="width:auto;padding:10px 16px;font-size:0.85rem;background:#111;color:#FFF;border-color:#444;margin-bottom:0;">
+                <option value="ALL">ALL CATEGORIES</option>
+                <option value="Acrylic Pet">Acrylic Pet</option>
+                <option value="Leather Pet">Leather Pet</option>
+                <option value="Retro Visor">Retro Visor</option>
+                <option value="Drop Sets">Drop Sets</option>
+              </select>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="admin-table-container">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th style="width:64px;">THUMB</th>
+                    <th>PRODUCT DETAILS</th>
+                    <th>CATEGORY</th>
+                    <th>PRICE</th>
+                    <th style="text-align:center;">STOCK LEVEL</th>
+                    <th>BADGE</th>
+                    <th style="text-align:right;">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody id="adminProductsTbody">
+                  <!-- Populated dynamically by js/admin.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- PANEL 2: ADD NEW PRODUCT -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <div class="account-tab-panel" id="panel-add">
+            <div style="margin-bottom:24px;">
+              <h2 class="editorial-title" style="font-size:2rem;margin:0 0 4px;">ADD NEW PET VISOR</h2>
+              <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;margin:0;">
+                PUBLISH A NEW HAND-CRAFTED HELMET VISOR INTO MUSTAZ CRAFT CATALOG.
+              </p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:32px;align-items:start;">
+              
+              <!-- Form -->
+              <div style="background:#111;border:2px solid #282828;padding:32px;box-shadow:6px 6px 0px #000;">
+                <form id="addProductForm">
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">PRODUCT NAME *</label>
+                    <input type="text" id="newProdName" class="form-input-brutal" placeholder="e.g. ACID GHOST ROOF VISOR" required>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <div class="form-group-brutal">
+                      <label class="form-label-brutal">CATEGORY *</label>
+                      <select id="newProdCategory" class="form-input-brutal" style="background:#111;color:#FFF;" required>
+                        <option value="Acrylic Pet">Acrylic Pet</option>
+                        <option value="Leather Pet">Leather Pet</option>
+                        <option value="Retro Visor">Retro Visor</option>
+                        <option value="Drop Sets">Drop Sets</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group-brutal">
+                      <label class="form-label-brutal">BADGE / STATUS</label>
+                      <select id="newProdBadge" class="form-input-brutal" style="background:#111;color:#FFF;">
+                        <option value="NEW">NEW</option>
+                        <option value="HOT DROP">HOT DROP</option>
+                        <option value="BESTSELLER">BESTSELLER</option>
+                        <option value="LIMITED">LIMITED</option>
+                        <option value="BUNDLE">BUNDLE</option>
+                        <option value="SALE">SALE</option>
+                        <option value="">(NONE)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">SUBTITLE / SPECS SUMMARY *</label>
+                    <input type="text" id="newProdSub" class="form-input-brutal" placeholder="e.g. Acid Neon Acrylic // 3-Snap Universal // Punk Spikes" required>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+                    <div class="form-group-brutal">
+                      <label class="form-label-brutal">PRICE (IDR) *</label>
+                      <input type="number" id="newProdPrice" class="form-input-brutal" placeholder="350000" min="10000" step="5000" required>
+                    </div>
+                    <div class="form-group-brutal">
+                      <label class="form-label-brutal">ORIGINAL PRICE</label>
+                      <input type="number" id="newProdOriginalPrice" class="form-input-brutal" placeholder="450000 (optional)">
+                    </div>
+                    <div class="form-group-brutal">
+                      <label class="form-label-brutal">STOCK QTY *</label>
+                      <input type="number" id="newProdStock" class="form-input-brutal" placeholder="10" min="0" value="10" required>
+                    </div>
+                  </div>
+
+                  <!-- ASSET CHOOSER -->
+                  <div class="form-group-brutal" style="margin-bottom:24px;">
+                    <label class="form-label-brutal">SELECT PRODUCT IMAGE / ASSET *</label>
+                    <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;margin-bottom:12px;" id="assetPickerGrid">
+                      
+                      <div class="admin-asset-choice selected" data-asset="assets/images/pet_visor_yellow_flame.png">
+                        <img src="assets/images/pet_visor_yellow_flame.png" alt="Yellow Flame Visor">
+                        <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">YELLOW FLAME</span>
+                      </div>
+
+                      <div class="admin-asset-choice" data-asset="assets/images/retro_checkered_helmet.png">
+                        <img src="assets/images/retro_checkered_helmet.png" alt="Checker Visor">
+                        <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">CHECKER RETRO</span>
+                      </div>
+
+                      <div class="admin-asset-choice" data-asset="assets/images/mustaz_booth_event.png">
+                        <img src="assets/images/mustaz_booth_event.png" alt="Booth Event">
+                        <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">BUNDLE PACK</span>
+                      </div>
+
+                    </div>
+
+                    <!-- Custom URL input -->
+                    <input type="url" id="newProdCustomUrl" class="form-input-brutal" placeholder="Or enter custom image URL: https://..." style="font-size:0.8rem;margin-bottom:10px;">
+
+                    <!-- Direct Supabase Storage File Uploader -->
+                    <div style="background:#181818;border:2px dashed #444;padding:12px 14px;box-shadow:3px 3px 0px #000;">
+                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <label class="form-label-brutal" style="font-size:0.72rem;color:var(--accent-yellow);margin-bottom:0;">
+                          ☁️ UPLOAD DARI PC KE SUPABASE STORAGE
+                        </label>
+                        <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#888;">BUCKET: product-images</span>
+                      </div>
+                      <input type="file" id="newProdFileInput" accept="image/*" class="form-input-brutal" style="padding:6px;font-size:0.78rem;background:#000;margin-bottom:4px;cursor:pointer;">
+                      <div id="uploadStatusText" style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;">
+                        Pilih file gambar untuk di-upload otomatis ke cloud Supabase Storage.
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn-brutal-pink" style="width:100%;padding:16px;font-size:1.1rem;display:flex;justify-content:center;align-items:center;gap:10px;">
+                    <span class="material-symbols-outlined">publish</span>
+                    <span>PUBLISH PRODUCT TO STORE →</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Live Card Preview -->
+              <div>
+                <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+                  <span class="zine-tag-yellow">LIVE STORE PREVIEW</span>
+                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">AS SEEN ON /PARTS.HTML</span>
+                </div>
+
+                <div style="max-width:340px;margin:0 auto;">
+                  <article class="part-card" style="transition:all 0.2s ease;">
+                    <div style="background:#FFFFFF;color:#000;border:3px solid #000;box-shadow:6px 6px 0px var(--accent-pink);padding:16px;position:relative;">
+                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <span style="font-family:var(--font-headline);font-weight:900;font-size:1.4rem;color:#000;line-height:1;" id="prevNumber">01</span>
+                        <span style="background:#000;color:#FFF;font-family:var(--font-mono-sub);font-weight:800;font-size:0.68rem;padding:3px 8px;text-transform:uppercase;letter-spacing:0.12em;" id="prevCategory">ACRYLIC PET</span>
+                      </div>
+
+                      <div style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;">
+                        <div class="zine-tag-pink" style="position:absolute;top:8px;left:8px;z-index:10;" id="prevBadge">NEW</div>
+                        <img id="prevImage" src="assets/images/pet_visor_yellow_flame.png" alt="Preview" style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);">
+                      </div>
+
+                      <div>
+                        <h3 style="font-family:var(--font-headline);font-size:1.35rem;color:#000;text-transform:uppercase;line-height:0.95;margin-bottom:6px;" id="prevName">
+                          UNTITLED PET VISOR
+                        </h3>
+                        <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#555;text-transform:uppercase;margin-bottom:14px;" id="prevSub">
+                          Custom Hand-Crafted Helmet Accessory
+                        </p>
+                        <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed #000;padding-top:10px;">
+                          <span style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:#FF008C;" id="prevPrice">
+                            IDR 350.000
+                          </span>
+                          <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:#333;" id="prevStock">
+                            STOCK: 10
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- PANEL 3: CUSTOMER ORDERS -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <div class="account-tab-panel" id="panel-orders">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:14px;">
+              <div>
+                <h2 class="editorial-title" style="font-size:2rem;margin:0 0 4px;">CUSTOMER ORDERS</h2>
+                <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;margin:0;">
+                  MONITOR INCOMING DISPATCH ORDERS AND UPDATE DELIVERY STATUS.
+                </p>
+              </div>
+              <button id="btnRefreshOrders" class="btn-brutal-dark btn-brutal-sm">
+                REFRESH ORDERS
+              </button>
+            </div>
+
+            <div class="admin-table-container">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ORDER ID</th>
+                    <th>CUSTOMER / ALIAS</th>
+                    <th>ITEMS & SPECS</th>
+                    <th>TOTAL AMOUNT</th>
+                    <th>DATE</th>
+                    <th>STATUS</th>
+                    <th style="text-align:right;">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody id="adminOrdersTbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- PANEL 4: SYSTEM & BACKUP -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <div class="account-tab-panel" id="panel-settings">
+            <div style="max-width:700px;display:flex;flex-direction:column;gap:24px;">
+              
+              <div style="background:#111;border:2px solid #282828;border-left:4px solid var(--accent-yellow);padding:24px;box-shadow:4px 4px 0px #000;">
+                <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;margin-bottom:8px;">EXPORT INVENTORY JSON</h3>
+                <p style="font-size:0.88rem;color:#AAA;margin-bottom:16px;line-height:1.5;">
+                  Download complete store catalog as a backup JSON file containing all products, prices, badges, and stock quantities.
+                </p>
+                <button id="btnExportJson" class="btn-brutal-yellow btn-brutal-sm">
+                  DOWNLOAD JSON BACKUP ↓
+                </button>
+              </div>
+
+              <div style="background:#111;border:2px solid #282828;border-left:4px solid var(--accent-pink);padding:24px;box-shadow:4px 4px 0px #000;">
+                <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-pink);margin-bottom:8px;">RESTORE FACTORY DEFAULT CATALOG</h3>
+                <p style="font-size:0.88rem;color:#AAA;margin-bottom:16px;line-height:1.5;">
+                  Reset all product listings back to the default 8 MUSTAZ workshop products. Useful for testing or wiping sample custom products.
+                </p>
+                <button id="btnResetCatalog" class="btn-brutal-pink btn-brutal-sm" style="background:#59001b;border-color:var(--accent-pink);">
+                  RESET CATALOG TO DEFAULT ⚠️
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- EDIT PRODUCT MODAL (Brutalist Garage Box) -->
+<div class="modal-backdrop" id="editProductModal">
+  <div class="modal-box" style="max-width:580px;background:#111;border:3px solid var(--accent-yellow);box-shadow:10px 10px 0px #000;">
+    <div class="modal-header" style="background:#181818;border-bottom:2px solid #282828;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="zine-tag-yellow" id="editModalSku">SKU_001</span>
+        <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFFFFF;">EDIT PRODUCT DETAILS</span>
+      </div>
+      <button class="modal-close" id="editModalCloseBtn" aria-label="Close modal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <form id="editProductForm">
+        <input type="hidden" id="editProdId">
+        
+        <div class="form-group-brutal">
+          <label class="form-label-brutal">PRODUCT NAME</label>
+          <input type="text" id="editProdName" class="form-input-brutal" required>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group-brutal">
+            <label class="form-label-brutal">CATEGORY</label>
+            <select id="editProdCategory" class="form-input-brutal" style="background:#111;color:#FFF;">
+              <option value="Acrylic Pet">Acrylic Pet</option>
+              <option value="Leather Pet">Leather Pet</option>
+              <option value="Retro Visor">Retro Visor</option>
+              <option value="Drop Sets">Drop Sets</option>
+            </select>
+          </div>
+          <div class="form-group-brutal">
+            <label class="form-label-brutal">BADGE</label>
+            <select id="editProdBadge" class="form-input-brutal" style="background:#111;color:#FFF;">
+              <option value="NEW">NEW</option>
+              <option value="HOT DROP">HOT DROP</option>
+              <option value="BESTSELLER">BESTSELLER</option>
+              <option value="LIMITED">LIMITED</option>
+              <option value="BUNDLE">BUNDLE</option>
+              <option value="SALE">SALE</option>
+              <option value="">(NONE)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-brutal">
+          <label class="form-label-brutal">SUBTITLE / SPECS</label>
+          <input type="text" id="editProdSub" class="form-input-brutal" required>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group-brutal">
+            <label class="form-label-brutal">PRICE (IDR)</label>
+            <input type="number" id="editProdPrice" class="form-input-brutal" min="10000" step="5000" required>
+          </div>
+          <div class="form-group-brutal">
+            <label class="form-label-brutal">STOCK QTY</label>
+            <input type="number" id="editProdStock" class="form-input-brutal" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-group-brutal" style="margin-bottom:24px;">
+          <label class="form-label-brutal">IMAGE PATH / URL</label>
+          <input type="text" id="editProdImage" class="form-input-brutal" required>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+          <button type="button" class="btn-brutal-dark" id="btnCancelEdit" style="padding:10px 18px;">CANCEL</button>
+          <button type="submit" class="btn-brutal-yellow" style="padding:10px 22px;">SAVE UPDATES ✓</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+
+<!-- Newsletter & Underground Manifesto -->
+<div class="footer-manifesto">
+  <div class="wrap-tight">
+    <div style="display:inline-block;margin-bottom:12px;">
+      <span class="zine-tag-pink">COMMS FREQUENCY</span>
+    </div>
+    <h2 class="editorial-title" style="font-size:clamp(2.5rem, 5.5vw, 4.5rem);margin-bottom:12px;">
+      JOIN THE UNDERGROUND
+    </h2>
+    <p style="max-width:540px;margin:0 auto 28px;color:#A0A0A0;font-size:1rem;line-height:1.6;">
+      Drop your comms line below. We only send dispatch intel on new builds, limited hardware drops, and garage parties. No spam. Pure combustion.
+    </p>
+    <form class="newsletter-form" id="newsletterForm" style="display:flex;gap:12px;justify-content:center;max-width:500px;margin:0 auto;flex-wrap:wrap;">
+      <input type="email" class="form-input-brutal" placeholder="ENTER YOUR EMAIL FREQUENCY..." required style="flex:1;min-width:260px;">
+      <button type="submit" class="btn-brutal-pink">SUBSCRIBE →</button>
+    </form>
+  </div>
+</div>
+
+<!-- Bottom Footer Bar -->
+<footer class="footer-bottom">
+  <div class="wrap">
+    <div class="footer-bottom-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <a href="index.html" class="brand-badge">
+          <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" style="height:36px;width:auto;object-fit:contain;">
+        </a>
+        <span class="barcode-decor" style="height:20px;width:90px;"></span>
+      </div>
+
+      <nav class="footer-links">
+        <a href="index.html" class="footer-link">HOME</a>
+        <a href="parts.html" class="footer-link">PRODUCT</a>
+        <a href="account.html" class="footer-link">ACCOUNT</a>
+        <a href="kulture.html" class="footer-link">ABOUT</a>
+        <a href="admin.html" class="footer-link" style="color:var(--accent-yellow);font-weight:700;">ADMIN</a>
+      </nav>
+
+      <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#555;letter-spacing:0.1em;text-transform:uppercase;">
+        © 2026 MUSTAZ CRAFT. ALL RIGHTS RESERVED.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
+</body>
+</html>
