@@ -173,6 +173,8 @@ function sharedFooter() {
         <a href="account.html" class="footer-link">ACCOUNT</a>
         <a href="kulture.html" class="footer-link">ABOUT</a>
         <a href="admin.html" class="footer-link" style="color:var(--accent-yellow);font-weight:700;">ADMIN</a>
+        <a href="privacy-policy.html" class="footer-link">PRIVACY</a>
+        <a href="terms-of-service.html" class="footer-link">TERMS</a>
       </nav>
 
       <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#555;letter-spacing:0.1em;text-transform:uppercase;">
@@ -772,13 +774,14 @@ ${sharedMarquee()}
           
           <!-- Avatar + Member Bio -->
           <div style="display:flex;align-items:center;gap:20px;">
-            <div style="width:72px;height:72px;background:var(--accent-pink);border:3px solid #FFFFFF;box-shadow:4px 4px 0px #000000;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <span id="userAvatarInitial" style="font-family:var(--font-headline);font-size:2.4rem;font-weight:900;color:#000000;line-height:1;">R</span>
+            <div style="width:72px;height:72px;background:var(--accent-pink);border:3px solid #FFFFFF;box-shadow:4px 4px 0px #000000;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+              <img id="userAvatarImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;" alt="Avatar">
+              <span id="userAvatarInitial" style="font-family:var(--font-headline);font-size:2.4rem;font-weight:900;color:#000000;line-height:1;">M</span>
             </div>
             <div>
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
                 <h1 class="editorial-title" id="userNameHeading" style="font-size:clamp(1.8rem, 3.5vw, 2.5rem);margin:0;color:#FFF;line-height:1;">
-                  RAIHAN PRATAMA
+                  MEMBER
                 </h1>
                 <span id="userRoleBadge" class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">MEMBER</span>
                 <span class="zine-tag-yellow" style="font-size:0.65rem;padding:2px 8px;">VERIFIED CREW</span>
@@ -788,7 +791,7 @@ ${sharedMarquee()}
                 </a>
               </div>
               <p id="userSubMeta" style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#888;letter-spacing:0.08em;margin:0;">
-                raihan@mustazcraft.com • +62 812-3456-7890 • MEMBER SINCE OCT 2024
+                VERIFIED MEMBER
               </p>
             </div>
           </div>
@@ -1027,22 +1030,22 @@ ${sharedMarquee()}
                 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:20px;margin-bottom:20px;">
                   <div class="form-group-brutal" style="margin-bottom:0;">
                     <label class="form-label-brutal">NAMA LENGKAP (FULL NAME)</label>
-                    <input type="text" id="inputFullName" class="form-input-brutal" value="Raihan Pratama" required>
+                    <input type="text" id="inputFullName" class="form-input-brutal" placeholder="Nama Anda" required>
                   </div>
                   <div class="form-group-brutal" style="margin-bottom:0;">
                     <label class="form-label-brutal">PANGGILAN / ALIAS / USERNAME</label>
-                    <input type="text" id="inputAlias" class="form-input-brutal" value="Rider 7G">
+                    <input type="text" id="inputAlias" class="form-input-brutal" placeholder="Rider 7G">
                   </div>
                 </div>
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:20px;margin-bottom:28px;">
                   <div class="form-group-brutal" style="margin-bottom:0;">
                     <label class="form-label-brutal">ALAMAT EMAIL</label>
-                    <input type="email" id="inputEmail" class="form-input-brutal" value="raihan@mustazcraft.com" required>
+                    <input type="email" id="inputEmail" class="form-input-brutal" placeholder="your@email.com" required readonly style="opacity:0.85;cursor:not-allowed;">
                   </div>
                   <div class="form-group-brutal" style="margin-bottom:0;">
                     <label class="form-label-brutal">NO. WHATSAPP / HP</label>
-                    <input type="tel" id="inputPhone" class="form-input-brutal" value="+62 812-3456-7890" required>
+                    <input type="tel" id="inputPhone" class="form-input-brutal" placeholder="+62 812-xxxx-xxxx">
                   </div>
                 </div>
 
@@ -1279,10 +1282,12 @@ ${sharedMarquee()}
     // 2. Dynamic & Persistent Profile Data (Data Diri)
     const STORAGE_KEY = 'mustaz_user_profile_data';
     const defaultData = {
-      fullName: 'Raihan Pratama',
+      fullName: '',
       alias: 'Rider 7G',
-      email: 'raihan@mustazcraft.com',
-      phone: '+62 812-3456-7890'
+      email: '',
+      phone: '',
+      avatarUrl: '',
+      role: 'member'
     };
 
     function loadProfile() {
@@ -1302,12 +1307,28 @@ ${sharedMarquee()}
       // Update Top Greeting Banner
       const nameHeading = document.getElementById('userNameHeading');
       const avatarInitial = document.getElementById('userAvatarInitial');
+      const avatarImg = document.getElementById('userAvatarImg');
       const subMeta = document.getElementById('userSubMeta');
 
-      const name = data.fullName && data.fullName.trim() ? data.fullName.trim() : 'MEMBER';
+      const name = (data.fullName && data.fullName.trim()) || (data.email ? data.email.split('@')[0].toUpperCase() : 'MEMBER');
       if (nameHeading) nameHeading.textContent = name.toUpperCase();
-      if (avatarInitial) avatarInitial.textContent = name.charAt(0).toUpperCase();
-      if (subMeta) subMeta.textContent = (data.email || 'raihan@mustazcraft.com') + ' • ' + (data.phone || '+62 812-3456-7890') + ' • MEMBER SINCE OCT 2024';
+
+      if (data.avatarUrl && avatarImg) {
+        avatarImg.src = data.avatarUrl;
+        avatarImg.style.display = 'block';
+        if (avatarInitial) avatarInitial.style.display = 'none';
+      } else {
+        if (avatarImg) avatarImg.style.display = 'none';
+        if (avatarInitial) {
+          avatarInitial.style.display = 'block';
+          avatarInitial.textContent = name.charAt(0).toUpperCase();
+        }
+      }
+
+      if (subMeta) {
+        const parts = [data.email, data.phone].filter(Boolean);
+        subMeta.textContent = parts.length > 0 ? parts.join(' • ') + ' • VERIFIED MEMBER' : 'VERIFIED MEMBER';
+      }
 
       // Update Form Inputs
       const inName = document.getElementById('inputFullName');
@@ -1357,10 +1378,11 @@ ${sharedMarquee()}
         e.preventDefault();
         const stored = loadProfile();
         const updated = {
-          fullName: document.getElementById('inputFullName').value.trim() || 'Raihan Pratama',
-          alias: document.getElementById('inputAlias').value.trim() || '',
-          email: document.getElementById('inputEmail').value.trim() || '',
-          phone: document.getElementById('inputPhone').value.trim() || '',
+          fullName: document.getElementById('inputFullName').value.trim() || stored.fullName || 'MEMBER',
+          alias: document.getElementById('inputAlias').value.trim() || stored.alias || 'Rider 7G',
+          email: document.getElementById('inputEmail').value.trim() || stored.email || '',
+          phone: document.getElementById('inputPhone').value.trim() || stored.phone || '',
+          avatarUrl: stored.avatarUrl || '',
           role: stored.role || 'member'
         };
 
@@ -1498,14 +1520,14 @@ ${sharedMarquee()}
         <form id="passwordLoginForm">
           <div class="form-group-brutal">
             <label class="form-label-brutal">CREDENTIAL ID / EMAIL</label>
-            <input type="email" id="loginEmail" class="form-input-brutal" placeholder="your@frequency.net" required value="raihan@mustazcraft.com">
+            <input type="email" id="loginEmail" class="form-input-brutal" placeholder="your@frequency.net" required autocomplete="email">
           </div>
           <div class="form-group-brutal" style="margin-bottom:14px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
               <label class="form-label-brutal" style="margin-bottom:0;">SECURITY PASSCODE</label>
               <a href="forgot-password.html" style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-pink);text-decoration:none;">LUPA PASSWORD?</a>
             </div>
-            <input type="password" id="loginPassword" class="form-input-brutal" placeholder="••••••••" required value="mustaz1978">
+            <input type="password" id="loginPassword" class="form-input-brutal" placeholder="••••••••" required autocomplete="current-password">
           </div>
           <button type="submit" id="btnSubmitPassword" class="btn-brutal-pink" style="width:100%;padding:14px;font-size:1.05rem;">
             ENTER GARAGE →

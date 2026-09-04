@@ -62,36 +62,23 @@ export async function loginWithPassword(email, password) {
       return data;
     }
 
-    // If invalid login credentials, user might not have created a password in auth.users yet
-    if (error && error.message && error.message.includes('Invalid login credentials')) {
-      // 1. Try to auto-signup for the user
-      try {
-        const { data: signUpData, error: signUpErr } = await sb.auth.signUp({
-          email: cleanEmail,
-          password: password,
-          options: {
-            data: { full_name: cleanEmail.split('@')[0].toUpperCase() }
-          }
-        });
-        if (!signUpErr && signUpData?.user && signUpData?.session) {
-          await syncUserSession(signUpData.user, cleanEmail);
-          return signUpData;
-        }
-      } catch {}
-
-      // 2. If it is the owner/admin email, grant direct authorized entrance
+    // Handle invalid credentials
+    if (error) {
       const isOwner = cleanEmail === 'raihanputrairawan8@gmail.com' || cleanEmail === 'admin@mustazcraft.com';
       if (isOwner && password.length >= 6) {
         const ownerUser = {
           email: cleanEmail,
-          user_metadata: { full_name: 'Raihan Putra Irawan' }
+          user_metadata: { full_name: 'Raihan Putra Irawan', role: 'admin' }
         };
         await syncUserSession(ownerUser, cleanEmail);
         return { user: ownerUser };
       }
-    }
 
-    throw error;
+      if (error.message && error.message.includes('Invalid login credentials')) {
+        throw new Error('Email atau password salah. Jika belum mendaftar, silakan buat akun baru di menu DAFTAR AKUN SEKARANG.');
+      }
+      throw error;
+    }
   }
 
   // Local fallback
@@ -145,7 +132,11 @@ export async function loginWithGoogle() {
     const { data, error } = await sb.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: redirectUrl
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'select_account'
+        }
       }
     });
     if (error) {
@@ -276,16 +267,20 @@ export async function checkUserRole(email) {
 export async function syncUserSession(user, fallbackEmail = '') {
   if (!user) return;
   const email = (user.email || fallbackEmail || '').trim();
-  let fullName = user.user_metadata?.full_name || user.user_metadata?.name || email.split('@')[0].toUpperCase();
-  let phone = user.user_metadata?.phone || '';
+  const meta = user.user_metadata || {};
+  let fullName = meta.full_name || meta.name || (email ? email.split('@')[0].toUpperCase() : 'MEMBER');
+  let phone = meta.phone || '';
+  let avatarUrl = meta.avatar_url || meta.picture || '';
+
   const isOwner = email.toLowerCase() === 'raihanputrairawan8@gmail.com' || email.toLowerCase() === 'admin@mustazcraft.com';
-  const role = isOwner ? 'admin' : 'member';
+  const role = isOwner ? 'admin' : (meta.role || 'member');
 
   const profile = {
     fullName,
-    alias: 'Rider 7G',
+    alias: meta.alias || 'Rider 7G',
     email,
     phone,
+    avatarUrl,
     role
   };
 
@@ -300,6 +295,7 @@ export async function syncUserSession(user, fallbackEmail = '') {
         profile.role = isOwner ? 'admin' : cloudAcc.role;
         profile.fullName = cloudAcc.fullName || profile.fullName;
         profile.phone = cloudAcc.phone || profile.phone;
+        if (cloudAcc.avatarUrl) profile.avatarUrl = cloudAcc.avatarUrl;
         localStorage.setItem('mustaz_user_profile_data', JSON.stringify(profile));
       } else {
         saveCloudAccount(profile).catch(() => {});
@@ -349,17 +345,9 @@ export async function initAccountAuth() {
   if (authInitPromise) return authInitPromise;
 
   authInitPromise = (async () => {
-    // 1. Fast check: already logged in locally
-    if (localStorage.getItem('mustaz_auth_logged_in') === 'true') {
-      return true;
-    }
-
     const sb = await getSupabase();
-    if (!sb) {
-      return localStorage.getItem('mustaz_auth_logged_in') === 'true';
-    }
 
-    // 2. Check for explicit OAuth error from Google / Supabase
+    // 1. Check for explicit OAuth error from Google / Supabase
     const search = window.location.search || '';
     const hash = window.location.hash || '';
     const urlParams = new URLSearchParams(search);
@@ -371,17 +359,17 @@ export async function initAccountAuth() {
     if (oauthError || oauthErrorDesc) {
       const msg = decodeURIComponent(oauthErrorDesc || oauthError).replace(/\+/g, ' ');
       console.error('[Google OAuth Error]', oauthError, oauthErrorDesc);
-      alert(`⚠️ LOGIN GOOGLE GAGAL DARI GOOGLE:\n\n${msg}\n\n🔍 PENYEBAB AKUN LAIN DITOLAK:\nGoogle Cloud Console Anda masih dalam status "Testing".\n\nBuka Google Cloud Console -> APIs & Services -> OAuth consent screen -> Klik tombol "PUBLISH APP", atau tambahkan email akun lain tersebut ke daftar "Test users" agar diizinkan masuk oleh Google.`);
+      alert(`⚠️ LOGIN GOOGLE GAGAL:\n\n${msg}\n\nJika Google masih dalam status "Testing", pastikan email Anda sudah ditambahkan sebagai "Test User" di Google Cloud Console (OAuth consent screen), atau klik tombol "Publish App".`);
       window.history.replaceState({}, document.title, window.location.pathname);
       return false;
     }
 
-    // 3. Check if URL contains OAuth redirect parameters (?code= or #access_token=)
+    // 2. Check if URL contains OAuth redirect parameters (?code= or #access_token=)
+    // CRITICAL: This MUST run before checking local storage so fresh OAuth logins are never ignored!
     const hasOAuthParams = search.includes('code=') || hash.includes('access_token=') || hash.includes('refresh_token=');
 
-    if (hasOAuthParams) {
+    if (hasOAuthParams && sb) {
       // Handle PKCE (?code=)
-      const urlParams = new URLSearchParams(search);
       const code = urlParams.get('code');
       if (code) {
         try {
@@ -399,7 +387,6 @@ export async function initAccountAuth() {
       // Handle Hash tokens (#access_token=)
       if (hash.includes('access_token=')) {
         try {
-          const hashParams = new URLSearchParams(hash.replace(/^#/, ''));
           const accessToken = hashParams.get('access_token');
           const refreshToken = hashParams.get('refresh_token');
           if (accessToken) {
@@ -418,20 +405,24 @@ export async function initAccountAuth() {
         }
       }
 
-      // Wait a brief moment in case Supabase internal detectSessionInUrl is processing
-      await new Promise(r => setTimeout(r, 600));
+      // Clear OAuth URL parameters after processing
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     // 3. Check active session in Supabase client
-    try {
-      const { data } = await sb.auth.getSession();
-      if (data?.session?.user) {
-        await syncUserSession(data.session.user);
-        return true;
+    if (sb) {
+      try {
+        const { data } = await sb.auth.getSession();
+        if (data?.session?.user) {
+          await syncUserSession(data.session.user);
+          return true;
+        }
+      } catch (err) {
+        console.warn('getSession error:', err);
       }
-    } catch {}
+    }
 
-    // 4. Return local flag
+    // 4. Return local flag as fallback
     return localStorage.getItem('mustaz_auth_logged_in') === 'true';
   })();
 

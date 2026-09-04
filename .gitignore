@@ -29,3 +29,6 @@ build/
 .agents/
 .antigravity-ide/
 stitch_raw/
+
+# Local Netlify folder
+.netlify

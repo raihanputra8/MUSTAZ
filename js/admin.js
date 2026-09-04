@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch {}
 
-    const { checkUserRole } = await import('./services/authService.js');
     const role = await checkUserRole(userEmail);
 
     if (role !== 'admin' && localRole !== 'admin') {

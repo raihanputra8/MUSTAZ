@@ -221,15 +221,17 @@ export async function fetchCloudOrders() {
  */
 export async function saveCloudAccount(profile) {
   try {
-    const email = profile.email || 'raihan@mustazcraft.com';
+    const email = profile.email;
+    if (!email) return false;
     const id = profile.id || `acc_${email.replace(/[^a-zA-Z0-9]/g, '_')}`;
     const payload = {
       id: id,
       email: email,
-      full_name: profile.fullName || 'Raihan Pratama',
-      alias: profile.alias || '',
+      full_name: profile.fullName || email.split('@')[0].toUpperCase(),
+      alias: profile.alias || 'Rider 7G',
       phone: profile.phone || '',
       role: profile.role || 'member',
+      avatar_url: profile.avatarUrl || '',
       updated_at: new Date().toISOString()
     };
 
@@ -267,6 +269,7 @@ export async function fetchCloudAccount(email) {
         alias: acc.alias || '',
         email: acc.email,
         phone: acc.phone || '',
+        avatarUrl: acc.avatar_url || '',
         role: acc.role || 'member'
       };
       localStorage.setItem('mustaz_user_profile_data', JSON.stringify(mapped));
