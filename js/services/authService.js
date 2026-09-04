@@ -184,7 +184,19 @@ export async function registerWithEmail(email, password, metadata = {}) {
         }
       }
     });
-    if (error) throw error;
+
+    if (error) {
+      // If user is already registered, seamlessly attempt to log in with this password!
+      if (error.message && (error.message.includes('already registered') || error.message.includes('already exists') || error.message.includes('User already registered'))) {
+        try {
+          const loginRes = await loginWithPassword(email, password);
+          return { user: loginRes.user, autoLoggedIn: true, requiresOtp: false };
+        } catch (loginErr) {
+          throw new Error('Email ini sudah terdaftar di sistem. Silakan <a href="login.html" style="color:#FFF;text-decoration:underline;font-weight:700;">masuk melalui halaman Login</a> atau gunakan akun Google.');
+        }
+      }
+      throw error;
+    }
 
     // Also register in public.accounts table
     try {
