@@ -173,37 +173,77 @@
           <div style="flex:1;height:1px;background:#282828;"></div>
         </div>
 
-        <form id="registerForm">
-          <div class="form-group-brutal">
-            <label class="form-label-brutal">FULL NAME / ALIAS *</label>
-            <input type="text" id="regFullName" class="form-input-brutal" placeholder="e.g. Raihan Pratama" required>
-          </div>
-
-          <div class="form-group-brutal">
-            <label class="form-label-brutal">WHATSAPP / PHONE NUMBER</label>
-            <input type="tel" id="regPhone" class="form-input-brutal" placeholder="e.g. +62 812-3456-7890">
-          </div>
-
-          <div class="form-group-brutal">
-            <label class="form-label-brutal">EMAIL ADDRESS *</label>
-            <input type="email" id="regEmail" class="form-input-brutal" placeholder="your@frequency.net" required>
-          </div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
-            <div class="form-group-brutal" style="margin-bottom:0;">
-              <label class="form-label-brutal">PASSWORD *</label>
-              <input type="password" id="regPassword" class="form-input-brutal" placeholder="••••••••" minlength="6" required>
+        <!-- 2-STEP REGISTRATION: CREDENTIALS -> OTP VERIFICATION -->
+        <div id="regFlowContainer">
+          <!-- STEP 1: FILL CREDENTIALS -->
+          <form id="registerForm">
+            <div class="form-group-brutal">
+              <label class="form-label-brutal" for="regFullName">FULL NAME / ALIAS *</label>
+              <input type="text" id="regFullName" class="form-input-brutal" placeholder="e.g. Raihan Pratama" required>
             </div>
-            <div class="form-group-brutal" style="margin-bottom:0;">
-              <label class="form-label-brutal">CONFIRM *</label>
-              <input type="password" id="regConfirmPassword" class="form-input-brutal" placeholder="••••••••" minlength="6" required>
-            </div>
-          </div>
 
-          <button type="submit" id="btnSubmitRegister" class="btn-brutal-yellow" style="width:100%;padding:14px;font-size:1.05rem;">
-            CREATE ACCOUNT →
-          </button>
-        </form>
+            <div class="form-group-brutal">
+              <label class="form-label-brutal" for="regPhone">WHATSAPP / PHONE NUMBER</label>
+              <input type="tel" id="regPhone" class="form-input-brutal" placeholder="e.g. 081234567890">
+            </div>
+
+            <div class="form-group-brutal">
+              <label class="form-label-brutal" for="regEmail">EMAIL ADDRESS *</label>
+              <input type="email" id="regEmail" class="form-input-brutal" placeholder="contoh: nama@email.com" required autocomplete="email">
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+              <div class="form-group-brutal" style="margin-bottom:0;">
+                <label class="form-label-brutal" for="regPassword">PASSWORD *</label>
+                <input type="password" id="regPassword" class="form-input-brutal" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+              </div>
+              <div class="form-group-brutal" style="margin-bottom:0;">
+                <label class="form-label-brutal" for="regConfirmPassword">CONFIRM *</label>
+                <input type="password" id="regConfirmPassword" class="form-input-brutal" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+              </div>
+            </div>
+
+            <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;display:block;margin-bottom:14px;line-height:1.4;">
+              ⚡ Kode OTP verifikasi 6-digit akan dikirimkan ke email Anda untuk mengaktifkan akun baru.
+            </span>
+
+            <button type="submit" id="btnSubmitRegister" class="btn-brutal-yellow" style="width:100%;padding:15px;font-size:1.05rem;">
+              DAFTAR & KIRIM KODE OTP KE EMAIL →
+            </button>
+          </form>
+
+          <!-- STEP 2: VERIFY REGISTRATION OTP (Revealed once registration is submitted) -->
+          <form id="regOtpVerifyForm" style="display:none;">
+            <div style="background:#161616;border:2px solid var(--accent-yellow);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.4rem;">✉️</span>
+              <div style="flex:1;">
+                <div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;text-transform:uppercase;">KODE OTP VERIFIKASI DIKIRIM KE:</div>
+                <div id="regTargetEmailDisplay" style="font-family:var(--font-headline);font-size:1rem;color:var(--accent-yellow);word-break:break-all;"></div>
+              </div>
+            </div>
+
+            <div class="form-group-brutal">
+              <label class="form-label-brutal" for="regOtpCode">MASUKKAN 6-DIGIT KODE OTP DARI EMAIL</label>
+              <input type="text" id="regOtpCode" class="form-input-brutal" placeholder="123456" maxlength="6" style="letter-spacing:0.35em;text-align:center;font-size:1.4rem;font-family:var(--font-headline);font-weight:900;" autocomplete="one-time-code">
+              <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;display:block;margin-top:6px;">
+                Cek kotak masuk atau folder spam email Anda untuk kode aktivasi akun baru.
+              </span>
+            </div>
+
+            <button type="submit" id="btnVerifyRegOtp" class="btn-brutal-pink" style="width:100%;padding:15px;font-size:1.05rem;margin-bottom:12px;">
+              VERIFIKASI & AKTIFKAN AKUN →
+            </button>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <button type="button" id="btnResendRegOtp" class="btn-brutal-dark btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
+                ↻ KIRIM ULANG
+              </button>
+              <button type="button" id="btnBackToRegStep1" class="btn-brutal-dark btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
+                ← GANTI DATA
+              </button>
+            </div>
+          </form>
+        </div>
 
         <div style="margin-top:24px;text-align:center;border-top:1px dashed #282828;padding-top:18px;">
           <span style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#888;">
@@ -217,7 +257,7 @@
 </main>
 
 <script type="module">
-  import { registerWithEmail, loginWithGoogle } from './js/services/authService.js';
+  import { registerWithEmail, verifyEmailOtp, sendEmailOtp, loginWithGoogle } from './js/services/authService.js';
 
   document.addEventListener('DOMContentLoaded', () => {
     const alertBox = document.getElementById('regAlert');
@@ -266,15 +306,25 @@
       }
     });
 
-    // Form Submit
-    document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+    const regForm = document.getElementById('registerForm');
+    const regOtpForm = document.getElementById('regOtpVerifyForm');
+    const regOtpCodeInput = document.getElementById('regOtpCode');
+    const btnSubmitRegister = document.getElementById('btnSubmitRegister');
+    const btnVerifyRegOtp = document.getElementById('btnVerifyRegOtp');
+    const btnResendRegOtp = document.getElementById('btnResendRegOtp');
+    const btnBackToRegStep1 = document.getElementById('btnBackToRegStep1');
+    const regTargetEmailDisplay = document.getElementById('regTargetEmailDisplay');
+
+    let registeredEmail = '';
+
+    // Step 1: Submit Form to Register and Trigger OTP
+    regForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fullName = document.getElementById('regFullName').value.trim();
       const phone = document.getElementById('regPhone').value.trim();
       const email = document.getElementById('regEmail').value.trim();
       const pass = document.getElementById('regPassword').value;
       const confirm = document.getElementById('regConfirmPassword').value;
-      const btn = document.getElementById('btnSubmitRegister');
 
       if (pass !== confirm) {
         showAlert('Konfirmasi password tidak cocok.');
@@ -282,18 +332,87 @@
       }
 
       try {
-        btn.textContent = 'CREATING ACCOUNT...';
-        btn.disabled = true;
-        await registerWithEmail(email, pass, { fullName, phone });
-        showAlert('✓ Pendaftaran berhasil! Akun telah tersimpan di Supabase. Mengalihkan...', true);
+        btnSubmitRegister.textContent = 'MENDAFTAR & MENGIRIM OTP...';
+        btnSubmitRegister.disabled = true;
+        if (alertBox) alertBox.style.display = 'none';
+
+        const res = await registerWithEmail(email, pass, { fullName, phone });
+        registeredEmail = email;
+
+        // If Supabase requires OTP verification (default)
+        if (res.requiresOtp) {
+          if (regTargetEmailDisplay) regTargetEmailDisplay.textContent = email;
+          showAlert('✓ Pendaftaran berhasil dicatat! Kode OTP 6-digit telah dikirim ke ' + email + '. Silakan masukkan kode untuk mengaktifkan akun.', true);
+          regForm.style.display = 'none';
+          regOtpForm.style.display = 'block';
+          regOtpCodeInput.value = '';
+          regOtpCodeInput.focus();
+        } else {
+          // Auto-confirmed or immediate session
+          showAlert('✓ Pendaftaran berhasil! Mengalihkan ke garasi...', true);
+          setTimeout(() => {
+            window.location.href = 'account.html';
+          }, 800);
+        }
+      } catch (err) {
+        btnSubmitRegister.textContent = 'DAFTAR & KIRIM KODE OTP KE EMAIL →';
+        btnSubmitRegister.disabled = false;
+        showAlert('Gagal mendaftar: ' + (err.message || 'Periksa kembali data yang dimasukkan.'));
+      }
+    });
+
+    // Step 2: Verify Registration OTP
+    regOtpForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = regOtpCodeInput.value.trim();
+      if (!token || token.length < 6) {
+        showAlert('Silakan masukkan 6-digit kode OTP verifikasi lengkap.');
+        return;
+      }
+
+      try {
+        btnVerifyRegOtp.textContent = 'MENGAKTIFKAN AKUN...';
+        btnVerifyRegOtp.disabled = true;
+        if (alertBox) alertBox.style.display = 'none';
+
+        await verifyEmailOtp(registeredEmail, token, 'signup');
+        showAlert('✓ Akun Berhasil Diaktifkan! Selamat datang di Garasi MUSTAZ...', true);
         setTimeout(() => {
           window.location.href = 'account.html';
-        }, 1200);
+        }, 750);
       } catch (err) {
-        btn.textContent = 'CREATE ACCOUNT →';
-        btn.disabled = false;
-        showAlert('Gagal mendaftar: ' + err.message);
+        btnVerifyRegOtp.textContent = 'VERIFIKASI & AKTIFKAN AKUN →';
+        btnVerifyRegOtp.disabled = false;
+        showAlert('Kode OTP Salah atau Kadaluarsa: ' + (err.message || 'Periksa kembali kode di inbox email Anda.'));
       }
+    });
+
+    // Resend Registration OTP
+    btnResendRegOtp?.addEventListener('click', async () => {
+      if (!registeredEmail) return;
+      try {
+        btnResendRegOtp.textContent = 'MENGIRIM...';
+        btnResendRegOtp.disabled = true;
+        await sendEmailOtp(registeredEmail);
+        showAlert('✓ Kode verifikasi baru telah dikirim ke ' + registeredEmail, true);
+        setTimeout(() => {
+          btnResendRegOtp.textContent = '↻ KIRIM ULANG';
+          btnResendRegOtp.disabled = false;
+        }, 5000);
+      } catch (err) {
+        btnResendRegOtp.textContent = '↻ KIRIM ULANG';
+        btnResendRegOtp.disabled = false;
+        showAlert('Gagal mengirim ulang kode: ' + err.message);
+      }
+    });
+
+    // Back to Step 1
+    btnBackToRegStep1?.addEventListener('click', () => {
+      regOtpForm.style.display = 'none';
+      regForm.style.display = 'block';
+      btnSubmitRegister.textContent = 'DAFTAR & KIRIM KODE OTP KE EMAIL →';
+      btnSubmitRegister.disabled = false;
+      if (alertBox) alertBox.style.display = 'none';
     });
   });
 </script>

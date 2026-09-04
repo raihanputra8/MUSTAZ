@@ -149,7 +149,7 @@
           AUTHENTICATE
         </h2>
         <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#777;margin:0 0 20px;">
-          MASUK SECARA INSTAN MENGGUNAKAN GOOGLE ATAU EMAIL OTP (KODE MASUK).
+          MASUK KE GARASI MENGGUNAKAN GOOGLE ATAU EMAIL & PASSWORD ANDA.
         </p>
 
         <!-- Status / Alert Message -->
@@ -167,64 +167,33 @@
           <span id="btnGoogleText">CONTINUE WITH GOOGLE</span>
         </button>
 
-        <div style="display:flex;align-items:center;margin-bottom:22px;">
+        <div style="display:flex;align-items:center;margin-bottom:20px;">
           <div style="flex:1;height:1px;background:#282828;"></div>
-          <span style="padding:0 12px;font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;letter-spacing:0.12em;">ATAU MASUK VIA EMAIL OTP</span>
+          <span style="padding:0 12px;font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;letter-spacing:0.12em;">ATAU LOGIN DENGAN PASSWORD</span>
           <div style="flex:1;height:1px;background:#282828;"></div>
         </div>
 
-        <!-- UNIFIED EMAIL OTP FLOW -->
-        <div id="unifiedAuthContainer">
-          <!-- STEP 1: Enter Email -->
-          <form id="otpEmailForm">
-            <div class="form-group-brutal">
-              <label class="form-label-brutal" for="loginEmail">ALAMAT EMAIL ANDA</label>
-              <input type="email" id="loginEmail" class="form-input-brutal" placeholder="contoh: nama@email.com" required autocomplete="email">
-              <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;display:block;margin-top:6px;line-height:1.4;">
-                Kode rahasia 6-digit akan dikirim langsung ke inbox email Anda. Tanpa perlu mengingat password!
-              </span>
+        <!-- FAST EMAIL & PASSWORD LOGIN FORM -->
+        <form id="passwordLoginForm">
+          <div class="form-group-brutal">
+            <label class="form-label-brutal" for="loginEmail">EMAIL ADDRESS</label>
+            <input type="email" id="loginEmail" class="form-input-brutal" placeholder="contoh: nama@email.com" required autocomplete="email">
+          </div>
+          <div class="form-group-brutal" style="margin-bottom:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <label class="form-label-brutal" for="loginPassword" style="margin-bottom:0;">SECURITY PASSCODE</label>
+              <a href="forgot-password.html" style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-pink);text-decoration:none;">LUPA PASSWORD?</a>
             </div>
-            <button type="submit" id="btnRequestOtp" class="btn-brutal-pink" style="width:100%;padding:15px;font-size:1.05rem;">
-              KIRIM KODE OTP KE EMAIL →
-            </button>
-          </form>
+            <input type="password" id="loginPassword" class="form-input-brutal" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <button type="submit" id="btnSubmitPassword" class="btn-brutal-pink" style="width:100%;padding:15px;font-size:1.05rem;">
+            ENTER GARAGE →
+          </button>
+        </form>
 
-          <!-- STEP 2: Enter 6-digit OTP (Revealed after code sent) -->
-          <form id="otpVerifyForm" style="display:none;">
-            <div style="background:#161616;border:2px solid var(--accent-yellow);padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
-              <span style="font-size:1.2rem;">✉️</span>
-              <div style="flex:1;">
-                <div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;text-transform:uppercase;">KODE DIKIRIM KE:</div>
-                <div id="targetEmailDisplay" style="font-family:var(--font-headline);font-size:0.95rem;color:var(--accent-yellow);word-break:break-all;"></div>
-              </div>
-            </div>
-
-            <div class="form-group-brutal">
-              <label class="form-label-brutal" for="otpCode">MASUKKAN 6-DIGIT KODE OTP</label>
-              <input type="text" id="otpCode" class="form-input-brutal" placeholder="123456" maxlength="6" style="letter-spacing:0.35em;text-align:center;font-size:1.4rem;font-family:var(--font-headline);font-weight:900;" autocomplete="one-time-code">
-              <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;display:block;margin-top:6px;">
-                Cek kotak masuk atau folder spam/junk email Anda.
-              </span>
-            </div>
-
-            <button type="submit" id="btnVerifyOtp" class="btn-brutal-yellow" style="width:100%;padding:15px;font-size:1.05rem;margin-bottom:12px;">
-              VERIFIKASI & MASUK KE GARASI →
-            </button>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <button type="button" id="btnResendOtp" class="btn-brutal-dark btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
-                ↻ KIRIM ULANG
-              </button>
-              <button type="button" id="btnChangeEmail" class="btn-brutal-dark btn-brutal-sm" style="text-align:center;font-size:0.75rem;padding:8px 6px;">
-                ← GANTI EMAIL
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div style="margin-top:24px;text-align:center;border-top:1px dashed #282828;padding-top:18px;">
-          <span style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;line-height:1.5;display:block;">
-            ⚡ <strong>SISTEM AKSES OTOMATIS:</strong> Belum punya akun? Cukup masukkan email di atas, akun baru Anda akan otomatis dibuat saat verifikasi kode pertama kali.
+        <div style="margin-top:26px;text-align:center;border-top:1px dashed #282828;padding-top:20px;">
+          <span style="font-family:var(--font-mono-sub);font-size:0.82rem;color:#AAA;">
+            BELUM MEMILIKI AKUN? <a href="register.html" style="color:var(--accent-yellow);font-weight:900;text-decoration:none;letter-spacing:0.02em;">DAFTAR AKUN SEKARANG →</a>
           </span>
         </div>
       </div>
@@ -234,7 +203,7 @@
 </main>
 
 <script type="module">
-  import { sendEmailOtp, verifyEmailOtp, loginWithGoogle, initAccountAuth } from './js/services/authService.js';
+  import { loginWithPassword, loginWithGoogle, initAccountAuth } from './js/services/authService.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // If returning from Google OAuth or already logged in, redirect directly to account
@@ -290,104 +259,29 @@
       }
     });
 
-    // 2. Unified Email OTP Flow
-    const otpEmailForm = document.getElementById('otpEmailForm');
-    const otpVerifyForm = document.getElementById('otpVerifyForm');
-    const loginEmailInput = document.getElementById('loginEmail');
-    const otpCodeInput = document.getElementById('otpCode');
-    const btnRequestOtp = document.getElementById('btnRequestOtp');
-    const btnVerifyOtp = document.getElementById('btnVerifyOtp');
-    const btnResendOtp = document.getElementById('btnResendOtp');
-    const btnChangeEmail = document.getElementById('btnChangeEmail');
-    const targetEmailDisplay = document.getElementById('targetEmailDisplay');
-
-    let currentEmail = '';
-
-    // Step 1: Submit Email to send OTP
-    otpEmailForm?.addEventListener('submit', async (e) => {
+    // 2. Direct Email & Password Login
+    const passwordForm = document.getElementById('passwordLoginForm');
+    passwordForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = loginEmailInput.value.trim();
-      if (!email || !email.includes('@')) {
-        showAlert('Silakan masukkan alamat email yang valid.');
-        return;
-      }
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('btnSubmitPassword');
 
       try {
-        btnRequestOtp.textContent = 'MENGIRIM KODE OTP...';
-        btnRequestOtp.disabled = true;
+        btn.textContent = 'AUTHENTICATING...';
+        btn.disabled = true;
         if (alertBox) alertBox.style.display = 'none';
 
-        await sendEmailOtp(email);
-        currentEmail = email;
-
-        if (targetEmailDisplay) targetEmailDisplay.textContent = email;
-        showAlert('✓ Kode 6-digit berhasil dikirim ke ' + email + '. Cek kotak masuk Anda!', true);
-
-        otpEmailForm.style.display = 'none';
-        otpVerifyForm.style.display = 'block';
-        otpCodeInput.value = '';
-        otpCodeInput.focus();
-      } catch (err) {
-        btnRequestOtp.textContent = 'KIRIM KODE OTP KE EMAIL →';
-        btnRequestOtp.disabled = false;
-        showAlert('Gagal mengirim kode: ' + (err.message || 'Periksa koneksi Anda'));
-      }
-    });
-
-    // Step 2: Submit OTP Code to verify
-    otpVerifyForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const token = otpCodeInput.value.trim();
-      if (!token || token.length < 6) {
-        showAlert('Silakan masukkan 6-digit kode OTP lengkap.');
-        return;
-      }
-
-      try {
-        btnVerifyOtp.textContent = 'MEMVERIFIKASI KODE...';
-        btnVerifyOtp.disabled = true;
-        if (alertBox) alertBox.style.display = 'none';
-
-        await verifyEmailOtp(currentEmail, token);
-        showAlert('✓ Verifikasi Berhasil! Selamat datang di Garasi MUSTAZ...', true);
-
+        await loginWithPassword(email, pass);
+        showAlert('✓ Login Berhasil! Membuka garasi...', true);
         setTimeout(() => {
           window.location.href = 'account.html';
-        }, 750);
+        }, 700);
       } catch (err) {
-        btnVerifyOtp.textContent = 'VERIFIKASI & MASUK KE GARASI →';
-        btnVerifyOtp.disabled = false;
-        showAlert('Kode OTP Salah atau Kadaluarsa: ' + (err.message || 'Coba kirim ulang kode baru.'));
+        btn.textContent = 'ENTER GARAGE →';
+        btn.disabled = false;
+        showAlert('Gagal Masuk: ' + (err.message || 'Periksa kembali email dan password Anda.'));
       }
-    });
-
-    // Resend OTP button
-    btnResendOtp?.addEventListener('click', async () => {
-      if (!currentEmail) return;
-      try {
-        btnResendOtp.textContent = 'MENGIRIM...';
-        btnResendOtp.disabled = true;
-        await sendEmailOtp(currentEmail);
-        showAlert('✓ Kode baru telah dikirimkan ke ' + currentEmail, true);
-        setTimeout(() => {
-          btnResendOtp.textContent = '↻ KIRIM ULANG';
-          btnResendOtp.disabled = false;
-        }, 5000);
-      } catch (err) {
-        btnResendOtp.textContent = '↻ KIRIM ULANG';
-        btnResendOtp.disabled = false;
-        showAlert('Gagal mengirim ulang kode: ' + err.message);
-      }
-    });
-
-    // Change Email button
-    btnChangeEmail?.addEventListener('click', () => {
-      otpVerifyForm.style.display = 'none';
-      otpEmailForm.style.display = 'block';
-      btnRequestOtp.textContent = 'KIRIM KODE OTP KE EMAIL →';
-      btnRequestOtp.disabled = false;
-      loginEmailInput.focus();
-      if (alertBox) alertBox.style.display = 'none';
     });
   });
 </script>

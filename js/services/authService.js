@@ -105,18 +105,32 @@ export async function sendEmailOtp(email) {
 }
 
 /**
- * 3. Verify 6-digit OTP Token sent to Email
+ * 3. Verify 6-digit OTP Token sent to Email (for Login OTP or Signup Confirmation OTP)
  */
-export async function verifyEmailOtp(email, token) {
+export async function verifyEmailOtp(email, token, type = 'email') {
   const sb = await getSupabase();
   if (sb) {
-    const { data, error } = await sb.auth.verifyOtp({
+    let { data, error } = await sb.auth.verifyOtp({
       email: email.trim(),
       token: token.trim(),
-      type: 'email'
+      type: type
     });
+    // If signup failed, try type 'email' as fallback
+    if (error && type === 'signup') {
+      const fallback = await sb.auth.verifyOtp({
+        email: email.trim(),
+        token: token.trim(),
+        type: 'email'
+      });
+      if (!fallback.error) {
+        data = fallback.data;
+        error = null;
+      }
+    }
     if (error) throw error;
-    await syncUserSession(data.user, email);
+    if (data && data.user) {
+      await syncUserSession(data.user, email);
+    }
     return data;
   }
   throw new Error('Supabase Client tidak tersedia');
@@ -184,17 +198,21 @@ export async function registerWithEmail(email, password, metadata = {}) {
       });
     } catch {}
 
-    if (data.user) {
+    const sessionActive = !!(data.session && data.user);
+    if (sessionActive) {
       await syncUserSession(data.user, email);
     }
-    return data;
+    return {
+      ...data,
+      requiresOtp: !sessionActive
+    };
   }
 
   // Local fallback
   localStorage.setItem('mustaz_auth_logged_in', 'true');
   const profile = { fullName, email, phone, alias: 'Rider 7G', role: 'member' };
   localStorage.setItem('mustaz_user_profile_data', JSON.stringify(profile));
-  return { user: { email } };
+  return { user: { email }, requiresOtp: false };
 }
 
 /**
