@@ -83,8 +83,10 @@ async function initAdminDashboard() {
     const rootContainer = document.getElementById('adminRootContainer');
 
     function unlockAdminInterface() {
-      if (overlay) overlay.style.display = 'none';
-      if (rootContainer) rootContainer.style.display = 'block';
+      const ov = document.getElementById('adminSecurityOverlay');
+      if (ov) ov.remove();
+      const rc = document.getElementById('adminRootContainer');
+      if (rc) rc.style.display = 'block';
       const gateStyle = document.getElementById('adminSecurityGateStyle');
       if (gateStyle) gateStyle.remove();
     }
