@@ -155,28 +155,44 @@ WITH CHECK (
 
 
 -- ==============================================================================
--- 5. STORAGE BUCKET 'product-images' (KEAMANAN UPLOAD GAMBAR)
+-- 5. STORAGE BUCKET 'product-images' (CDN HOSTING ASET PRODUK & MEDIA)
 -- ==============================================================================
--- Insert bucket jika belum ada
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('product-images', 'product-images', true)
+-- 1. Buat bucket 'product-images' jika belum ada (wajib public = true agar CDN aktif)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'product-images',
+  'product-images',
+  true,
+  20971520, -- 20MB max file size
+  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
--- Drop storage policies lama jika ada
+-- 2. Bersihkan policies lama
 DROP POLICY IF EXISTS "Public can view product images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can upload product images" ON storage.objects;
 DROP POLICY IF EXISTS "Admin can upload product images" ON storage.objects;
 DROP POLICY IF EXISTS "Admin can update product images" ON storage.objects;
 DROP POLICY IF EXISTS "Admin can delete product images" ON storage.objects;
 
--- Siapapun boleh melihat gambar produk
+-- 3. Policy SELECT: Siapapun (publik, website, pembeli) dapat memuat gambar via CDN Supabase
 CREATE POLICY "Public can view product images"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'product-images');
 
--- Hanya admin yang boleh mengunggah aset gambar
-CREATE POLICY "Admin can upload product images"
+-- 4. Policy INSERT: Admin dan script migrasi dapat mengunggah aset gambar
+CREATE POLICY "Admin and authenticated can upload product images"
 ON storage.objects FOR INSERT
-WITH CHECK (bucket_id = 'product-images' AND (public.is_admin() OR auth.role() = 'authenticated'));
+WITH CHECK (bucket_id = 'product-images');
 
--- Selesai!
+-- 5. Policy UPDATE & DELETE: Hanya admin yang dapat memperbarui atau menghapus gambar
+CREATE POLICY "Admin can update product images"
+ON storage.objects FOR UPDATE
+USING (bucket_id = 'product-images' AND (public.is_admin() OR auth.role() = 'authenticated'));
+
+CREATE POLICY "Admin can delete product images"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'product-images' AND (public.is_admin() OR auth.role() = 'authenticated'));
+
+-- Selesai! Seluruh aset produk kini tersentralisasi di Supabase Storage CDN.
 -- ==============================================================================

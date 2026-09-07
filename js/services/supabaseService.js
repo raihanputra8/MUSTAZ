@@ -2,7 +2,7 @@
  * MUSTAZ CRAFT - Supabase Cloud Database & Storage Service Layer
  */
 
-import { CONFIG } from '../config.js';
+import { CONFIG, getProductImageUrl } from '../config.js';
 
 /**
  * Build dynamic headers with user session JWT if authenticated
@@ -66,7 +66,7 @@ export async function fetchCloudProducts() {
         originalPrice: p.original_price ? Number(p.original_price) : null,
         badge: p.badge || '',
         sub: p.sub || p.description || '',
-        image: p.image || p.image_url || 'assets/images/pet_visor_yellow_flame.png',
+        image: getProductImageUrl(p.image || p.image_url || 'pet_visor_yellow_flame.png'),
         stock: Number(p.stock) || 0
       }));
       localStorage.setItem('mustaz_catalog_products', JSON.stringify(mapped));
@@ -91,7 +91,7 @@ export async function createCloudProduct(product) {
       original_price: product.originalPrice ? Number(product.originalPrice) : null,
       badge: product.badge || null,
       sub: product.sub,
-      image: product.image,
+      image: getProductImageUrl(product.image),
       stock: Number(product.stock) || 0
     }];
 
@@ -118,7 +118,7 @@ export async function updateCloudProduct(id, updates) {
     if (updates.originalPrice !== undefined) payload.original_price = updates.originalPrice ? Number(updates.originalPrice) : null;
     if (updates.badge !== undefined) payload.badge = updates.badge;
     if (updates.sub !== undefined) payload.sub = updates.sub;
-    if (updates.image !== undefined) payload.image = updates.image;
+    if (updates.image !== undefined) payload.image = getProductImageUrl(updates.image);
     if (updates.stock !== undefined) payload.stock = Number(updates.stock);
 
     const safeId = encodeURIComponent(id.trim());

@@ -10,6 +10,7 @@ import {
   resetCatalogToDefault,
   formatRupiah
 } from './services/cartService.js';
+import { CONFIG, getProductImageUrl } from './config.js';
 
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
@@ -189,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const safeCategory = escapeHtml(part.category);
       const safeSub = escapeHtml(part.sub);
       const safeBadge = escapeHtml(part.badge);
-      const safeImage = part.image && (part.image.startsWith('http') || part.image.startsWith('assets/')) ? part.image : 'assets/images/Product1.png';
+      const safeImage = part.image ? getProductImageUrl(part.image) : getProductImageUrl('Product1.png');
 
       const badgeHtml = safeBadge
         ? `<span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">${safeBadge}</span>`
@@ -198,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
         <tr>
           <td>
-            <img src="${safeImage}" alt="${safeName}" style="width:52px;aspect-ratio:4/5;object-fit:cover;border:1px solid #333;background:#000;">
+            <img src="${safeImage}" alt="${safeName}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" style="width:52px;aspect-ratio:4/5;object-fit:cover;border:1px solid #333;background:#000;">
           </td>
           <td>
             <div style="font-family:var(--font-headline);font-size:1.1rem;color:#FFF;letter-spacing:0.02em;">${safeName}</div>
@@ -290,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('adminCategoryFilter')?.addEventListener('change', refreshAdminView);
 
   // ─── 4. ADD PRODUCT LOGIC & LIVE PREVIEW ─────────────────────────────────
-  let selectedAssetPath = 'assets/images/Product1.png';
+  let selectedAssetPath = getProductImageUrl('Product1.png');
 
   document.querySelectorAll('#assetPickerGrid .admin-asset-choice').forEach(choice => {
     choice.addEventListener('click', () => {
@@ -310,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       const first = document.querySelector('#assetPickerGrid .admin-asset-choice');
       first?.classList.add('selected');
-      selectedAssetPath = first?.dataset.asset || 'assets/images/Product1.png';
+      selectedAssetPath = first?.dataset.asset || getProductImageUrl('Product1.png');
     }
     updatePreview();
   });
@@ -373,7 +374,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (prevSub) prevSub.textContent = sub;
     if (prevPrice) prevPrice.textContent = formatRupiah(priceVal);
     if (prevStock) prevStock.textContent = 'STOCK: ' + stockVal;
-    if (prevImage) prevImage.src = selectedAssetPath;
+    if (prevImage) {
+      prevImage.src = selectedAssetPath;
+      prevImage.onerror = () => { prevImage.src = 'assets/images/Product1.png'; };
+    }
 
     const badgeEl = document.getElementById('prevBadge');
     if (badgeEl) {

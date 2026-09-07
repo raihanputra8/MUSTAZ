@@ -2,11 +2,11 @@
  * MUSTAZ Garage - Cart State & E-Commerce Data Service
  */
 
-import { CONFIG } from '../config.js';
+import { CONFIG, getProductImageUrl } from '../config.js';
 
 const CART_KEY = 'mustaz_cart_v2';
 
-// ─── Product Catalog Data ───────────────────────────────────────────────────
+// ─── Product Catalog Data (Hosted on Supabase Storage CDN) ───────────────────
 
 export const CHOPPERS_DATA = [
   {
@@ -14,7 +14,7 @@ export const CHOPPERS_DATA = [
     name: 'THE FLAME PILOT HELMET', sub: 'Open-Face Custom Lid + Studded Flame Leather Pet',
     price: 1850000, status: 'Available',
     specs: { Shell: 'Fiberglass Open Face', Pet: 'Hellfire Studded Leather', Snaps: 'Brass 3-Snap Universal', Finish: 'Matte Black Flame', Size: 'M / L / XL' },
-    image: 'assets/images/pet_visor_yellow_flame.png',
+    image: getProductImageUrl('pet_visor_yellow_flame.png'),
     fallback: 'assets/images/pet_visor_yellow_flame.png'
   },
   {
@@ -22,7 +22,7 @@ export const CHOPPERS_DATA = [
     name: 'CHECKER SPEED DEMON', sub: 'Full Moto Retro Shell + Monochrome Checker Peak',
     price: 2450000, status: 'In Shop',
     specs: { Shell: 'Reinforced Retro Full Moto', Pet: 'Checkered Duckbill Peak', Finish: 'Hand-Distressed Gloss', Interior: 'Antibacterial Foam', Size: 'All Sizes' },
-    image: 'assets/images/retro_checkered_helmet.png',
+    image: getProductImageUrl('retro_checkered_helmet.png'),
     fallback: 'assets/images/retro_checkered_helmet.png'
   },
   {
@@ -30,7 +30,7 @@ export const CHOPPERS_DATA = [
     name: 'MUSTAZ EVENT EDITION KIT', sub: 'Complete Rider Kit + Ziplock Packaging + Zine',
     price: 1200000, status: 'Limited Drop',
     specs: { Visor: 'Acid Spiked Acrylic Pet', Package: 'Heavy Duty Zip Pack', Gloves: 'Yellow Leather Gloves', Extra: 'Issue 04 Zine + Stickers', Batch: 'Series 01 Run' },
-    image: 'assets/images/mustaz_booth_event.png',
+    image: getProductImageUrl('mustaz_booth_event.png'),
     fallback: 'assets/images/mustaz_booth_event.png'
   }
 ];
@@ -40,49 +40,57 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-1', type: 'parts', category: 'Acrylic Pet',
     name: 'Y-TWO ROOF VISOR', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
     price: 350000, original_price: 450000, badge: 'BESTSELLER', stock: 12,
-    image: 'assets/images/Product1.png'
+    image: getProductImageUrl('Product1.png'),
+    fallback: 'assets/images/Product1.png'
   },
   {
     id: 'pet-2', type: 'parts', category: 'Leather Pet',
     name: 'STUDDED LID FLAME VISOR', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
     price: 380000, original_price: null, badge: 'HOT DROP', stock: 8,
-    image: 'assets/images/Product2.png'
+    image: getProductImageUrl('Product2.png'),
+    fallback: 'assets/images/Product2.png'
   },
   {
     id: 'pet-3', type: 'parts', category: 'Retro Visor',
     name: 'CHECKER RACER DUCKBILL', sub: 'Monochrome Checkered Motocross Visor // Chrome Snaps',
     price: 280000, original_price: 320000, badge: 'LIMITED', stock: 15,
-    image: 'assets/images/Product3.png'
+    image: getProductImageUrl('Product3.png'),
+    fallback: 'assets/images/Product3.png'
   },
   {
     id: 'pet-4', type: 'parts', category: 'Drop Sets',
     name: 'MUSTAZ OFFICIAL BUNDLE SET', sub: 'Pet Visor + Custom Packaging Bag + Zine + Sticker Pack',
     price: 450000, original_price: 520000, badge: 'BUNDLE', stock: 10,
-    image: 'assets/images/mustaz_booth_event.png'
+    image: getProductImageUrl('mustaz_booth_event.png'),
+    fallback: 'assets/images/mustaz_booth_event.png'
   },
   {
     id: 'pet-5', type: 'parts', category: 'Acrylic Pet',
     name: 'ACID YELLOW SPIKED PET', sub: 'Acid Yellow High-Voltage Acrylic // Punk Spike Hardware',
     price: 360000, original_price: null, badge: 'NEW', stock: 18,
-    image: 'assets/images/Product1.png'
+    image: getProductImageUrl('Product1.png'),
+    fallback: 'assets/images/Product1.png'
   },
   {
     id: 'pet-6', type: 'parts', category: 'Retro Visor',
     name: 'SMOKE TINT SHORT PEAK', sub: 'Dark Smoke Polycarbonate // Universal 3-Snap Fit',
     price: 220000, original_price: 270000, badge: 'SALE', stock: 24,
-    image: 'assets/images/Product2.png'
+    image: getProductImageUrl('Product2.png'),
+    fallback: 'assets/images/Product2.png'
   },
   {
     id: 'pet-7', type: 'parts', category: 'Leather Pet',
     name: 'VINTAGE HIGHWAY EAR GUARDS', sub: 'Vintage Leather Side Covers with Brass Rivets',
     price: 195000, original_price: null, badge: 'CORE', stock: 14,
-    image: 'assets/images/Product3.png'
+    image: getProductImageUrl('Product3.png'),
+    fallback: 'assets/images/Product3.png'
   },
   {
     id: 'pet-8', type: 'parts', category: 'Drop Sets',
     name: 'MUSTAZ EVENT EDITION PACK', sub: 'Special Event Pack // Limited Screenprinted Ziplock',
     price: 490000, original_price: 550000, badge: 'ARCHIVE', stock: 5,
-    image: 'assets/images/mustaz_booth_event.png'
+    image: getProductImageUrl('mustaz_booth_event.png'),
+    fallback: 'assets/images/mustaz_booth_event.png'
   }
 ];
 
@@ -95,7 +103,10 @@ export function getDynamicParts() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return parsed.map(p => ({
+            ...p,
+            image: getProductImageUrl(p.image)
+          }));
         }
       }
     }
