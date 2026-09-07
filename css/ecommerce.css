@@ -406,3 +406,17 @@
 .modal-body {
   padding: 28px;
 }
+
+/* ── STRICT ADMIN NAVIGATION VISIBILITY GUARDS ── */
+.nav-link-admin,
+.mobile-admin-link {
+  display: none !important;
+}
+
+.nav-link-admin.is-admin {
+  display: inline-block !important;
+}
+
+.mobile-admin-link.is-admin {
+  display: flex !important;
+}

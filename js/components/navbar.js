@@ -18,15 +18,27 @@ export function initNavbar() {
 
     const email = (profile.email || '').toLowerCase().trim();
     const isAdmin = isLoggedIn && (profile.role === 'admin' || email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com');
+    const onAdminPage = window.location.pathname.includes('admin.html') || window.location.pathname.endsWith('/admin');
 
-    // Update 'ADMIN' link in navbar: visible if admin, hidden for ordinary users
-    const adminNavLinks = document.querySelectorAll('.nav-link-admin, a[href="admin.html"].nav-link');
+    // Update 'ADMIN' link in navbar: STRICTLY visible only if admin, NEVER for ordinary users
+    const adminNavLinks = document.querySelectorAll('.nav-link-admin, a[href="admin.html"], a[href="/admin.html"], a[href="admin"], a[href="/admin"]');
     adminNavLinks.forEach(link => {
-      link.style.display = isAdmin ? 'inline-block' : 'none';
+      // Don't hide the nav link if we are actively inside admin.html dashboard
+      if (onAdminPage) {
+        link.style.display = 'inline-block';
+        return;
+      }
+      if (isAdmin) {
+        link.style.setProperty('display', 'inline-block', 'important');
+        link.classList.add('is-admin');
+      } else {
+        link.style.setProperty('display', 'none', 'important');
+        link.classList.remove('is-admin');
+      }
     });
 
     // Update Person Icon in navbar:
-    const personIcons = header.querySelectorAll('a[aria-label="Admin Dashboard"], a[aria-label="My Account"], a[title="Admin Dashboard"], a[title="My Account"]');
+    const personIcons = header.querySelectorAll('a[aria-label="Admin Dashboard"], a[aria-label="My Account"], a[title="Admin Dashboard"], a[title="My Account"], .nav-btn-icon[href*="admin"], .nav-btn-icon[href*="account"]');
     personIcons.forEach(icon => {
       if (isAdmin) {
         icon.setAttribute('href', 'admin.html');
@@ -87,10 +99,20 @@ export function initNavbar() {
     // Dynamic Auth area in Mobile Navigation Drawer
     const mobileDrawer = document.getElementById('mobileNavDrawer');
     if (mobileDrawer) {
-      let mobAdminLink = mobileDrawer.querySelector('.mobile-admin-link');
-      if (mobAdminLink) {
-        mobAdminLink.style.display = isAdmin ? 'flex' : 'none';
-      }
+      const mobAdminLinks = mobileDrawer.querySelectorAll('.mobile-admin-link, a[href="admin.html"], a[href="/admin.html"], a[href="admin"]');
+      mobAdminLinks.forEach(link => {
+        if (onAdminPage) {
+          link.style.display = 'flex';
+          return;
+        }
+        if (isAdmin) {
+          link.style.setProperty('display', 'flex', 'important');
+          link.classList.add('is-admin');
+        } else {
+          link.style.setProperty('display', 'none', 'important');
+          link.classList.remove('is-admin');
+        }
+      });
 
       let mobAuthArea = mobileDrawer.querySelector('.mobile-auth-area');
       if (!mobAuthArea) {

@@ -39,7 +39,7 @@
       <a href="index.html" class="nav-link">HOME</a>
       <a href="parts.html" class="nav-link">PRODUCT</a>
       <a href="kulture.html" class="nav-link">ABOUT</a>
-      <a href="admin.html" class="nav-link" style="color:var(--accent-yellow);font-weight:900;">ADMIN</a>
+      <a href="admin.html" class="nav-link nav-link-admin" style="display:none !important;color:var(--accent-yellow);font-weight:900;">ADMIN</a>
     </nav>
 
     <!-- Nav Controls (Search, Account, Cart, Mobile Menu) -->
@@ -122,7 +122,7 @@
                 </h1>
                 <span id="userRoleBadge" class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">MEMBER</span>
                 <span class="zine-tag-yellow" style="font-size:0.65rem;padding:2px 8px;">VERIFIED CREW</span>
-                <a href="admin.html" id="adminConsoleBtn" class="btn-brutal-yellow btn-brutal-sm" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:6px 14px;font-size:0.8rem;font-weight:900;">
+                <a href="admin.html" id="adminConsoleBtn" class="btn-brutal-yellow btn-brutal-sm" style="display:none;align-items:center;gap:6px;text-decoration:none;padding:6px 14px;font-size:0.8rem;font-weight:900;">
                   <span class="material-symbols-outlined" style="font-size:18px;">admin_panel_settings</span>
                   <span>ADMIN WORKSHOP ↗</span>
                 </a>
@@ -375,8 +375,12 @@
   import { saveCloudAccount, fetchCloudAccount } from './js/services/supabaseService.js';
   import { initAccountAuth } from './js/services/authService.js';
   import { getUserOrders, getUserWishlist, getUserAddresses, saveUserAddress, formatRupiah } from './js/services/cartService.js';
+  import { initNavbar } from './js/components/navbar.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
+    // 0. Synchronize navigation bar & logout state
+    try { initNavbar(); } catch {}
+
     // 0. Robust Auth Guard: handles Google OAuth tokens from URL hash & active sessions
     const isAuthenticated = await initAccountAuth();
     if (!isAuthenticated) {
@@ -473,18 +477,30 @@
       // Update Role Badge & Admin Button
       const roleBadge = document.getElementById('userRoleBadge');
       const adminBtn = document.getElementById('adminConsoleBtn');
-      if (data.role === 'admin') {
+      const email = (data.email || '').toLowerCase().trim();
+      const isAdmin = data.role === 'admin' || email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
+      const navAdminLinks = document.querySelectorAll('.nav-link-admin, a[href="admin.html"], a[href="/admin.html"], a[href="admin"]');
+
+      if (isAdmin) {
         if (roleBadge) {
           roleBadge.textContent = 'ADMIN WORKSHOP';
           roleBadge.className = 'zine-tag-yellow';
         }
         if (adminBtn) adminBtn.style.display = 'inline-flex';
+        navAdminLinks.forEach(l => {
+          l.style.setProperty('display', 'inline-block', 'important');
+          l.classList.add('is-admin');
+        });
       } else {
         if (roleBadge) {
           roleBadge.textContent = 'MEMBER';
           roleBadge.className = 'zine-tag-pink';
         }
         if (adminBtn) adminBtn.style.display = 'none';
+        navAdminLinks.forEach(l => {
+          l.style.setProperty('display', 'none', 'important');
+          l.classList.remove('is-admin');
+        });
       }
     }
 
