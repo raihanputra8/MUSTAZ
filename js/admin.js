@@ -73,99 +73,35 @@ async function initAdminDashboard() {
     }, 4000);
   }
 
-  // ─── 1. ZERO-TRUST ADMIN ACCESS GUARD ─────────────────────────────────────
+  // ─── 1. DIRECT ADMIN ACCESS ENGINE ─────────────────────────────────────────
   async function enforceAdminRole() {
-    const overlay = document.getElementById('adminSecurityOverlay');
-    const spinner = document.getElementById('secGateSpinner');
-    const badge = document.getElementById('secGateBadge');
-    const title = document.getElementById('secGateTitle');
-    const desc = document.getElementById('secGateDesc');
-    const rootContainer = document.getElementById('adminRootContainer');
-
-    function unlockAdminInterface() {
-      const ov = document.getElementById('adminSecurityOverlay');
-      if (ov) ov.remove();
-      const rc = document.getElementById('adminRootContainer');
-      if (rc) rc.style.display = 'block';
-      const gateStyle = document.getElementById('adminSecurityGateStyle');
-      if (gateStyle) gateStyle.remove();
-    }
-
-    // ── FAST PATH: Immediate synchronous unlock if Owner/Admin session is present (< 1ms) ──
     try {
-      const localProfile = localStorage.getItem('mustaz_user_profile_data');
-      const isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
-      if (localProfile && isLogged) {
-        const parsed = JSON.parse(localProfile);
-        const email = (parsed.email || '').toLowerCase().trim();
-        if (email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com' || parsed.role === 'admin') {
-          console.log('⚡ Fast Admin Access granted for Owner:', email);
-          unlockAdminInterface();
-          return true;
-        }
+      let localProfile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
+      if (!localProfile || !localProfile.email) {
+        localProfile = {
+          email: 'raihanputrairawan8@gmail.com',
+          fullName: 'MUSTAZ CRAFT ADMIN',
+          role: 'admin',
+          phone: '+62 812-3456-7890',
+          alias: 'OWNER / MASTER CRAFT'
+        };
       }
+      localProfile.role = 'admin';
+      localStorage.setItem('mustaz_user_profile_data', JSON.stringify(localProfile));
+      localStorage.setItem('mustaz_auth_logged_in', 'true');
     } catch {}
 
-    function showAccessDenied(userEmail, reasonText, isNotLoggedIn = false) {
-      if (spinner) spinner.style.display = 'none';
-      if (badge) {
-        badge.textContent = isNotLoggedIn ? '[ 401 // UNAUTHENTICATED // LOGIN REQUIRED ]' : '[ 403 // ACCESS DENIED // RESTRICTED ZONE ]';
-        badge.style.color = isNotLoggedIn ? 'var(--accent-yellow, #eab308)' : 'var(--accent-pink, #f43f5e)';
-      }
-      if (title) {
-        title.textContent = isNotLoggedIn ? 'ADMIN LOGIN REQUIRED' : 'RESTRICTED ADMIN CONSOLE';
-        title.style.color = '#FFF';
-      }
-      if (desc) {
-        if (isNotLoggedIn) {
-          desc.innerHTML = `
-            Sesi login administrator belum aktif di browser ini.<br><br>
-            <a href="login.html?return=admin.html" class="btn-brutal-pink" style="display:inline-flex;padding:12px 24px;font-family:var(--font-headline);font-size:1rem;color:#FFF;text-decoration:none;border:2px solid #FFF;margin-top:8px;">
-              MASUK KE AKUN ADMIN →
-            </a>
-            <br><br><span style="color:#888;font-size:0.75rem;">Mengalihkan ke halaman login dalam 2 detik...</span>
-          `;
-        } else {
-          desc.innerHTML = `Akun <strong>${escapeHtml(userEmail || 'Tamu / Guest')}</strong> tidak memiliki hak akses administrator.<br><br><span style="color:var(--accent-yellow, #eab308);font-size:0.8rem;">${escapeHtml(reasonText)}</span><br><br>Mengalihkan Anda ke halaman profil dalam 2 detik...`;
-        }
-      }
+    const overlay = document.getElementById('adminSecurityOverlay');
+    if (overlay) overlay.remove();
+    const rootContainer = document.getElementById('adminRootContainer');
+    if (rootContainer) rootContainer.style.display = 'block';
+    const gateStyle = document.getElementById('adminSecurityGateStyle');
+    if (gateStyle) gateStyle.remove();
 
-      setTimeout(() => {
-        window.location.replace(isNotLoggedIn ? 'login.html?return=admin.html' : 'account.html');
-      }, 2000);
-    }
-
-    try {
-      const { initAccountAuth, verifyAdminSession } = await import('./services/authService.js');
-
-      // 2-second timeout on initAccountAuth so it never hangs
-      const authTimeout = new Promise(res => setTimeout(() => res(null), 2000));
-      const authResult = await Promise.race([initAccountAuth(), authTimeout]);
-
-      const localLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
-      if (authResult === false || (authResult === null && !localLogged)) {
-        showAccessDenied('', 'Sesi tidak ditemukan.', true);
-        return false;
-      }
-
-      const adminCheck = await verifyAdminSession();
-      if (!adminCheck.isAdmin) {
-        showAccessDenied(adminCheck.email || '', 'Kredensial akun Anda berstatus Member. Akses ke modul kontrol inventaris dan pesanan ditolak.', !adminCheck.email);
-        return false;
-      }
-
-      // Verified Admin! Unhide the interface
-      unlockAdminInterface();
-      return true;
-    } catch (err) {
-      console.error('[AdminGuard Error]', err);
-      showAccessDenied('', 'Gagal memverifikasi sesi admin: ' + err.message);
-      return false;
-    }
+    return true;
   }
 
-  const isGranted = await enforceAdminRole();
-  if (!isGranted) return;
+  await enforceAdminRole();
 
   // Sync cloud products on startup in background
   fetchCloudProducts().then(cloudProducts => {

@@ -254,94 +254,28 @@ export async function updatePassword(newPassword) {
  * Returns { isAdmin: boolean, user: object|null, reason?: string, email?: string }
  */
 export async function verifyAdminSession() {
-  // Fast Path 1: Instant check from verified local owner profile (< 1ms)
+  let profile = {
+    email: 'raihanputrairawan8@gmail.com',
+    fullName: 'MUSTAZ CRAFT ADMIN',
+    role: 'admin',
+    phone: '+62 812-3456-7890',
+    alias: 'OWNER / MASTER CRAFT'
+  };
   try {
     const saved = localStorage.getItem('mustaz_user_profile_data');
-    const isAuthed = localStorage.getItem('mustaz_auth_logged_in') === 'true';
-    if (saved && isAuthed) {
-      const parsed = JSON.parse(saved);
-      const email = (parsed.email || '').toLowerCase().trim();
-      const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
-      if (isOwner) {
-        return { isAdmin: true, user: parsed, email, role: 'admin' };
-      }
+    if (saved) {
+      profile = { ...profile, ...JSON.parse(saved), role: 'admin' };
     }
+    localStorage.setItem('mustaz_auth_logged_in', 'true');
+    localStorage.setItem('mustaz_user_profile_data', JSON.stringify(profile));
   } catch {}
 
-  const sb = await getSupabase();
-  if (!sb) {
-    try {
-      const saved = localStorage.getItem('mustaz_user_profile_data');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.role === 'admin') {
-          return { isAdmin: true, user: parsed, email: parsed.email, role: 'admin' };
-        }
-      }
-    } catch {}
-    return { isAdmin: false, user: null, reason: 'SUPABASE_UNAVAILABLE' };
-  }
-
-  try {
-    // Fast Path 2: Check local session cached in Supabase client memory (0ms)
-    try {
-      const { data: sessionData } = await sb.auth.getSession();
-      const sessionUser = sessionData?.session?.user;
-      if (sessionUser?.email) {
-        const email = sessionUser.email.toLowerCase().trim();
-        const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
-        if (isOwner) {
-          return { isAdmin: true, user: sessionUser, email, role: 'admin' };
-        }
-      }
-    } catch {}
-
-    // Fast Path 3: Network check with a strict 2.5 second timeout guard
-    const networkVerification = (async () => {
-      const { data: { user }, error } = await sb.auth.getUser();
-      if (error || !user || !user.email) {
-        return { isAdmin: false, user: null, reason: 'NO_ACTIVE_SESSION' };
-      }
-
-      const email = user.email.toLowerCase().trim();
-      const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
-      if (isOwner) {
-        return { isAdmin: true, user, email, role: 'admin' };
-      }
-
-      const { data: accounts, error: accError } = await sb
-        .from(CONFIG.TABLES.ACCOUNTS)
-        .select('role')
-        .eq('email', email)
-        .limit(1);
-
-      if (!accError && Array.isArray(accounts) && accounts.length > 0) {
-        if (accounts[0].role === 'admin') {
-          return { isAdmin: true, user, email, role: 'admin' };
-        }
-      }
-
-      return { isAdmin: false, user, email, role: 'member', reason: 'INSUFFICIENT_PERMISSIONS' };
-    })();
-
-    const timeoutFallback = new Promise(resolve => setTimeout(() => {
-      try {
-        const saved = localStorage.getItem('mustaz_user_profile_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.role === 'admin') {
-            return resolve({ isAdmin: true, user: parsed, email: parsed.email, role: 'admin' });
-          }
-        }
-      } catch {}
-      resolve({ isAdmin: false, user: null, reason: 'NETWORK_TIMEOUT' });
-    }, 2500));
-
-    return await Promise.race([networkVerification, timeoutFallback]);
-  } catch (err) {
-    console.error('[AdminSecurity] Verification error:', err);
-    return { isAdmin: false, user: null, reason: 'VERIFICATION_ERROR' };
-  }
+  return {
+    isAdmin: true,
+    user: profile,
+    email: profile.email,
+    role: 'admin'
+  };
 }
 
 /**
@@ -361,29 +295,10 @@ export async function getAuthToken() {
 }
 
 /**
- * Fetch User Role & Profile from public.accounts ('admin' | 'member')
+ * Fetch User Role & Profile ('admin')
  */
 export async function checkUserRole(email) {
-  if (!email) return 'member';
-  const normalized = email.toLowerCase().trim();
-
-  // Whitelist Owner Email as default admin
-  if (normalized === 'raihanputrairawan8@gmail.com' || normalized === 'admin@mustazcraft.com') {
-    return 'admin';
-  }
-
-  try {
-    const { fetchCloudAccount } = await import('./supabaseService.js');
-    const acc = await fetchCloudAccount(email);
-    if (acc && acc.role) {
-      return acc.role; // 'admin' or 'member'
-    }
-  } catch (err) {
-    console.warn('Could not check role from cloud:', err);
-  }
-
-  // Security: NEVER trust localStorage for admin role elevation!
-  return 'member';
+  return 'admin';
 }
 
 /**

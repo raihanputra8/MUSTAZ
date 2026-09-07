@@ -8,29 +8,46 @@ export function initNavbar() {
   const header = document.querySelector('header');
   if (!header) return;
 
-  // 1. Synchronize Authentication Status across navigation & footer
+  // 1. Direct Single-Role: Always Admin
+  try {
+    let localProfile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
+    if (!localProfile || !localProfile.email) {
+      localProfile = {
+        email: 'raihanputrairawan8@gmail.com',
+        fullName: 'MUSTAZ CRAFT ADMIN',
+        role: 'admin',
+        phone: '+62 812-3456-7890',
+        alias: 'OWNER / MASTER CRAFT'
+      };
+    }
+    localProfile.role = 'admin';
+    localStorage.setItem('mustaz_user_profile_data', JSON.stringify(localProfile));
+    localStorage.setItem('mustaz_auth_logged_in', 'true');
+  } catch {}
+
+  // 2. Synchronize Admin links across navigation & footer
   function syncAccountLinks() {
-    const isLoggedIn = localStorage.getItem('mustaz_auth_logged_in') === 'true';
     const accountLinks = document.querySelectorAll('a[href="account.html"], a[href="login.html"]');
     accountLinks.forEach(link => {
-      if (!isLoggedIn) {
-        link.setAttribute('href', 'login.html');
-      } else {
-        link.setAttribute('href', 'account.html');
-      }
+      link.setAttribute('href', 'admin.html');
+      link.setAttribute('title', 'Admin Dashboard');
     });
 
     const signInBtn = document.getElementById('headerSignInBtn');
     if (signInBtn) {
-      signInBtn.textContent = isLoggedIn ? 'ACCOUNT' : 'SIGN IN';
-      signInBtn.setAttribute('href', isLoggedIn ? 'account.html' : 'login.html');
+      signInBtn.textContent = 'ADMIN';
+      signInBtn.setAttribute('href', 'admin.html');
     }
+
+    const personIcons = header.querySelectorAll('a[aria-label="My Account"], a[title="My Account"]');
+    personIcons.forEach(icon => {
+      icon.setAttribute('href', 'admin.html');
+      icon.setAttribute('aria-label', 'Admin Dashboard');
+      icon.setAttribute('title', 'Admin Dashboard');
+    });
   }
 
   syncAccountLinks();
-
-  // Listen for logout event to immediately switch links to login.html
-  window.addEventListener('mustaz:logout', syncAccountLinks);
 
   // Determine active route
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';

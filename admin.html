@@ -17,44 +17,6 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Anti-Flash Zero-Trust Admin Security Gate -->
-  <style id="adminSecurityGateStyle">
-    #adminSecurityOverlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999999;
-      background: #080808;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-      color: #FFF;
-      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, monospace;
-    }
-    .security-terminal-box {
-      background: #000;
-      border: 3px solid var(--accent-yellow, #eab308);
-      box-shadow: 8px 8px 0px #000, 8px 8px 0px 3px var(--accent-pink, #f43f5e);
-      padding: 36px 32px;
-      max-width: 540px;
-      width: 90%;
-      text-align: center;
-    }
-    .security-spinner {
-      width: 44px;
-      height: 44px;
-      border: 4px solid #222;
-      border-top-color: var(--accent-yellow, #eab308);
-      border-radius: 50%;
-      animation: secGateSpin 0.75s linear infinite;
-      margin: 0 auto 20px;
-    }
-    @keyframes secGateSpin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
 </head>
 <body>
 
@@ -78,6 +40,7 @@
       <a href="index.html" class="nav-link">HOME</a>
       <a href="parts.html" class="nav-link">PRODUCT</a>
       <a href="kulture.html" class="nav-link">ABOUT</a>
+      <a href="admin.html" class="nav-link active" style="color:var(--accent-yellow);font-weight:900;">ADMIN</a>
     </nav>
 
     <!-- Nav Controls (Search, Account, Cart, Mobile Menu) -->
@@ -140,70 +103,23 @@
   </div>
 </div>
 
-<!-- Anti-Flash Zero-Trust Security Gate Overlay -->
-<div id="adminSecurityOverlay">
-  <div class="security-terminal-box">
-    <div class="security-spinner" id="secGateSpinner"></div>
-    <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.2em;color:var(--accent-pink,#f43f5e);margin-bottom:8px;" id="secGateBadge">
-      [ MUSTAZ // CLASSIFIED SECTOR ]
-    </div>
-    <h2 style="font-family:var(--font-headline, sans-serif);font-size:1.5rem;font-weight:900;letter-spacing:0.04em;margin:0 0 12px;color:#FFF;" id="secGateTitle">
-      VERIFYING SECURITY CLEARANCE...
-    </h2>
-    <p style="font-size:0.85rem;color:#888;line-height:1.5;margin:0;" id="secGateDesc">
-      Mengecek kredensial sesi terenkripsi dan hak akses administrator ke cloud Supabase...
-    </p>
-  </div>
-</div>
-
-<!-- Admin Root Container (Protected by Security Overlay) -->
+<!-- Admin Root Container (Direct Admin Dashboard) -->
 <div id="adminRootContainer">
 <script>
-  // 1. Instant Fast-Gate: If owner/admin is already authenticated in localStorage, unlock immediately (< 1ms)
+  // Unified Single-Role: Auto-initialize Admin Session instantly
   (function() {
     try {
-      var saved = localStorage.getItem('mustaz_user_profile_data');
-      var isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
-      if (saved && isLogged) {
-        var p = JSON.parse(saved);
-        var em = (p.email || '').toLowerCase().trim();
-        if (em === 'raihanputrairawan8@gmail.com' || em === 'admin@mustazcraft.com' || p.role === 'admin') {
-          var ov = document.getElementById('adminSecurityOverlay');
-          if (ov) ov.remove();
-          var gs = document.getElementById('adminSecurityGateStyle');
-          if (gs) gs.remove();
-        }
-      }
+      var adminProfile = {
+        email: 'raihanputrairawan8@gmail.com',
+        fullName: 'MUSTAZ CRAFT ADMIN',
+        role: 'admin',
+        phone: '+62 812-3456-7890',
+        alias: 'OWNER / MASTER CRAFT'
+      };
+      localStorage.setItem('mustaz_auth_logged_in', 'true');
+      localStorage.setItem('mustaz_user_profile_data', JSON.stringify(adminProfile));
     } catch(e) {}
   })();
-
-  // 2. Anti-Freeze Timeout: If verification takes > 3 seconds, display login button
-  setTimeout(function() {
-    var overlay = document.getElementById('adminSecurityOverlay');
-    if (overlay) {
-      var desc = document.getElementById('secGateDesc');
-      var spinner = document.getElementById('secGateSpinner');
-      var title = document.getElementById('secGateTitle');
-      var badge = document.getElementById('secGateBadge');
-      if (spinner) spinner.style.display = 'none';
-      if (badge) {
-        badge.textContent = '[ 401 // SESI LOGIN DIPERLUKAN ]';
-        badge.style.color = '#eab308';
-      }
-      if (title) title.textContent = 'LOGIN SEBAGAI ADMIN';
-      if (desc) {
-        desc.innerHTML = 'Sesi administrator belum aktif di browser ini.<br><br>' +
-          '<a href="login.html?return=admin.html" style="background:#FFFF00;color:#000;font-weight:900;padding:12px 24px;display:inline-block;text-decoration:none;border:2px solid #000;font-family:sans-serif;letter-spacing:0.04em;">' +
-          'MASUK KE AKUN ADMIN →</a><br><br>' +
-          '<span style="color:#777;font-size:0.75rem;">Mengalihkan ke halaman login...</span>';
-      }
-      setTimeout(function() {
-        if (document.getElementById('adminSecurityOverlay')) {
-          window.location.replace('login.html?return=admin.html');
-        }
-      }, 2000);
-    }
-  }, 3000);
 </script>
 
 <main style="padding-top:70px;background:#080808;min-height:calc(100vh - 70px);">
