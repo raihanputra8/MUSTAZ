@@ -155,7 +155,7 @@
 .nav-cart-btn {
   background: var(--accent-pink);
   border: 2px solid #000000;
-  color: #000000;
+  color: #FFFFFF;
   height: 40px;
   padding: 0 14px;
   display: flex;
@@ -173,11 +173,16 @@
 
 .nav-cart-btn:hover {
   background: var(--accent-yellow);
+  color: #000000;
   box-shadow: 3px 3px 0px var(--accent-pink);
 }
 
 .nav-cart-btn .material-symbols-outlined {
   font-size: 20px;
+  color: #FFFFFF;
+}
+
+.nav-cart-btn:hover .material-symbols-outlined {
   color: #000000;
 }
 
@@ -201,11 +206,11 @@
   line-height: 1;
 }
 
-/* Pink Sign In Nav Button */
+/* Purple Sign In Nav Button */
 .nav-btn-pink {
   background: var(--accent-pink);
   border: 2px solid #000000;
-  color: #000000;
+  color: #FFFFFF;
   height: 40px;
   padding: 0 16px;
   display: inline-flex;
@@ -465,7 +470,7 @@
 
 .footer-white-divider {
   border: none;
-  border-top: 2px solid #A00078;
+  border-top: 2px solid var(--accent-pink);
   margin: 28px 0 16px;
   opacity: 1;
 }

@@ -19,7 +19,7 @@
 
 /* ── INDUSTRIAL METAL CHAIN / DOTTED DIVIDER ── */
 .metal-chain-divider {
-  background-image: radial-gradient(circle, #FF008C 2px, transparent 2.5px);
+  background-image: radial-gradient(circle, var(--accent-pink) 2px, transparent 2.5px);
   background-size: 12px 12px;
   height: 2px;
   width: 100%;
@@ -43,7 +43,7 @@
   justify-content: center;
   gap: 10px;
   background: var(--accent-pink);
-  color: #000000;
+  color: #FFFFFF;
   font-family: var(--font-headline);
   font-size: 1.15rem;
   letter-spacing: 0.08em;
@@ -57,7 +57,7 @@
 }
 
 .btn-brutal-pink:hover {
-  background: #FFFFFF;
+  background: var(--accent-yellow);
   color: #000000;
   box-shadow: 4px 4px 0px var(--accent-pink);
   transform: translate(-2px, -2px);
@@ -156,7 +156,7 @@
 .zine-tag-pink {
   display: inline-block;
   background: var(--accent-pink);
-  color: #000000;
+  color: #FFFFFF;
   font-family: var(--font-mono-sub);
   font-weight: 800;
   font-size: 0.75rem;
@@ -789,7 +789,7 @@
 
 .flash-sale-badge {
   background: var(--accent-pink);
-  color: #000000;
+  color: #FFFFFF;
   font-family: var(--font-headline);
   font-size: 1.1rem;
   font-weight: 900;

@@ -15,7 +15,7 @@ function getCartDrawerHTML() {
       <div class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Shopping Cart">
         <div class="cart-header">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div style="background:#FF008C;color:#000;font-family:var(--font-headline);font-weight:900;padding:2px 8px;font-size:0.85rem;border:1px solid #000;">GARAGE</div>
+            <div style="background:var(--accent-pink);color:#FFF;font-family:var(--font-headline);font-weight:900;padding:2px 8px;font-size:0.85rem;border:1px solid #000;">GARAGE</div>
             <h3>YOUR ARSENAL</h3>
           </div>
           <button class="cart-close-btn" id="cartCloseBtn" aria-label="Close cart">
@@ -86,7 +86,7 @@ function getCheckoutModalHTML() {
                 <option value="Direct WhatsApp Negotiation">Direct WhatsApp Negotiation</option>
               </select>
             </div>
-            <div id="checkoutError" style="display:none;color:#FF008C;font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:12px;background:rgba(255,0,140,0.1);border:1px solid #FF008C;"></div>
+            <div id="checkoutError" style="display:none;color:var(--accent-pink);font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:12px;background:rgba(109,40,217,0.1);border:1px solid var(--accent-pink);"></div>
             <button type="submit" id="checkoutSubmitBtn" class="btn-brutal-pink" style="width:100%;font-size:1.15rem;padding:16px;">
               CONFIRM ORDER VIA WHATSAPP →
             </button>
@@ -199,18 +199,18 @@ function renderCheckoutSummary() {
   const total = getCartTotal();
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #282828;padding-bottom:8px;margin-bottom:12px;">
-      <span style="font-family:var(--font-headline);font-size:1rem;color:#FF008C;text-transform:uppercase;">CARGO INVENTORY</span>
+      <span style="font-family:var(--font-headline);font-size:1rem;color:var(--accent-pink);text-transform:uppercase;">CARGO INVENTORY</span>
       <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">${items.length} ITEM(S)</span>
     </div>
     ${items.map(i => `
       <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#F2F0E8;margin-bottom:8px;">
         <span>${i.name} × ${i.quantity}</span>
-        <span style="color:#FF008C;font-weight:700;">${formatRupiah(i.price * i.quantity)}</span>
+        <span style="color:var(--accent-pink);font-weight:700;">${formatRupiah(i.price * i.quantity)}</span>
       </div>
     `).join('')}
-    <div style="border-top:2px solid #FF008C;margin-top:14px;padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="border-top:2px solid var(--accent-pink);margin-top:14px;padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
       <span style="font-family:var(--font-headline);font-weight:900;font-size:1.1rem;text-transform:uppercase;">TOTAL MANIFEST</span>
-      <span style="font-family:var(--font-headline);font-weight:900;color:#FF008C;font-size:1.6rem;">${formatRupiah(total)}</span>
+      <span style="font-family:var(--font-headline);font-weight:900;color:var(--accent-pink);font-size:1.6rem;">${formatRupiah(total)}</span>
     </div>
   `;
 }

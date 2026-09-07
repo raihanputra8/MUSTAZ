@@ -15,8 +15,8 @@ function ensureProductModal() {
   modal.className = 'modal-backdrop';
   modal.id = 'productDetailModal';
   modal.innerHTML = `
-    <div class="modal-box" style="max-width:860px;background:#0d0d0d;border:3px solid #FFFFFF;box-shadow:12px 12px 0px #FF008C;">
-      <div class="modal-header" style="background:#000;border-bottom:3px solid #FF008C;">
+    <div class="modal-box" style="max-width:860px;background:#0d0d0d;border:3px solid #FFFFFF;box-shadow:12px 12px 0px var(--accent-pink);">
+      <div class="modal-header" style="background:#000;border-bottom:3px solid var(--accent-pink);">
         <div style="display:flex;align-items:center;gap:12px;">
           <span class="zine-tag-pink" id="modalSku">SKU_001</span>
           <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;letter-spacing:0.12em;" id="modalCategory">PARTS ARCHIVE</span>
@@ -69,7 +69,7 @@ export function openProductDetail(product) {
       <!-- RIGHT: SPECIFICATIONS & ADD TO CART -->
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div>
-          <span style="font-family:var(--font-mono-sub);font-size:0.75rem;letter-spacing:0.2em;color:#FF008C;text-transform:uppercase;font-weight:700;">
+          <span style="font-family:var(--font-mono-sub);font-size:0.75rem;letter-spacing:0.2em;color:var(--accent-pink);text-transform:uppercase;font-weight:700;">
             ${product.category || 'TECHNICAL HARDWARE'}
           </span>
           <h2 style="font-family:var(--font-headline);font-size:clamp(2rem, 3.5vw, 2.8rem);color:#FFF;line-height:0.92;margin:6px 0 8px;">
@@ -81,7 +81,7 @@ export function openProductDetail(product) {
         </div>
 
         <div style="display:flex;align-items:baseline;gap:12px;padding:12px 0;border-top:1px dashed #333;border-bottom:1px dashed #333;">
-          <span style="font-family:var(--font-headline);font-size:2.2rem;color:#FF008C;font-weight:900;">
+          <span style="font-family:var(--font-headline);font-size:2.2rem;color:var(--accent-pink);font-weight:900;">
             ${formatRupiah(product.price)}
           </span>
           ${product.original_price ? `<span style="text-decoration:line-through;color:#666;font-size:1rem;font-family:var(--font-mono-sub);">${formatRupiah(product.original_price)}</span>` : ''}
@@ -89,7 +89,7 @@ export function openProductDetail(product) {
 
         <!-- SPECIFICATIONS TABLE -->
         <div style="background:#141414;border:1px solid #282828;padding:16px;">
-          <div style="font-family:var(--font-mono-sub);font-size:0.7rem;letter-spacing:0.18em;color:#FF008C;text-transform:uppercase;font-weight:800;margin-bottom:10px;">
+          <div style="font-family:var(--font-mono-sub);font-size:0.7rem;letter-spacing:0.18em;color:var(--accent-pink);text-transform:uppercase;font-weight:800;margin-bottom:10px;">
             TECHNICAL SPECIFICATIONS
           </div>
           ${isChopper && product.specs ? Object.entries(product.specs).map(([k, v]) => `
@@ -112,7 +112,7 @@ export function openProductDetail(product) {
             </div>
             <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:6px 0;">
               <span style="color:#888;font-family:var(--font-mono-sub);">STOCK STATUS</span>
-              <span style="color:${(product.stock || 10) <= 5 ? '#FF008C' : '#4ADE80'};font-weight:700;">
+              <span style="color:${(product.stock || 10) <= 5 ? 'var(--accent-pink)' : '#4ADE80'};font-weight:700;">
                 ${(product.stock || 10) <= 5 ? `CRITICAL - ${(product.stock || 5)} REMAINING` : `VERIFIED AVAILABLE (${product.stock || 10})`}
               </span>
             </div>
@@ -166,7 +166,7 @@ function renderParts(data) {
   if (data.length === 0) {
     grid.innerHTML = `
       <div style="grid-column:1/-1;text-align:center;padding:80px 20px;background:#101010;border:2px dashed #333;">
-        <div style="font-size:3rem;margin-bottom:16px;color:#FF008C;">⚡</div>
+        <div style="font-size:3rem;margin-bottom:16px;color:var(--accent-pink);">⚡</div>
         <p style="font-family:var(--font-headline);font-size:1.8rem;color:#FFF;text-transform:uppercase;margin:0 0 8px;">NO HARDWARE MATCHED</p>
         <p style="font-size:0.9rem;color:#888;">Try selecting ALL SCRAP or adjusting your search keyword.</p>
       </div>
@@ -214,10 +214,10 @@ function renderParts(data) {
 
             <!-- Price & Stock -->
             <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed #000;padding-top:10px;margin-top:auto;margin-bottom:14px;">
-              <span style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:#FF008C;">
+              <span style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:var(--accent-pink);">
                 ${formatRupiah(part.price)}
               </span>
-              <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:${part.stock <= 5 ? '#FF008C' : '#333'};">
+              <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:${part.stock <= 5 ? 'var(--accent-pink)' : '#333'};">
                 ${part.stock <= 5 ? `⚠️ ${part.stock} REMAINING` : `IN STOCK (${part.stock})`}
               </span>
             </div>
@@ -334,7 +334,7 @@ function renderChoppers(data) {
   if (data.length === 0) {
     grid.innerHTML = `
       <div style="grid-column:1/-1;text-align:center;padding:80px 20px;background:#101010;border:2px dashed #333;">
-        <div style="font-size:3rem;margin-bottom:16px;color:#FF008C;">🏍️</div>
+        <div style="font-size:3rem;margin-bottom:16px;color:var(--accent-pink);">🏍️</div>
         <p style="font-family:var(--font-headline);font-size:1.8rem;color:#FFF;text-transform:uppercase;">NO MACHINES FOUND</p>
         <p style="font-size:0.9rem;color:#888;">Try selecting ALL MACHINES or clearing the search query.</p>
       </div>
@@ -344,7 +344,7 @@ function renderChoppers(data) {
 
   grid.innerHTML = data.map((chop, index) => {
     const isSold = chop.status === 'Sold';
-    const statusBg = isSold ? 'background:#333;color:#999;' : chop.status === 'In Shop' ? 'background:#FF008C;color:#000;' : 'background:#FFF;color:#000;';
+    const statusBg = isSold ? 'background:#333;color:#999;' : chop.status === 'In Shop' ? 'background:var(--accent-pink);color:#FFF;' : 'background:#FFF;color:#000;';
     const tiltStyle = index % 2 === 1 ? 'transform: translateY(12px);' : '';
 
     return `
@@ -382,7 +382,7 @@ function renderChoppers(data) {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:18px;">
             ${Object.entries(chop.specs).slice(0, 4).map(([k, v]) => `
               <div style="background:#000;color:#FFF;padding:6px 10px;border:1px solid #222;">
-                <span style="display:block;font-family:var(--font-mono-sub);font-size:0.62rem;color:#FF008C;letter-spacing:0.1em;text-transform:uppercase;">${k}</span>
+                <span style="display:block;font-family:var(--font-mono-sub);font-size:0.62rem;color:var(--accent-pink);letter-spacing:0.1em;text-transform:uppercase;">${k}</span>
                 <span style="font-family:var(--font-headline);font-size:0.88rem;color:#FFF;letter-spacing:0.04em;text-transform:uppercase;">${v}</span>
               </div>
             `).join('')}
@@ -392,7 +392,7 @@ function renderChoppers(data) {
           <div style="display:flex;align-items:center;justify-content:space-between;border-top:2px dashed #000;padding-top:14px;margin-top:auto;">
             <div>
               <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:#777;letter-spacing:0.1em;">PRICE PROTOCOL</span>
-              <span style="font-family:var(--font-headline);font-size:1.4rem;font-weight:900;color:#FF008C;">
+              <span style="font-family:var(--font-headline);font-size:1.4rem;font-weight:900;color:var(--accent-pink);">
                 ${formatRupiah(chop.price)}
               </span>
             </div>
