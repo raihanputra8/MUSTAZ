@@ -86,7 +86,7 @@ function getCheckoutModalHTML() {
                 <option value="Direct WhatsApp Negotiation">Direct WhatsApp Negotiation</option>
               </select>
             </div>
-            <div id="checkoutError" style="display:none;color:var(--accent-pink);font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:12px;background:rgba(109,40,217,0.1);border:1px solid var(--accent-pink);"></div>
+            <div id="checkoutError" style="display:none;color:var(--accent-pink);font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:12px;background:rgba(160,0,120,0.1);border:1px solid var(--accent-pink);"></div>
             <button type="submit" id="checkoutSubmitBtn" class="btn-brutal-pink" style="width:100%;font-size:1.15rem;padding:16px;">
               CONFIRM ORDER VIA WHATSAPP →
             </button>
