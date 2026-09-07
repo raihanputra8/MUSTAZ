@@ -341,9 +341,12 @@
 }
 
 .footer-manifesto {
-  padding: 84px 24px 110px;
-  background: linear-gradient(180deg, rgba(5, 5, 5, 0.5) 0%, rgba(5, 5, 5, 0.1) 60%, rgba(255, 255, 255, 0) 85%),
-              url('../assets/images/bg_footer_torn_paper.jpg') center bottom / cover no-repeat;
+  padding: 100px 24px 130px;
+  background-color: var(--bg-deep);
+  background-image: url('../assets/images/bg_footer_torn_paper.jpg');
+  background-position: center bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
   border-bottom: none;
   text-align: center;
   position: relative;
@@ -682,4 +685,11 @@
     padding: 28px 16px 50px;
   }
 }
+
+@media (max-width: 768px) {
+  .footer-manifesto {
+    padding: 70px 16px 110px;
+  }
+}
+
 
