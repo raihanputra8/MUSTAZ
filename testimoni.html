@@ -16,6 +16,11 @@
   
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Redirect legacy testimoni page to integrated About page section -->
+  <script>
+    window.location.replace("kulture.html#testimoni");
+  </script>
 </head>
 <body>
 
@@ -38,8 +43,6 @@
     <nav class="nav-menu">
       <a href="index.html" class="nav-link">HOME</a>
       <a href="parts.html" class="nav-link">PRODUCT</a>
-      <a href="testimoni.html" class="nav-link active">TESTIMONI</a>
-      <a href="account.html" class="nav-link">ACCOUNT</a>
       <a href="kulture.html" class="nav-link">ABOUT</a>
     </nav>
 
@@ -77,6 +80,7 @@
     <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">ISSUE 04</span>
   </div>
   
+  
   <a href="index.html" class="mobile-nav-link">
     HOME
     <span class="material-symbols-outlined">arrow_forward</span>
@@ -84,16 +88,6 @@
 
   <a href="parts.html" class="mobile-nav-link">
     PRODUCT
-    <span class="material-symbols-outlined">arrow_forward</span>
-  </a>
-
-  <a href="testimoni.html" class="mobile-nav-link active">
-    TESTIMONI
-    <span class="material-symbols-outlined">arrow_forward</span>
-  </a>
-
-  <a href="account.html" class="mobile-nav-link">
-    ACCOUNT
     <span class="material-symbols-outlined">arrow_forward</span>
   </a>
 
@@ -370,7 +364,7 @@
         <h4>GARASI</h4>
         <div class="footer-white-links">
           <a href="parts.html" class="footer-white-link">KATALOG PET HELM</a>
-          <a href="testimoni.html" class="footer-white-link">TESTIMONI RIDERS</a>
+          <a href="kulture.html#testimoni" class="footer-white-link">TESTIMONI RIDERS</a>
           <a href="kulture.html" class="footer-white-link">ABOUT MUSTAZ</a>
           <a href="account.html" class="footer-white-link">STATUS PESANAN</a>
         </div>
