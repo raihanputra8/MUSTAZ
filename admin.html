@@ -159,6 +159,54 @@
   </div>
 </div>
 
+<script>
+  // 1. Instant Fast-Gate: If owner/admin is already authenticated in localStorage, unlock immediately (< 1ms)
+  (function() {
+    try {
+      var saved = localStorage.getItem('mustaz_user_profile_data');
+      var isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+      if (saved && isLogged) {
+        var p = JSON.parse(saved);
+        var em = (p.email || '').toLowerCase().trim();
+        if (em === 'raihanputrairawan8@gmail.com' || em === 'admin@mustazcraft.com' || p.role === 'admin') {
+          var ov = document.getElementById('adminSecurityOverlay');
+          var rc = document.getElementById('adminRootContainer');
+          var gs = document.getElementById('adminSecurityGateStyle');
+          if (ov) ov.style.display = 'none';
+          if (rc) rc.style.display = 'block';
+          if (gs) gs.remove();
+        }
+      }
+    } catch(e) {}
+  })();
+
+  // 2. Anti-Freeze Timeout: If verification takes > 2.5 seconds, display login button & redirect
+  setTimeout(function() {
+    var overlay = document.getElementById('adminSecurityOverlay');
+    var desc = document.getElementById('secGateDesc');
+    var spinner = document.getElementById('secGateSpinner');
+    var title = document.getElementById('secGateTitle');
+    var badge = document.getElementById('secGateBadge');
+    if (overlay && overlay.style.display !== 'none' && desc) {
+      if (spinner) spinner.style.display = 'none';
+      if (badge) {
+        badge.textContent = '[ 401 // SESI LOGIN DIPERLUKAN ]';
+        badge.style.color = '#eab308';
+      }
+      if (title) title.textContent = 'LOGIN SEBAGAI ADMIN';
+      desc.innerHTML = 'Sesi administrator belum aktif di browser ini.<br><br>' +
+        '<a href="login.html?return=admin.html" style="background:#FFFF00;color:#000;font-weight:900;padding:12px 24px;display:inline-block;text-decoration:none;border:2px solid #000;font-family:sans-serif;letter-spacing:0.04em;">' +
+        'MASUK KE AKUN ADMIN →</a><br><br>' +
+        '<span style="color:#777;font-size:0.75rem;">Mengalihkan ke halaman login...</span>';
+      setTimeout(function() {
+        if (overlay && overlay.style.display !== 'none') {
+          window.location.replace('login.html?return=admin.html');
+        }
+      }, 1500);
+    }
+  }, 2500);
+</script>
+
 <!-- Admin Root Container (Hidden until cryptographically authorized) -->
 <div id="adminRootContainer" style="display:none;">
 

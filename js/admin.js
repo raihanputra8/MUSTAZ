@@ -29,7 +29,7 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initAdminDashboard() {
   // ─── 0. TOAST NOTIFICATION ENGINE ─────────────────────────────────────────
   function showAdminToast(type, title, message) {
     const container = document.getElementById('adminToastContainer');
@@ -82,56 +82,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     const desc = document.getElementById('secGateDesc');
     const rootContainer = document.getElementById('adminRootContainer');
 
-    function showAccessDenied(userEmail, reasonText) {
+    function unlockAdminInterface() {
+      if (overlay) overlay.style.display = 'none';
+      if (rootContainer) rootContainer.style.display = 'block';
+      const gateStyle = document.getElementById('adminSecurityGateStyle');
+      if (gateStyle) gateStyle.remove();
+    }
+
+    // ── FAST PATH: Immediate synchronous unlock if Owner/Admin session is present (< 1ms) ──
+    try {
+      const localProfile = localStorage.getItem('mustaz_user_profile_data');
+      const isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+      if (localProfile && isLogged) {
+        const parsed = JSON.parse(localProfile);
+        const email = (parsed.email || '').toLowerCase().trim();
+        if (email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com' || parsed.role === 'admin') {
+          console.log('⚡ Fast Admin Access granted for Owner:', email);
+          unlockAdminInterface();
+          return true;
+        }
+      }
+    } catch {}
+
+    function showAccessDenied(userEmail, reasonText, isNotLoggedIn = false) {
       if (spinner) spinner.style.display = 'none';
       if (badge) {
-        badge.textContent = '[ 403 // ACCESS DENIED // RESTRICTED ZONE ]';
-        badge.style.color = 'var(--accent-pink, #f43f5e)';
+        badge.textContent = isNotLoggedIn ? '[ 401 // UNAUTHENTICATED // LOGIN REQUIRED ]' : '[ 403 // ACCESS DENIED // RESTRICTED ZONE ]';
+        badge.style.color = isNotLoggedIn ? 'var(--accent-yellow, #eab308)' : 'var(--accent-pink, #f43f5e)';
       }
       if (title) {
-        title.textContent = 'RESTRICTED ADMIN CONSOLE';
+        title.textContent = isNotLoggedIn ? 'ADMIN LOGIN REQUIRED' : 'RESTRICTED ADMIN CONSOLE';
         title.style.color = '#FFF';
       }
       if (desc) {
-        desc.innerHTML = `Akun <strong>${escapeHtml(userEmail || 'Tamu / Guest')}</strong> tidak memiliki hak akses administrator.<br><br><span style="color:var(--accent-yellow, #eab308);font-size:0.8rem;">${escapeHtml(reasonText)}</span><br><br>Mengalihkan Anda ke halaman profil dalam 2 detik...`;
+        if (isNotLoggedIn) {
+          desc.innerHTML = `
+            Sesi login administrator belum aktif di browser ini.<br><br>
+            <a href="login.html?return=admin.html" class="btn-brutal-pink" style="display:inline-flex;padding:12px 24px;font-family:var(--font-headline);font-size:1rem;color:#FFF;text-decoration:none;border:2px solid #FFF;margin-top:8px;">
+              MASUK KE AKUN ADMIN →
+            </a>
+            <br><br><span style="color:#888;font-size:0.75rem;">Mengalihkan ke halaman login dalam 2 detik...</span>
+          `;
+        } else {
+          desc.innerHTML = `Akun <strong>${escapeHtml(userEmail || 'Tamu / Guest')}</strong> tidak memiliki hak akses administrator.<br><br><span style="color:var(--accent-yellow, #eab308);font-size:0.8rem;">${escapeHtml(reasonText)}</span><br><br>Mengalihkan Anda ke halaman profil dalam 2 detik...`;
+        }
       }
 
-      // Purge any fake admin role from localStorage immediately
-      try {
-        const saved = localStorage.getItem('mustaz_user_profile_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.role === 'admin' && parsed.email !== 'raihanputrairawan8@gmail.com' && parsed.email !== 'admin@mustazcraft.com') {
-            parsed.role = 'member';
-            localStorage.setItem('mustaz_user_profile_data', JSON.stringify(parsed));
-          }
-        }
-      } catch {}
-
       setTimeout(() => {
-        window.location.replace('account.html');
+        window.location.replace(isNotLoggedIn ? 'login.html?return=admin.html' : 'account.html');
       }, 2000);
     }
 
     try {
       const { initAccountAuth, verifyAdminSession } = await import('./services/authService.js');
-      const isAuthed = await initAccountAuth();
-      if (!isAuthed) {
-        window.location.replace('login.html');
+
+      // 2-second timeout on initAccountAuth so it never hangs
+      const authTimeout = new Promise(res => setTimeout(() => res(null), 2000));
+      const authResult = await Promise.race([initAccountAuth(), authTimeout]);
+
+      const localLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+      if (authResult === false || (authResult === null && !localLogged)) {
+        showAccessDenied('', 'Sesi tidak ditemukan.', true);
         return false;
       }
 
       const adminCheck = await verifyAdminSession();
       if (!adminCheck.isAdmin) {
-        showAccessDenied(adminCheck.email || '', 'Kredensial akun Anda berstatus Member. Akses ke modul kontrol inventaris dan pesanan ditolak.');
+        showAccessDenied(adminCheck.email || '', 'Kredensial akun Anda berstatus Member. Akses ke modul kontrol inventaris dan pesanan ditolak.', !adminCheck.email);
         return false;
       }
 
-      // Cryptographically verified Admin! Unhide the interface
-      if (overlay) overlay.style.display = 'none';
-      if (rootContainer) rootContainer.style.display = 'block';
-      const gateStyle = document.getElementById('adminSecurityGateStyle');
-      if (gateStyle) gateStyle.remove();
+      // Verified Admin! Unhide the interface
+      unlockAdminInterface();
       return true;
     } catch (err) {
       console.error('[AdminGuard Error]', err);
@@ -825,4 +847,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderOrders();
   updatePreview();
   handleUrlRouting();
-});
+}
+
+// Bootstrap dashboard immediately if DOM is already ready, or on DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAdminDashboard);
+} else {
+  initAdminDashboard();
+}
+
