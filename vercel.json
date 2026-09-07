@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/choppers.html", "destination": "/helmets", "permanent": true },
+    { "source": "/choppers", "destination": "/helmets", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/.netlify/functions/send-order-email", "destination": "/api/send-order-email" },
+    { "source": "/admin/products/edit/:id", "destination": "/admin" },
+    { "source": "/admin/products", "destination": "/admin" },
+    { "source": "/admin/:match*", "destination": "/admin" }
+  ]
+}
