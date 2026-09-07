@@ -32,3 +32,6 @@ stitch_raw/
 
 # Local Netlify folder
 .netlify
+
+# Temp / scratch files
+scratch/
