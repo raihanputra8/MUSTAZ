@@ -18,6 +18,11 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--bg-deep);
+  background-image: url('../assets/images/bg_underground_chain_hd.webp');
+  background-repeat: repeat-y;
+  background-position: center top;
+  background-size: 100% auto;
+  background-attachment: scroll;
   color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
