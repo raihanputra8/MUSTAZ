@@ -1237,4 +1237,115 @@
   }
 }
 
+/* ==========================================================================
+   MUSTAZ RIDER TESTIMONIALS / COMMUNITY DISPATCH SYSTEM
+   ========================================================================== */
+.testi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  align-items: stretch;
+}
+
+.card-testi-brutal {
+  background: #0f0f0f;
+  border: 3px solid #242424;
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.9);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-testi-brutal:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-pink);
+  box-shadow: 8px 8px 0px var(--accent-pink);
+}
+
+.testi-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.testi-stars {
+  color: var(--accent-yellow);
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+
+.testi-photo-box {
+  width: 100%;
+  aspect-ratio: 4/5;
+  background: #000;
+  border: 2px solid #333;
+  overflow: hidden;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.testi-photo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: contrast(108%);
+  transition: transform 0.4s ease;
+}
+
+.card-testi-brutal:hover .testi-photo-box img {
+  transform: scale(1.03);
+}
+
+.testi-quote {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: #E6E6E6;
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.testi-author-block {
+  border-top: 1px dashed #333;
+  padding-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.testi-author-name {
+  font-family: var(--font-headline);
+  font-size: 1.25rem;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.testi-author-bike {
+  font-family: var(--font-mono-sub);
+  font-size: 0.75rem;
+  color: var(--accent-yellow);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.testi-gear-tag {
+  display: inline-block;
+  background: #1a1a1a;
+  color: var(--accent-pink);
+  border: 1px solid var(--accent-pink);
+  font-family: var(--font-mono-sub);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 

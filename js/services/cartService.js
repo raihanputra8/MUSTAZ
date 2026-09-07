@@ -40,19 +40,19 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-1', type: 'parts', category: 'Acrylic Pet',
     name: 'Y-TWO ROOF VISOR', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
     price: 350000, original_price: 450000, badge: 'BESTSELLER', stock: 12,
-    image: 'assets/images/pet_visor_yellow_flame.png'
+    image: 'assets/images/Product1.png'
   },
   {
     id: 'pet-2', type: 'parts', category: 'Leather Pet',
     name: 'STUDDED LID FLAME VISOR', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
     price: 380000, original_price: null, badge: 'HOT DROP', stock: 8,
-    image: 'assets/images/pet_visor_yellow_flame.png'
+    image: 'assets/images/Product2.png'
   },
   {
     id: 'pet-3', type: 'parts', category: 'Retro Visor',
     name: 'CHECKER RACER DUCKBILL', sub: 'Monochrome Checkered Motocross Visor // Chrome Snaps',
     price: 280000, original_price: 320000, badge: 'LIMITED', stock: 15,
-    image: 'assets/images/retro_checkered_helmet.png'
+    image: 'assets/images/Product3.png'
   },
   {
     id: 'pet-4', type: 'parts', category: 'Drop Sets',
@@ -64,19 +64,19 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-5', type: 'parts', category: 'Acrylic Pet',
     name: 'ACID YELLOW SPIKED PET', sub: 'Acid Yellow High-Voltage Acrylic // Punk Spike Hardware',
     price: 360000, original_price: null, badge: 'NEW', stock: 18,
-    image: 'assets/images/pet_visor_yellow_flame.png'
+    image: 'assets/images/Product1.png'
   },
   {
     id: 'pet-6', type: 'parts', category: 'Retro Visor',
     name: 'SMOKE TINT SHORT PEAK', sub: 'Dark Smoke Polycarbonate // Universal 3-Snap Fit',
     price: 220000, original_price: 270000, badge: 'SALE', stock: 24,
-    image: 'assets/images/retro_checkered_helmet.png'
+    image: 'assets/images/Product2.png'
   },
   {
     id: 'pet-7', type: 'parts', category: 'Leather Pet',
     name: 'VINTAGE HIGHWAY EAR GUARDS', sub: 'Vintage Leather Side Covers with Brass Rivets',
     price: 195000, original_price: null, badge: 'CORE', stock: 14,
-    image: 'assets/images/pet_visor_yellow_flame.png'
+    image: 'assets/images/Product3.png'
   },
   {
     id: 'pet-8', type: 'parts', category: 'Drop Sets',
@@ -86,7 +86,7 @@ export const DEFAULT_PARTS_DATA = [
   }
 ];
 
-const PRODUCTS_STORAGE_KEY = 'mustaz_catalog_products';
+const PRODUCTS_STORAGE_KEY = 'mustaz_catalog_products_v3';
 
 export function getDynamicParts() {
   try {

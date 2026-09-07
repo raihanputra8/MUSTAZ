@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testimoni Riders — MUSTAZ CRAFT Pet Helm // Issue 04 | MUSTAZ CRAFT</title>
+  
+  <!-- Google Fonts: Editorial Brutalist Grotesk & Headings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  
+  <!-- Master Stylesheet (Variables, Base, Layout, Components, Ecommerce) -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <!-- Brand Logo: Official MUSTAZ CRAFT Identity -->
+    <a href="index.html" class="brand-badge">
+      <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="brand-logo-img">
+      <div class="brand-text-block">
+        <span class="brand-name" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;letter-spacing:0.06em;color:#FFF;line-height:1;">
+          CRAFT
+        </span>
+        <span class="brand-sub" style="color:var(--accent-yellow);font-weight:800;font-size:0.65rem;letter-spacing:0.16em;">
+          PET HELM // VISORS
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="nav-menu">
+      <a href="index.html" class="nav-link">HOME</a>
+      <a href="parts.html" class="nav-link">PRODUCT</a>
+      <a href="testimoni.html" class="nav-link active">TESTIMONI</a>
+      <a href="account.html" class="nav-link">ACCOUNT</a>
+      <a href="kulture.html" class="nav-link">ABOUT</a>
+    </nav>
+
+    <!-- Nav Controls (Search, Account, Cart, Mobile Menu) -->
+    <div class="nav-actions">
+      <button class="nav-btn-icon" id="headerSearchBtn" aria-label="Search visors" title="Search Pet Helm">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+      
+      <a href="account.html" class="nav-btn-icon" aria-label="My Account" title="My Account">
+        <span class="material-symbols-outlined">person</span>
+      </a>
+
+      <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="View Arsenal">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="cart-label">CART</span>
+        <span class="cart-count-badge mustaz-cart-badge" id="headerCartBadge">0</span>
+      </button>
+
+      <a href="login.html" class="nav-btn-pink" id="headerSignInBtn" title="Member Sign In">
+        SIGN IN
+      </a>
+
+      <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+        <span class="material-symbols-outlined" id="hamburgerIcon">menu</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-nav-drawer" id="mobileNavDrawer">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--accent-pink);">
+    <span class="zine-tag-yellow">PET HELM DIRECTORY</span>
+    <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">ISSUE 04</span>
+  </div>
+  
+  <a href="index.html" class="mobile-nav-link">
+    HOME
+    <span class="material-symbols-outlined">arrow_forward</span>
+  </a>
+
+  <a href="parts.html" class="mobile-nav-link">
+    PRODUCT
+    <span class="material-symbols-outlined">arrow_forward</span>
+  </a>
+
+  <a href="testimoni.html" class="mobile-nav-link active">
+    TESTIMONI
+    <span class="material-symbols-outlined">arrow_forward</span>
+  </a>
+
+  <a href="account.html" class="mobile-nav-link">
+    ACCOUNT
+    <span class="material-symbols-outlined">arrow_forward</span>
+  </a>
+
+  <a href="kulture.html" class="mobile-nav-link">
+    ABOUT
+    <span class="material-symbols-outlined">arrow_forward</span>
+  </a>
+
+  <div style="margin-top:auto;padding-top:20px;border-top:1px dashed #333;display:flex;justify-content:space-between;align-items:center;">
+    <span class="barcode-decor" style="height:24px;width:110px;"></span>
+    <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;">
+      MEMBER LOGIN →
+    </a>
+  </div>
+</div>
+
+<div class="marquee-bar">
+  <div class="marquee-content">
+    <span class="marquee-item">★ REAL RIDERS // REAL FEEDBACK</span>
+    <span class="marquee-item">★ 100% HANDMADE VISORS</span>
+    <span class="marquee-item">★ VERIFIED DISPATCH</span>
+    <span class="marquee-item">★ CHOPPER & RETRO KULTURE</span>
+    <span class="marquee-item">★ NO FACTORY STERILITY</span>
+    <span class="marquee-item">★ REAL RIDERS // REAL FEEDBACK</span>
+    <span class="marquee-item">★ 100% HANDMADE VISORS</span>
+    <span class="marquee-item">★ VERIFIED DISPATCH</span>
+    <span class="marquee-item">★ CHOPPER & RETRO KULTURE</span>
+    <span class="marquee-item">★ NO FACTORY STERILITY</span>
+  </div>
+</div>
+
+<main style="padding-top:70px;">
+  <!-- Testimonial Hero Section -->
+  <section style="background:transparent;padding:70px 0 40px;border-bottom:3px solid var(--accent-pink);position:relative;">
+    <div class="wrap">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <span class="zine-tag-yellow">COMMUNITY DISPATCH</span>
+        <span class="zine-tag-pink">VERIFIED BUYERS & RIDERS</span>
+        <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">BANDUNG // JAKARTA // BALI // JOGJA</span>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:32px;">
+        <div>
+          <h1 class="editorial-title" style="font-size:clamp(2.8rem, 6.5vw, 5.5rem);margin-bottom:12px;line-height:0.92;">
+            RIDER DISPATCH<br>
+            <span style="color:var(--accent-pink);text-shadow:2px 2px 0px #000;">TESTIMONIALS</span>
+          </h1>
+          <p class="editorial-desc" style="max-width:680px;">
+            Bukti nyata dari kawan-kawan riders di jalanan. Dari booth event kustomfest hingga harian jalanan aspal, visor MUSTAZ CRAFT teruji tahan banting, anti getar, dan berkarakter.
+          </p>
+        </div>
+
+        <!-- Rating & Stats Box -->
+        <div style="background:#0c0c0c;border:2px solid var(--border-light);box-shadow:6px 6px 0px var(--accent-yellow);padding:18px 24px;display:flex;gap:24px;align-items:center;">
+          <div>
+            <div style="font-family:var(--font-headline);font-size:2.4rem;color:var(--accent-yellow);line-height:1;">
+              4.9★
+            </div>
+            <div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;letter-spacing:0.1em;text-transform:uppercase;">
+              AVERAGE SCORE
+            </div>
+          </div>
+          <div style="width:1px;height:40px;background:#333;"></div>
+          <div>
+            <div style="font-family:var(--font-headline);font-size:2.4rem;color:#FFF;line-height:1;">
+              500+
+            </div>
+            <div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:var(--accent-pink);letter-spacing:0.1em;text-transform:uppercase;">
+              VISORS DEPLOYED
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real Testimonials Photo Grid -->
+  <section style="padding:70px 0 100px;background:transparent;">
+    <div class="wrap">
+      
+      <div class="testi-grid">
+
+        <!-- Testimonial 1: Dimas (TESTI.png) -->
+        <article class="card-testi-brutal">
+          <div class="tape-decor tape-top-left"></div>
+          <div class="testi-header-row">
+            <span class="zine-tag-yellow">BOOTH FITTING</span>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+
+          <div class="testi-photo-box">
+            <img src="assets/images/TESTI.png" alt="Testimoni Dimas MUSTAZ CRAFT">
+          </div>
+
+          <p class="testi-quote">
+            “Fitting ke helm open-face Bell 500 langsung pas presisi tanpa goyang. Finishing akrilik tebal rapi dan bonus sticker pack-nya gokil abis! Rekomendasi buat anak kustom.”
+          </p>
+
+          <div class="testi-author-block">
+            <div>
+              <div class="testi-author-name">DIMAS "SPEEDY" R.</div>
+              <div class="testi-author-bike">HONDA CB KUSTOM // BANDUNG</div>
+            </div>
+            <span class="testi-gear-tag">WHITE ACRYLIC 3-SNAP</span>
+          </div>
+        </article>
+
+        <!-- Testimonial 2: Om Bram (TESTI1.png) -->
+        <article class="card-testi-brutal">
+          <div class="tape-decor tape-top-right"></div>
+          <div class="testi-header-row">
+            <span class="zine-tag-pink">VERIFIED BUYER</span>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+
+          <div class="testi-photo-box">
+            <img src="assets/images/TESTI1.png" alt="Testimoni Om Bram MUSTAZ CRAFT">
+          </div>
+
+          <p class="testi-quote">
+            “Bahan duckbill pet-nya solid banget, bukan plastik abal-abal tipis pabrikan. Dipakai touring panas terik tetep adem dan gak gampang baret. Mantap brother!”
+          </p>
+
+          <div class="testi-author-block">
+            <div>
+              <div class="testi-author-name">OM BRAM "IRONHEAD"</div>
+              <div class="testi-author-bike">CHOPPER RIGID // JAKSEL</div>
+            </div>
+            <span class="testi-gear-tag">SMOKE OBSIDIAN PEAK</span>
+          </div>
+        </article>
+
+        <!-- Testimonial 3: Sarah (TESTI2.png) -->
+        <article class="card-testi-brutal">
+          <div class="tape-decor tape-top-left"></div>
+          <div class="testi-header-row">
+            <span class="zine-tag-yellow">DAILY RIDER</span>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+
+          <div class="testi-photo-box">
+            <img src="assets/images/TESTI2.png" alt="Testimoni Sarah MUSTAZ CRAFT">
+          </div>
+
+          <p class="testi-quote">
+            “Desain pet flame-nya eye catching parah! Packaging ziplock eksklusif kayak brand streetwear luar. Pas dipasang ke helm retro langsung auto ganteng motoran santai.”
+          </p>
+
+          <div class="testi-author-block">
+            <div>
+              <div class="testi-author-name">SARAH "VALKYRIE" W.</div>
+              <div class="testi-author-bike">VESPA SPRINT RETRO // TANGERANG</div>
+            </div>
+            <span class="testi-gear-tag">Y-TWO FLAME SPECIAL</span>
+          </div>
+        </article>
+
+        <!-- Testimonial 4: Cindy (TESTI3.png) -->
+        <article class="card-testi-brutal">
+          <div class="tape-decor tape-top-right"></div>
+          <div class="testi-header-row">
+            <span class="zine-tag-pink">CUSTOM BUILD</span>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+
+          <div class="testi-photo-box">
+            <img src="assets/images/TESTI3.png" alt="Testimoni Cindy MUSTAZ CRAFT">
+          </div>
+
+          <p class="testi-quote">
+            “Spikes studded-nya bener-bener gahar pas dipasang ke helm custom full cat gua. Kancing snap solid ga gampang copot walau kena angin kencang. 100% riding with pride!”
+          </p>
+
+          <div class="testi-author-block">
+            <div>
+              <div class="testi-author-name">CINDY "REBEL" A.</div>
+              <div class="testi-author-bike">CUSTOM BOBBER // JAKTIM</div>
+            </div>
+            <span class="testi-gear-tag">STUDDED FLAME LIDS</span>
+          </div>
+        </article>
+
+        <!-- Testimonial 5: Radit (TESTI4.png) -->
+        <article class="card-testi-brutal">
+          <div class="tape-decor tape-top-left"></div>
+          <div class="testi-header-row">
+            <span class="zine-tag-yellow">STREET KULTURE</span>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+
+          <div class="testi-photo-box">
+            <img src="assets/images/TESTI4.png" alt="Testimoni Radit MUSTAZ CRAFT">
+          </div>
+
+          <p class="testi-quote">
+            “Kancing snap kuningan asli kenceng banget pas ngebut di jalur luar kota. Warna flame birunya tajem dan materialnya tahan banting. Bakal order varian lain!”
+          </p>
+
+          <div class="testi-author-block">
+            <div>
+              <div class="testi-author-name">RADIT "BLUE FLAME"</div>
+              <div class="testi-author-bike">ROYAL ENFIELD 350 // BOGOR</div>
+            </div>
+            <span class="testi-gear-tag">BLUE FLAME UNIVERSAL</span>
+          </div>
+        </article>
+
+        <!-- Testimonial CTA Box: Join the Wall -->
+        <div class="card-brutal-white" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:36px 28px;box-shadow:8px 8px 0px var(--accent-pink);">
+          <span class="zine-tag-pink" style="margin-bottom:14px;">SUBMIT YOUR RIDE</span>
+          <h3 style="font-family:var(--font-headline);font-size:2rem;color:#000;margin-bottom:12px;line-height:0.95;">
+            PUNYA FOTO BERSAMA MUSTAZ?
+          </h3>
+          <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#444;margin-bottom:24px;line-height:1.5;">
+            Tag Instagram kami di <strong>@mustazcraft</strong> atau kirim foto garasi Anda via WhatsApp untuk masuk ke Community Dispatch berikutnya.
+          </p>
+          <a href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT,%20saya%20mau%20kirim%20foto%20testimoni%20pet%20helm!" target="_blank" class="btn-brutal-pink" style="width:100%;">
+            KIRIM VIA WHATSAPP →
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Newsletter & Underground Manifesto -->
+<div class="footer-manifesto">
+  <div class="wrap-tight">
+    <div style="display:inline-block;margin-bottom:12px;">
+      <span class="zine-tag-pink">COMMS FREQUENCY</span>
+    </div>
+    <h2 class="editorial-title" style="font-size:clamp(2.5rem, 5.5vw, 4.5rem);margin-bottom:12px;">
+      JOIN THE UNDERGROUND
+    </h2>
+    <p style="max-width:540px;margin:0 auto 28px;color:#A0A0A0;font-size:1rem;line-height:1.6;">
+      Drop your comms line below. We only send dispatch intel on new builds, limited hardware drops, and garage parties. No spam. Pure combustion.
+    </p>
+    <form class="newsletter-form" id="newsletterForm" style="display:flex;gap:12px;justify-content:center;max-width:500px;margin:0 auto;flex-wrap:wrap;">
+      <input type="email" class="form-input-brutal" placeholder="ENTER YOUR EMAIL FREQUENCY..." required style="flex:1;min-width:260px;">
+      <button type="submit" class="btn-brutal-pink">SUBSCRIBE →</button>
+    </form>
+  </div>
+</div>
+
+<!-- New Figma White Brutalist Footer -->
+<footer class="site-footer-white">
+  <div class="wrap">
+    <div class="footer-white-grid">
+      <!-- Col 1: Brand Info -->
+      <div class="footer-white-brand">
+        <a href="index.html">
+          <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="footer-white-brand-logo">
+        </a>
+        <p class="footer-white-brand-desc">
+          KUSTOM PET HELM &amp; RETRO VISOR WORKSHOP. FORGED FOR STREET REBELS WITH NO FACTORY STERILITY.
+        </p>
+      </div>
+
+      <!-- Col 2: Support -->
+      <div class="footer-white-col">
+        <h4>SUPPORT</h4>
+        <div class="footer-white-links">
+          <a href="faq.html" class="footer-white-link">FAQ</a>
+          <a href="shipping.html" class="footer-white-link">KEBIJAKAN PENGIRIMAN</a>
+          <a href="returns.html" class="footer-white-link">PENGEMBALIAN &amp; RETUR</a>
+          <a href="terms-of-service.html" class="footer-white-link">SYARAT &amp; KETENTUAN</a>
+        </div>
+      </div>
+
+      <!-- Col 3: Garage -->
+      <div class="footer-white-col">
+        <h4>GARASI</h4>
+        <div class="footer-white-links">
+          <a href="parts.html" class="footer-white-link">KATALOG PET HELM</a>
+          <a href="testimoni.html" class="footer-white-link">TESTIMONI RIDERS</a>
+          <a href="kulture.html" class="footer-white-link">ABOUT MUSTAZ</a>
+          <a href="account.html" class="footer-white-link">STATUS PESANAN</a>
+        </div>
+      </div>
+
+      <!-- Col 4: Community -->
+      <div class="footer-white-col">
+        <h4>COMMUNITY</h4>
+        <div class="footer-white-links">
+          <a href="https://instagram.com" target="_blank" class="footer-white-link">INSTAGRAM @MUSTAZCRAFT</a>
+          <a href="https://tiktok.com" target="_blank" class="footer-white-link">TIKTOK DISPATCH</a>
+          <a href="https://youtube.com" target="_blank" class="footer-white-link">YOUTUBE GARAGE SESSIONS</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-footer Bottom Bar -->
+    <div class="footer-white-bottom">
+      <span>© 2026 MUSTAZ CRAFT. ALL RIGHTS RESERVED. HAND-CRAFTED IN INDONESIA.</span>
+      <div class="footer-white-bottom-links">
+        <a href="privacy-policy.html">PRIVACY POLICY</a>
+        <a href="terms-of-service.html">TERMS</a>
+        <a href="admin.html" style="color:var(--accent-pink);font-weight:700;">ADMIN PANEL</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

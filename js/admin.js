@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('adminCategoryFilter')?.addEventListener('change', refreshAdminView);
 
   // ─── 4. ADD PRODUCT LOGIC & LIVE PREVIEW ─────────────────────────────────
-  let selectedAssetPath = 'assets/images/pet_visor_yellow_flame.png';
+  let selectedAssetPath = 'assets/images/Product1.png';
 
   document.querySelectorAll('#assetPickerGrid .admin-asset-choice').forEach(choice => {
     choice.addEventListener('click', () => {
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       const first = document.querySelector('#assetPickerGrid .admin-asset-choice');
       first?.classList.add('selected');
-      selectedAssetPath = first?.dataset.asset || 'assets/images/pet_visor_yellow_flame.png';
+      selectedAssetPath = first?.dataset.asset || 'assets/images/Product1.png';
     }
     updatePreview();
   });
