@@ -341,11 +341,10 @@
 }
 
 .footer-manifesto {
-  padding: 72px 24px;
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 2px solid var(--border-subtle);
+  padding: 84px 24px 110px;
+  background: linear-gradient(180deg, rgba(5, 5, 5, 0.5) 0%, rgba(5, 5, 5, 0.1) 60%, rgba(255, 255, 255, 0) 85%),
+              url('../assets/images/bg_footer_torn_paper.jpg') center bottom / cover no-repeat;
+  border-bottom: none;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -387,7 +386,7 @@
   background: #FFFFFF;
   color: #000000;
   padding: 44px 0 24px;
-  border-top: 3px solid #A00078;
+  border-top: none;
   position: relative;
   z-index: 10;
 }
