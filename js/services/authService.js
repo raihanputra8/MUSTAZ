@@ -64,16 +64,6 @@ export async function loginWithPassword(email, password) {
 
     // Handle invalid credentials
     if (error) {
-      const isOwner = cleanEmail === 'raihanputrairawan8@gmail.com' || cleanEmail === 'admin@mustazcraft.com';
-      if (isOwner && password.length >= 6) {
-        const ownerUser = {
-          email: cleanEmail,
-          user_metadata: { full_name: 'Raihan Putra Irawan', role: 'admin' }
-        };
-        await syncUserSession(ownerUser, cleanEmail);
-        return { user: ownerUser };
-      }
-
       if (error.message && error.message.includes('Invalid login credentials')) {
         throw new Error('Email atau password salah. Jika belum mendaftar, silakan buat akun baru di menu DAFTAR AKUN SEKARANG.');
       }
@@ -81,8 +71,8 @@ export async function loginWithPassword(email, password) {
     }
   }
 
-  // Local fallback
-  await syncUserSession({ email: cleanEmail }, cleanEmail);
+  // Local fallback (only for offline development, never grant admin automatically)
+  await syncUserSession({ email: cleanEmail, user_metadata: { role: 'member' } }, cleanEmail);
   return { user: { email: cleanEmail } };
 }
 
@@ -259,7 +249,69 @@ export async function updatePassword(newPassword) {
 }
 
 /**
- * 8. Fetch User Role & Profile from public.accounts ('admin' | 'member')
+ * 8. Cryptographic Admin Session Verification (Zero-Trust)
+ * Ensures user has an active Supabase session AND is authorized as admin in cloud database or whitelist.
+ * Returns { isAdmin: boolean, user: object|null, reason?: string, email?: string }
+ */
+export async function verifyAdminSession() {
+  const sb = await getSupabase();
+  if (!sb) {
+    return { isAdmin: false, user: null, reason: 'SUPABASE_UNAVAILABLE' };
+  }
+
+  try {
+    // 1. Must have an active, non-expired Supabase session cryptographically signed by JWT
+    const { data: { user }, error } = await sb.auth.getUser();
+    if (error || !user || !user.email) {
+      return { isAdmin: false, user: null, reason: 'NO_ACTIVE_SESSION' };
+    }
+
+    const email = user.email.toLowerCase().trim();
+
+    // 2. Check whitelist (Owners)
+    const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
+    if (isOwner) {
+      return { isAdmin: true, user, email, role: 'admin' };
+    }
+
+    // 3. Query public.accounts directly using Supabase client to check verified role
+    const { data: accounts, error: accError } = await sb
+      .from(CONFIG.TABLES.ACCOUNTS)
+      .select('role')
+      .eq('email', email)
+      .limit(1);
+
+    if (!accError && Array.isArray(accounts) && accounts.length > 0) {
+      if (accounts[0].role === 'admin') {
+        return { isAdmin: true, user, email, role: 'admin' };
+      }
+    }
+
+    return { isAdmin: false, user, email, role: 'member', reason: 'INSUFFICIENT_PERMISSIONS' };
+  } catch (err) {
+    console.error('[AdminSecurity] Verification error:', err);
+    return { isAdmin: false, user: null, reason: 'VERIFICATION_ERROR' };
+  }
+}
+
+/**
+ * Get current user's active Supabase JWT access token for API authorization headers
+ */
+export async function getAuthToken() {
+  const sb = await getSupabase();
+  if (sb) {
+    try {
+      const { data } = await sb.auth.getSession();
+      return data?.session?.access_token || null;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Fetch User Role & Profile from public.accounts ('admin' | 'member')
  */
 export async function checkUserRole(email) {
   if (!email) return 'member';
@@ -280,14 +332,7 @@ export async function checkUserRole(email) {
     console.warn('Could not check role from cloud:', err);
   }
 
-  // Fallback to local profile
-  try {
-    const saved = localStorage.getItem('mustaz_user_profile_data');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.role) return parsed.role;
-    }
-  } catch {}
+  // Security: NEVER trust localStorage for admin role elevation!
   return 'member';
 }
 

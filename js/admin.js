@@ -11,38 +11,86 @@ import {
   formatRupiah
 } from './services/cartService.js';
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-  // ─── 0. ADMIN ACCESS GUARD ────────────────────────────────────────────────
+  // ─── 0. ZERO-TRUST ADMIN ACCESS GUARD ─────────────────────────────────────
   async function enforceAdminRole() {
-    const { initAccountAuth, checkUserRole } = await import('./services/authService.js');
-    const isAuthed = await initAccountAuth();
-    if (!isAuthed) {
-      window.location.replace('login.html');
-      return false;
-    }
+    const overlay = document.getElementById('adminSecurityOverlay');
+    const spinner = document.getElementById('secGateSpinner');
+    const badge = document.getElementById('secGateBadge');
+    const title = document.getElementById('secGateTitle');
+    const desc = document.getElementById('secGateDesc');
+    const rootContainer = document.getElementById('adminRootContainer');
 
-    let userEmail = '';
-    let localRole = 'member';
-    try {
-      const saved = localStorage.getItem('mustaz_user_profile_data');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        userEmail = parsed.email || '';
-        localRole = parsed.role || 'member';
+    function showAccessDenied(userEmail, reasonText) {
+      if (spinner) spinner.style.display = 'none';
+      if (badge) {
+        badge.textContent = '[ 403 // ACCESS DENIED // RESTRICTED ZONE ]';
+        badge.style.color = 'var(--accent-pink, #f43f5e)';
       }
-    } catch {}
+      if (title) {
+        title.textContent = 'RESTRICTED ADMIN CONSOLE';
+        title.style.color = '#FFF';
+      }
+      if (desc) {
+        desc.innerHTML = `Akun <strong>${escapeHtml(userEmail || 'Tamu / Guest')}</strong> tidak memiliki hak akses administrator.<br><br><span style="color:var(--accent-yellow, #eab308);font-size:0.8rem;">${escapeHtml(reasonText)}</span><br><br>Mengalihkan Anda ke halaman profil dalam 2 detik...`;
+      }
 
-    const role = await checkUserRole(userEmail);
+      // Purge any fake admin role from localStorage immediately
+      try {
+        const saved = localStorage.getItem('mustaz_user_profile_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.role === 'admin' && parsed.email !== 'raihanputrairawan8@gmail.com' && parsed.email !== 'admin@mustazcraft.com') {
+            parsed.role = 'member';
+            localStorage.setItem('mustaz_user_profile_data', JSON.stringify(parsed));
+          }
+        }
+      } catch {}
 
-    if (role !== 'admin' && localRole !== 'admin') {
-      alert(`⚠️ AKSES DITOLAK // RESTRICTED ACCESS\n\nAkun (${userEmail || 'Anda'}) saat ini berstatus 'member'.\n\nHalaman Admin ini hanya dapat diakses oleh akun dengan role 'admin' di Supabase.\n\nUntuk membuka akses admin, ubah role di database Supabase:\nUPDATE public.accounts SET role = 'admin' WHERE email = '${userEmail}';`);
-      window.location.replace('account.html');
+      setTimeout(() => {
+        window.location.replace('account.html');
+      }, 2000);
+    }
+
+    try {
+      const { initAccountAuth, verifyAdminSession } = await import('./services/authService.js');
+      const isAuthed = await initAccountAuth();
+      if (!isAuthed) {
+        window.location.replace('login.html');
+        return false;
+      }
+
+      const adminCheck = await verifyAdminSession();
+      if (!adminCheck.isAdmin) {
+        showAccessDenied(adminCheck.email || '', 'Kredensial akun Anda berstatus Member. Akses ke modul kontrol inventaris dan pesanan ditolak.');
+        return false;
+      }
+
+      // Cryptographically verified Admin! Unhide the interface
+      if (overlay) overlay.style.display = 'none';
+      if (rootContainer) rootContainer.style.display = 'block';
+      const gateStyle = document.getElementById('adminSecurityGateStyle');
+      if (gateStyle) gateStyle.remove();
+      return true;
+    } catch (err) {
+      console.error('[AdminGuard Error]', err);
+      showAccessDenied('', 'Gagal memverifikasi sesi admin: ' + err.message);
       return false;
     }
-    return true;
   }
 
-  await enforceAdminRole();
+  const isGranted = await enforceAdminRole();
+  if (!isGranted) return;
 
   // ─── 1. TABS SWITCHING (HARMONIZED WITH ACCOUNT.HTML) ─────────────────────
   const navItems = document.querySelectorAll('#adminNav .account-nav-item[data-tab]');
@@ -136,23 +184,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         stockLabel = 'LOW STOCK';
       }
 
-      const badgeHtml = part.badge
-        ? `<span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">${part.badge}</span>`
+      const safeId = escapeHtml(part.id);
+      const safeName = escapeHtml(part.name);
+      const safeCategory = escapeHtml(part.category);
+      const safeSub = escapeHtml(part.sub);
+      const safeBadge = escapeHtml(part.badge);
+      const safeImage = part.image && (part.image.startsWith('http') || part.image.startsWith('assets/')) ? part.image : 'assets/images/Product1.png';
+
+      const badgeHtml = safeBadge
+        ? `<span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">${safeBadge}</span>`
         : '<span style="color:#555;">-</span>';
 
       return `
         <tr>
           <td>
-            <img src="${part.image}" alt="${part.name}" style="width:52px;aspect-ratio:4/5;object-fit:cover;border:1px solid #333;background:#000;">
+            <img src="${safeImage}" alt="${safeName}" style="width:52px;aspect-ratio:4/5;object-fit:cover;border:1px solid #333;background:#000;">
           </td>
           <td>
-            <div style="font-family:var(--font-headline);font-size:1.1rem;color:#FFF;letter-spacing:0.02em;">${part.name}</div>
-            <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin-top:2px;">SKU: ${part.id.toUpperCase()}</div>
-            <div style="font-size:0.78rem;color:#AAA;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${part.sub}</div>
+            <div style="font-family:var(--font-headline);font-size:1.1rem;color:#FFF;letter-spacing:0.02em;">${safeName}</div>
+            <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin-top:2px;">SKU: ${safeId.toUpperCase()}</div>
+            <div style="font-size:0.78rem;color:#AAA;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${safeSub}</div>
           </td>
           <td>
             <span style="background:#181818;border:1px solid #333;color:var(--accent-yellow);font-family:var(--font-mono-sub);font-size:0.72rem;font-weight:700;padding:4px 8px;">
-              ${part.category}
+              ${safeCategory}
             </span>
           </td>
           <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;">
@@ -160,9 +215,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           </td>
           <td style="text-align:center;">
             <div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:4px;">
-              <button class="qty-control-btn btn-stock-dec" data-id="${part.id}">-</button>
+              <button class="qty-control-btn btn-stock-dec" data-id="${safeId}">-</button>
               <span style="font-family:var(--font-headline);font-size:1.1rem;min-width:32px;text-align:center;color:#FFF;">${stock}</span>
-              <button class="qty-control-btn btn-stock-inc" data-id="${part.id}">+</button>
+              <button class="qty-control-btn btn-stock-inc" data-id="${safeId}">+</button>
             </div>
             <div>
               <span class="${stockBadgeClass}">${stockLabel}</span>
@@ -172,10 +227,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             ${badgeHtml}
           </td>
           <td style="text-align:right;white-space:nowrap;">
-            <button class="btn-admin-edit btn-brutal-ghost btn-brutal-sm" data-id="${part.id}" style="padding:6px 14px;font-size:0.75rem;margin-right:6px;">
+            <button class="btn-admin-edit btn-brutal-ghost btn-brutal-sm" data-id="${safeId}" style="padding:6px 14px;font-size:0.75rem;margin-right:6px;">
               EDIT
             </button>
-            <button class="btn-admin-del btn-brutal-dark btn-brutal-sm" data-id="${part.id}" style="padding:6px 14px;font-size:0.75rem;background:#35000a;border-color:#e11d48;color:#fecdd3;">
+            <button class="btn-admin-del btn-brutal-dark btn-brutal-sm" data-id="${safeId}" style="padding:6px 14px;font-size:0.75rem;background:#35000a;border-color:#e11d48;color:#fecdd3;">
               DELETE
             </button>
           </td>
@@ -432,22 +487,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tbody = document.getElementById('adminOrdersTbody');
     if (!tbody) return;
 
-    tbody.innerHTML = orders.map((ord, idx) => `
+    tbody.innerHTML = orders.map((ord, idx) => {
+      const safeId = escapeHtml(ord.id);
+      const safeCustomer = escapeHtml(ord.customer);
+      const safeItems = escapeHtml(ord.items);
+      const safeDate = escapeHtml(ord.date);
+
+      return `
       <tr>
         <td>
-          <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${ord.id}</span>
+          <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
         </td>
         <td>
-          <div style="font-weight:700;color:#FFF;">${ord.customer}</div>
+          <div style="font-weight:700;color:#FFF;">${safeCustomer}</div>
         </td>
         <td style="font-size:0.85rem;color:#AAA;">
-          ${ord.items}
+          ${safeItems}
         </td>
         <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;">
           ${formatRupiah(ord.total)}
         </td>
         <td style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">
-          ${ord.date}
+          ${safeDate}
         </td>
         <td>
           <select class="form-input-brutal order-status-select" data-index="${idx}" style="padding:6px 10px;font-size:0.75rem;background:#111;color:#FFF;border-color:#444;width:auto;">
@@ -458,18 +519,25 @@ document.addEventListener('DOMContentLoaded', async () => {
           </select>
         </td>
         <td style="text-align:right;">
-          <a href="https://wa.me/6281234567890?text=Halo%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20${ord.id}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;">
+          <a href="https://wa.me/6281234567890?text=Halo%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20${encodeURIComponent(ord.id)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;">
             WHATSAPP
           </a>
         </td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
 
     tbody.querySelectorAll('.order-status-select').forEach(sel => {
       sel.addEventListener('change', (e) => {
         const idx = Number(e.target.dataset.index);
-        orders[idx].status = e.target.value;
+        const newStatus = e.target.value;
+        orders[idx].status = newStatus;
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
+
+        // Sync with Supabase cloud
+        import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
+          updateCloudOrderStatus(orders[idx].id, newStatus);
+        }).catch(() => {});
       });
     });
   }

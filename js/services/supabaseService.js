@@ -4,12 +4,27 @@
 
 import { CONFIG } from '../config.js';
 
-const headers = {
-  'apikey': CONFIG.SUPABASE_ANON_KEY,
-  'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
-  'Content-Type': 'application/json',
-  'Prefer': 'return=representation'
-};
+/**
+ * Build dynamic headers with user session JWT if authenticated
+ */
+async function getDynamicHeaders(customHeaders = {}) {
+  let authToken = CONFIG.SUPABASE_ANON_KEY;
+  try {
+    const { getAuthToken } = await import('./authService.js');
+    const token = await getAuthToken();
+    if (token) {
+      authToken = token;
+    }
+  } catch {}
+
+  return {
+    'apikey': CONFIG.SUPABASE_ANON_KEY,
+    'Authorization': `Bearer ${authToken}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation',
+    ...customHeaders
+  };
+}
 
 /**
  * Universal Supabase REST Helper
@@ -17,12 +32,10 @@ const headers = {
 async function supabaseRest(endpoint, options = {}) {
   const url = `${CONFIG.SUPABASE_URL}/rest/v1/${endpoint}`;
   try {
+    const reqHeaders = await getDynamicHeaders(options.headers || {});
     const res = await fetch(url, {
       ...options,
-      headers: {
-        ...headers,
-        ...(options.headers || {})
-      }
+      headers: reqHeaders
     });
 
     if (!res.ok) {
@@ -108,7 +121,8 @@ export async function updateCloudProduct(id, updates) {
     if (updates.image !== undefined) payload.image = updates.image;
     if (updates.stock !== undefined) payload.stock = Number(updates.stock);
 
-    await supabaseRest(`${CONFIG.TABLES.PRODUCTS}?id=eq.${id}`, {
+    const safeId = encodeURIComponent(id.trim());
+    await supabaseRest(`${CONFIG.TABLES.PRODUCTS}?id=eq.${safeId}`, {
       method: 'PATCH',
       body: JSON.stringify(payload)
     });
@@ -124,7 +138,8 @@ export async function updateCloudProduct(id, updates) {
  */
 export async function deleteCloudProduct(id) {
   try {
-    await supabaseRest(`${CONFIG.TABLES.PRODUCTS}?id=eq.${id}`, {
+    const safeId = encodeURIComponent(id.trim());
+    await supabaseRest(`${CONFIG.TABLES.PRODUCTS}?id=eq.${safeId}`, {
       method: 'DELETE'
     });
     return true;
@@ -138,16 +153,24 @@ export async function deleteCloudProduct(id) {
  * 5. Upload Image Asset to Supabase Storage Bucket ('product-images')
  */
 export async function uploadAssetToStorage(file) {
-  const ext = file.name.split('.').pop() || 'png';
+  const rawExt = file.name.split('.').pop() || 'png';
+  const ext = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '');
   const cleanName = `pet_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
   const uploadUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/${CONFIG.STORAGE_BUCKET}/${cleanName}`;
 
   try {
+    let authToken = CONFIG.SUPABASE_ANON_KEY;
+    try {
+      const { getAuthToken } = await import('./authService.js');
+      const token = await getAuthToken();
+      if (token) authToken = token;
+    } catch {}
+
     const res = await fetch(uploadUrl, {
       method: 'POST',
       headers: {
         'apikey': CONFIG.SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
+        'Authorization': `Bearer ${authToken}`,
         'Content-Type': file.type || 'image/png'
       },
       body: file
@@ -163,6 +186,23 @@ export async function uploadAssetToStorage(file) {
   } catch (err) {
     console.error('Supabase Storage upload error:', err);
     throw err;
+  }
+}
+
+/**
+ * 5b. Update Order Status in Supabase
+ */
+export async function updateCloudOrderStatus(orderId, status) {
+  try {
+    const safeId = encodeURIComponent(orderId.trim());
+    await supabaseRest(`${CONFIG.TABLES.ORDERS}?id=eq.${safeId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+    return true;
+  } catch (err) {
+    console.warn(`Could not update cloud order ${orderId}:`, err.message);
+    return false;
   }
 }
 
@@ -221,8 +261,19 @@ export async function fetchCloudOrders() {
  */
 export async function saveCloudAccount(profile) {
   try {
-    const email = profile.email;
+    const email = (profile.email || '').trim().toLowerCase();
     if (!email) return false;
+
+    // Security: Prevent unprivileged client from escalating their own role to 'admin'
+    let role = profile.role || 'member';
+    const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
+    if (role === 'admin' && !isOwner) {
+      const existing = await fetchCloudAccount(email).catch(() => null);
+      if (!existing || existing.role !== 'admin') {
+        role = 'member'; // Enforce member role
+      }
+    }
+
     const id = profile.id || `acc_${email.replace(/[^a-zA-Z0-9]/g, '_')}`;
     const payload = {
       id: id,
@@ -230,7 +281,7 @@ export async function saveCloudAccount(profile) {
       full_name: profile.fullName || email.split('@')[0].toUpperCase(),
       alias: profile.alias || 'Rider 7G',
       phone: profile.phone || '',
-      role: profile.role || 'member',
+      role: role,
       avatar_url: profile.avatarUrl || '',
       updated_at: new Date().toISOString()
     };
