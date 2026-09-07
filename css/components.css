@@ -99,14 +99,14 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: transparent;
-  color: var(--paper-white);
+  background: #080808;
+  color: #FFFFFF;
   font-family: var(--font-headline);
   font-size: 1.1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 13px 26px;
-  border: 2px solid var(--paper-white);
+  border: 2px solid #FFFFFF;
   box-shadow: 4px 4px 0px var(--accent-pink);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -116,7 +116,7 @@
 .btn-brutal-ghost:hover {
   background: var(--accent-pink);
   color: #000000;
-  border-color: var(--accent-pink);
+  border-color: #000000;
   box-shadow: 4px 4px 0px #FFFFFF;
   transform: translate(-2px, -2px);
 }
@@ -442,6 +442,22 @@
   box-shadow: 3px 3px 0px var(--accent-pink);
 }
 
+/* ── CATALOG HERO SECTION ── */
+.catalog-hero {
+  background: rgba(8, 8, 8, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 70px 0 50px;
+  border-bottom: 3px solid var(--accent-pink);
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .catalog-hero {
+    padding: 48px 0 36px;
+  }
+}
+
 /* ── FILTER TABS ── */
 .filter-tabs-container {
   display: flex;
@@ -474,6 +490,30 @@
   border-color: #000000;
   box-shadow: 3px 3px 0px #FFFFFF;
   font-weight: 900;
+}
+
+@media (max-width: 768px) {
+  .filter-tabs-container > span {
+    display: none;
+  }
+  .filter-tabs-container {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    padding-bottom: 8px;
+    gap: 8px;
+    scrollbar-width: none;
+  }
+  .filter-tabs-container::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
 }
 
 /* ── ACCOUNT DASHBOARD SYSTEM ── */
@@ -871,6 +911,36 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .flash-sale-banner {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px 16px;
+    gap: 14px;
+    box-shadow: 5px 5px 0px var(--accent-pink);
+  }
+  .flash-sale-title {
+    font-size: 1.8rem;
+  }
+  .flash-sale-timer-wrap {
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px dashed #333;
+    padding-top: 12px;
+  }
+  .timer-box {
+    min-width: 42px;
+    padding: 3px 6px;
+  }
+  .timer-box .time-val {
+    font-size: 1.35rem;
+  }
+  .flash-sale-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
 }
 
 .card-flash-sale {

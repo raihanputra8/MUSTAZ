@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         title: part.name,
         message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
         image: part.image,
-        actionText: 'VIEW ARSENAL',
+        actionText: 'LIHAT KERANJANG',
         onAction: openCart
       });
     });

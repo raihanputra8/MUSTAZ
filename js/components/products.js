@@ -139,7 +139,7 @@ export function openProductDetail(product) {
       title: product.name,
       message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
       image: product.image,
-      actionText: 'VIEW ARSENAL',
+      actionText: 'LIHAT KERANJANG',
       onAction: openCart
     });
     closeProductModal();
@@ -181,7 +181,8 @@ function renderParts(data) {
     
     return `
       <article class="part-card group" data-category="${part.category}" style="${tiltStyle}transition:all 0.2s ease;">
-        <div style="background:#FFFFFF;color:#000;border:3px solid #000;box-shadow:6px 6px 0px #000;padding:16px;position:relative;display:flex;flex-direction:column;height:100%;">
+        <div style="background:#FFFFFF;color:#000;border:3px solid #000;box-shadow:8px 8px 0px var(--accent-pink);padding:18px;position:relative;display:flex;flex-direction:column;height:100%;">
+          <div class="tape-decor tape-top-left" style="background:rgba(255,230,0,0.75);"></div>
           
           <!-- Top Row: Number + Category Tag + Tape -->
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -224,11 +225,11 @@ function renderParts(data) {
 
             <!-- Action Buttons: Add to Cart + Quick View -->
             <div style="display:flex;gap:8px;">
-              <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.95rem;justify-content:center;">
-                + ADD
+              <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.92rem;justify-content:center;letter-spacing:0.04em;">
+                + KERANJANG
               </button>
-              <button class="quick-view-btn" data-id="${part.id}" style="background:#000;color:#FFF;border:2px solid #000;padding:10px 14px;font-family:var(--font-headline);font-size:0.95rem;cursor:pointer;" title="View Specs">
-                VIEW →
+              <button class="quick-view-btn" data-id="${part.id}" style="background:#000;color:#FFF;border:2px solid #000;padding:10px 14px;font-family:var(--font-headline);font-size:0.92rem;cursor:pointer;letter-spacing:0.04em;" title="Lihat Detail">
+                DETAIL →
               </button>
             </div>
           </div>
@@ -249,7 +250,7 @@ function renderParts(data) {
         title: part.name,
         message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
         image: part.image,
-        actionText: 'VIEW ARSENAL',
+        actionText: 'LIHAT KERANJANG',
         onAction: openCart
       });
     });
@@ -420,7 +421,7 @@ function renderHelmets(data) {
         title: chop.name,
         message: `INQUIRY ADDED! Finalize via WhatsApp.`,
         image: chop.image,
-        actionText: 'VIEW ARSENAL',
+        actionText: 'LIHAT KERANJANG',
         onAction: openCart
       });
     });

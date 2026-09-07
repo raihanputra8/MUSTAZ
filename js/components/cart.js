@@ -15,8 +15,8 @@ function getCartDrawerHTML() {
       <div class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Shopping Cart">
         <div class="cart-header">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div style="background:var(--accent-pink);color:#FFF;font-family:var(--font-headline);font-weight:900;padding:2px 8px;font-size:0.85rem;border:1px solid #000;">GARAGE</div>
-            <h3>YOUR ARSENAL</h3>
+            <div style="background:var(--accent-pink);color:#FFF;font-family:var(--font-headline);font-weight:900;padding:2px 8px;font-size:0.85rem;border:1px solid #000;">MUSTAZ</div>
+            <h3>KERANJANG BELANJA</h3>
           </div>
           <button class="cart-close-btn" id="cartCloseBtn" aria-label="Close cart">
             <span class="material-symbols-outlined">close</span>
@@ -117,7 +117,7 @@ function renderCartItems() {
     list.innerHTML = `
       <div class="cart-empty-state">
         <div class="cart-empty-icon">🔒</div>
-        <p class="cart-empty-title">ARSENAL LOCKED</p>
+        <p class="cart-empty-title">KERANJANG TERKUNCI</p>
         <p class="cart-empty-sub">Silakan masuk atau buat akun terlebih dahulu untuk mengaktifkan keranjang belanja Anda.</p>
         <a href="login.html" class="btn-brutal-yellow btn-brutal-sm" style="margin-top:20px;display:inline-flex;">
           MASUK KE AKUN →
@@ -144,10 +144,10 @@ function renderCartItems() {
     list.innerHTML = `
       <div class="cart-empty-state">
         <div class="cart-empty-icon">🏍️</div>
-        <p class="cart-empty-title">ARSENAL IS EMPTY</p>
+        <p class="cart-empty-title">KERANJANG BELANJA KOSONG</p>
         <p class="cart-empty-sub">Belum ada visor atau part yang dipilih. Masuk ke katalog untuk melengkapi helm Anda.</p>
         <a href="parts.html" class="btn-brutal-pink btn-brutal-sm" style="margin-top:20px;display:inline-flex;">
-          ENTER PARTS SHOP →
+          LIHAT KATALOG PRODUK →
         </a>
       </div>
     `;

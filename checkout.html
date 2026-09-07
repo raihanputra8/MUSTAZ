@@ -51,7 +51,7 @@
         <span class="material-symbols-outlined">person</span>
       </a>
 
-      <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="View Arsenal">
+      <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="Lihat Keranjang">
         <span class="material-symbols-outlined">shopping_cart</span>
         <span class="cart-label">CART</span>
         <span class="cart-count-badge mustaz-cart-badge" id="headerCartBadge">0</span>
@@ -201,7 +201,7 @@
       if (list) {
         list.innerHTML = `
           <div style="text-align:center;padding:32px 0;">
-            <p style="font-family:var(--font-headline);font-size:1.4rem;color:#000;">ARSENAL IS EMPTY</p>
+            <p style="font-family:var(--font-headline);font-size:1.4rem;color:#000;">KERANJANG BELANJA KOSONG</p>
             <p style="font-size:0.85rem;color:#666;margin-top:6px;">Pilih produk pet helm atau kustom parts sebelum menyelesaikan pesanan.</p>
             <a href="parts.html" class="btn-brutal-pink btn-brutal-sm" style="margin-top:16px;display:inline-flex;">LIHAT KATALOG PRODUK</a>
           </div>
@@ -242,7 +242,7 @@
       e.preventDefault();
       const items = getCart();
       if (!items || items.length === 0) {
-        alert('Your arsenal is empty! Please add hardware first.');
+        alert('Keranjang belanja Anda masih kosong! Silakan pilih produk terlebih dahulu.');
         return;
       }
       const name = document.getElementById('chkName').value.trim();

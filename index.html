@@ -51,7 +51,7 @@
         <span class="material-symbols-outlined">person</span>
       </a>
 
-      <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="View Arsenal">
+      <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="Lihat Keranjang">
         <span class="material-symbols-outlined">shopping_cart</span>
         <span class="cart-label">CART</span>
         <span class="cart-count-badge mustaz-cart-badge" id="headerCartBadge">0</span>
@@ -116,7 +116,7 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:56px;align-items:center;">
         
         <!-- LEFT: EDITORIAL HEADLINE & METADATA -->
-        <div style="position:relative;z-index:10;">
+        <div class="hero-editorial-panel" style="position:relative;z-index:10;">
           <!-- Metadata Stamps -->
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
             <span class="zine-tag-yellow">PET HELM ARCHIVE</span>
@@ -131,12 +131,12 @@
           </h1>
 
           <!-- Editorial Description -->
-          <p style="font-size:1.05rem;color:#C0C0C0;max-width:520px;border-left:4px solid var(--accent-yellow);padding-left:20px;margin-bottom:32px;line-height:1.6;">
+          <p style="font-size:1.05rem;color:#E8E8E8;max-width:520px;border-left:4px solid var(--accent-yellow);padding-left:20px;margin-bottom:32px;line-height:1.6;text-shadow:0 1px 3px rgba(0,0,0,0.8);">
             Radical visor peaks, hand-crafted pet helm, and studded headgear accessories for two-wheeled street rebels. Hand-forged in dust, heavy leather, and high-voltage neon. No generic factory plastic.
           </p>
 
           <!-- CTA Buttons -->
-          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+          <div class="hero-cta-group" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
             <a href="parts.html" class="btn-brutal-yellow" style="font-size:1.2rem;padding:18px 36px;">
               ENTER SHOP →
             </a>
@@ -518,7 +518,7 @@
   </section>
 
   <!-- SECTION 02: FEATURED HERO PET VISOR -->
-  <section style="padding:90px 0;background:transparent;border-top:2px solid var(--border-subtle);border-bottom:2px solid var(--border-subtle);">
+  <section style="padding:90px 0;background:transparent;border-top:2px solid var(--border-subtle);border-bottom:none;">
     <div class="wrap">
       <div class="card-brutal-white" style="box-shadow:12px 12px 0px var(--accent-yellow);padding:36px;border:4px solid #000;">
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:48px;align-items:center;">
@@ -550,7 +550,7 @@
             </p>
             <div style="display:flex;gap:14px;flex-wrap:wrap;">
               <button class="btn-brutal-pink" data-add-to-cart="pet-1" style="font-size:1.15rem;padding:16px 28px;">
-                + ADD TO ARSENAL
+                + TAMBAH KE KERANJANG
               </button>
               <a href="parts.html" class="btn-brutal-dark" style="background:#000;color:#FFF;padding:16px 28px;font-family:var(--font-headline);font-size:1.15rem;border:2px solid #000;cursor:pointer;text-decoration:none;">
                 ALL VISOR SPECS →
@@ -566,14 +566,16 @@
   <!-- FIGMA EXTENSION: 3D VISOR COVERFLOW SLIDER (FOR RIDING WITH PRIDE) -->
   <section class="visor-showcase-section" id="visorShowcaseSection">
     <div class="wrap">
-      <!-- Centered Editorial Header from Figma -->
+      <!-- Centered Editorial Header from Figma (High Contrast Brutalist Badge) -->
       <div style="text-align:center;margin-bottom:36px;">
-        <span style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);letter-spacing:0.18em;text-transform:uppercase;display:block;margin-bottom:6px;">
-          BEST SELLER
-        </span>
-        <h2 style="font-family:var(--font-headline);font-size:clamp(2.4rem, 5.2vw, 4.2rem);color:#FFFFFF;letter-spacing:0.02em;margin:0;line-height:0.95;text-transform:uppercase;">
-          FOR RIDING WITH PRIDE
-        </h2>
+        <div style="display:inline-block;background:#080808;border:2.5px solid var(--accent-pink);box-shadow:6px 6px 0px var(--accent-yellow);padding:14px 28px;max-width:92%;">
+          <span style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);letter-spacing:0.18em;text-transform:uppercase;display:block;margin-bottom:4px;">
+            ★ BEST SELLER ★
+          </span>
+          <h2 style="font-family:var(--font-headline);font-size:clamp(2rem, 4.5vw, 3.8rem);color:#FFFFFF;letter-spacing:0.02em;margin:0;line-height:0.95;text-transform:uppercase;text-shadow:2px 2px 0px #000;">
+            FOR RIDING WITH PRIDE
+          </h2>
+        </div>
       </div>
 
       <!-- 3D Carousel Stage Container -->
