@@ -982,84 +982,233 @@
 /* ==========================================================================
    FIGMA EXTENSION: VISOR COLORWAYS GALLERY SHOWCASE
    ========================================================================== */
+/* ==========================================================================
+   FIGMA EXTENSION: 3D VISOR COVERFLOW SLIDER (FOR RIDING WITH PRIDE)
+   ========================================================================== */
 .visor-showcase-section {
-  padding: 80px 0;
+  padding: 80px 0 100px;
   background: transparent;
   position: relative;
-  border-bottom: 2px solid var(--border-subtle);
+  overflow: hidden;
 }
 
-.visor-showcase-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 18px;
+.visor-slider-container {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 30px 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.visor-colorway-card {
-  background: #0E0E0E;
-  border: 2px solid #282828;
-  box-shadow: 4px 4px 0px #000000;
-  padding: 16px;
+.visor-slider-stage {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.visor-slide {
+  position: absolute;
+  width: 240px;
+  height: 220px;
+  cursor: pointer;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), 
+              opacity 0.55s ease, 
+              box-shadow 0.55s ease;
+  user-select: none;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s ease;
-  position: relative;
+  align-items: center;
 }
 
-.visor-colorway-card:hover {
-  border-color: var(--accent-yellow);
-  box-shadow: 6px 6px 0px var(--accent-pink);
-  transform: translateY(-4px);
-}
-
-.visor-colorway-img {
+.visor-card-inner {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: 100%;
   background: #000000;
-  border: 1px solid #222222;
+  border: 2px solid #282828;
+  border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease;
 }
 
-.visor-colorway-img img {
+.visor-card-inner img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
-.visor-colorway-card:hover .visor-colorway-img img {
-  transform: scale(1.08);
+/* 3D Positions relative to active slide */
+.visor-slide.pos-active {
+  transform: translateX(0) scale(1.35);
+  z-index: 10;
+  opacity: 1;
 }
 
-.visor-colorway-tag {
-  display: inline-block;
-  font-family: var(--font-mono-sub);
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 2px 8px;
-  background: #202020;
-  color: var(--accent-yellow);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-  align-self: flex-start;
+.visor-slide.pos-active .visor-card-inner {
+  border: 2.5px solid var(--accent-pink);
+  box-shadow: 0 0 30px rgba(160, 0, 120, 0.75), 0 0 10px rgba(160, 0, 120, 0.5);
 }
 
-.visor-colorway-name {
+.visor-slide.pos-prev-1 {
+  transform: translateX(-165px) scale(0.88);
+  z-index: 5;
+  opacity: 0.85;
+}
+
+.visor-slide.pos-next-1 {
+  transform: translateX(165px) scale(0.88);
+  z-index: 5;
+  opacity: 0.85;
+}
+
+.visor-slide.pos-prev-2 {
+  transform: translateX(-310px) scale(0.72);
+  z-index: 2;
+  opacity: 0.6;
+}
+
+.visor-slide.pos-next-2 {
+  transform: translateX(310px) scale(0.72);
+  z-index: 2;
+  opacity: 0.6;
+}
+
+.visor-slide.pos-hidden {
+  transform: translateX(0) scale(0.5);
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Captions under active visor */
+.visor-slide-caption {
+  position: absolute;
+  bottom: -46px;
+  text-align: center;
+  width: 280px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+.visor-slide.pos-active .visor-slide-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.v-caption-name {
+  display: block;
   font-family: var(--font-headline);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: #FFFFFF;
-  line-height: 1;
-  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
 }
 
-.visor-colorway-sub {
+.v-caption-spec {
+  display: block;
   font-family: var(--font-mono-sub);
   font-size: 0.72rem;
-  color: #888888;
-  line-height: 1.4;
-  margin-bottom: 12px;
+  color: var(--accent-yellow);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Navigation Arrow Buttons */
+.visor-slider-arrow {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  background: #000000;
+  border: 2px solid var(--accent-pink);
+  color: #FFFFFF;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.2s ease;
+  box-shadow: 3px 3px 0px #000000;
+}
+
+.visor-slider-arrow.prev {
+  left: 10px;
+}
+
+.visor-slider-arrow.next {
+  right: 10px;
+}
+
+.visor-slider-arrow:hover {
+  background: var(--accent-yellow);
+  color: #000000;
+  border-color: #000000;
+  box-shadow: 3px 3px 0px var(--accent-pink);
+}
+
+/* Dot Indicators */
+.visor-slider-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 36px;
+}
+
+.v-dot {
+  width: 10px;
+  height: 10px;
+  background: #333333;
+  border: 1px solid #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.v-dot.active {
+  background: var(--accent-pink);
+  width: 24px;
+  box-shadow: 0 0 10px var(--accent-pink);
+}
+
+@media (max-width: 768px) {
+  .visor-slider-stage {
+    height: 260px;
+  }
+  .visor-slide {
+    width: 180px;
+    height: 165px;
+  }
+  .visor-slide.pos-active {
+    transform: translateX(0) scale(1.22);
+  }
+  .visor-slide.pos-prev-1 {
+    transform: translateX(-100px) scale(0.82);
+    opacity: 0.75;
+  }
+  .visor-slide.pos-next-1 {
+    transform: translateX(100px) scale(0.82);
+    opacity: 0.75;
+  }
+  .visor-slide.pos-prev-2,
+  .visor-slide.pos-next-2 {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 

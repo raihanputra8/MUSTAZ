@@ -112,4 +112,142 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   initFlashSaleTimer();
+
+  // 8. 3D Visor Coverflow Carousel with Auto-Slide (FOR RIDING WITH PRIDE)
+  function initVisorCoverflowSlider() {
+    const stage = document.getElementById('visorSliderStage');
+    if (!stage) return;
+
+    const slides = Array.from(stage.querySelectorAll('.visor-slide'));
+    const dots = Array.from(document.querySelectorAll('.v-dot'));
+    const prevBtn = document.getElementById('visorSlidePrev');
+    const nextBtn = document.getElementById('visorSlideNext');
+    const container = document.getElementById('visorSliderContainer');
+
+    const total = slides.length;
+    let currentIndex = 2; // initial center slide: Pink Spiked Hero
+    let autoSlideTimer = null;
+    const INTERVAL = 3000; // auto-slide every 3 seconds
+
+    function updatePositions() {
+      slides.forEach((slide, idx) => {
+        let offset = (idx - currentIndex + total) % total;
+        if (offset > total / 2) offset -= total;
+
+        slide.classList.remove(
+          'pos-active',
+          'pos-prev-1',
+          'pos-next-1',
+          'pos-prev-2',
+          'pos-next-2',
+          'pos-hidden'
+        );
+
+        if (offset === 0) {
+          slide.classList.add('pos-active');
+        } else if (offset === -1) {
+          slide.classList.add('pos-prev-1');
+        } else if (offset === 1) {
+          slide.classList.add('pos-next-1');
+        } else if (offset === -2) {
+          slide.classList.add('pos-prev-2');
+        } else if (offset === 2) {
+          slide.classList.add('pos-next-2');
+        } else {
+          slide.classList.add('pos-hidden');
+        }
+      });
+
+      dots.forEach((dot, idx) => {
+        if (idx === currentIndex) dot.classList.add('active');
+        else dot.classList.remove('active');
+      });
+    }
+
+    function goToSlide(index) {
+      currentIndex = (index + total) % total;
+      updatePositions();
+    }
+
+    function nextSlide() {
+      goToSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      goToSlide(currentIndex - 1);
+    }
+
+    // Navigation buttons
+    nextBtn?.addEventListener('click', () => {
+      nextSlide();
+      resetTimer();
+    });
+
+    prevBtn?.addEventListener('click', () => {
+      prevSlide();
+      resetTimer();
+    });
+
+    // Click on side slide to focus
+    slides.forEach((slide, idx) => {
+      slide.addEventListener('click', () => {
+        if (currentIndex !== idx) {
+          goToSlide(idx);
+          resetTimer();
+        }
+      });
+    });
+
+    // Pagination dots
+    dots.forEach((dot, idx) => {
+      dot.addEventListener('click', () => {
+        goToSlide(idx);
+        resetTimer();
+      });
+    });
+
+    // Auto-slide loop
+    function startTimer() {
+      stopTimer();
+      autoSlideTimer = setInterval(nextSlide, INTERVAL);
+    }
+
+    function stopTimer() {
+      if (autoSlideTimer) clearInterval(autoSlideTimer);
+    }
+
+    function resetTimer() {
+      stopTimer();
+      startTimer();
+    }
+
+    // Pause on hover
+    if (container) {
+      container.addEventListener('mouseenter', stopTimer);
+      container.addEventListener('mouseleave', startTimer);
+    }
+
+    // Touch Swipe Support for mobile
+    let touchStartX = 0;
+    stage.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      stopTimer();
+    }, { passive: true });
+
+    stage.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 40) {
+        if (diff < 0) nextSlide();
+        else prevSlide();
+      }
+      startTimer();
+    }, { passive: true });
+
+    // Initial state
+    updatePositions();
+    startTimer();
+  }
+
+  initVisorCoverflowSlider();
 });

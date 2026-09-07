@@ -578,89 +578,94 @@
     </div>
   </section>
 
-  <!-- FIGMA EXTENSION: VISOR COLORWAYS GALLERY SHOWCASE -->
-  <section class="visor-showcase-section">
+  <!-- FIGMA EXTENSION: 3D VISOR COVERFLOW SLIDER (FOR RIDING WITH PRIDE) -->
+  <section class="visor-showcase-section" id="visorShowcaseSection">
     <div class="wrap">
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px;flex-wrap:wrap;gap:16px;">
-        <div>
-          <div class="section-meta-header">
-            <span class="section-num" style="color:var(--accent-pink);">LINEUP</span>
-            <span class="section-label" style="color:var(--accent-yellow);">VISOR COLORWAYS & FINISHES</span>
-          </div>
-          <h2 class="editorial-title" style="margin-bottom:0;font-size:clamp(2rem, 4vw, 3rem);">
-            THE KUSTOM VISOR ARSENAL
-          </h2>
-        </div>
-        <a href="parts.html" class="btn-brutal-yellow btn-brutal-sm">
-          EXPLORE ALL SPECS →
-        </a>
+      <!-- Centered Editorial Header from Figma -->
+      <div style="text-align:center;margin-bottom:36px;">
+        <span style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);letter-spacing:0.18em;text-transform:uppercase;display:block;margin-bottom:6px;">
+          BEST SELLER
+        </span>
+        <h2 style="font-family:var(--font-headline);font-size:clamp(2.4rem, 5.2vw, 4.2rem);color:#FFFFFF;letter-spacing:0.02em;margin:0;line-height:0.95;text-transform:uppercase;">
+          FOR RIDING WITH PRIDE
+        </h2>
       </div>
 
-      <div class="visor-showcase-grid">
-        <!-- Colorway 1 -->
-        <div class="visor-colorway-card">
-          <div class="visor-colorway-img">
-            <img src="assets/images/pet_visor_yellow_flame.png" alt="Acid Yellow Neon Acrylic">
+      <!-- 3D Carousel Stage Container -->
+      <div class="visor-slider-container" id="visorSliderContainer">
+        <button class="visor-slider-arrow prev" id="visorSlidePrev" aria-label="Previous Visor">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+
+        <div class="visor-slider-stage" id="visorSliderStage">
+          <!-- Slide 0: Orange Visor -->
+          <div class="visor-slide" data-index="0" data-name="AMBER SUN DUCKBILL" data-spec="AERODYNAMIC CURVE // 3-SNAP">
+            <div class="visor-card-inner">
+              <img src="assets/images/slider_visors/visor_1_orange.png" alt="Amber Sun Duckbill Visor">
+            </div>
+            <div class="visor-slide-caption">
+              <span class="v-caption-name">AMBER SUN DUCKBILL</span>
+              <span class="v-caption-spec">3-SNAP UNIVERSAL</span>
+            </div>
           </div>
-          <span class="visor-colorway-tag">COLORWAY 01</span>
-          <h3 class="visor-colorway-name">ACID NEON</h3>
-          <p class="visor-colorway-sub">High-translucent UV optical acrylic with piercing fluorescent glow.</p>
-          <div style="margin-top:auto;font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-yellow);font-weight:700;">
-            3-SNAP UNIVERSAL
+
+          <!-- Slide 1: White Flame Visor -->
+          <div class="visor-slide" data-index="1" data-name="FIREBIRD WHITE FLAME" data-spec="DUAL COLOR FLAME // SPIKED">
+            <div class="visor-card-inner">
+              <img src="assets/images/slider_visors/visor_2_white.png" alt="Firebird White Flame Visor">
+            </div>
+            <div class="visor-slide-caption">
+              <span class="v-caption-name">FIREBIRD WHITE FLAME</span>
+              <span class="v-caption-spec">PUNK RIVETS // 3-SNAP</span>
+            </div>
+          </div>
+
+          <!-- Slide 2: Pink Blue-Flame Spiked Hero (Initial Center) -->
+          <div class="visor-slide pos-active" data-index="2" data-name="CHROME HELLFIRE PET" data-spec="PUNK SPIKES // HEART FLAME CUT">
+            <div class="visor-card-inner">
+              <img src="assets/images/slider_visors/visor_3_pink_hero.png" alt="Chrome Hellfire Spiked Visor">
+            </div>
+            <div class="visor-slide-caption">
+              <span class="v-caption-name">CHROME HELLFIRE PET</span>
+              <span class="v-caption-spec">FEATURED // HEART FLAME CUT</span>
+            </div>
+          </div>
+
+          <!-- Slide 3: Yellow Flame Visor -->
+          <div class="visor-slide" data-index="3" data-name="ACID YELLOW FLAME" data-spec="HIGH-TRANSLUCENT ACRYLIC">
+            <div class="visor-card-inner">
+              <img src="assets/images/slider_visors/visor_4_yellow.png" alt="Acid Yellow Flame Visor">
+            </div>
+            <div class="visor-slide-caption">
+              <span class="v-caption-name">ACID YELLOW FLAME</span>
+              <span class="v-caption-spec">HIGH-TRANSLUCENT // 3-SNAP</span>
+            </div>
+          </div>
+
+          <!-- Slide 4: Black Flame Visor -->
+          <div class="visor-slide" data-index="4" data-name="OBSIDIAN GOLD FLAME" data-spec="UV DARK SHIELD // RACER">
+            <div class="visor-card-inner">
+              <img src="assets/images/slider_visors/visor_5_black.png" alt="Obsidian Gold Flame Visor">
+            </div>
+            <div class="visor-slide-caption">
+              <span class="v-caption-name">OBSIDIAN GOLD FLAME</span>
+              <span class="v-caption-spec">UV DARK SHIELD // UNIVERSAL</span>
+            </div>
           </div>
         </div>
 
-        <!-- Colorway 2 -->
-        <div class="visor-colorway-card">
-          <div class="visor-colorway-img">
-            <img src="assets/images/retro_checkered_helmet.png" alt="Checker Motocross">
-          </div>
-          <span class="visor-colorway-tag">COLORWAY 02</span>
-          <h3 class="visor-colorway-name">MONO CHECKER</h3>
-          <p class="visor-colorway-sub">Distressed vintage 70s race track pattern on impact ABS.</p>
-          <div style="margin-top:auto;font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-yellow);font-weight:700;">
-            3-SNAP UNIVERSAL
-          </div>
-        </div>
+        <button class="visor-slider-arrow next" id="visorSlideNext" aria-label="Next Visor">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
 
-        <!-- Colorway 3 -->
-        <div class="visor-colorway-card">
-          <div class="visor-colorway-img">
-            <img src="assets/images/pet_visor_yellow_flame.png" alt="Chrome Spiked Punk">
-          </div>
-          <span class="visor-colorway-tag">COLORWAY 03</span>
-          <h3 class="visor-colorway-name">CHROME SPIKED</h3>
-          <p class="visor-colorway-sub">Heavy industrial punk spike rivets machine-locked to frame.</p>
-          <div style="margin-top:auto;font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-yellow);font-weight:700;">
-            SOLID BRASS SNAPS
-          </div>
-        </div>
-
-        <!-- Colorway 4 -->
-        <div class="visor-colorway-card">
-          <div class="visor-colorway-img">
-            <img src="assets/images/retro_checkered_helmet.png" alt="Smoked Obsidian">
-          </div>
-          <span class="visor-colorway-tag">COLORWAY 04</span>
-          <h3 class="visor-colorway-name">DARK OBSIDIAN</h3>
-          <p class="visor-colorway-sub">Deep smoked polycarbonate shield with 99% UV daylight cutoff.</p>
-          <div style="margin-top:auto;font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-yellow);font-weight:700;">
-            3-SNAP UNIVERSAL
-          </div>
-        </div>
-
-        <!-- Colorway 5 -->
-        <div class="visor-colorway-card">
-          <div class="visor-colorway-img">
-            <img src="assets/images/mustaz_booth_event.png" alt="Heavy Leather Craft">
-          </div>
-          <span class="visor-colorway-tag">COLORWAY 05</span>
-          <h3 class="visor-colorway-name">HELLFIRE LEATHER</h3>
-          <p class="visor-colorway-sub">Tough water-resistant cowhide with hand-tooled flame motif.</p>
-          <div style="margin-top:auto;font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-yellow);font-weight:700;">
-            HAND CRAFTED
-          </div>
-        </div>
+      <!-- Pagination Dot Indicators -->
+      <div class="visor-slider-dots" id="visorSliderDots">
+        <span class="v-dot" data-target="0"></span>
+        <span class="v-dot" data-target="1"></span>
+        <span class="v-dot active" data-target="2"></span>
+        <span class="v-dot" data-target="3"></span>
+        <span class="v-dot" data-target="4"></span>
       </div>
     </div>
   </section>
