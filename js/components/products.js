@@ -2,7 +2,7 @@
  * MUSTAZ Garage Zine - Catalog & Product Detail Engine
  */
 
-import { CHOPPERS_DATA, PARTS_DATA, getDynamicParts, addToCart, formatRupiah, getCartCount } from '../services/cartService.js';
+import { HELMETS_DATA, CHOPPERS_DATA, PARTS_DATA, getDynamicParts, addToCart, formatRupiah, getCartCount } from '../services/cartService.js';
 import { openCart } from './cart.js';
 import { showToast } from './toast.js';
 
@@ -47,7 +47,7 @@ export function openProductDetail(product) {
   if (skuEl) skuEl.textContent = product.id.toUpperCase();
   if (catEl) catEl.textContent = (product.category || 'HARDWARE').toUpperCase();
 
-  const isChopper = product.type === 'choppers';
+  const isChopper = product.type === 'choppers' || product.type === 'helmets';
 
   content.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:32px;align-items:start;">
@@ -104,7 +104,7 @@ export function openProductDetail(product) {
             </div>
             <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:6px 0;border-bottom:1px solid #1e1e1e;">
               <span style="color:#888;font-family:var(--font-mono-sub);">FITMENT</span>
-              <span style="color:#FFF;font-weight:700;">Universal / Chopper & Bobber Platforms</span>
+              <span style="color:#FFF;font-weight:700;">Universal Pet Helm / 3-Snap & Strap Fitment</span>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:6px 0;border-bottom:1px solid #1e1e1e;">
               <span style="color:#888;font-family:var(--font-mono-sub);">FINISH</span>
@@ -325,10 +325,10 @@ export function initPartsPage() {
   });
 }
 
-// ─── CHOPPERS BUILDS CATALOG ───────────────────────────────────────────────
+// ─── HELMETS & KUSTOM BUILDS CATALOG ─────────────────────────────────────────
 
-function renderChoppers(data) {
-  const grid = document.getElementById('choppersGrid');
+function renderHelmets(data) {
+  const grid = document.getElementById('helmetsGrid') || document.getElementById('choppersGrid');
   if (!grid) return;
 
   if (data.length === 0) {
@@ -348,7 +348,7 @@ function renderChoppers(data) {
     const tiltStyle = index % 2 === 1 ? 'transform: translateY(12px);' : '';
 
     return `
-      <article class="chopper-card" data-category="${chop.category}" style="${tiltStyle}">
+      <article class="helmet-card chopper-card" data-category="${chop.category}" style="${tiltStyle}">
         <div class="card-brutal-white" style="display:flex;flex-direction:column;height:100%;padding:20px;">
           
           <!-- Top Tag & Stamp -->
@@ -361,8 +361,8 @@ function renderChoppers(data) {
             </span>
           </div>
 
-          <!-- Chopper Image (4:5 proportional ratio) -->
-          <div style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:16px;cursor:pointer;" class="chopper-view-trigger" data-id="${chop.id}">
+          <!-- Helmet Image (4:5 proportional ratio) -->
+          <div style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:16px;cursor:pointer;" class="chopper-view-trigger helmet-view-trigger" data-id="${chop.id}">
             <img src="${chop.image}" alt="${chop.name}"
               style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);transition:all 0.3s ease;"
               onerror="this.src='${chop.fallback}'"
@@ -370,8 +370,8 @@ function renderChoppers(data) {
               onmouseout="this.style.filter='contrast(110%)';this.style.transform='scale(1)';">
           </div>
 
-          <!-- Chopper Title & Sub -->
-          <h2 style="font-family:var(--font-headline);font-size:1.8rem;color:#000;text-transform:uppercase;line-height:0.9;margin-bottom:4px;cursor:pointer;" class="chopper-view-trigger" data-id="${chop.id}">
+          <!-- Helmet Title & Sub -->
+          <h2 style="font-family:var(--font-headline);font-size:1.8rem;color:#000;text-transform:uppercase;line-height:0.9;margin-bottom:4px;cursor:pointer;" class="chopper-view-trigger helmet-view-trigger" data-id="${chop.id}">
             ${chop.name}
           </h2>
           <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#555;text-transform:uppercase;margin-bottom:14px;">
@@ -427,23 +427,25 @@ function renderChoppers(data) {
   });
 
   // Wire quick detail
-  grid.querySelectorAll('.chopper-view-trigger').forEach(el => {
+  grid.querySelectorAll('.chopper-view-trigger, .helmet-view-trigger').forEach(el => {
     el.addEventListener('click', () => {
-      const chop = CHOPPERS_DATA.find(c => c.id === el.dataset.id);
+      const chop = HELMETS_DATA.find(c => c.id === el.dataset.id);
       if (chop) openProductDetail(chop);
     });
   });
 }
 
-export function initChoppersPage() {
-  const container = document.getElementById('choppersGrid');
+export const renderChoppers = renderHelmets;
+
+export function initHelmetsPage() {
+  const container = document.getElementById('helmetsGrid') || document.getElementById('choppersGrid');
   if (!container) return;
 
   let activeCategory = 'ALL';
   let searchQuery = '';
 
   function applyFilters() {
-    let result = CHOPPERS_DATA;
+    let result = HELMETS_DATA;
     if (activeCategory !== 'ALL') {
       result = result.filter(c => c.category.toLowerCase() === activeCategory.toLowerCase());
     }
@@ -454,7 +456,7 @@ export function initChoppersPage() {
         c.category.toLowerCase().includes(searchQuery)
       );
     }
-    renderChoppers(result);
+    renderHelmets(result);
   }
 
   document.querySelectorAll('[data-filter]').forEach(btn => {
@@ -476,3 +478,5 @@ export function initChoppersPage() {
 
   applyFilters();
 }
+
+export const initChoppersPage = initHelmetsPage;

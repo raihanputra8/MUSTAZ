@@ -65,7 +65,7 @@ export function initNavbar() {
     });
   }
 
-  // Quick search button in header (if clicked on parts/choppers page, focuses input; else redirects to parts.html)
+  // Quick search button in header (if clicked on parts/helmets page, focuses input; else redirects to parts.html)
   document.getElementById('headerSearchBtn')?.addEventListener('click', () => {
     const searchInput = document.querySelector('[data-search]');
     if (searchInput) {

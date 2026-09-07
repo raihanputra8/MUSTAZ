@@ -4,8 +4,8 @@
 
 import { initCart, openCart } from './components/cart.js';
 import { initNavbar } from './components/navbar.js';
-import { initPartsPage, initChoppersPage, openProductDetail } from './components/products.js';
-import { addToCart, getCartCount, PARTS_DATA, CHOPPERS_DATA, getDynamicParts } from './services/cartService.js';
+import { initPartsPage, initHelmetsPage, initChoppersPage, openProductDetail } from './components/products.js';
+import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts } from './services/cartService.js';
 import { showToast } from './components/toast.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 3. Initialize Page-Specific Catalogs
   initPartsPage();
-  initChoppersPage();
+  initHelmetsPage();
 
   // 4. Wire Global "data-add-to-cart" buttons (e.g. on Home page or featured sections)
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('[data-quick-view]').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.quickView;
-      const item = getDynamicParts().find(p => p.id === id) || CHOPPERS_DATA.find(c => c.id === id);
+      const item = getDynamicParts().find(p => p.id === id) || (HELMETS_DATA || CHOPPERS_DATA).find(c => c.id === id);
       if (item) openProductDetail(item);
     });
   });

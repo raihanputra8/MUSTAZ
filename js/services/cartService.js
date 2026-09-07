@@ -8,9 +8,9 @@ const CART_KEY = 'mustaz_cart_v2';
 
 // ─── Product Catalog Data (Hosted on Supabase Storage CDN) ───────────────────
 
-export const CHOPPERS_DATA = [
+export const HELMETS_DATA = [
   {
-    id: 'custom-1', type: 'choppers', category: 'Custom Helmet',
+    id: 'custom-1', type: 'helmets', category: 'Custom Helmet',
     name: 'THE FLAME PILOT HELMET', sub: 'Open-Face Custom Lid + Studded Flame Leather Pet',
     price: 1850000, status: 'Available',
     specs: { Shell: 'Fiberglass Open Face', Pet: 'Hellfire Studded Leather', Snaps: 'Brass 3-Snap Universal', Finish: 'Matte Black Flame', Size: 'M / L / XL' },
@@ -18,7 +18,7 @@ export const CHOPPERS_DATA = [
     fallback: 'assets/images/pet_visor_yellow_flame.png'
   },
   {
-    id: 'custom-2', type: 'choppers', category: 'Custom Helmet',
+    id: 'custom-2', type: 'helmets', category: 'Custom Helmet',
     name: 'CHECKER SPEED DEMON', sub: 'Full Moto Retro Shell + Monochrome Checker Peak',
     price: 2450000, status: 'In Shop',
     specs: { Shell: 'Reinforced Retro Full Moto', Pet: 'Checkered Duckbill Peak', Finish: 'Hand-Distressed Gloss', Interior: 'Antibacterial Foam', Size: 'All Sizes' },
@@ -26,7 +26,7 @@ export const CHOPPERS_DATA = [
     fallback: 'assets/images/retro_checkered_helmet.png'
   },
   {
-    id: 'custom-3', type: 'choppers', category: 'Drop Sets',
+    id: 'custom-3', type: 'drop-sets', category: 'Drop Sets',
     name: 'MUSTAZ EVENT EDITION KIT', sub: 'Complete Rider Kit + Ziplock Packaging + Zine',
     price: 1200000, status: 'Limited Drop',
     specs: { Visor: 'Acid Spiked Acrylic Pet', Package: 'Heavy Duty Zip Pack', Gloves: 'Yellow Leather Gloves', Extra: 'Issue 04 Zine + Stickers', Batch: 'Series 01 Run' },
@@ -34,6 +34,9 @@ export const CHOPPERS_DATA = [
     fallback: 'assets/images/mustaz_booth_event.png'
   }
 ];
+
+// Backward-compatible alias
+export const CHOPPERS_DATA = HELMETS_DATA;
 
 export const DEFAULT_PARTS_DATA = [
   {
