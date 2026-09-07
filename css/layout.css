@@ -343,7 +343,7 @@
 /* ── TORN PAPER SEAMLESS TRANSITION TO FOOTER ── */
 .footer-torn-transition {
   width: 100%;
-  height: 220px;
+  height: 380px;
   background-color: var(--bg-deep);
   background-image: url('../assets/images/bg_footer_torn_paper.jpg');
   background-position: center bottom;
@@ -353,11 +353,13 @@
   padding: 0;
   border: none;
   display: block;
+  position: relative;
+  z-index: 5;
 }
 
 @media (max-width: 768px) {
   .footer-torn-transition {
-    height: 140px;
+    height: 200px;
   }
 }
 
