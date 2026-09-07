@@ -106,18 +106,22 @@
 <!-- Admin Root Container (Direct Admin Dashboard) -->
 <div id="adminRootContainer">
 <script>
-  // Unified Single-Role: Auto-initialize Admin Session instantly
   (function() {
     try {
-      var adminProfile = {
-        email: 'raihanputrairawan8@gmail.com',
-        fullName: 'MUSTAZ CRAFT ADMIN',
-        role: 'admin',
-        phone: '+62 812-3456-7890',
-        alias: 'OWNER / MASTER CRAFT'
-      };
-      localStorage.setItem('mustaz_auth_logged_in', 'true');
-      localStorage.setItem('mustaz_user_profile_data', JSON.stringify(adminProfile));
+      var isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+      var saved = localStorage.getItem('mustaz_user_profile_data');
+      // Set default Admin session if no active session exists
+      if (!isLogged || !saved) {
+        var adminProfile = {
+          email: 'raihanputrairawan8@gmail.com',
+          fullName: 'MUSTAZ CRAFT ADMIN',
+          role: 'admin',
+          phone: '+62 812-3456-7890',
+          alias: 'OWNER / MASTER CRAFT'
+        };
+        localStorage.setItem('mustaz_auth_logged_in', 'true');
+        localStorage.setItem('mustaz_user_profile_data', JSON.stringify(adminProfile));
+      }
     } catch(e) {}
   })();
 </script>
@@ -126,6 +130,29 @@
   <section style="padding:40px 0 90px;">
     <div class="wrap">
       
+      <!-- Non-Admin Notice (Shown only if current user is logged in as regular member) -->
+      <div id="adminNonAdminPrompt" style="display:none;background:#111111;border:3px solid var(--accent-yellow);box-shadow:8px 8px 0px #000, 8px 8px 0px 3px var(--accent-pink);padding:36px 28px;margin:20px auto 40px;max-width:560px;text-align:center;">
+        <span class="material-symbols-outlined" style="font-size:48px;color:var(--accent-yellow);display:block;margin-bottom:12px;">admin_panel_settings</span>
+        <h2 class="editorial-title" style="font-size:1.8rem;color:#FFF;margin:0 0 10px;">AREA KHUSUS ADMINISTRATOR</h2>
+        <p style="color:#AAA;font-size:0.85rem;line-height:1.6;margin-bottom:24px;" id="adminNonAdminMsg">
+          Anda saat ini sedang login sebagai <strong style="color:#4ade80;" id="adminCurrentEmail">User Biasa</strong>.<br>Halaman ini dikhususkan untuk pengelolaan stok, pesanan, dan upload katalog workshop.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button id="btnSwitchToAdminNow" type="button" class="btn-brutal-yellow" style="padding:14px;font-weight:900;font-size:0.95rem;cursor:pointer;">
+            ⚡ GANTI KE AKUN ADMIN SEKARANG (AUTO)
+          </button>
+          <button id="btnPromptLogout" type="button" class="btn-brutal-dark" style="padding:12px;color:#ef4444;border-color:#ef4444;cursor:pointer;">
+            🚪 LOG OUT DARI AKUN INI
+          </button>
+          <a href="parts.html" style="color:var(--accent-pink);font-size:0.85rem;text-decoration:none;margin-top:6px;display:inline-block;">
+            ← KEMBALI BELANJA DI KATALOG
+          </a>
+        </div>
+      </div>
+
+      <!-- Main Admin Dashboard Body -->
+      <div id="adminDashboardBody">
+
       <!-- Top Admin Greeting & Overview Card (Harmonized with account.html) -->
       <div class="card-brutal-dark" style="margin-bottom:36px;border-color:var(--accent-yellow);padding:28px 32px;background:#0f0f0f;">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
@@ -136,12 +163,16 @@
               <span style="font-family:var(--font-headline);font-size:2.2rem;font-weight:900;color:#000000;line-height:1;">M</span>
             </div>
             <div>
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
                 <h1 class="editorial-title" style="font-size:clamp(1.8rem, 3.5vw, 2.5rem);margin:0;color:#FFF;line-height:1;">
                   MUSTAZ CRAFT ADMIN
                 </h1>
                 <span class="zine-tag-yellow" style="font-size:0.65rem;padding:2px 8px;">MASTER DESK</span>
                 <span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">INVENTORY PROTOCOL</span>
+                <button id="btnAdminTopLogout" type="button" class="btn-brutal-pink btn-brutal-sm" style="background:#dc2626;border-color:#ef4444;color:#FFF;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;font-size:0.75rem;font-weight:900;cursor:pointer;" title="Keluar / Ganti Akun">
+                  <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
+                  <span>LOG OUT (GANTI AKUN)</span>
+                </button>
               </div>
               <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#AAA;letter-spacing:0.08em;margin:0;">
                 CONTROL DESK // PET VISOR CATALOG & REAL-TIME DISPATCH DISCIPLINE
@@ -201,10 +232,10 @@
               <span class="material-symbols-outlined" style="color:var(--accent-yellow);">open_in_new</span>
               <span>VIEW LIVE STORE ↗</span>
             </a>
-            <a href="index.html" class="account-nav-item" style="color:#FF4444;">
-              <span class="material-symbols-outlined" style="color:#FF4444;">logout</span>
-              <span>EXIT TO GARAGE</span>
-            </a>
+            <button id="btnAdminSidebarLogout" type="button" class="account-nav-item" style="width:100%;text-align:left;background:none;border:none;color:#ef4444;cursor:pointer;display:flex;align-items:center;gap:12px;">
+              <span class="material-symbols-outlined" style="color:#ef4444;">logout</span>
+              <span>LOG OUT / GANTI AKUN</span>
+            </button>
           </nav>
 
           <!-- Status / Synchronization Box -->
@@ -695,6 +726,7 @@
 
 <!-- FLOATING TOAST NOTIFICATION CONTAINER -->
 <div id="adminToastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
+</div><!-- /#adminDashboardBody -->
 </div><!-- /#adminRootContainer -->
 
 <script type="module" src="js/admin.js"></script>

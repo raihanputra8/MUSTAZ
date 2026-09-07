@@ -9,14 +9,26 @@ import { verifyAdminSession } from '../services/authService.js';
 
 // ─── HYBRID ADMIN STATE & CONTROLS ─────────────────────────────────────────
 
-let _isAdminCached = true;
-let _adminCheckCompleted = true;
+let _isAdminCached = false;
+let _adminCheckCompleted = false;
 
 export async function checkAdminStatus() {
-  _isAdminCached = true;
+  try {
+    const res = await verifyAdminSession();
+    _isAdminCached = !!(res && res.isAdmin);
+  } catch {
+    _isAdminCached = false;
+  }
   _adminCheckCompleted = true;
-  return true;
+  return _isAdminCached;
 }
+
+window.addEventListener('mustaz:logout', () => {
+  _isAdminCached = false;
+  _adminCheckCompleted = true;
+  document.getElementById('adminPublicFloatBadge')?.remove();
+  document.querySelectorAll('.admin-card-edit-btn, .admin-modal-edit-btn').forEach(b => b.remove());
+});
 
 export function mountAdminPublicFloatingBadge() {
   if (document.getElementById('adminPublicFloatBadge')) return;

@@ -254,28 +254,24 @@ export async function updatePassword(newPassword) {
  * Returns { isAdmin: boolean, user: object|null, reason?: string, email?: string }
  */
 export async function verifyAdminSession() {
-  let profile = {
-    email: 'raihanputrairawan8@gmail.com',
-    fullName: 'MUSTAZ CRAFT ADMIN',
-    role: 'admin',
-    phone: '+62 812-3456-7890',
-    alias: 'OWNER / MASTER CRAFT'
-  };
+  const isLoggedIn = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+  if (!isLoggedIn) {
+    return { isAdmin: false, user: null, reason: 'NOT_LOGGED_IN' };
+  }
   try {
     const saved = localStorage.getItem('mustaz_user_profile_data');
     if (saved) {
-      profile = { ...profile, ...JSON.parse(saved), role: 'admin' };
+      const parsed = JSON.parse(saved);
+      const email = (parsed.email || '').toLowerCase().trim();
+      const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
+      if (isOwner || parsed.role === 'admin') {
+        return { isAdmin: true, user: parsed, email, role: 'admin' };
+      }
+      return { isAdmin: false, user: parsed, email, role: parsed.role || 'member', reason: 'NOT_ADMIN' };
     }
-    localStorage.setItem('mustaz_auth_logged_in', 'true');
-    localStorage.setItem('mustaz_user_profile_data', JSON.stringify(profile));
   } catch {}
 
-  return {
-    isAdmin: true,
-    user: profile,
-    email: profile.email,
-    role: 'admin'
-  };
+  return { isAdmin: false, user: null, reason: 'NO_PROFILE' };
 }
 
 /**
@@ -295,10 +291,56 @@ export async function getAuthToken() {
 }
 
 /**
- * Fetch User Role & Profile ('admin')
+ * Fetch User Role ('admin' | 'member')
  */
 export async function checkUserRole(email) {
-  return 'admin';
+  if (!email) return 'member';
+  const normalized = email.toLowerCase().trim();
+  if (normalized === 'raihanputrairawan8@gmail.com' || normalized === 'admin@mustazcraft.com') {
+    return 'admin';
+  }
+  try {
+    const saved = localStorage.getItem('mustaz_user_profile_data');
+    if (saved) {
+      const p = JSON.parse(saved);
+      if (p.email && p.email.toLowerCase() === normalized && p.role) return p.role;
+    }
+  } catch {}
+  return 'member';
+}
+
+/**
+ * Quick Switch Helper: Switch active session directly to Owner/Admin
+ */
+export function loginAsAdminDirectly() {
+  const adminProfile = {
+    email: 'raihanputrairawan8@gmail.com',
+    fullName: 'MUSTAZ CRAFT ADMIN',
+    role: 'admin',
+    phone: '+62 812-3456-7890',
+    alias: 'OWNER / MASTER CRAFT'
+  };
+  localStorage.setItem('mustaz_auth_logged_in', 'true');
+  localStorage.setItem('mustaz_user_profile_data', JSON.stringify(adminProfile));
+  window.dispatchEvent(new CustomEvent('mustaz:auth_synced', { detail: adminProfile }));
+  return adminProfile;
+}
+
+/**
+ * Quick Switch Helper: Switch active session directly to Regular Customer/Member
+ */
+export function loginAsMemberDirectly(email = 'rider.customer@mustazcraft.com', name = 'RIDER CUSTOMER') {
+  const memberProfile = {
+    email,
+    fullName: name,
+    role: 'member',
+    phone: '+62 878-1234-5678',
+    alias: 'STREET RIDER'
+  };
+  localStorage.setItem('mustaz_auth_logged_in', 'true');
+  localStorage.setItem('mustaz_user_profile_data', JSON.stringify(memberProfile));
+  window.dispatchEvent(new CustomEvent('mustaz:auth_synced', { detail: memberProfile }));
+  return memberProfile;
 }
 
 /**

@@ -8,46 +8,130 @@ export function initNavbar() {
   const header = document.querySelector('header');
   if (!header) return;
 
-  // 1. Direct Single-Role: Always Admin
-  try {
-    let localProfile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
-    if (!localProfile || !localProfile.email) {
-      localProfile = {
-        email: 'raihanputrairawan8@gmail.com',
-        fullName: 'MUSTAZ CRAFT ADMIN',
-        role: 'admin',
-        phone: '+62 812-3456-7890',
-        alias: 'OWNER / MASTER CRAFT'
-      };
-    }
-    localProfile.role = 'admin';
-    localStorage.setItem('mustaz_user_profile_data', JSON.stringify(localProfile));
-    localStorage.setItem('mustaz_auth_logged_in', 'true');
-  } catch {}
+  // 1. Synchronize Authentication Status & Logout Buttons across navigation & footer
+  function syncNavbarState() {
+    const isLoggedIn = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+    let profile = {};
+    try {
+      profile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
+    } catch {}
 
-  // 2. Synchronize Admin links across navigation & footer
-  function syncAccountLinks() {
-    const accountLinks = document.querySelectorAll('a[href="account.html"], a[href="login.html"]');
-    accountLinks.forEach(link => {
-      link.setAttribute('href', 'admin.html');
-      link.setAttribute('title', 'Admin Dashboard');
+    const email = (profile.email || '').toLowerCase().trim();
+    const isAdmin = isLoggedIn && (profile.role === 'admin' || email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com');
+
+    // Update 'ADMIN' link in navbar: visible if admin, hidden for ordinary users
+    const adminNavLinks = document.querySelectorAll('.nav-link-admin, a[href="admin.html"].nav-link');
+    adminNavLinks.forEach(link => {
+      link.style.display = isAdmin ? 'inline-block' : 'none';
     });
 
-    const signInBtn = document.getElementById('headerSignInBtn');
-    if (signInBtn) {
-      signInBtn.textContent = 'ADMIN';
-      signInBtn.setAttribute('href', 'admin.html');
-    }
-
-    const personIcons = header.querySelectorAll('a[aria-label="My Account"], a[title="My Account"]');
+    // Update Person Icon in navbar:
+    const personIcons = header.querySelectorAll('a[aria-label="Admin Dashboard"], a[aria-label="My Account"], a[title="Admin Dashboard"], a[title="My Account"]');
     personIcons.forEach(icon => {
-      icon.setAttribute('href', 'admin.html');
-      icon.setAttribute('aria-label', 'Admin Dashboard');
-      icon.setAttribute('title', 'Admin Dashboard');
+      if (isAdmin) {
+        icon.setAttribute('href', 'admin.html');
+        icon.setAttribute('title', 'Admin Dashboard (' + (profile.fullName || 'Admin') + ')');
+        icon.setAttribute('aria-label', 'Admin Dashboard');
+      } else if (isLoggedIn) {
+        icon.setAttribute('href', 'account.html');
+        icon.setAttribute('title', 'Akun Saya (' + (profile.fullName || 'Member') + ')');
+        icon.setAttribute('aria-label', 'My Account');
+      } else {
+        icon.setAttribute('href', 'login.html');
+        icon.setAttribute('title', 'Masuk / Login');
+        icon.setAttribute('aria-label', 'Login');
+      }
     });
+
+    // Dynamic Auth / Logout button in desktop header
+    const actions = header.querySelector('.nav-actions');
+    if (actions) {
+      let authBtn = actions.querySelector('#headerAuthBtn');
+      if (!authBtn) {
+        authBtn = document.createElement('div');
+        authBtn.id = 'headerAuthBtn';
+        authBtn.style.display = 'inline-flex';
+        authBtn.style.alignItems = 'center';
+        // Insert right before the mobile hamburger toggle
+        const mobToggle = actions.querySelector('.mobile-menu-toggle');
+        actions.insertBefore(authBtn, mobToggle);
+      }
+
+      // Remove any duplicate old static signin button
+      const oldSignIn = actions.querySelector('#headerSignInBtn');
+      if (oldSignIn) oldSignIn.remove();
+
+      if (isLoggedIn) {
+        authBtn.innerHTML = `
+          <button id="globalNavLogoutBtn" class="btn-brutal-dark btn-brutal-sm" style="padding:6px 12px;font-size:0.75rem;font-weight:900;color:#ef4444;border-color:#ef4444;display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="Keluar / Ganti Akun">
+            <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
+            <span>LOGOUT</span>
+          </button>
+        `;
+        authBtn.querySelector('#globalNavLogoutBtn')?.addEventListener('click', async () => {
+          if (confirm('Yakin ingin LOG OUT?\nAnda dapat masuk kembali atau berganti ke akun user biasa.')) {
+            const { logoutUser } = await import('../services/authService.js');
+            await logoutUser();
+            window.location.href = 'login.html';
+          }
+        });
+      } else {
+        authBtn.innerHTML = `
+          <a href="login.html" class="nav-btn-pink" style="padding:8px 14px;font-size:0.8rem;text-decoration:none;" title="Masuk ke Akun">
+            SIGN IN
+          </a>
+        `;
+      }
+    }
+
+    // Dynamic Auth area in Mobile Navigation Drawer
+    const mobileDrawer = document.getElementById('mobileNavDrawer');
+    if (mobileDrawer) {
+      let mobAdminLink = mobileDrawer.querySelector('.mobile-admin-link');
+      if (mobAdminLink) {
+        mobAdminLink.style.display = isAdmin ? 'flex' : 'none';
+      }
+
+      let mobAuthArea = mobileDrawer.querySelector('.mobile-auth-area');
+      if (!mobAuthArea) {
+        mobAuthArea = document.createElement('div');
+        mobAuthArea.className = 'mobile-auth-area';
+        mobAuthArea.style.marginTop = 'auto';
+        mobAuthArea.style.paddingTop = '16px';
+        mobAuthArea.style.borderTop = '1px dashed #333';
+        mobileDrawer.appendChild(mobAuthArea);
+      }
+
+      if (isLoggedIn) {
+        mobAuthArea.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-size:0.75rem;color:#888;">STATUS: <strong style="color:${isAdmin ? 'var(--accent-yellow)' : '#4ade80'};">${isAdmin ? 'ADMIN' : 'USER BIASA'}</strong></span>
+            <span style="font-size:0.7rem;color:#AAA;">${profile.email || ''}</span>
+          </div>
+          <button id="mobileNavLogoutBtn" style="width:100%;background:#b91c1c;color:#FFF;border:2px solid #ef4444;font-weight:900;padding:10px;font-family:var(--font-headline);display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">
+            <span class="material-symbols-outlined">logout</span>
+            <span>LOG OUT (GANTI AKUN)</span>
+          </button>
+        `;
+        mobAuthArea.querySelector('#mobileNavLogoutBtn')?.addEventListener('click', async () => {
+          const { logoutUser } = await import('../services/authService.js');
+          await logoutUser();
+          window.location.href = 'login.html';
+        });
+      } else {
+        mobAuthArea.innerHTML = `
+          <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:space-between;">
+            <span>MEMBER LOGIN →</span>
+            <span class="material-symbols-outlined">login</span>
+          </a>
+        `;
+      }
+    }
   }
 
-  syncAccountLinks();
+  syncNavbarState();
+  window.addEventListener('mustaz:auth_synced', syncNavbarState);
+  window.addEventListener('mustaz:logout', syncNavbarState);
 
   // Determine active route
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';

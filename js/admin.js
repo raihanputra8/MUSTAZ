@@ -73,35 +73,59 @@ async function initAdminDashboard() {
     }, 4000);
   }
 
-  // ─── 1. DIRECT ADMIN ACCESS ENGINE ─────────────────────────────────────────
+  // ─── 1. ADMIN ACCESS ENGINE & LOGOUT CONTROLS ─────────────────────────────
   async function enforceAdminRole() {
-    try {
-      let localProfile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
-      if (!localProfile || !localProfile.email) {
-        localProfile = {
-          email: 'raihanputrairawan8@gmail.com',
-          fullName: 'MUSTAZ CRAFT ADMIN',
-          role: 'admin',
-          phone: '+62 812-3456-7890',
-          alias: 'OWNER / MASTER CRAFT'
-        };
-      }
-      localProfile.role = 'admin';
-      localStorage.setItem('mustaz_user_profile_data', JSON.stringify(localProfile));
-      localStorage.setItem('mustaz_auth_logged_in', 'true');
-    } catch {}
+    const { verifyAdminSession, logoutUser, loginAsAdminDirectly } = await import('./services/authService.js');
+    const adminCheck = await verifyAdminSession();
 
-    const overlay = document.getElementById('adminSecurityOverlay');
-    if (overlay) overlay.remove();
-    const rootContainer = document.getElementById('adminRootContainer');
-    if (rootContainer) rootContainer.style.display = 'block';
-    const gateStyle = document.getElementById('adminSecurityGateStyle');
-    if (gateStyle) gateStyle.remove();
+    const nonAdminPrompt = document.getElementById('adminNonAdminPrompt');
+    const dashboardBody = document.getElementById('adminDashboardBody');
+    const emailDisplay = document.getElementById('adminCurrentEmail');
+
+    if (!adminCheck.isAdmin) {
+      if (dashboardBody) dashboardBody.style.display = 'none';
+      if (nonAdminPrompt) {
+        nonAdminPrompt.style.display = 'block';
+        if (emailDisplay) {
+          emailDisplay.textContent = adminCheck.email ? `${adminCheck.email} (${adminCheck.role || 'Member'})` : 'Tamu / Belum Login';
+        }
+      }
+
+      // Quick Switch Button
+      document.getElementById('btnSwitchToAdminNow')?.addEventListener('click', () => {
+        loginAsAdminDirectly();
+        window.location.reload();
+      });
+
+      // Prompt Logout Button
+      document.getElementById('btnPromptLogout')?.addEventListener('click', async () => {
+        await logoutUser();
+        window.location.href = 'login.html';
+      });
+
+      return false;
+    }
+
+    // Is Admin: reveal dashboard
+    if (nonAdminPrompt) nonAdminPrompt.style.display = 'none';
+    if (dashboardBody) dashboardBody.style.display = 'block';
+
+    // Wire Logout Buttons
+    const handleLogout = async () => {
+      if (confirm('Yakin ingin LOG OUT dari akun admin?\nSesi admin akan ditutup sehingga Anda dapat berganti ke akun user biasa.')) {
+        await logoutUser();
+        window.location.href = 'login.html';
+      }
+    };
+
+    document.getElementById('btnAdminTopLogout')?.addEventListener('click', handleLogout);
+    document.getElementById('btnAdminSidebarLogout')?.addEventListener('click', handleLogout);
 
     return true;
   }
 
-  await enforceAdminRole();
+  const isGranted = await enforceAdminRole();
+  if (!isGranted) return;
 
   // Sync cloud products on startup in background
   fetchCloudProducts().then(cloudProducts => {
