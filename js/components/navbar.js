@@ -19,6 +19,12 @@ export function initNavbar() {
         link.setAttribute('href', 'account.html');
       }
     });
+
+    const signInBtn = document.getElementById('headerSignInBtn');
+    if (signInBtn) {
+      signInBtn.textContent = isLoggedIn ? 'ACCOUNT' : 'SIGN IN';
+      signInBtn.setAttribute('href', isLoggedIn ? 'account.html' : 'login.html');
+    }
   }
 
   syncAccountLinks();

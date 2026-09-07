@@ -758,3 +758,309 @@
   color: #000000;
 }
 
+/* ==========================================================================
+   FIGMA EXTENSION: FLASH SALE & COUNTDOWN
+   ========================================================================== */
+.flash-sale-section {
+  padding: 60px 0 80px;
+  background: transparent;
+  position: relative;
+  border-bottom: 3px solid var(--accent-pink);
+}
+
+.flash-sale-banner {
+  background: #000000;
+  border: 3px solid var(--accent-pink);
+  box-shadow: 8px 8px 0px var(--accent-pink);
+  padding: 24px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.flash-sale-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.flash-sale-badge {
+  background: var(--accent-pink);
+  color: #000000;
+  font-family: var(--font-headline);
+  font-size: 1.1rem;
+  font-weight: 900;
+  padding: 6px 14px;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px var(--accent-yellow);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.flash-sale-title {
+  font-family: var(--font-headline);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  color: #FFFFFF;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.flash-sale-timer-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timer-label {
+  font-family: var(--font-mono-sub);
+  font-size: 0.8rem;
+  color: var(--accent-yellow);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.timer-blocks {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-box {
+  background: #151515;
+  border: 2px solid var(--accent-pink);
+  box-shadow: 3px 3px 0px #000000;
+  min-width: 48px;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 0;
+}
+
+.timer-box .time-val {
+  display: block;
+  font-family: var(--font-headline);
+  font-size: 1.6rem;
+  color: var(--accent-yellow);
+  line-height: 1;
+}
+
+.timer-box .time-lbl {
+  display: block;
+  font-family: var(--font-mono-sub);
+  font-size: 0.6rem;
+  color: #888888;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.timer-colon {
+  font-family: var(--font-headline);
+  font-size: 1.6rem;
+  color: var(--accent-pink);
+  line-height: 1;
+}
+
+.flash-sale-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.card-flash-sale {
+  background: #FFFFFF;
+  border: 3px solid #000000;
+  box-shadow: 8px 8px 0px var(--accent-pink);
+  padding: 18px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-flash-sale:hover {
+  transform: translateY(-4px);
+  box-shadow: 10px 10px 0px var(--accent-yellow);
+}
+
+.flash-discount-tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--accent-pink);
+  color: #FFFFFF;
+  font-family: var(--font-headline);
+  font-size: 1.05rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+  transform: rotate(3deg);
+  z-index: 5;
+}
+
+.card-flash-sale .card-img-box {
+  width: 100%;
+  aspect-ratio: 4 / 3.2;
+  background: #000000;
+  border: 2px solid #000000;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.card-flash-sale .card-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: contrast(110%);
+  transition: transform 0.3s ease;
+}
+
+.card-flash-sale:hover .card-img-box img {
+  transform: scale(1.05);
+}
+
+.flash-stock-wrap {
+  margin: 12px 0 16px;
+}
+
+.flash-stock-info {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono-sub);
+  font-size: 0.72rem;
+  color: #333333;
+  font-weight: 800;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.flash-stock-bar {
+  width: 100%;
+  height: 8px;
+  background: #E0E0E0;
+  border: 1px solid #000000;
+  overflow: hidden;
+}
+
+.flash-stock-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-yellow), var(--accent-pink));
+}
+
+.flash-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 2px dashed #000000;
+}
+
+.flash-price-sale {
+  font-family: var(--font-headline);
+  font-size: 1.55rem;
+  color: var(--accent-pink);
+  font-weight: 900;
+}
+
+.flash-price-orig {
+  font-family: var(--font-mono-sub);
+  font-size: 0.85rem;
+  color: #888888;
+  text-decoration: line-through;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   FIGMA EXTENSION: VISOR COLORWAYS GALLERY SHOWCASE
+   ========================================================================== */
+.visor-showcase-section {
+  padding: 80px 0;
+  background: transparent;
+  position: relative;
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.visor-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+}
+
+.visor-colorway-card {
+  background: #0E0E0E;
+  border: 2px solid #282828;
+  box-shadow: 4px 4px 0px #000000;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.visor-colorway-card:hover {
+  border-color: var(--accent-yellow);
+  box-shadow: 6px 6px 0px var(--accent-pink);
+  transform: translateY(-4px);
+}
+
+.visor-colorway-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #000000;
+  border: 1px solid #222222;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.visor-colorway-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+.visor-colorway-card:hover .visor-colorway-img img {
+  transform: scale(1.08);
+}
+
+.visor-colorway-tag {
+  display: inline-block;
+  font-family: var(--font-mono-sub);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  background: #202020;
+  color: var(--accent-yellow);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  align-self: flex-start;
+}
+
+.visor-colorway-name {
+  font-family: var(--font-headline);
+  font-size: 1.25rem;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.visor-colorway-sub {
+  font-family: var(--font-mono-sub);
+  font-size: 0.72rem;
+  color: #888888;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+

@@ -84,4 +84,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   });
+
+  // 7. Live Flash Sale Countdown Timer
+  function initFlashSaleTimer() {
+    const hoursEl = document.getElementById('fsHours');
+    const minsEl = document.getElementById('fsMins');
+    const secsEl = document.getElementById('fsSecs');
+    if (!hoursEl || !minsEl || !secsEl) return;
+
+    function tick() {
+      const now = new Date();
+      const endOfDay = new Date(now);
+      endOfDay.setHours(23, 59, 59, 999);
+      const totalSeconds = Math.max(0, Math.floor((endOfDay - now) / 1000));
+
+      const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const s = String(totalSeconds % 60).padStart(2, '0');
+
+      hoursEl.textContent = h;
+      minsEl.textContent = m;
+      secsEl.textContent = s;
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  initFlashSaleTimer();
 });
