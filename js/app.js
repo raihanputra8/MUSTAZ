@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const total = slides.length;
     let currentIndex = 2; // initial center slide: Pink Spiked Hero
     let autoSlideTimer = null;
-    const INTERVAL = 3000; // auto-slide every 3 seconds
+    const INTERVAL = 1900; // accelerated interval for dynamic auto-slide (was 3000ms)
 
     function updatePositions() {
       slides.forEach((slide, idx) => {
