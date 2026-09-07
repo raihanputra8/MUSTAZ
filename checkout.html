@@ -231,11 +231,39 @@
   document.addEventListener('DOMContentLoaded', () => {
     renderPageCheckout();
 
-    // Prefill active user email if logged in
+    // Prefill active user data if logged in
     const activeEmail = getActiveUserEmail();
+    let profile = {};
+    try {
+      profile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
+    } catch {}
+
+    const nameInput = document.getElementById('chkName');
+    const phoneInput = document.getElementById('chkPhone');
     const emailInput = document.getElementById('chkEmail');
-    if (activeEmail && emailInput && !emailInput.value) {
-      emailInput.value = activeEmail;
+    const addrInput = document.getElementById('chkAddress');
+
+    if (nameInput && !nameInput.value) {
+      nameInput.value = profile.fullName || profile.alias || profile.name || '';
+    }
+    if (phoneInput && !phoneInput.value) {
+      phoneInput.value = profile.phone || '';
+    }
+    if (emailInput && !emailInput.value) {
+      emailInput.value = profile.email || activeEmail || '';
+    }
+    if (addrInput && !addrInput.value) {
+      if (profile.address) {
+        addrInput.value = profile.address;
+      } else if (activeEmail) {
+        import('./js/services/cartService.js').then(({ getUserAddresses }) => {
+          const addrs = getUserAddresses(activeEmail);
+          if (addrs && addrs.length > 0) {
+            const primary = addrs.find(a => a.isPrimary) || addrs[0];
+            addrInput.value = `${primary.label ? '[' + primary.label + '] ' : ''}${primary.street || ''}, ${primary.city || ''} ${primary.zip || ''}`.trim();
+          }
+        }).catch(() => {});
+      }
     }
 
     document.getElementById('directCheckoutForm')?.addEventListener('submit', async (e) => {
@@ -294,7 +322,10 @@
       showOrderSuccessModal(orderRecord);
 
       const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email }, items, total);
-      window.open(url, '_blank');
+      const waWin = window.open(url, '_blank');
+      if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+        window.location.href = url;
+      }
       clearCart();
     });
   });

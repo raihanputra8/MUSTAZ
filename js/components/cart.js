@@ -4,8 +4,11 @@
 
 import {
   getCart, removeFromCart, updateCartQty, clearCart,
-  getCartTotal, getCartCount, formatRupiah, generateWhatsAppUrl
+  getCartTotal, getCartCount, formatRupiah, generateWhatsAppUrl,
+  getActiveUserEmail, getUserAddresses, saveUserOrder
 } from '../services/cartService.js';
+import { sendOrderSuccessEmail, showOrderSuccessModal } from '../services/emailService.js';
+import { saveCloudOrder } from '../services/supabaseService.js';
 
 // ─── Cart Drawer HTML Template ─────────────────────────────────────────────
 
@@ -235,23 +238,61 @@ export function closeCart() {
 }
 
 export function openCheckout() {
+  const items = getCart();
+  if (!items || items.length === 0) {
+    alert('⚠️ KERANJANG KOSONG\n\nSilakan pilih produk pet helm atau custom visor terlebih dahulu.');
+    return;
+  }
+
   const modal = document.getElementById('checkoutModal');
   if (modal) {
     renderCheckoutSummary();
-    // Prefill buyer email if user is logged in
+
+    // Prefill buyer details from active session & profile
     const activeEmail = getActiveUserEmail();
+    let profile = {};
+    try {
+      profile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
+    } catch {}
+
+    const nameInput = document.getElementById('custName');
+    const phoneInput = document.getElementById('custPhone');
     const emailInput = document.getElementById('custEmail');
-    if (activeEmail && emailInput && !emailInput.value) {
-      emailInput.value = activeEmail;
+    const addrInput = document.getElementById('custAddress');
+
+    if (nameInput && !nameInput.value) {
+      nameInput.value = profile.fullName || profile.alias || profile.name || '';
     }
-    modal.classList.add('open');
+    if (phoneInput && !phoneInput.value) {
+      phoneInput.value = profile.phone || '';
+    }
+    if (emailInput && !emailInput.value) {
+      emailInput.value = profile.email || activeEmail || '';
+    }
+    if (addrInput && !addrInput.value) {
+      if (profile.address) {
+        addrInput.value = profile.address;
+      } else if (activeEmail) {
+        const addrs = getUserAddresses(activeEmail);
+        if (addrs && addrs.length > 0) {
+          const primary = addrs.find(a => a.isPrimary) || addrs[0];
+          addrInput.value = `${primary.label ? '[' + primary.label + '] ' : ''}${primary.street || ''}, ${primary.city || ''} ${primary.zip || ''}`.trim();
+        }
+      }
+    }
+
     closeCart();
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
 }
 
 export function closeCheckout() {
   const modal = document.getElementById('checkoutModal');
-  if (modal) modal.classList.remove('open');
+  if (modal) {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
 }
 
 // ─── Init Cart Component ───────────────────────────────────────────────────
@@ -277,33 +318,48 @@ export function initCart() {
   document.getElementById('cartCloseBtn')?.addEventListener('click', closeCart);
 
   // Checkout open
-  document.getElementById('startCheckoutBtn')?.addEventListener('click', openCheckout);
+  document.getElementById('startCheckoutBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openCheckout();
+  });
   document.getElementById('checkoutCloseBtn')?.addEventListener('click', closeCheckout);
   document.getElementById('checkoutModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'checkoutModal') closeCheckout();
   });
 
+  // Keyboard Escape to dismiss modal & drawer
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeCheckout();
+      closeCart();
+    }
+  });
+
   // Checkout form submit
   document.getElementById('checkoutForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = document.getElementById('custName').value.trim();
-    const phone = document.getElementById('custPhone').value.trim();
-    const email = document.getElementById('custEmail').value.trim();
-    const address = document.getElementById('custAddress').value.trim();
-    const payment = document.getElementById('paymentMethod').value;
+    const name = document.getElementById('custName')?.value.trim();
+    const phone = document.getElementById('custPhone')?.value.trim();
+    const email = document.getElementById('custEmail')?.value.trim();
+    const address = document.getElementById('custAddress')?.value.trim();
+    const payment = document.getElementById('paymentMethod')?.value;
     const errEl = document.getElementById('checkoutError');
 
     if (!name || !phone || !email || !address) {
-      errEl.textContent = '⚠️ ALL PROTOCOL FIELDS (INCLUDING EMAIL) REQUIRED BEFORE DROP.';
-      errEl.style.display = 'block';
+      if (errEl) {
+        errEl.textContent = '⚠️ SEMUA DATA (NAMA, NO. WA, EMAIL, ALAMAT) WAJIB DIISI SEBELUM CHECKOUT.';
+        errEl.style.display = 'block';
+      }
       return;
     }
     if (!email.includes('@')) {
-      errEl.textContent = '⚠️ PLEASE ENTER A VALID EMAIL FOR INVOICE DISPATCH.';
-      errEl.style.display = 'block';
+      if (errEl) {
+        errEl.textContent = '⚠️ MASUKKAN EMAIL VALID UNTUK PENGIRIMAN INVOICE RESMI.';
+        errEl.style.display = 'block';
+      }
       return;
     }
-    errEl.style.display = 'none';
+    if (errEl) errEl.style.display = 'none';
 
     const cartItems = getCart();
     const total = getCartTotal();
@@ -330,14 +386,14 @@ export function initCart() {
       total: total
     };
 
-    // 1. Send Order Confirmation / Invoice Email to Buyer
-    import('../services/emailService.js').then(({ sendOrderSuccessEmail, showOrderSuccessModal }) => {
+    // 1. Send Order Confirmation / Invoice Email to Buyer & Show In-App Success
+    try {
       sendOrderSuccessEmail(orderRecord).catch(() => {});
       showOrderSuccessModal(orderRecord);
-    }).catch(() => {});
+    } catch {}
 
     // 2. Save order to Supabase Cloud
-    import('../services/supabaseService.js').then(({ saveCloudOrder }) => {
+    try {
       saveCloudOrder({
         customer: name,
         email: email,
@@ -345,20 +401,24 @@ export function initCart() {
         total: total,
         status: 'PROCESSING'
       }).catch(() => {});
-    }).catch(() => {});
+    } catch {}
 
     // 3. Save to user's localized order history
-    import('../services/cartService.js').then(({ saveUserOrder }) => {
+    try {
       saveUserOrder(email, orderRecord);
-    }).catch(() => {});
+    } catch {}
 
+    // 4. Generate and launch WhatsApp conversation
     const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email }, cartItems, total);
-    window.open(url, '_blank');
+    const waWin = window.open(url, '_blank');
+    if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+      window.location.href = url;
+    }
 
     clearCart();
     closeCheckout();
     renderCartItems();
-    document.getElementById('checkoutForm').reset();
+    document.getElementById('checkoutForm')?.reset();
   });
 
   // Listen to cart updates, auth changes, and logout events from any page
