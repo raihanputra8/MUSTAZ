@@ -18,25 +18,17 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--bg-deep);
+  background-image: url('../assets/images/bg_underground_chain_hd.webp');
+  background-repeat: repeat-y;
+  background-position: center top;
+  background-size: 100% auto;
+  background-attachment: scroll;
   color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Atmospheric Underground Garage Background (Fixed, Seamless, No Cuts) */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url('../assets/images/bg_underground_chain_hd.webp');
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  z-index: -2;
 }
 
 /* Subtle Photocopier Noise / Grain Overlay */
