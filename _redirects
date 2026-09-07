@@ -1,2 +1,5 @@
+/admin/products/edit/:id  /admin.html?tab=inventory&edit=:id  200
+/admin/products           /admin.html?tab=inventory          200
+/admin                    /admin.html                        200
 /choppers.html  /helmets.html  301
 /choppers       /helmets.html  301

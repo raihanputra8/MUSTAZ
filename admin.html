@@ -282,18 +282,32 @@
               </button>
             </div>
 
-            <!-- Search & Filter Controls -->
+            <!-- Search, Filter & Sorting Controls -->
             <div style="background:#111;border:2px solid #282828;padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:4px 4px 0px #000;">
-              <div style="position:relative;flex:1;min-width:240px;">
-                <input type="text" id="adminSearchInput" class="form-input-brutal" placeholder="Search product name, SKU..." style="padding-left:38px;padding-top:10px;padding-bottom:10px;font-size:0.85rem;margin-bottom:0;">
+              <div style="position:relative;flex:1;min-width:220px;">
+                <input type="text" id="adminSearchInput" class="form-input-brutal" placeholder="Search product name, slug, SKU..." style="padding-left:38px;padding-top:10px;padding-bottom:10px;font-size:0.85rem;margin-bottom:0;">
                 <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#888;font-size:20px;">search</span>
               </div>
-              <select id="adminCategoryFilter" class="form-input-brutal" style="width:auto;padding:10px 16px;font-size:0.85rem;background:#111;color:#FFF;border-color:#444;margin-bottom:0;">
+              <select id="adminCategoryFilter" class="form-input-brutal" style="width:auto;padding:10px 14px;font-size:0.85rem;background:#111;color:#FFF;border-color:#444;margin-bottom:0;">
                 <option value="ALL">ALL CATEGORIES</option>
                 <option value="Acrylic Pet">Acrylic Pet</option>
                 <option value="Leather Pet">Leather Pet</option>
                 <option value="Retro Visor">Retro Visor</option>
                 <option value="Drop Sets">Drop Sets</option>
+                <option value="Custom Helmet">Custom Helmet</option>
+              </select>
+              <select id="adminStatusFilter" class="form-input-brutal" style="width:auto;padding:10px 14px;font-size:0.85rem;background:#111;color:#FFF;border-color:#444;margin-bottom:0;">
+                <option value="ALL">ALL STATUS</option>
+                <option value="Active">ACTIVE</option>
+                <option value="Draft">DRAFT</option>
+              </select>
+              <select id="adminSortFilter" class="form-input-brutal" style="width:auto;padding:10px 14px;font-size:0.85rem;background:#111;color:#FFF;border-color:#444;margin-bottom:0;">
+                <option value="NEWEST">SORT: NEWEST</option>
+                <option value="NAME_ASC">NAME (A - Z)</option>
+                <option value="NAME_DESC">NAME (Z - A)</option>
+                <option value="PRICE_ASC">PRICE (LOW - HIGH)</option>
+                <option value="PRICE_DESC">PRICE (HIGH - LOW)</option>
+                <option value="STOCK_LOW">STOCK (LOWEST FIRST)</option>
               </select>
             </div>
 
@@ -303,11 +317,11 @@
                 <thead>
                   <tr>
                     <th style="width:64px;">THUMB</th>
-                    <th>PRODUCT DETAILS</th>
+                    <th>PRODUCT &amp; SLUG</th>
                     <th>CATEGORY</th>
                     <th>PRICE</th>
                     <th style="text-align:center;">STOCK LEVEL</th>
-                    <th>BADGE</th>
+                    <th style="text-align:center;">STATUS</th>
                     <th style="text-align:right;">ACTIONS</th>
                   </tr>
                 </thead>
@@ -339,7 +353,12 @@
                     <input type="text" id="newProdName" class="form-input-brutal" placeholder="e.g. ACID GHOST ROOF VISOR" required>
                   </div>
 
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">SLUG / URL IDENTIFIER *</label>
+                    <input type="text" id="newProdSlug" class="form-input-brutal" placeholder="e.g. acid-ghost-roof-visor" required>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
                     <div class="form-group-brutal">
                       <label class="form-label-brutal">CATEGORY *</label>
                       <select id="newProdCategory" class="form-input-brutal" style="background:#111;color:#FFF;" required>
@@ -347,11 +366,20 @@
                         <option value="Leather Pet">Leather Pet</option>
                         <option value="Retro Visor">Retro Visor</option>
                         <option value="Drop Sets">Drop Sets</option>
+                        <option value="Custom Helmet">Custom Helmet</option>
                       </select>
                     </div>
 
                     <div class="form-group-brutal">
-                      <label class="form-label-brutal">BADGE / STATUS</label>
+                      <label class="form-label-brutal">STATUS *</label>
+                      <select id="newProdStatus" class="form-input-brutal" style="background:#111;color:#FFF;">
+                        <option value="Active">ACTIVE (LIVE)</option>
+                        <option value="Draft">DRAFT (HIDDEN)</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group-brutal">
+                      <label class="form-label-brutal">BADGE</label>
                       <select id="newProdBadge" class="form-input-brutal" style="background:#111;color:#FFF;">
                         <option value="NEW">NEW</option>
                         <option value="HOT DROP">HOT DROP</option>
@@ -432,9 +460,12 @@
                         </label>
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#888;">BUCKET: product-images</span>
                       </div>
-                      <input type="file" id="newProdFileInput" accept="image/*" class="form-input-brutal" style="padding:6px;font-size:0.78rem;background:#000;margin-bottom:4px;cursor:pointer;">
+                      <input type="file" id="newProdFileInput" accept="image/*" class="form-input-brutal" style="padding:6px;font-size:0.78rem;background:#000;margin-bottom:6px;cursor:pointer;">
+                      <div id="newProdProgressContainer" style="display:none;height:6px;background:#222;margin-bottom:8px;overflow:hidden;border:1px solid #444;">
+                        <div id="newProdProgressBar" style="height:100%;width:0%;background:var(--accent-pink);transition:width 0.2s ease;"></div>
+                      </div>
                       <div id="uploadStatusText" style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;">
-                        Pilih file gambar untuk di-upload otomatis ke cloud Supabase Storage.
+                        Pilih file gambar untuk di-upload otomatis ke cloud Supabase Storage CDN.
                       </div>
                     </div>
                   </div>
@@ -565,8 +596,8 @@
 
 <!-- EDIT PRODUCT MODAL (Brutalist Garage Box) -->
 <div class="modal-backdrop" id="editProductModal">
-  <div class="modal-box" style="max-width:580px;background:#111;border:3px solid var(--accent-yellow);box-shadow:10px 10px 0px #000;">
-    <div class="modal-header" style="background:#181818;border-bottom:2px solid #282828;padding:16px 20px;">
+  <div class="modal-box" style="max-width:620px;background:#111;border:3px solid var(--accent-yellow);box-shadow:10px 10px 0px #000;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header" style="background:#181818;border-bottom:2px solid #282828;padding:16px 20px;position:sticky;top:0;z-index:10;">
       <div style="display:flex;align-items:center;gap:12px;">
         <span class="zine-tag-yellow" id="editModalSku">SKU_001</span>
         <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFFFFF;">EDIT PRODUCT DETAILS</span>
@@ -580,18 +611,31 @@
         <input type="hidden" id="editProdId">
         
         <div class="form-group-brutal">
-          <label class="form-label-brutal">PRODUCT NAME</label>
+          <label class="form-label-brutal">PRODUCT NAME *</label>
           <input type="text" id="editProdName" class="form-input-brutal" required>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group-brutal">
+          <label class="form-label-brutal">SLUG / URL IDENTIFIER *</label>
+          <input type="text" id="editProdSlug" class="form-input-brutal" required>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
           <div class="form-group-brutal">
-            <label class="form-label-brutal">CATEGORY</label>
+            <label class="form-label-brutal">CATEGORY *</label>
             <select id="editProdCategory" class="form-input-brutal" style="background:#111;color:#FFF;">
               <option value="Acrylic Pet">Acrylic Pet</option>
               <option value="Leather Pet">Leather Pet</option>
               <option value="Retro Visor">Retro Visor</option>
               <option value="Drop Sets">Drop Sets</option>
+              <option value="Custom Helmet">Custom Helmet</option>
+            </select>
+          </div>
+          <div class="form-group-brutal">
+            <label class="form-label-brutal">STATUS *</label>
+            <select id="editProdStatus" class="form-input-brutal" style="background:#111;color:#FFF;">
+              <option value="Active">ACTIVE (LIVE)</option>
+              <option value="Draft">DRAFT (HIDDEN)</option>
             </select>
           </div>
           <div class="form-group-brutal">
@@ -609,34 +653,88 @@
         </div>
 
         <div class="form-group-brutal">
-          <label class="form-label-brutal">SUBTITLE / SPECS</label>
+          <label class="form-label-brutal">SUBTITLE / SPECS *</label>
           <input type="text" id="editProdSub" class="form-input-brutal" required>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div class="form-group-brutal">
-            <label class="form-label-brutal">PRICE (IDR)</label>
+            <label class="form-label-brutal">PRICE (IDR) *</label>
             <input type="number" id="editProdPrice" class="form-input-brutal" min="10000" step="5000" required>
           </div>
           <div class="form-group-brutal">
-            <label class="form-label-brutal">STOCK QTY</label>
+            <label class="form-label-brutal">STOCK QTY *</label>
             <input type="number" id="editProdStock" class="form-input-brutal" min="0" required>
           </div>
         </div>
 
+        <!-- Image Management & Supabase Storage File Upload -->
         <div class="form-group-brutal" style="margin-bottom:24px;">
-          <label class="form-label-brutal">IMAGE PATH / URL</label>
-          <input type="text" id="editProdImage" class="form-input-brutal" required>
+          <label class="form-label-brutal">IMAGE MANAGEMENT (SUPABASE STORAGE)</label>
+          
+          <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;">
+            <div style="width:80px;aspect-ratio:4/5;background:#000;border:2px solid #333;overflow:hidden;flex-shrink:0;">
+              <img id="editProdPreviewImg" src="" alt="Thumbnail" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div style="flex:1;">
+              <input type="text" id="editProdImage" class="form-input-brutal" style="font-size:0.8rem;margin-bottom:8px;" placeholder="https://... URL Supabase Storage" required>
+              
+              <div style="background:#181818;border:2px dashed #444;padding:10px 12px;box-shadow:2px 2px 0px #000;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <span style="font-size:0.7rem;font-weight:700;color:var(--accent-yellow);">GANTI GAMBAR DARI PC:</span>
+                  <span style="font-family:var(--font-mono-sub);font-size:0.62rem;color:#888;">AUTO CLEANUP OLD ASSET</span>
+                </div>
+                <input type="file" id="editProdFileInput" accept="image/*" class="form-input-brutal" style="padding:4px;font-size:0.75rem;background:#000;margin-bottom:4px;cursor:pointer;">
+                <div id="editProdProgressContainer" style="display:none;height:5px;background:#222;margin-bottom:6px;overflow:hidden;border:1px solid #444;">
+                  <div id="editProdProgressBar" style="height:100%;width:0%;background:var(--accent-pink);transition:width 0.2s ease;"></div>
+                </div>
+                <div id="editUploadStatusText" style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;">
+                  Pilih file untuk mengunggah gambar baru &amp; otomatis menghapus gambar lama.
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style="display:flex;gap:12px;justify-content:flex-end;">
           <button type="button" class="btn-brutal-dark" id="btnCancelEdit" style="padding:10px 18px;">CANCEL</button>
-          <button type="submit" class="btn-brutal-yellow" style="padding:10px 22px;">SAVE UPDATES ✓</button>
+          <button type="submit" class="btn-brutal-yellow" id="btnSaveEditProduct" style="padding:10px 22px;">SAVE UPDATES ✓</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<!-- BRUTALIST CONFIRM DELETE MODAL -->
+<div class="modal-backdrop" id="deleteConfirmModal">
+  <div class="modal-box" style="max-width:460px;background:#0f0f0f;border:3px solid var(--accent-pink);box-shadow:8px 8px 0px #000;padding:28px;">
+    <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">
+      ⚠️ DANGER // DATABASE PURGE
+    </div>
+    <h3 style="font-family:var(--font-headline);font-size:1.6rem;color:#FFF;margin:0 0 14px;line-height:1.1;">
+      CONFIRM PRODUCT DELETION
+    </h3>
+    <div style="display:flex;gap:16px;background:#181818;border:1px solid #333;padding:12px;margin-bottom:16px;align-items:center;">
+      <img id="deleteModalThumb" src="" alt="" style="width:54px;aspect-ratio:4/5;object-fit:cover;border:1px solid #444;background:#000;">
+      <div>
+        <div id="deleteModalName" style="font-family:var(--font-headline);font-size:1.1rem;color:#FFF;line-height:1.1;"></div>
+        <div id="deleteModalSku" style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);margin-top:2px;"></div>
+      </div>
+    </div>
+    <p style="font-size:0.85rem;color:#AAA;line-height:1.5;margin-bottom:24px;">
+      Tindakan ini akan menghapus produk dari database serta <strong style="color:#FFF;">membersihkan aset gambar dari Supabase Storage</strong>. Data yang dihapus tidak dapat dipulihkan.
+    </p>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button type="button" class="btn-brutal-dark" id="btnCancelDelete" style="padding:10px 18px;">BATAL</button>
+      <button type="button" class="btn-brutal-pink" id="btnConfirmDelete" style="padding:10px 20px;background:#b91c1c;border-color:#ef4444;color:#FFF;">
+        YA, HAPUS PRODUK
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING TOAST NOTIFICATION CONTAINER -->
+<div id="adminToastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
 </div><!-- /#adminRootContainer -->
 
 <script type="module" src="js/admin.js"></script>

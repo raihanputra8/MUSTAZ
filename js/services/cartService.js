@@ -41,63 +41,67 @@ export const CHOPPERS_DATA = HELMETS_DATA;
 export const DEFAULT_PARTS_DATA = [
   {
     id: 'pet-1', type: 'parts', category: 'Acrylic Pet',
-    name: 'Y-TWO ROOF VISOR', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
-    price: 350000, original_price: 450000, badge: 'BESTSELLER', stock: 12,
+    name: 'Y-TWO ROOF VISOR', slug: 'y-two-roof-visor', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
+    price: 350000, original_price: 450000, badge: 'BESTSELLER', status: 'Active', stock: 12,
     image: getProductImageUrl('Product1.png'),
     fallback: 'assets/images/Product1.png'
   },
   {
     id: 'pet-2', type: 'parts', category: 'Leather Pet',
-    name: 'STUDDED LID FLAME VISOR', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
-    price: 380000, original_price: null, badge: 'HOT DROP', stock: 8,
+    name: 'STUDDED LID FLAME VISOR', slug: 'studded-lid-flame-visor', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
+    price: 380000, original_price: null, badge: 'HOT DROP', status: 'Active', stock: 8,
     image: getProductImageUrl('Product2.png'),
     fallback: 'assets/images/Product2.png'
   },
   {
     id: 'pet-3', type: 'parts', category: 'Retro Visor',
-    name: 'CHECKER RACER DUCKBILL', sub: 'Monochrome Checkered Motocross Visor // Chrome Snaps',
-    price: 280000, original_price: 320000, badge: 'LIMITED', stock: 15,
+    name: 'CHECKER RACER DUCKBILL', slug: 'checker-racer-duckbill', sub: 'Monochrome Checkered Motocross Visor // Chrome Snaps',
+    price: 280000, original_price: 320000, badge: 'LIMITED', status: 'Active', stock: 15,
     image: getProductImageUrl('Product3.png'),
     fallback: 'assets/images/Product3.png'
   },
   {
     id: 'pet-4', type: 'parts', category: 'Drop Sets',
-    name: 'MUSTAZ OFFICIAL BUNDLE SET', sub: 'Pet Visor + Custom Packaging Bag + Zine + Sticker Pack',
-    price: 450000, original_price: 520000, badge: 'BUNDLE', stock: 10,
+    name: 'MUSTAZ OFFICIAL BUNDLE SET', slug: 'mustaz-official-bundle-set', sub: 'Pet Visor + Custom Packaging Bag + Zine + Sticker Pack',
+    price: 450000, original_price: 520000, badge: 'BUNDLE', status: 'Active', stock: 10,
     image: getProductImageUrl('mustaz_booth_event.png'),
     fallback: 'assets/images/mustaz_booth_event.png'
   },
   {
     id: 'pet-5', type: 'parts', category: 'Acrylic Pet',
-    name: 'ACID YELLOW SPIKED PET', sub: 'Acid Yellow High-Voltage Acrylic // Punk Spike Hardware',
-    price: 360000, original_price: null, badge: 'NEW', stock: 18,
+    name: 'ACID YELLOW SPIKED PET', slug: 'acid-yellow-spiked-pet', sub: 'Acid Yellow High-Voltage Acrylic // Punk Spike Hardware',
+    price: 360000, original_price: null, badge: 'NEW', status: 'Active', stock: 18,
     image: getProductImageUrl('Product1.png'),
     fallback: 'assets/images/Product1.png'
   },
   {
     id: 'pet-6', type: 'parts', category: 'Retro Visor',
-    name: 'SMOKE TINT SHORT PEAK', sub: 'Dark Smoke Polycarbonate // Universal 3-Snap Fit',
-    price: 220000, original_price: 270000, badge: 'SALE', stock: 24,
+    name: 'SMOKE TINT SHORT PEAK', slug: 'smoke-tint-short-peak', sub: 'Dark Smoke Polycarbonate // Universal 3-Snap Fit',
+    price: 220000, original_price: 270000, badge: 'SALE', status: 'Active', stock: 24,
     image: getProductImageUrl('Product2.png'),
     fallback: 'assets/images/Product2.png'
   },
   {
     id: 'pet-7', type: 'parts', category: 'Leather Pet',
-    name: 'VINTAGE HIGHWAY EAR GUARDS', sub: 'Vintage Leather Side Covers with Brass Rivets',
-    price: 195000, original_price: null, badge: 'CORE', stock: 14,
+    name: 'VINTAGE HIGHWAY EAR GUARDS', slug: 'vintage-highway-ear-guards', sub: 'Vintage Leather Side Covers with Brass Rivets',
+    price: 195000, original_price: null, badge: 'CORE', status: 'Active', stock: 14,
     image: getProductImageUrl('Product3.png'),
     fallback: 'assets/images/Product3.png'
   },
   {
     id: 'pet-8', type: 'parts', category: 'Drop Sets',
-    name: 'MUSTAZ EVENT EDITION PACK', sub: 'Special Event Pack // Limited Screenprinted Ziplock',
-    price: 490000, original_price: 550000, badge: 'ARCHIVE', stock: 5,
+    name: 'MUSTAZ EVENT EDITION PACK', slug: 'mustaz-event-edition-pack', sub: 'Special Event Pack // Limited Screenprinted Ziplock',
+    price: 490000, original_price: 550000, badge: 'ARCHIVE', status: 'Active', stock: 5,
     image: getProductImageUrl('mustaz_booth_event.png'),
     fallback: 'assets/images/mustaz_booth_event.png'
   }
 ];
 
 const PRODUCTS_STORAGE_KEY = 'mustaz_catalog_products_v3';
+
+function toSlug(str) {
+  return String(str || '').toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 export function getDynamicParts() {
   try {
@@ -108,6 +112,8 @@ export function getDynamicParts() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map(p => ({
             ...p,
+            slug: p.slug || toSlug(p.name),
+            status: p.status || 'Active',
             image: getProductImageUrl(p.image)
           }));
         }
@@ -117,6 +123,10 @@ export function getDynamicParts() {
     console.error('Failed to read dynamic products from storage', e);
   }
   return DEFAULT_PARTS_DATA;
+}
+
+export function getActiveParts() {
+  return getDynamicParts().filter(p => (p.status || 'Active').toLowerCase() === 'active');
 }
 
 export function saveDynamicParts(parts) {
@@ -135,10 +145,12 @@ export function addProduct(product) {
     type: 'parts',
     category: product.category || 'Acrylic Pet',
     name: product.name || 'UNTITLED PET VISOR',
-    sub: product.sub || 'Custom Hand-Crafted Helmet Accessory',
+    slug: product.slug || toSlug(product.name || 'untitled-pet-visor'),
+    sub: product.sub || product.description || 'Custom Hand-Crafted Helmet Accessory',
     price: Number(product.price) || 250000,
-    original_price: product.original_price ? Number(product.original_price) : null,
-    badge: product.badge || 'NEW',
+    original_price: product.original_price ? Number(product.original_price) : (product.originalPrice ? Number(product.originalPrice) : null),
+    badge: product.badge || '',
+    status: product.status || 'Active',
     stock: Number(product.stock) || 10,
     image: product.image || 'assets/images/pet_visor_yellow_flame.png'
   };
@@ -157,6 +169,20 @@ export function updateProduct(id, updatedFields) {
   const parts = getDynamicParts();
   const idx = parts.findIndex(p => p.id === id);
   if (idx !== -1) {
+    const oldImage = parts[idx].image;
+    const newImage = updatedFields.image;
+
+    // Clean up old image from Supabase Storage if replaced
+    if (newImage && oldImage && newImage !== oldImage) {
+      import('./supabaseService.js').then(sb => {
+        sb.deleteAssetFromStorage(oldImage).catch(() => {});
+      }).catch(() => {});
+    }
+
+    if (updatedFields.name && !updatedFields.slug) {
+      updatedFields.slug = toSlug(updatedFields.name);
+    }
+
     parts[idx] = Object.assign({}, parts[idx], updatedFields);
     saveDynamicParts(parts);
 
@@ -172,6 +198,15 @@ export function updateProduct(id, updatedFields) {
 
 export function deleteProduct(id) {
   let parts = getDynamicParts();
+  const target = parts.find(p => p.id === id);
+
+  // Clean up image from Supabase Storage bucket when product is deleted
+  if (target && target.image) {
+    import('./supabaseService.js').then(sb => {
+      sb.deleteAssetFromStorage(target.image).catch(() => {});
+    }).catch(() => {});
+  }
+
   parts = parts.filter(p => p.id !== id);
   saveDynamicParts(parts);
 

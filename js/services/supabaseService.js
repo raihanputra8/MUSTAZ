@@ -52,6 +52,16 @@ async function supabaseRest(endpoint, options = {}) {
 }
 
 /**
+export function generateSlug(text) {
+  return String(text || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
  * 1. Fetch All Products from Supabase (Falls back to Local if table not ready)
  */
 export async function fetchCloudProducts() {
@@ -61,10 +71,12 @@ export async function fetchCloudProducts() {
       const mapped = data.map(p => ({
         id: p.id,
         name: p.name,
+        slug: p.slug || generateSlug(p.name),
         category: p.category,
         price: Number(p.price) || 0,
         originalPrice: p.original_price ? Number(p.original_price) : null,
         badge: p.badge || '',
+        status: p.status || 'Active',
         sub: p.sub || p.description || '',
         image: getProductImageUrl(p.image || p.image_url || 'pet_visor_yellow_flame.png'),
         stock: Number(p.stock) || 0
@@ -86,11 +98,13 @@ export async function createCloudProduct(product) {
     const payload = [{
       id: product.id,
       name: product.name,
+      slug: product.slug || generateSlug(product.name),
       category: product.category,
       price: Number(product.price),
-      original_price: product.originalPrice ? Number(product.originalPrice) : null,
+      original_price: product.originalPrice ? Number(product.originalPrice) : (product.original_price ? Number(product.original_price) : null),
       badge: product.badge || null,
-      sub: product.sub,
+      status: product.status || 'Active',
+      sub: product.sub || product.description || '',
       image: getProductImageUrl(product.image),
       stock: Number(product.stock) || 0
     }];
@@ -112,12 +126,19 @@ export async function createCloudProduct(product) {
 export async function updateCloudProduct(id, updates) {
   try {
     const payload = {};
-    if (updates.name !== undefined) payload.name = updates.name;
+    if (updates.name !== undefined) {
+      payload.name = updates.name;
+      if (!updates.slug) payload.slug = generateSlug(updates.name);
+    }
+    if (updates.slug !== undefined) payload.slug = generateSlug(updates.slug);
     if (updates.category !== undefined) payload.category = updates.category;
     if (updates.price !== undefined) payload.price = Number(updates.price);
     if (updates.originalPrice !== undefined) payload.original_price = updates.originalPrice ? Number(updates.originalPrice) : null;
+    if (updates.original_price !== undefined) payload.original_price = updates.original_price ? Number(updates.original_price) : null;
     if (updates.badge !== undefined) payload.badge = updates.badge;
+    if (updates.status !== undefined) payload.status = updates.status;
     if (updates.sub !== undefined) payload.sub = updates.sub;
+    if (updates.description !== undefined) payload.sub = updates.description;
     if (updates.image !== undefined) payload.image = getProductImageUrl(updates.image);
     if (updates.stock !== undefined) payload.stock = Number(updates.stock);
 
@@ -153,10 +174,96 @@ export async function deleteCloudProduct(id) {
  * 5. Upload Image Asset to Supabase Storage Bucket ('product-images')
  */
 export async function uploadAssetToStorage(file) {
-  const rawExt = file.name.split('.').pop() || 'png';
-  const ext = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const cleanName = `pet_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
-  const uploadUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/${CONFIG.STORAGE_BUCKET}/${cleanName}`;
+  return uploadAssetWithProgress(file);
+}
+
+/**
+ * 5a. Upload Image Asset with real-time Progress Event callback
+ */
+export function uploadAssetWithProgress(file, onProgress) {
+  return new Promise(async (resolve, reject) => {
+    if (!file) {
+      return reject(new Error('No file selected for upload.'));
+    }
+
+    const rawExt = file.name.split('.').pop() || 'png';
+    const ext = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cleanName = `pet_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+    const uploadUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/${CONFIG.STORAGE_BUCKET}/${cleanName}`;
+
+    let authToken = CONFIG.SUPABASE_ANON_KEY;
+    try {
+      const { getAuthToken } = await import('./authService.js');
+      const token = await getAuthToken();
+      if (token) authToken = token;
+    } catch {}
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', uploadUrl);
+    xhr.setRequestHeader('apikey', CONFIG.SUPABASE_ANON_KEY);
+    xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+    xhr.setRequestHeader('Content-Type', file.type || 'image/png');
+
+    if (xhr.upload && typeof onProgress === 'function') {
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          onProgress(percent, event.loaded, event.total);
+        }
+      };
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const publicUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/public/${CONFIG.STORAGE_BUCKET}/${cleanName}`;
+        console.log('⚡ File uploaded to Supabase Storage successfully:', publicUrl);
+        resolve(publicUrl);
+      } else {
+        let errMsg = `Upload failed with HTTP ${xhr.status}`;
+        try {
+          const parsed = JSON.parse(xhr.responseText);
+          if (parsed.message) errMsg = parsed.message;
+        } catch {}
+        reject(new Error(errMsg));
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error('Network error during upload to Supabase Storage'));
+    };
+
+    xhr.send(file);
+  });
+}
+
+/**
+ * 5b. Delete Old Image Asset from Supabase Storage Bucket ('product-images')
+ * Prevents storage clutter when a product image is replaced or product is deleted.
+ */
+export async function deleteAssetFromStorage(imageUrl) {
+  if (!imageUrl || typeof imageUrl !== 'string') return false;
+
+  const bucketMarker = `/${CONFIG.STORAGE_BUCKET}/`;
+  if (!imageUrl.includes(bucketMarker)) {
+    // Not hosted on this Supabase storage bucket (e.g. local assets/images/ or external CDN)
+    return false;
+  }
+
+  const filePath = imageUrl.split(bucketMarker)[1]?.split('?')[0];
+  if (!filePath) return false;
+
+  // Protect default system seed templates from accidental deletion
+  const protectedAssets = [
+    'Product1.png',
+    'Product2.png',
+    'Product3.png',
+    'pet_visor_yellow_flame.png',
+    'retro_checkered_helmet.png',
+    'mustaz_booth_event.png'
+  ];
+  if (protectedAssets.includes(filePath)) {
+    return false;
+  }
 
   try {
     let authToken = CONFIG.SUPABASE_ANON_KEY;
@@ -166,27 +273,37 @@ export async function uploadAssetToStorage(file) {
       if (token) authToken = token;
     } catch {}
 
-    const res = await fetch(uploadUrl, {
-      method: 'POST',
+    // Option 1: Supabase client remove
+    try {
+      const { getSupabase } = await import('./authService.js');
+      const sb = await getSupabase();
+      if (sb && sb.storage) {
+        const { error } = await sb.storage.from(CONFIG.STORAGE_BUCKET).remove([filePath]);
+        if (!error) {
+          console.log(`🗑️ Removed old asset from Supabase Storage: ${filePath}`);
+          return true;
+        }
+      }
+    } catch {}
+
+    // Option 2: Direct REST call
+    const deleteUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/${CONFIG.STORAGE_BUCKET}/${filePath}`;
+    const res = await fetch(deleteUrl, {
+      method: 'DELETE',
       headers: {
         'apikey': CONFIG.SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': file.type || 'image/png'
-      },
-      body: file
+        'Authorization': `Bearer ${authToken}`
+      }
     });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || `Upload failed with HTTP ${res.status}`);
+    if (res.ok) {
+      console.log(`🗑️ Deleted asset via REST: ${filePath}`);
+      return true;
     }
-
-    const publicUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/public/${CONFIG.STORAGE_BUCKET}/${cleanName}`;
-    return publicUrl;
   } catch (err) {
-    console.error('Supabase Storage upload error:', err);
-    throw err;
+    console.warn(`Could not delete storage asset ${filePath}:`, err.message);
   }
+  return false;
 }
 
 /**

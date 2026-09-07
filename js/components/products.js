@@ -2,9 +2,42 @@
  * MUSTAZ Garage Zine - Catalog & Product Detail Engine
  */
 
-import { HELMETS_DATA, CHOPPERS_DATA, PARTS_DATA, getDynamicParts, addToCart, formatRupiah, getCartCount } from '../services/cartService.js';
+import { HELMETS_DATA, CHOPPERS_DATA, PARTS_DATA, getDynamicParts, getActiveParts, addToCart, formatRupiah, getCartCount } from '../services/cartService.js';
 import { openCart } from './cart.js';
 import { showToast } from './toast.js';
+import { verifyAdminSession } from '../services/authService.js';
+
+// ─── HYBRID ADMIN STATE & CONTROLS ─────────────────────────────────────────
+
+let _isAdminCached = false;
+let _adminCheckCompleted = false;
+
+export async function checkAdminStatus() {
+  if (_adminCheckCompleted) return _isAdminCached;
+  try {
+    const res = await verifyAdminSession();
+    _isAdminCached = !!(res && res.isAdmin);
+  } catch {
+    _isAdminCached = false;
+  }
+  _adminCheckCompleted = true;
+  return _isAdminCached;
+}
+
+export function mountAdminPublicFloatingBadge() {
+  if (document.getElementById('adminPublicFloatBadge')) return;
+  const badge = document.createElement('aside');
+  badge.className = 'admin-public-float-badge';
+  badge.id = 'adminPublicFloatBadge';
+  badge.innerHTML = `
+    <a href="/admin.html?tab=inventory" class="admin-float-link" title="Buka Admin Dashboard">
+      <span class="admin-float-icon">⚡</span>
+      <span>ADMIN DASHBOARD</span>
+      <span class="admin-float-badge">LIVE</span>
+    </a>
+  `;
+  document.body.appendChild(badge);
+}
 
 // ─── PRODUCT DETAIL MODAL COMPONENT ────────────────────────────────────────
 
@@ -124,10 +157,15 @@ export function openProductDetail(product) {
         </p>
 
         <!-- CTA BUTTONS -->
-        <div style="display:flex;gap:12px;margin-top:8px;">
-          <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:16px;font-size:1.15rem;">
+        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;" id="modalActionButtons">
+          <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:16px;font-size:1.15rem;min-width:180px;">
             ADD TO GARAGE →
           </button>
+          ${_isAdminCached ? `
+            <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(product.id)}" class="btn-brutal-white admin-modal-edit-btn" style="padding:16px;font-size:0.95rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;border:2px solid #FFF;" title="Edit Produk di Admin">
+              ✏️ ADMIN EDIT
+            </a>
+          ` : ''}
         </div>
       </div>
     </div>
@@ -144,6 +182,23 @@ export function openProductDetail(product) {
     });
     closeProductModal();
   });
+
+  if (!_adminCheckCompleted) {
+    checkAdminStatus().then(isAdmin => {
+      if (isAdmin) {
+        const actions = document.getElementById('modalActionButtons');
+        if (actions && !actions.querySelector('.admin-modal-edit-btn')) {
+          const btn = document.createElement('a');
+          btn.href = `/admin.html?tab=inventory&edit=${encodeURIComponent(product.id)}`;
+          btn.className = 'btn-brutal-white admin-modal-edit-btn';
+          btn.style.cssText = 'padding:16px;font-size:0.95rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;border:2px solid #FFF;';
+          btn.innerHTML = '✏️ ADMIN EDIT';
+          btn.title = 'Edit Produk di Admin';
+          actions.appendChild(btn);
+        }
+      }
+    });
+  }
 
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -189,9 +244,16 @@ function renderParts(data) {
             <span style="font-family:var(--font-headline);font-weight:900;font-size:1.4rem;color:#000;line-height:1;">
               ${num}
             </span>
-            <span style="background:#000;color:#FFF;font-family:var(--font-mono-sub);font-weight:800;font-size:0.68rem;padding:3px 8px;text-transform:uppercase;letter-spacing:0.12em;">
-              ${part.category}
-            </span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${_isAdminCached && part.status === 'Draft' ? `
+                <span style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.62rem;padding:2px 6px;text-transform:uppercase;letter-spacing:0.08em;">
+                  [DRAFT]
+                </span>
+              ` : ''}
+              <span style="background:#000;color:#FFF;font-family:var(--font-mono-sub);font-weight:800;font-size:0.68rem;padding:3px 8px;text-transform:uppercase;letter-spacing:0.12em;">
+                ${part.category}
+              </span>
+            </div>
           </div>
 
           <!-- Product Image with raw border (4:5 proportional ratio) -->
@@ -224,13 +286,18 @@ function renderParts(data) {
             </div>
 
             <!-- Action Buttons: Add to Cart + Quick View -->
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.92rem;justify-content:center;letter-spacing:0.04em;">
                 + KERANJANG
               </button>
               <button class="quick-view-btn" data-id="${part.id}" style="background:#000;color:#FFF;border:2px solid #000;padding:10px 14px;font-family:var(--font-headline);font-size:0.92rem;cursor:pointer;letter-spacing:0.04em;" title="Lihat Detail">
                 DETAIL →
               </button>
+              ${_isAdminCached ? `
+                <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(part.id)}" class="admin-card-edit-btn" style="background:#FFFF00;color:#000;border:2px solid #000;padding:10px 12px;font-family:var(--font-headline);font-size:0.85rem;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" title="Admin Quick Edit">
+                  ✏️
+                </a>
+              ` : ''}
             </div>
           </div>
 
@@ -273,7 +340,7 @@ export function initPartsPage() {
   let searchQuery = '';
 
   function applyFilters() {
-    let result = getDynamicParts();
+    let result = _isAdminCached ? getDynamicParts() : getActiveParts();
     if (activeCategory !== 'ALL') {
       result = result.filter(p => p.category.toLowerCase() === activeCategory.toLowerCase());
     }
@@ -315,6 +382,14 @@ export function initPartsPage() {
   }
 
   applyFilters();
+
+  // Asynchronously verify admin status and enhance UI if admin
+  checkAdminStatus().then(isAdmin => {
+    if (isAdmin) {
+      mountAdminPublicFloatingBadge();
+      applyFilters();
+    }
+  });
 
   window.addEventListener('mustaz_products_updated', () => {
     applyFilters();
@@ -478,6 +553,12 @@ export function initHelmetsPage() {
   }
 
   applyFilters();
+
+  checkAdminStatus().then(isAdmin => {
+    if (isAdmin) {
+      mountAdminPublicFloatingBadge();
+    }
+  });
 }
 
 export const initChoppersPage = initHelmetsPage;
