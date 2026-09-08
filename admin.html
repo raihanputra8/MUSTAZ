@@ -151,50 +151,46 @@
       <!-- Main Admin Dashboard Body -->
       <div id="adminDashboardBody">
 
-      <!-- Top Admin Greeting & Overview Card (Harmonized with account.html) -->
-      <div class="card-brutal-dark" style="margin-bottom:36px;border-color:var(--accent-yellow);padding:28px 32px;background:#0f0f0f;">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <!-- Top Admin Greeting & Overview Card -->
+      <div class="card-brutal-dark" style="margin-bottom:32px;border:2px solid #282828;border-left:6px solid var(--accent-yellow);padding:24px 28px;background:#101010;box-shadow:6px 6px 0px #000;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
           
           <!-- Avatar + Member Bio -->
-          <div style="display:flex;align-items:center;gap:20px;">
-            <div style="width:72px;height:72px;background:var(--accent-yellow);border:3px solid #000000;box-shadow:4px 4px 0px var(--accent-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <span style="font-family:var(--font-headline);font-size:2.2rem;font-weight:900;color:#000000;line-height:1;">M</span>
+          <div style="display:flex;align-items:center;gap:18px;">
+            <div style="width:60px;height:60px;background:var(--accent-yellow);border:2px solid #000;box-shadow:3px 3px 0px var(--accent-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span style="font-family:var(--font-headline);font-size:2rem;font-weight:900;color:#000;line-height:1;">M</span>
             </div>
             <div>
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-                <h1 class="editorial-title" style="font-size:clamp(1.8rem, 3.5vw, 2.5rem);margin:0;color:#FFF;line-height:1;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                <h1 class="editorial-title" style="font-size:clamp(1.6rem, 3vw, 2.2rem);margin:0;color:#FFF;line-height:1;">
                   MUSTAZ CRAFT ADMIN
                 </h1>
-                <span class="zine-tag-yellow" style="font-size:0.65rem;padding:2px 8px;">MASTER DESK</span>
-                <span class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">INVENTORY PROTOCOL</span>
-                <button id="btnAdminTopLogout" type="button" class="btn-brutal-pink btn-brutal-sm" style="background:#dc2626;border-color:#ef4444;color:#FFF;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;font-size:0.75rem;font-weight:900;cursor:pointer;" title="Keluar / Ganti Akun">
-                  <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
-                  <span>LOG OUT (GANTI AKUN)</span>
-                </button>
+                <span class="zine-tag-yellow" style="font-size:0.65rem;padding:3px 8px;">MASTER DESK</span>
+                <span class="zine-tag-pink" style="font-size:0.65rem;padding:3px 8px;">INVENTORY PROTOCOL</span>
               </div>
-              <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#AAA;letter-spacing:0.08em;margin:0;">
-                CONTROL DESK // PET VISOR CATALOG & REAL-TIME DISPATCH DISCIPLINE
+              <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#888;letter-spacing:0.06em;margin:0;">
+                CONTROL DESK // PET VISOR CATALOG &amp; REAL-TIME DISPATCH DISCIPLINE
               </p>
             </div>
           </div>
 
           <!-- Quick Metrics Bar -->
-          <div style="display:flex;gap:14px;flex-wrap:wrap;">
-            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:100px;">
-              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:var(--accent-yellow);text-transform:uppercase;">TOTAL VISORS</span>
-              <span id="statTotalProducts" style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;font-weight:900;">8</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:10px;min-width:320px;">
+            <div style="background:#161616;border:1px solid #262626;padding:10px 14px;text-align:center;box-shadow:2px 2px 0px #000;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.62rem;color:var(--accent-yellow);text-transform:uppercase;letter-spacing:0.06em;">TOTAL VISORS</span>
+              <span id="statTotalProducts" style="font-family:var(--font-headline);font-size:1.35rem;color:#FFF;font-weight:900;line-height:1.2;">8</span>
             </div>
-            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:100px;">
-              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:#4ade80;text-transform:uppercase;">READY STOCK</span>
-              <span id="statTotalStock" style="font-family:var(--font-headline);font-size:1.4rem;color:#4ade80;font-weight:900;">106</span>
+            <div style="background:#161616;border:1px solid #262626;padding:10px 14px;text-align:center;box-shadow:2px 2px 0px #000;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.62rem;color:#4ade80;text-transform:uppercase;letter-spacing:0.06em;">READY STOCK</span>
+              <span id="statTotalStock" style="font-family:var(--font-headline);font-size:1.35rem;color:#4ade80;font-weight:900;line-height:1.2;">106</span>
             </div>
-            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:100px;">
-              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:var(--accent-pink);text-transform:uppercase;">LOW STOCK</span>
-              <span id="statLowStock" style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-pink);font-weight:900;">1</span>
+            <div style="background:#161616;border:1px solid #262626;padding:10px 14px;text-align:center;box-shadow:2px 2px 0px #000;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.62rem;color:var(--accent-pink);text-transform:uppercase;letter-spacing:0.06em;">LOW STOCK</span>
+              <span id="statLowStock" style="font-family:var(--font-headline);font-size:1.35rem;color:var(--accent-pink);font-weight:900;line-height:1.2;">1</span>
             </div>
-            <div style="background:#181818;border:1px solid #333;padding:10px 16px;text-align:center;min-width:130px;">
-              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.65rem;color:#AAA;text-transform:uppercase;">TOTAL ASSET</span>
-              <span id="statInventoryValue" style="font-family:var(--font-headline);font-size:1.3rem;color:var(--accent-yellow);font-weight:900;">Rp 32.880.000</span>
+            <div style="background:#161616;border:1px solid #262626;padding:10px 14px;text-align:center;box-shadow:2px 2px 0px #000;">
+              <span style="display:block;font-family:var(--font-mono-sub);font-size:0.62rem;color:#AAA;text-transform:uppercase;letter-spacing:0.06em;">TOTAL ASSET</span>
+              <span id="statInventoryValue" style="font-family:var(--font-headline);font-size:1.2rem;color:var(--accent-yellow);font-weight:900;line-height:1.2;white-space:nowrap;">Rp 32.880.000</span>
             </div>
           </div>
 
@@ -206,7 +202,7 @@
         
         <!-- SIDEBAR NAVIGATION -->
         <aside>
-          <nav class="account-sidebar-nav" id="adminNav">
+          <nav class="account-sidebar-nav" id="adminNav" style="border-radius:4px;">
             <button class="account-nav-item active" data-tab="inventory">
               <span class="material-symbols-outlined">inventory_2</span>
               <span>PRODUCT INVENTORY</span>
@@ -223,14 +219,10 @@
             </button>
             <button class="account-nav-item" data-tab="reviews">
               <span class="material-symbols-outlined">rate_review</span>
-              <span>TESTIMONI & ULASAN</span>
+              <span>TESTIMONI &amp; ULASAN</span>
               <span class="account-nav-badge" id="navBadgeReviews">5</span>
             </button>
-            <button class="account-nav-item" data-tab="settings">
-              <span class="material-symbols-outlined">tune</span>
-              <span>SYSTEM & BACKUP</span>
-            </button>
-            <hr style="border:none;border-top:1px dashed #333;margin:8px 0;">
+            <hr style="border:none;border-top:1px dashed #2a2a2a;margin:10px 0;">
             <a href="parts.html" target="_blank" class="account-nav-item" style="color:var(--accent-yellow);">
               <span class="material-symbols-outlined" style="color:var(--accent-yellow);">open_in_new</span>
               <span>VIEW LIVE STORE ↗</span>
@@ -240,19 +232,6 @@
               <span>LOG OUT / GANTI AKUN</span>
             </button>
           </nav>
-
-          <!-- Status / Synchronization Box -->
-          <div style="background:#121212;border:2px solid #222;padding:20px;margin-top:20px;box-shadow:4px 4px 0px #000;">
-            <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:var(--accent-yellow);letter-spacing:0.15em;text-transform:uppercase;display:block;margin-bottom:6px;">
-              SHOP SYNCHRONIZATION
-            </span>
-            <p style="font-size:0.85rem;color:#AAA;line-height:1.4;margin-bottom:14px;">
-              Semua penambahan visor, perubahan stok, dan harga akan langsung tersinkronisasi di katalog toko secara real-time.
-            </p>
-            <button id="btnSidebarQuickAdd" class="btn-brutal-yellow btn-brutal-sm" style="width:100%;text-align:center;">
-              + QUICK ADD PRODUCT
-            </button>
-          </div>
         </aside>
 
         <!-- MAIN CONTENT PANELS -->
@@ -270,8 +249,8 @@
                 </p>
               </div>
 
-              <button id="btnSwitchToAdd" class="btn-brutal-yellow btn-brutal-sm" style="display:inline-flex;align-items:center;gap:6px;">
-                <span class="material-symbols-outlined" style="font-size:18px;">add</span>
+              <button id="btnSwitchToAdd" class="btn-brutal-yellow btn-brutal-sm" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;font-weight:900;">
+                <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>
                 <span>+ ADD NEW VISOR</span>
               </button>
             </div>
@@ -586,35 +565,6 @@
                   <!-- Populated dynamically -->
                 </tbody>
               </table>
-            </div>
-          </div>
-
-          <!-- ══════════════════════════════════════════════════════════════ -->
-          <!-- PANEL 4: SYSTEM & BACKUP -->
-          <!-- ══════════════════════════════════════════════════════════════ -->
-          <div class="account-tab-panel" id="panel-settings">
-            <div style="max-width:700px;display:flex;flex-direction:column;gap:24px;">
-              
-              <div style="background:#111;border:2px solid #282828;border-left:4px solid var(--accent-yellow);padding:24px;box-shadow:4px 4px 0px #000;">
-                <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;margin-bottom:8px;">EXPORT INVENTORY JSON</h3>
-                <p style="font-size:0.88rem;color:#AAA;margin-bottom:16px;line-height:1.5;">
-                  Download complete store catalog as a backup JSON file containing all products, prices, badges, and stock quantities.
-                </p>
-                <button id="btnExportJson" class="btn-brutal-yellow btn-brutal-sm">
-                  DOWNLOAD JSON BACKUP ↓
-                </button>
-              </div>
-
-              <div style="background:#111;border:2px solid #282828;border-left:4px solid var(--accent-pink);padding:24px;box-shadow:4px 4px 0px #000;">
-                <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-pink);margin-bottom:8px;">RESTORE FACTORY DEFAULT CATALOG</h3>
-                <p style="font-size:0.88rem;color:#AAA;margin-bottom:16px;line-height:1.5;">
-                  Reset all product listings back to the default 8 MUSTAZ workshop products. Useful for testing or wiping sample custom products.
-                </p>
-                <button id="btnResetCatalog" class="btn-brutal-pink btn-brutal-sm" style="background:#59001b;border-color:var(--accent-pink);">
-                  RESET CATALOG TO DEFAULT ⚠️
-                </button>
-              </div>
-
             </div>
           </div>
 

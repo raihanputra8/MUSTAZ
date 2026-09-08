@@ -188,8 +188,8 @@ async function initAdminDashboard() {
       switchTab('add');
     } else if (tabParam === 'orders') {
       switchTab('orders');
-    } else if (tabParam === 'settings') {
-      switchTab('settings');
+    } else if (tabParam === 'reviews') {
+      switchTab('reviews');
     } else {
       switchTab('inventory');
     }
@@ -302,45 +302,50 @@ async function initAdminDashboard() {
       return `
         <tr>
           <td>
-            <img src="${safeImage}" alt="${safeName}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" style="width:52px;aspect-ratio:4/5;object-fit:cover;border:1px solid #333;background:#000;">
+            <img src="${safeImage}" alt="${safeName}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" style="width:52px;height:52px;object-fit:cover;border:1.5px solid #333;background:#000;border-radius:4px;">
           </td>
           <td>
-            <div style="font-family:var(--font-headline);font-size:1.1rem;color:#FFF;letter-spacing:0.02em;">${safeName}</div>
-            <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin-top:2px;display:flex;align-items:center;gap:8px;">
-              <span>SKU: ${safeId.toUpperCase()}</span>
-              <span style="color:#555;">//</span>
-              <span style="color:var(--accent-yellow);">${safeSlug}</span>
+            <div style="font-family:var(--font-headline);font-size:1.08rem;color:#FFF;letter-spacing:0.02em;line-height:1.2;">${safeName}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+              <span style="font-family:var(--font-mono-sub);font-size:0.68rem;background:#1e1e1e;border:1px solid #333;padding:2px 6px;color:#aaa;font-weight:700;">${safeId.toUpperCase()}</span>
+              <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);font-weight:700;">/${safeSlug}</span>
             </div>
-            <div style="font-size:0.78rem;color:#AAA;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${safeSub}</div>
+            ${safeSub ? `<div style="font-size:0.75rem;color:#777;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;">${safeSub}</div>` : ''}
           </td>
           <td>
-            <span style="background:#181818;border:1px solid #333;color:var(--accent-yellow);font-family:var(--font-mono-sub);font-size:0.72rem;font-weight:700;padding:4px 8px;">
+            <span style="background:#181818;border:1px solid #2e2e2e;color:var(--accent-yellow);font-family:var(--font-mono-sub);font-size:0.72rem;font-weight:800;padding:4px 10px;white-space:nowrap;letter-spacing:0.04em;">
               ${safeCategory}
             </span>
           </td>
-          <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;">
-            ${formatRupiah(part.price)}
+          <td style="white-space:nowrap;">
+            <span style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;letter-spacing:0.02em;">
+              ${formatRupiah(part.price)}
+            </span>
           </td>
           <td style="text-align:center;">
-            <div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:4px;">
-              <button class="qty-control-btn btn-stock-dec" data-id="${safeId}">-</button>
-              <span style="font-family:var(--font-headline);font-size:1.1rem;min-width:32px;text-align:center;color:#FFF;">${stock}</span>
-              <button class="qty-control-btn btn-stock-inc" data-id="${safeId}">+</button>
+            <div style="display:inline-flex;align-items:center;background:#141414;border:1px solid #333;padding:2px 4px;margin-bottom:6px;">
+              <button class="qty-control-btn btn-stock-dec" data-id="${safeId}" style="width:22px;height:22px;font-size:0.9rem;cursor:pointer;">-</button>
+              <span style="font-family:var(--font-headline);font-size:1.1rem;min-width:32px;text-align:center;color:#FFF;font-weight:900;">${stock}</span>
+              <button class="qty-control-btn btn-stock-inc" data-id="${safeId}" style="width:22px;height:22px;font-size:0.9rem;cursor:pointer;">+</button>
             </div>
             <div>
               <span class="${stockBadgeClass}">${stockLabel}</span>
             </div>
           </td>
-          <td style="text-align:center;">
+          <td style="text-align:center;white-space:nowrap;">
             ${statusBadge}
           </td>
           <td style="text-align:right;white-space:nowrap;">
-            <button class="btn-admin-edit btn-brutal-ghost btn-brutal-sm" data-id="${safeId}" style="padding:6px 14px;font-size:0.75rem;margin-right:6px;">
-              EDIT
-            </button>
-            <button class="btn-admin-del btn-brutal-dark btn-brutal-sm" data-id="${safeId}" style="padding:6px 14px;font-size:0.75rem;background:#35000a;border-color:#e11d48;color:#fecdd3;">
-              DELETE
-            </button>
+            <div style="display:inline-flex;gap:6px;align-items:center;justify-content:flex-end;">
+              <button class="btn-admin-edit btn-brutal-ghost btn-brutal-sm" data-id="${safeId}" style="padding:6px 12px;font-size:0.75rem;display:inline-flex;align-items:center;gap:4px;" title="Edit Produk">
+                <span class="material-symbols-outlined" style="font-size:15px;">edit</span>
+                <span>EDIT</span>
+              </button>
+              <button class="btn-admin-del btn-brutal-dark btn-brutal-sm" data-id="${safeId}" style="padding:6px 12px;font-size:0.75rem;background:#35000a;border-color:#e11d48;color:#fecdd3;display:inline-flex;align-items:center;gap:4px;" title="Hapus Produk">
+                <span class="material-symbols-outlined" style="font-size:15px;">delete</span>
+                <span>HAPUS</span>
+              </button>
+            </div>
           </td>
         </tr>
       `;
@@ -891,36 +896,7 @@ async function initAdminDashboard() {
   document.getElementById('btnRefreshReviews')?.addEventListener('click', renderAdminReviews);
   window.addEventListener('mustaz:reviews_updated', renderAdminReviews);
 
-  // ─── 9. SYSTEM SETTINGS ──────────────────────────────────────────────────
-  document.getElementById('btnExportJson')?.addEventListener('click', () => {
-    const data = getDynamicParts();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mustaz_products_catalog_${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showAdminToast('success', 'BACKUP DIEKSPOR', 'File JSON inventaris berhasil diunduh.');
-  });
-
-  document.getElementById('btnResetCatalog')?.addEventListener('click', async () => {
-    const confirmed = await showBrutalConfirm({
-      title: 'RESET STORE INVENTORY?',
-      message: 'PERINGATAN: Apakah Anda yakin ingin mengembalikan inventaris ke setelan pabrik workshop?\nSemua produk kustom baru akan dihapus.',
-      badge: 'DANGER // FACTORY RESET',
-      confirmText: 'YA, RESET INVENTORY',
-      cancelText: 'BATAL',
-      isDanger: true
-    });
-    if (confirmed) {
-      resetCatalogToDefault();
-      refreshAdminView();
-      showAdminToast('success', 'KATALOG DI-RESET', 'Katalog telah dikembalikan ke standar awal workshop.');
-    }
-  });
-
-  // ─── 10. INITIALIZATION ──────────────────────────────────────────────────
+  // ─── 9. INITIALIZATION ──────────────────────────────────────────────────
   refreshAdminView();
   renderOrders();
   renderAdminReviews();
