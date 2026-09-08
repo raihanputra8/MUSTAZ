@@ -52,6 +52,8 @@ async function supabaseRest(endpoint, options = {}) {
 }
 
 /**
+ * Helper to generate URL-safe product slug
+ */
 export function generateSlug(text) {
   return String(text || '')
     .toLowerCase()
