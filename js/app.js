@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const partId = btn.dataset.addToCart;
       const part = getDynamicParts().find(p => p.id === partId);
       if (!part) return;
-      addToCart(part);
+      const price = btn.dataset.price ? parseInt(btn.dataset.price, 10) : part.price;
+      addToCart({ ...part, price });
       showToast({
         title: part.name,
         message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,

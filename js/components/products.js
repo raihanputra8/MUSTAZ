@@ -267,7 +267,7 @@ function renderParts(data) {
             ${part.badge ? `<div class="zine-tag-pink" style="position:absolute;top:8px;left:8px;z-index:10;">${part.badge}</div>` : ''}
             <img src="${part.image}" alt="${part.name}"
               style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);transition:all 0.3s ease;"
-              onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop'"
+              onerror="this.onerror=null;this.src='assets/images/Product1.png';"
               onmouseover="this.style.filter='contrast(125%)';this.style.transform='scale(1.04)';"
               onmouseout="this.style.filter='contrast(110%)';this.style.transform='scale(1)';">
           </div>
@@ -417,8 +417,8 @@ function renderHelmets(data) {
     grid.innerHTML = `
       <div style="grid-column:1/-1;text-align:center;padding:80px 20px;background:#101010;border:2px dashed #333;">
         <div style="font-size:3rem;margin-bottom:16px;color:var(--accent-pink);">🏍️</div>
-        <p style="font-family:var(--font-headline);font-size:1.8rem;color:#FFF;text-transform:uppercase;">NO MACHINES FOUND</p>
-        <p style="font-size:0.9rem;color:#888;">Try selecting ALL MACHINES or clearing the search query.</p>
+        <p style="font-family:var(--font-headline);font-size:1.8rem;color:#FFF;text-transform:uppercase;">NO HELMETS OR KITS FOUND</p>
+        <p style="font-size:0.9rem;color:#888;">Try selecting ALL or clearing the search query.</p>
       </div>
     `;
     return;

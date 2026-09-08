@@ -162,7 +162,7 @@ function renderCartItems() {
       <img class="cart-item-img"
         src="${item.image || item.image_url || ''}"
         alt="${item.name}"
-        onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&auto=format&fit=crop'">
+        onerror="this.onerror=null;this.src='assets/images/Product1.png'">
       <div class="cart-item-info">
         <p class="cart-item-title">${item.name}</p>
         <p class="cart-item-price">${formatRupiah(item.price)}</p>

@@ -13,11 +13,11 @@ export function showToast({ title, message, image, onAction, actionText = "VIEW 
   const toast = document.createElement("div");
   toast.className = "toast-item";
 
-  const fallbackImg = "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=300&auto=format&fit=crop&q=80";
+  const fallbackImg = "assets/images/Product1.png";
   const imgSrc = image || fallbackImg;
 
   toast.innerHTML = `
-    <img src="${imgSrc}" class="toast-thumb" alt="${title}" onerror="this.src='${fallbackImg}'">
+    <img src="${imgSrc}" class="toast-thumb" alt="${title}" onerror="this.onerror=null;this.src='${fallbackImg}';">
     <div class="toast-content">
       <h4 class="toast-title">${title}</h4>
       <p class="toast-desc">${message}</p>
