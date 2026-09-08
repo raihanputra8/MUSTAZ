@@ -565,36 +565,36 @@
 
 @media (max-width: 768px) {
   .wrap, .wrap-tight {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
   
   /* Header & Navigation Polish */
   .site-header {
-    height: 64px;
+    height: 60px;
   }
   .site-header-inner {
-    padding: 0 16px;
+    padding: 0 14px;
   }
   .brand-badge {
-    gap: 10px;
+    gap: 8px;
     min-width: 0;
     flex-shrink: 1;
   }
   .brand-logo-img {
-    height: 38px;
+    height: 36px;
     flex-shrink: 0;
   }
   .brand-text-block .brand-name {
-    font-size: 1.2rem !important;
+    font-size: 1.15rem !important;
     line-height: 1;
   }
   .brand-text-block .brand-sub {
-    font-size: 0.55rem !important;
-    letter-spacing: 0.12em !important;
+    font-size: 0.52rem !important;
+    letter-spacing: 0.1em !important;
   }
   .nav-actions {
-    gap: 8px;
+    gap: 6px;
   }
   /* Hide search icon and text sign in button on mobile top bar (clean mobile navbar) */
   .nav-actions #headerSearchBtn,
@@ -602,49 +602,160 @@
     display: none !important;
   }
   .nav-btn-icon {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
   .nav-cart-btn {
-    height: 38px;
-    padding: 0 10px;
-    gap: 6px;
-    font-size: 0.9rem;
+    height: 36px;
+    padding: 0 9px;
+    gap: 5px;
+    font-size: 0.85rem;
     box-shadow: 2px 2px 0px #FFFFFF;
   }
   .mobile-menu-toggle {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
 
   /* Mobile Drawer */
   .mobile-nav-drawer {
-    top: 64px;
-    padding: 24px 20px;
+    top: 60px;
+    padding: 20px 16px;
     overflow-y: auto;
+  }
+
+  /* Universal Mobile Typography Scaling */
+  .editorial-title,
+  h1.editorial-title,
+  h1 {
+    font-size: clamp(1.65rem, 6.8vw, 2.15rem) !important;
+    line-height: 1.0 !important;
+    letter-spacing: -0.01em !important;
+    margin-bottom: 10px !important;
+  }
+  h2 {
+    font-size: clamp(1.3rem, 5.2vw, 1.65rem) !important;
+    line-height: 1.08 !important;
+  }
+  h3 {
+    font-size: 1.15rem !important;
+    line-height: 1.15 !important;
+  }
+  h4 {
+    font-size: 1.0rem !important;
+  }
+  .editorial-desc {
+    font-size: 0.88rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 16px !important;
+  }
+  .section-num {
+    font-size: 1.0rem !important;
+  }
+  .section-label {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.14em !important;
+  }
+  .section-meta-header {
+    margin-bottom: 8px !important;
+  }
+
+  /* Compact Section Spacing on Mobile */
+  section, main > section {
+    padding: 34px 0 40px !important;
+  }
+  .catalog-hero {
+    padding: 32px 0 24px !important;
+  }
+  .section-grid,
+  .products-grid,
+  .testi-grid,
+  .spec-grid {
+    gap: 16px !important;
+  }
+
+  /* Compact Brutalist Action Buttons */
+  .btn-brutal-pink,
+  .btn-brutal-yellow,
+  .btn-brutal-white,
+  .btn-brutal-ghost,
+  .btn-brutal-dark,
+  .btn-brutal {
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.05em !important;
+    min-height: 40px !important;
+  }
+
+  /* Compact Zine Tags & Badges */
+  .zine-tag,
+  .zine-tag-yellow,
+  .zine-tag-pink,
+  .zine-tag-black {
+    padding: 3px 8px !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  /* Brutalist Cards Scaled for Mobile (No Horizontal Overflow) */
+  .card-brutal-white,
+  .card-brutal-dark,
+  .card-testi-brutal,
+  .card-flash-sale,
+  .part-card > div,
+  .manifesto-card {
+    padding: 14px 16px !important;
+    transform: none !important;
+    box-shadow: 4px 4px 0px var(--accent-pink) !important;
+  }
+  .card-brutal-dark {
+    box-shadow: 4px 4px 0px #000000 !important;
+  }
+  .card-brutal-white {
+    box-shadow: 4px 4px 0px #000000 !important;
+  }
+  .card-testi-brutal {
+    box-shadow: 4px 4px 0px #000000 !important;
+    padding: 14px !important;
+  }
+  .testi-quote {
+    font-size: 0.88rem !important;
+    line-height: 1.5 !important;
+  }
+  .testi-author-name {
+    font-size: 1.1rem !important;
+  }
+  .manifesto-card {
+    padding: 18px 16px !important;
+    box-shadow: 5px 5px 0px #000000 !important;
+  }
+  .manifesto-card p {
+    font-size: 0.95rem !important;
+    line-height: 1.55 !important;
   }
 
   /* Hero Panel & Clean Mobile Layout */
   .hero-editorial-panel {
-    padding: 22px 18px 20px;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.8), 4px 4px 0px var(--accent-pink);
+    padding: 18px 16px 16px !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8), 4px 4px 0px var(--accent-pink) !important;
     border-radius: 2px;
   }
   .hero-editorial-panel .editorial-title {
-    font-size: clamp(2.4rem, 9vw, 3.8rem) !important;
+    font-size: clamp(1.8rem, 7.5vw, 2.35rem) !important;
+    margin-bottom: 12px !important;
   }
   .hero-editorial-panel p {
-    font-size: 0.92rem !important;
-    line-height: 1.55 !important;
-    padding-left: 14px !important;
-    margin-bottom: 22px !important;
+    font-size: 0.88rem !important;
+    line-height: 1.5 !important;
+    padding-left: 12px !important;
+    margin-bottom: 18px !important;
   }
 
   /* Mobile CTA Buttons */
   .hero-cta-group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
   }
   .hero-cta-group a,
@@ -652,42 +763,84 @@
     width: 100% !important;
     text-align: center;
     justify-content: center;
-    padding: 14px 20px !important;
-    font-size: 1.05rem !important;
+    padding: 11px 16px !important;
+    font-size: 0.92rem !important;
   }
 
-  /* Mobile Hero Photo Frame */
-  .hero-photo-frame {
+  /* Mobile Hero Photo Frame & Kulture Overlays */
+  .hero-photo-frame,
+  .kulture-main-photo-frame {
     max-width: 100% !important;
     transform: none !important;
-    margin: 24px auto 0 !important;
-    box-shadow: 6px 6px 0px var(--accent-pink) !important;
-    padding: 10px !important;
-  }
-  .hero-sub-badge {
-    position: relative !important;
-    bottom: auto !important;
-    left: auto !important;
-    margin-top: 14px !important;
-    transform: none !important;
+    margin: 18px auto 0 !important;
     box-shadow: 4px 4px 0px var(--accent-pink) !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: center;
+    padding: 8px !important;
   }
+  .hero-sub-badge,
   .kulture-mini-frame {
-    position: relative !important;
+    position: static !important;
     bottom: auto !important;
     left: auto !important;
-    margin-top: 14px !important;
+    margin-top: 10px !important;
     transform: none !important;
+    box-shadow: 3px 3px 0px var(--accent-yellow) !important;
     width: 100% !important;
     max-width: 100% !important;
+    box-sizing: border-box !important;
     text-align: center;
   }
-  .card-brutal-white {
+
+  /* Product Grid & Card Refinements on Mobile */
+  .part-card, .helmet-card, .chopper-card {
     transform: none !important;
-    padding: 20px !important;
+  }
+  .part-card h3 {
+    font-size: 1.15rem !important;
+    margin-bottom: 4px !important;
+  }
+  .helmet-card h2 {
+    font-size: 1.35rem !important;
+    margin-bottom: 4px !important;
+  }
+  #partsGrid, #helmetsGrid, #choppersGrid {
+    gap: 16px !important;
+  }
+
+  /* Flash Sale & Price Tag Offsets */
+  .raw-paper-edge {
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin-top: 10px !important;
+    display: inline-block !important;
+    padding: 6px 14px !important;
+  }
+  .raw-paper-edge span {
+    font-size: 1.2rem !important;
+  }
+
+  /* Slider Responsive Stage */
+  .visor-slider-stage {
+    height: 250px !important;
+  }
+  .visor-slide {
+    width: 175px !important;
+    height: 160px !important;
+  }
+
+  /* Filter Tabs & Search on Mobile */
+  .filter-tab-btn {
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+  }
+  .search-input,
+  #catalogSearchInput,
+  #lidSearchInput,
+  #partsSearchInput {
+    height: 38px !important;
+    font-size: 0.82rem !important;
+    padding: 0 12px 0 34px !important;
   }
 }
 
@@ -697,18 +850,36 @@
     display: none !important;
   }
   .brand-logo-img {
-    height: 34px;
+    height: 32px !important;
+  }
+  .brand-text-block .brand-name {
+    font-size: 1.05rem !important;
   }
   .brand-sub {
-    font-size: 0.52rem;
+    font-size: 0.48rem !important;
   }
   .card-img-box {
     aspect-ratio: 4 / 5;
   }
-  .btn-brutal-yellow, .btn-brutal-pink, .btn-brutal-ghost {
+  .editorial-title,
+  h1.editorial-title,
+  h1 {
+    font-size: clamp(1.5rem, 6.5vw, 1.85rem) !important;
+  }
+  .hero-editorial-panel .editorial-title {
+    font-size: clamp(1.65rem, 7vw, 2.05rem) !important;
+  }
+  .hero-editorial-panel {
+    padding: 16px 12px !important;
+  }
+  .btn-brutal-yellow, .btn-brutal-pink, .btn-brutal-ghost, .btn-brutal-white {
     width: 100%;
     justify-content: center;
-    padding: 13px 18px !important;
+    padding: 10px 14px !important;
+    font-size: 0.88rem !important;
+  }
+  .card-brutal-white, .card-brutal-dark, .card-flash-sale {
+    padding: 12px 14px !important;
   }
 }
 
