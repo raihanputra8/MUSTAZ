@@ -19,6 +19,7 @@ import {
   fetchCloudProducts
 } from './services/supabaseService.js';
 import { showBrutalConfirm, showBrutalAlert } from './components/modal.js';
+import { getAllReviews, updateReviewStatus, deleteReview } from './services/reviewsService.js';
 
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
@@ -792,6 +793,104 @@ async function initAdminDashboard() {
 
   document.getElementById('btnRefreshOrders')?.addEventListener('click', renderOrders);
 
+  // ─── 8B. TESTIMONI & ULASAN MODERATION (SCHEME 1) ────────────────────────
+  async function renderAdminReviews() {
+    const tbody = document.getElementById('adminReviewsTbody');
+    const badgeEl = document.getElementById('navBadgeReviews');
+    if (!tbody) return;
+
+    try {
+      const reviews = await getAllReviews();
+      if (badgeEl) badgeEl.textContent = reviews.length;
+
+      if (!reviews || reviews.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center;padding:36px 16px;color:#888;font-family:var(--font-mono-sub);">
+              BELUM ADA ULASAN RIDERS TERCATAT
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = reviews.map((rev) => {
+        const isApproved = rev.status === 'approved' || !rev.status;
+        const statusBadge = isApproved 
+          ? `<span style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e;padding:3px 8px;font-size:0.7rem;font-weight:800;">TAMPIL (APPROVED)</span>`
+          : `<span style="background:#ef444422;color:#ef4444;border:1px solid #ef4444;padding:3px 8px;font-size:0.7rem;font-weight:800;">DISEMBUNYIKAN</span>`;
+
+        return `
+          <tr style="border-bottom:1px solid #222;">
+            <td style="padding:14px 16px;">
+              <div style="font-weight:800;color:#FFF;font-size:0.95rem;">${escapeHtml(rev.user_name)}</div>
+              <div style="font-size:0.75rem;color:#888;">${escapeHtml(rev.bike_model || '-')} // ${escapeHtml(rev.city || '-')}</div>
+              <div style="font-size:0.72rem;color:var(--accent-pink);">${escapeHtml(rev.user_email || '')}</div>
+            </td>
+            <td style="padding:14px 16px;">
+              <div style="font-weight:700;color:var(--accent-yellow);font-size:0.9rem;">${escapeHtml(rev.product_name)}</div>
+              <div style="font-size:0.72rem;color:#888;font-family:var(--font-mono-sub);">ORDER #${escapeHtml(rev.order_id)}</div>
+            </td>
+            <td style="padding:14px 16px;">
+              <span style="color:var(--accent-yellow);font-size:1rem;letter-spacing:2px;">${'★'.repeat(rev.rating || 5)}</span>
+              <span style="font-size:0.72rem;color:#888;display:block;">(${rev.rating || 5}/5)</span>
+            </td>
+            <td style="padding:14px 16px;max-width:320px;">
+              <div style="font-size:0.82rem;color:#DDD;line-height:1.4;">“${escapeHtml(rev.comment)}”</div>
+              <div style="font-size:0.7rem;color:#666;margin-top:4px;">${new Date(rev.created_at || Date.now()).toLocaleDateString('id-ID')}</div>
+            </td>
+            <td style="padding:14px 16px;">
+              ${statusBadge}
+            </td>
+            <td style="padding:14px 16px;text-align:right;">
+              <div style="display:flex;gap:6px;justify-content:flex-end;">
+                <button type="button" class="btn-toggle-review btn-brutal-dark btn-brutal-sm" data-id="${rev.id}" data-status="${isApproved ? 'hidden' : 'approved'}" style="font-size:0.72rem;padding:4px 8px;">
+                  ${isApproved ? 'SEMBUNYIKAN' : 'TAMPILKAN'}
+                </button>
+                <button type="button" class="btn-delete-review btn-brutal-pink btn-brutal-sm" data-id="${rev.id}" style="font-size:0.72rem;padding:4px 8px;background:#ef4444;border-color:#ef4444;">
+                  HAPUS
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.querySelectorAll('.btn-toggle-review').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const revId = btn.dataset.id;
+          const nextStatus = btn.dataset.status;
+          await updateReviewStatus(revId, nextStatus);
+          showAdminToast('success', 'STATUS DIPERBARUI', `Ulasan #${revId} kini ${nextStatus === 'approved' ? 'ditampilkan' : 'disembunyikan'}.`);
+          renderAdminReviews();
+        });
+      });
+
+      tbody.querySelectorAll('.btn-delete-review').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const revId = btn.dataset.id;
+          const confirmed = await showBrutalConfirm({
+            title: 'HAPUS ULASAN INI?',
+            message: 'Tindakan ini akan menghapus ulasan secara permanen dari database.',
+            badge: 'MODERASI ULASAN',
+            confirmText: 'YA, HAPUS',
+            isDanger: true
+          });
+          if (confirmed) {
+            await deleteReview(revId);
+            showAdminToast('success', 'ULASAN DIHAPUS', `Ulasan #${revId} berhasil dihapus.`);
+            renderAdminReviews();
+          }
+        });
+      });
+    } catch (err) {
+      console.warn('Could not render admin reviews:', err);
+    }
+  }
+
+  document.getElementById('btnRefreshReviews')?.addEventListener('click', renderAdminReviews);
+  window.addEventListener('mustaz:reviews_updated', renderAdminReviews);
+
   // ─── 9. SYSTEM SETTINGS ──────────────────────────────────────────────────
   document.getElementById('btnExportJson')?.addEventListener('click', () => {
     const data = getDynamicParts();
@@ -824,6 +923,7 @@ async function initAdminDashboard() {
   // ─── 10. INITIALIZATION ──────────────────────────────────────────────────
   refreshAdminView();
   renderOrders();
+  renderAdminReviews();
   updatePreview();
   handleUrlRouting();
 }

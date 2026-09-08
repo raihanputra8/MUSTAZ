@@ -651,8 +651,9 @@
             </div>
           </div>
 
-          <!-- Testimonials Grid with All 5 Real Photos -->
-          <div class="testi-grid">
+          <!-- Testimonials Grid with Real Verified Reviews + Community Dispatch -->
+          <div class="testi-grid" id="testiGridContainer">
+            <!-- Rendered dynamically by reviewsService.js with fallback -->
             <!-- Testimonial 1: Dimas (TESTI.png) -->
             <article class="card-testi-brutal">
               <div class="tape-decor tape-top-left"></div>
@@ -809,7 +810,7 @@
               </div>
             </article>
 
-            <!-- Testimonial CTA Box: Join the Wall -->
+            <!-- Testimonial CTA Box: Scheme 1 Verified Review Explanation -->
             <div
               class="card-brutal-white"
               style="
@@ -818,45 +819,52 @@
                 justify-content: center;
                 align-items: center;
                 text-align: center;
-                padding: 36px 28px;
+                padding: 32px 24px;
                 box-shadow: 8px 8px 0px var(--accent-pink);
               "
             >
-              <span class="zine-tag-pink" style="margin-bottom: 14px"
-                >SUBMIT YOUR RIDE</span
+              <span class="zine-tag-pink" style="margin-bottom: 12px"
+                >100% VERIFIED COMMUNITY</span
               >
               <h3
                 style="
                   font-family: var(--font-headline);
-                  font-size: 2rem;
+                  font-size: 1.85rem;
                   color: #000;
-                  margin-bottom: 12px;
-                  line-height: 0.95;
+                  margin-bottom: 10px;
+                  line-height: 1;
                 "
               >
-                PUNYA FOTO BERSAMA MUSTAZ?
+                INGIN BERI ULASAN RIDER?
               </h3>
               <p
                 style="
                   font-family: var(--font-mono-sub);
-                  font-size: 0.85rem;
+                  font-size: 0.82rem;
                   color: #444;
-                  margin-bottom: 24px;
+                  margin-bottom: 20px;
                   line-height: 1.5;
                 "
               >
-                Tag Instagram kami di <strong>@mustazcraft</strong> atau kirim
-                foto garasi Anda via WhatsApp untuk masuk ke Community Dispatch
-                berikutnya.
+                Demi menjamin keaslian dan mencegah spam, rating hanya dapat dikirimkan oleh pembeli sah <strong>[VERIFIED BUYER]</strong> melalui menu Riwayat Pesanan di Akun Anda.
               </p>
-              <a
-                href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT,%20saya%20mau%20kirim%20foto%20testimoni%20pet%20helm!"
-                target="_blank"
-                class="btn-brutal-pink"
-                style="width: 100%"
-              >
-                KIRIM VIA WHATSAPP →
-              </a>
+              <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                <a
+                  href="account.html#orders"
+                  class="btn-brutal-pink"
+                  style="width: 100%; text-align: center;"
+                >
+                  TULIS DARI PESANAN SAYA →
+                </a>
+                <a
+                  href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT,%20saya%20mau%20kirim%20foto%20motor%20dan%20pet%20helm!"
+                  target="_blank"
+                  class="btn-brutal-ghost"
+                  style="width: 100%; color: #000; border-color: #000; text-align: center;"
+                >
+                  KIRIM FOTO MOTOR VIA WA
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -968,5 +976,88 @@
     </footer>
 
     <script type="module" src="js/app.js"></script>
+    <script type="module">
+      import { getApprovedReviews } from './js/services/reviewsService.js';
+
+      async function renderCommunityTestimonials() {
+        const grid = document.getElementById('testiGridContainer');
+        if (!grid) return;
+
+        try {
+          const reviews = await getApprovedReviews();
+          if (!reviews || reviews.length === 0) return;
+
+          const ctaBox = `
+            <div
+              class="card-brutal-white"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                padding: 32px 24px;
+                box-shadow: 8px 8px 0px var(--accent-pink);
+              "
+            >
+              <span class="zine-tag-pink" style="margin-bottom: 12px">100% VERIFIED COMMUNITY</span>
+              <h3 style="font-family: var(--font-headline); font-size: 1.85rem; color: #000; margin-bottom: 10px; line-height: 1;">
+                INGIN BERI ULASAN RIDER?
+              </h3>
+              <p style="font-family: var(--font-mono-sub); font-size: 0.82rem; color: #444; margin-bottom: 20px; line-height: 1.5;">
+                Demi menjamin keaslian dan mencegah spam, rating hanya dapat dikirimkan oleh pembeli sah <strong>[VERIFIED BUYER]</strong> melalui menu Riwayat Pesanan di Akun Anda.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                <a href="account.html#orders" class="btn-brutal-pink" style="width: 100%; text-align: center;">
+                  TULIS DARI PESANAN SAYA →
+                </a>
+                <a href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT,%20saya%20mau%20kirim%20foto%20motor%20dan%20pet%20helm!" target="_blank" class="btn-brutal-ghost" style="width: 100%; color: #000; border-color: #000; text-align: center;">
+                  KIRIM FOTO MOTOR VIA WA
+                </a>
+              </div>
+            </div>
+          `;
+
+          grid.innerHTML = reviews.map((r, idx) => {
+            const tapeClass = idx % 2 === 0 ? 'tape-top-left' : 'tape-top-right';
+            const tagClass = r.is_verified ? 'zine-tag-pink' : (idx % 2 === 0 ? 'zine-tag-yellow' : 'zine-tag-pink');
+            const tagLabel = r.is_verified ? '✓ VERIFIED RIDER' : (r.tag || 'COMMUNITY');
+
+            return `
+              <article class="card-testi-brutal">
+                <div class="tape-decor ${tapeClass}"></div>
+                <div class="testi-header-row">
+                  <span class="${tagClass}">${tagLabel}</span>
+                  <div class="testi-stars">${'★'.repeat(r.rating || 5)}</div>
+                </div>
+
+                <div class="testi-photo-box">
+                  <img src="${r.product_image || 'assets/images/TESTI.png'}" alt="Testimoni ${r.user_name} MUSTAZ CRAFT" onerror="this.src='assets/images/pet_visor_yellow_flame.png'" />
+                </div>
+
+                <p class="testi-quote">
+                  “${r.comment}”
+                </p>
+
+                <div class="testi-author-block">
+                  <div>
+                    <div class="testi-author-name">${r.user_name}</div>
+                    <div class="testi-author-bike">${r.bike_model || 'CUSTOM BUILD'} // ${r.city || 'INDONESIA'}</div>
+                  </div>
+                  <span class="testi-gear-tag">${r.product_name}</span>
+                </div>
+              </article>
+            `;
+          }).join('') + ctaBox;
+        } catch (err) {
+          console.warn('Could not render dynamic testimonials:', err);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        renderCommunityTestimonials();
+        window.addEventListener('mustaz:reviews_updated', renderCommunityTestimonials);
+      });
+    </script>
   </body>
 </html>

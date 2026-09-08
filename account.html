@@ -377,6 +377,8 @@
   import { initAccountAuth } from './js/services/authService.js';
   import { getUserOrders, getUserWishlist, getUserAddresses, saveUserAddress, formatRupiah } from './js/services/cartService.js';
   import { initNavbar } from './js/components/navbar.js';
+  import { showBrutalReviewModal, showBrutalAlert, showBrutalConfirm, showBrutalFormModal } from './js/components/modal.js';
+  import { getOrderReview, submitVerifiedReview, getUserReviews } from './js/services/reviewsService.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // 0. Synchronize navigation bar & logout state
@@ -505,8 +507,8 @@
       }
     }
 
-    // 3. User-Scoped Order History Renderer
-    function renderAccountOrders(email) {
+    // 3. User-Scoped Order History Renderer (Scheme 1: Verified Buyer Reviews)
+    async function renderAccountOrders(email) {
       const container = document.getElementById('orderHistoryContainer');
       const countEl = document.getElementById('orderHistoryCount');
       const metricOrders = document.getElementById('metricTotalOrders');
@@ -539,31 +541,85 @@
         return;
       }
 
+      // Fetch user's existing verified reviews
+      let userReviews = [];
+      try {
+        userReviews = await getUserReviews(email);
+      } catch {}
+
       container.innerHTML = orders.map(order => {
         const isTransit = order.status === 'IN TRANSIT';
         const statusClass = isTransit ? 'status-badge-transit' : 'status-badge-delivered';
         const statusIcon = isTransit ? 'local_shipping' : 'check_circle';
         const borderColor = isTransit ? 'var(--accent-yellow)' : '#282828';
 
-        const itemsHtml = (order.items || []).map(item => `
-          <div class="order-item-row">
-            <img src="${item.image || 'assets/images/pet_visor_yellow_flame.png'}" alt="${item.name}" class="order-item-thumb">
-            <div style="flex:1;">
-              <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
-                ${item.name}
-              </h4>
-              <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
-                ${item.spec || 'CUSTOM MUSTAZ SPEC'}
-              </p>
-              <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
-                QTY: ${item.qty || 1} × ${formatRupiah(item.price || 0)}
-              </span>
+        const itemsHtml = (order.items || []).map(item => {
+          const normItemName = String(item.name || '').trim().toLowerCase();
+          const existingReview = userReviews.find(r => 
+            String(r.order_id || '').trim() === String(order.id || '').trim() &&
+            String(r.product_name || '').trim().toLowerCase() === normItemName
+          );
+
+          return `
+            <div class="order-item-block" style="border-bottom: 1px dashed #222; padding-bottom: 14px; margin-bottom: 14px;">
+              <div class="order-item-row">
+                <img src="${item.image || 'assets/images/pet_visor_yellow_flame.png'}" alt="${item.name}" class="order-item-thumb">
+                <div style="flex:1;">
+                  <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
+                    ${item.name}
+                  </h4>
+                  <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
+                    ${item.spec || 'CUSTOM MUSTAZ SPEC'}
+                  </p>
+                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
+                    QTY: ${item.qty || 1} × ${formatRupiah(item.price || 0)}
+                  </span>
+                </div>
+                <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
+                  ${formatRupiah((item.price || 0) * (item.qty || 1))}
+                </div>
+              </div>
+
+              <!-- Scheme 1: Verified Buyer Review Action -->
+              ${existingReview ? `
+                <div style="background:#131313;border-left:3px solid var(--accent-yellow);padding:8px 12px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="color:var(--accent-yellow);font-size:0.95rem;letter-spacing:2px;">${'★'.repeat(existingReview.rating || 5)}</span>
+                    <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#FFF;font-weight:800;">
+                      ✓ ULASAN TERVERIFIKASI
+                    </span>
+                    <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;">
+                      “${(existingReview.comment || '').substring(0, 48)}${(existingReview.comment || '').length > 48 ? '...' : ''}”
+                    </span>
+                  </div>
+                  <button type="button" class="btn-review-trigger btn-brutal-ghost btn-brutal-sm"
+                    data-order-id="${order.id}"
+                    data-item-name="${encodeURIComponent(item.name)}"
+                    data-item-image="${encodeURIComponent(item.image || 'assets/images/pet_visor_yellow_flame.png')}"
+                    data-item-spec="${encodeURIComponent(item.spec || 'OFFICIAL MUSTAZ SPEC')}"
+                    data-existing-rating="${existingReview.rating || 5}"
+                    data-existing-bike="${encodeURIComponent(existingReview.bike_model || '')}"
+                    data-existing-city="${encodeURIComponent(existingReview.city || '')}"
+                    data-existing-comment="${encodeURIComponent(existingReview.comment || '')}"
+                    style="padding:4px 10px;font-size:0.72rem;">
+                    EDIT ULASAN ✎
+                  </button>
+                </div>
+              ` : `
+                <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+                  <button type="button" class="btn-review-trigger btn-brutal-pink btn-brutal-sm"
+                    data-order-id="${order.id}"
+                    data-item-name="${encodeURIComponent(item.name)}"
+                    data-item-image="${encodeURIComponent(item.image || 'assets/images/pet_visor_yellow_flame.png')}"
+                    data-item-spec="${encodeURIComponent(item.spec || 'OFFICIAL MUSTAZ SPEC')}"
+                    style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;font-size:0.8rem;box-shadow:3px 3px 0px #000;">
+                    <span>⭐</span> BERI ULASAN RESMI [VERIFIED RIDER]
+                  </button>
+                </div>
+              `}
             </div>
-            <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
-              ${formatRupiah((item.price || 0) * (item.qty || 1))}
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
 
         return `
           <div class="account-order-card" style="border-color:${borderColor};margin-bottom:20px;">
@@ -604,6 +660,65 @@
           </div>
         `;
       }).join('');
+
+      // Attach review modal triggers to buttons
+      container.querySelectorAll('.btn-review-trigger').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const orderId = btn.dataset.orderId;
+          const productName = decodeURIComponent(btn.dataset.itemName || '');
+          const productImage = decodeURIComponent(btn.dataset.itemImage || '');
+          const productSpec = decodeURIComponent(btn.dataset.itemSpec || '');
+          const existingRating = Number(btn.dataset.existingRating) || 5;
+          const existingBike = decodeURIComponent(btn.dataset.existingBike || '');
+          const existingCity = decodeURIComponent(btn.dataset.existingCity || '');
+          const existingComment = decodeURIComponent(btn.dataset.existingComment || '');
+
+          const profile = loadProfile();
+
+          const result = await showBrutalReviewModal({
+            orderId,
+            productName,
+            productImage,
+            productSpec,
+            riderName: profile.fullName || '',
+            bikeModel: existingBike,
+            city: existingCity,
+            existingRating,
+            existingComment
+          });
+
+          if (result) {
+            try {
+              await submitVerifiedReview({
+                order_id: orderId,
+                user_email: profile.email,
+                user_name: profile.fullName || 'VERIFIED RIDER',
+                bike_model: result.bikeModel,
+                city: result.city,
+                product_name: productName,
+                product_image: productImage,
+                rating: result.rating,
+                comment: result.comment
+              });
+
+              showBrutalAlert({
+                title: 'ULASAN TERVERIFIKASI!',
+                message: `Terima kasih Brother! Ulasan Anda untuk ${productName} telah tercatat sebagai [VERIFIED RIDER] dan otomatis dipublikasikan ke halaman Kulture & Testimoni.`,
+                badge: 'VERIFIED RIDER REVIEW',
+                okText: 'MANTAP JIWA!'
+              });
+
+              renderAccountOrders(profile.email);
+            } catch (err) {
+              showBrutalAlert({
+                title: 'GAGAL MENYIMPAN ULASAN',
+                message: err.message || 'Terjadi kesalahan saat memproses ulasan Anda.',
+                isDanger: true
+              });
+            }
+          }
+        });
+      });
     }
 
     // 4. User-Scoped Wishlist Renderer

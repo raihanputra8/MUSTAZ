@@ -22,6 +22,7 @@ export const CONFIG = {
     ORDERS: "orders",
     ACCOUNTS: "accounts",
     CATEGORIES: "categories",
+    REVIEWS: "reviews",
   },
 };
 

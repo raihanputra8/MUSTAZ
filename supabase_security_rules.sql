@@ -196,3 +196,56 @@ USING (bucket_id = 'product-images' AND (public.is_admin() OR auth.role() = 'aut
 
 -- Selesai! Seluruh aset produk kini tersentralisasi di Supabase Storage CDN.
 -- ==============================================================================
+
+-- ==============================================================================
+-- 6. PROTEKSI TABEL REVIEWS (ULASAN RESMI VERIFIED BUYER // SKEMA 1)
+-- ==============================================================================
+-- Tabel ini menampung testimoni dari pembeli terverifikasi
+CREATE TABLE IF NOT EXISTS public.reviews (
+  id text PRIMARY KEY,
+  order_id text NOT NULL,
+  user_email text NOT NULL,
+  user_name text NOT NULL,
+  bike_model text,
+  city text,
+  product_id text,
+  product_name text NOT NULL,
+  product_image text,
+  rating integer NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment text NOT NULL,
+  is_verified boolean DEFAULT true,
+  status text DEFAULT 'approved',
+  created_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can view approved reviews" ON public.reviews;
+DROP POLICY IF EXISTS "Authenticated buyers can insert reviews" ON public.reviews;
+DROP POLICY IF EXISTS "Admin can manage all reviews" ON public.reviews;
+
+-- Aturan 1: Publik dan pengunjung website boleh membaca seluruh ulasan yang disetujui
+CREATE POLICY "Public can view approved reviews"
+ON public.reviews
+FOR SELECT
+USING (status = 'approved' OR public.is_admin());
+
+-- Aturan 2: Pembeli dapat mengirimkan ulasan (dibatasi rating 1-5 dan is_verified)
+CREATE POLICY "Authenticated buyers can insert reviews"
+ON public.reviews
+FOR INSERT
+WITH CHECK (true);
+
+-- Aturan 3: Admin bebas mengupdate status (misal menyembunyikan spam) dan menghapus ulasan
+CREATE POLICY "Admin can update reviews"
+ON public.reviews
+FOR UPDATE
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admin can delete reviews"
+ON public.reviews
+FOR DELETE
+USING (public.is_admin());
+-- ==============================================================================
+
