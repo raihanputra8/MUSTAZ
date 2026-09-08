@@ -4,6 +4,8 @@
 
 import { openCart } from './cart.js';
 
+let _navbarEventsWired = false;
+
 export function initNavbar() {
   const header = document.querySelector('header');
   if (!header) return;
@@ -38,7 +40,7 @@ export function initNavbar() {
     });
 
     // Update Person Icon in navbar:
-    const personIcons = header.querySelectorAll('a[aria-label="Admin Dashboard"], a[aria-label="My Account"], a[title="Admin Dashboard"], a[title="My Account"], .nav-btn-icon[href*="admin"], .nav-btn-icon[href*="account"]');
+    const personIcons = header.querySelectorAll('a[aria-label="Admin Dashboard"], a[aria-label="My Account"], a[title="Admin Dashboard"], a[title="My Account"], .nav-btn-icon[href*="admin"], .nav-btn-icon[href*="account"], .nav-btn-icon[href*="login"]');
     personIcons.forEach(icon => {
       if (isAdmin) {
         icon.setAttribute('href', 'admin.html');
@@ -55,16 +57,14 @@ export function initNavbar() {
       }
     });
 
-    // Dynamic Auth / Logout button in desktop header
+    // Dynamic Logout button in desktop header (40x40 square icon button to prevent layout shifts)
     const actions = header.querySelector('.nav-actions');
     if (actions) {
       let authBtn = actions.querySelector('#headerAuthBtn');
       if (!authBtn) {
         authBtn = document.createElement('div');
         authBtn.id = 'headerAuthBtn';
-        authBtn.style.display = 'inline-flex';
-        authBtn.style.alignItems = 'center';
-        // Insert right before the mobile hamburger toggle
+        authBtn.className = 'header-auth-slot';
         const mobToggle = actions.querySelector('.mobile-menu-toggle');
         actions.insertBefore(authBtn, mobToggle);
       }
@@ -73,14 +73,14 @@ export function initNavbar() {
       const oldSignIn = actions.querySelector('#headerSignInBtn');
       if (oldSignIn) oldSignIn.remove();
 
-      const expectedMode = isLoggedIn ? 'logout' : 'signin';
+      const expectedMode = isLoggedIn ? 'logout' : 'none';
       if (authBtn.dataset.mode !== expectedMode) {
         authBtn.dataset.mode = expectedMode;
         if (isLoggedIn) {
+          authBtn.style.display = 'inline-flex';
           authBtn.innerHTML = `
-            <button id="globalNavLogoutBtn" class="btn-brutal-dark btn-brutal-sm" style="padding:6px 12px;font-size:0.75rem;font-weight:900;color:#ef4444;border-color:#ef4444;display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="Keluar / Ganti Akun">
-              <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
-              <span>LOGOUT</span>
+            <button id="globalNavLogoutBtn" class="nav-btn-icon" style="border-color:#ef4444;color:#ef4444;width:40px;height:40px;" title="Keluar / Ganti Akun (${profile.fullName || profile.email || 'Member'})" aria-label="Keluar / Ganti Akun">
+              <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
             </button>
           `;
           authBtn.querySelector('#globalNavLogoutBtn')?.addEventListener('click', async () => {
@@ -91,11 +91,9 @@ export function initNavbar() {
             }
           });
         } else {
-          authBtn.innerHTML = `
-            <a href="login.html" class="nav-btn-pink" style="padding:8px 14px;font-size:0.8rem;text-decoration:none;" title="Masuk ke Akun">
-              SIGN IN
-            </a>
-          `;
+          // When logged out, Person icon handles login cleanly with zero layout shift
+          authBtn.style.display = 'none';
+          authBtn.innerHTML = '';
         }
       }
     }
@@ -156,24 +154,40 @@ export function initNavbar() {
   }
 
   syncNavbarState();
-  window.addEventListener('mustaz:auth_synced', syncNavbarState);
-  window.addEventListener('mustaz:logout', syncNavbarState);
 
-  // Determine active route
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-  
+  // 2. Determine active route (handles clean URLs on Vercel e.g. /parts, /kulture, /helmets, /)
+  const pathname = window.location.pathname.toLowerCase();
+  const pathSegment = pathname.split('/').filter(Boolean).pop() || 'index';
+  const currentBase = pathSegment.replace(/\.html$/, '');
+
   header.querySelectorAll('.nav-link').forEach(link => {
-    const href = link.getAttribute('href');
-    if (href === currentPath || (currentPath === '' && href === 'index.html')) {
+    if (link.classList.contains('nav-link-admin')) return;
+    const rawHref = (link.getAttribute('href') || '').toLowerCase().trim();
+    const hrefBase = rawHref.split('/').filter(Boolean).pop()?.replace(/\.html$/, '') || '';
+
+    const isMatch = (hrefBase === currentBase) ||
+                    ((currentBase === 'index' || currentBase === '') && (hrefBase === 'index' || hrefBase === ''));
+
+    if (isMatch) {
       link.classList.add('active');
     } else {
       link.classList.remove('active');
     }
   });
 
+  // Attach event listeners only once
+  if (_navbarEventsWired) return;
+  _navbarEventsWired = true;
+
+  window.addEventListener('mustaz:auth_synced', syncNavbarState);
+  window.addEventListener('mustaz:logout', syncNavbarState);
+
   // Wire cart open on cart buttons
   document.querySelectorAll('[data-open-cart], #headerCartBtn').forEach(btn => {
-    btn.addEventListener('click', openCart);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openCart();
+    });
   });
 
   // Mobile drawer toggle
