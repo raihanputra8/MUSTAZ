@@ -11,11 +11,11 @@
   --bg-surface-card: #141414;
   --bg-surface-bright: #222222;
 
-  /* Primary Accent: Deep Plum Purple (#a00078) */
-  --accent-pink: #a00078;
-  --accent-pink-hover: #b8008c;
-  --accent-pink-dim: rgba(160, 0, 120, 0.18);
-  --accent-pink-glow: rgba(160, 0, 120, 0.45);
+  /* Primary Accent: Hot Pink / Magenta */
+  --accent-pink: #FF008C;
+  --accent-pink-hover: #ff2a9d;
+  --accent-pink-dim: rgba(255, 0, 140, 0.15);
+  --accent-pink-glow: rgba(255, 0, 140, 0.35);
 
   /* Secondary Accent: High-Voltage Acid / Flame Yellow (Matching Visor & Gloves) */
   --accent-yellow: #FFE600;
@@ -41,7 +41,7 @@
   --border-subtle: #202020;
   --border-light: rgba(255, 255, 255, 0.15);
   --border-white: #FFFFFF;
-  --border-pink: #a00078;
+  --border-pink: #FF008C;
   --border-yellow: #FFE600;
   --border-black: #000000;
 
@@ -54,9 +54,9 @@
   --shadow-hard-sm: 3px 3px 0px #000000;
   --shadow-hard-md: 6px 6px 0px #000000;
   --shadow-hard-lg: 8px 8px 0px #000000;
-  --shadow-pink-sm: 3px 3px 0px #700054;
-  --shadow-pink-md: 6px 6px 0px #700054;
-  --shadow-pink-lg: 8px 8px 0px #50003c;
+  --shadow-pink-sm: 3px 3px 0px #FF008C;
+  --shadow-pink-md: 6px 6px 0px #FF008C;
+  --shadow-pink-lg: 8px 8px 0px #FF008C;
   --shadow-yellow-sm: 3px 3px 0px #FFE600;
   --shadow-yellow-md: 6px 6px 0px #FFE600;
   --shadow-yellow-lg: 8px 8px 0px #FFE600;

@@ -1164,7 +1164,7 @@
 
 .visor-slide.pos-active .visor-card-inner {
   border: 2.5px solid var(--accent-pink);
-  box-shadow: 0 0 35px rgba(160, 0, 120, 0.85), 0 0 12px rgba(160, 0, 120, 0.6);
+  box-shadow: 0 0 35px rgba(255, 0, 140, 0.85), 0 0 12px rgba(255, 0, 140, 0.6);
 }
 
 .visor-slide.pos-prev-1 {

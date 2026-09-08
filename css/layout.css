@@ -215,7 +215,7 @@
   box-sizing: border-box;
 }
 
-/* Purple Sign In Nav Button */
+/* Pink Sign In Nav Button */
 .nav-btn-pink {
   background: var(--accent-pink);
   border: 2px solid #000000;
@@ -447,7 +447,7 @@
   font-family: var(--font-headline);
   font-size: 1.4rem;
   font-weight: 900;
-  color: #A00078;
+  color: var(--accent-pink);
   text-transform: uppercase;
   margin-bottom: 12px;
   letter-spacing: -0.01em;
@@ -472,7 +472,7 @@
 }
 
 .footer-white-link:hover {
-  color: #A00078;
+  color: var(--accent-pink);
 }
 
 .footer-white-payment-box {
@@ -514,7 +514,7 @@
 }
 
 .footer-white-social-link:hover {
-  color: #A00078;
+  color: var(--accent-pink);
 }
 
 @media (max-width: 900px) {
