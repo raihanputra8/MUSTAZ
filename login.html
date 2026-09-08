@@ -179,21 +179,6 @@
             BELUM MEMILIKI AKUN? <a href="register.html" style="color:var(--accent-yellow);font-weight:900;text-decoration:none;letter-spacing:0.02em;">DAFTAR AKUN SEKARANG →</a>
           </span>
         </div>
-
-        <!-- Quick Switcher Box for Testing Admin vs Regular User -->
-        <div style="margin-top:20px;background:#0d0d0d;border:2px dashed #444;padding:16px;text-align:center;">
-          <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;display:block;margin-bottom:10px;letter-spacing:0.1em;font-weight:700;">
-            TESTING / QUICK SWITCH (1-KLIK):
-          </span>
-          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-            <button id="btnQuickLoginAdmin" type="button" class="btn-brutal-yellow btn-brutal-sm" style="font-size:0.8rem;padding:8px 14px;cursor:pointer;">
-              ⚡ MASUK SEBAGAI ADMIN
-            </button>
-            <button id="btnQuickLoginMember" type="button" class="btn-brutal-dark btn-brutal-sm" style="font-size:0.8rem;padding:8px 14px;cursor:pointer;color:#4ade80;border-color:#22c55e;">
-              👤 MASUK SEBAGAI USER BIASA
-            </button>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -201,7 +186,7 @@
 </main>
 
 <script type="module">
-  import { loginWithPassword, loginWithGoogle, initAccountAuth, loginAsAdminDirectly, loginAsMemberDirectly } from './js/services/authService.js';
+  import { loginWithPassword, loginWithGoogle, initAccountAuth } from './js/services/authService.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // If already logged in, route according to role
@@ -236,24 +221,6 @@
         alertBox.innerHTML = `<span style="font-size:1.1rem;">ℹ️</span> <span>${msg}</span>`;
       }
     }
-
-    // Quick Switch: Admin
-    document.getElementById('btnQuickLoginAdmin')?.addEventListener('click', () => {
-      loginAsAdminDirectly();
-      showAlert('✓ Masuk sebagai Admin Workshop! Mengalihkan ke Dashboard...', true);
-      setTimeout(() => {
-        window.location.href = 'admin.html';
-      }, 500);
-    });
-
-    // Quick Switch: Regular User / Member
-    document.getElementById('btnQuickLoginMember')?.addEventListener('click', () => {
-      loginAsMemberDirectly('customer.rider@mustazcraft.com', 'RIDER CUSTOMER');
-      showAlert('✓ Masuk sebagai User Biasa / Customer! Mengalihkan...', true);
-      setTimeout(() => {
-        window.location.href = 'account.html';
-      }, 500);
-    });
 
     // 1. Google OAuth Direct
     const btnGoogle = document.getElementById('btnGoogleLogin');
