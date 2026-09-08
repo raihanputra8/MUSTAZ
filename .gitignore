@@ -36,3 +36,4 @@ stitch_raw/
 # Temp / scratch files
 scratch/
 .vercel
+.env*

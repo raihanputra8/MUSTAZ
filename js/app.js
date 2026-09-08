@@ -8,7 +8,7 @@ import { initPartsPage, initHelmetsPage, initChoppersPage, openProductDetail } f
 import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts } from './services/cartService.js';
 import { showToast } from './components/toast.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initApp() {
   // 1. Universal OAuth Return & Session Handling across all pages
   const hasAuthParams = window.location.search.includes('code=') || 
                         window.location.hash.includes('access_token=') || 
@@ -251,4 +251,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   initVisorCoverflowSlider();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}

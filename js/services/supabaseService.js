@@ -349,6 +349,8 @@ export async function createCloudOrder(order) {
   }
 }
 
+export const saveCloudOrder = createCloudOrder;
+
 /**
  * 7. Fetch Customer Orders from Supabase
  */
