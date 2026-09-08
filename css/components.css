@@ -52,7 +52,7 @@
   border: 2px solid #000000;
   box-shadow: 4px 4px 0px #FFFFFF;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
 }
 
@@ -83,7 +83,7 @@
   border: 2px solid #000000;
   box-shadow: 4px 4px 0px var(--accent-pink);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
 }
 
@@ -109,7 +109,7 @@
   border: 2px solid #FFFFFF;
   box-shadow: 4px 4px 0px var(--accent-pink);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
 }
 
@@ -136,7 +136,7 @@
   border: 2px solid #000000;
   box-shadow: 4px 4px 0px var(--accent-pink);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
 }
 
@@ -145,6 +145,32 @@
   color: #000000;
   box-shadow: 4px 4px 0px var(--accent-yellow);
   transform: translate(-2px, -2px);
+}
+
+.btn-brutal-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #111111;
+  color: #FFFFFF;
+  font-family: var(--font-headline);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: 2px solid #333333;
+  box-shadow: 3px 3px 0px #000000;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-brutal-dark:hover {
+  background: #1a1a1a;
+  border-color: var(--accent-pink);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--accent-pink);
 }
 
 .btn-brutal-sm {
@@ -476,7 +502,7 @@
   text-transform: uppercase;
   padding: 10px 20px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .filter-tab-btn:hover {

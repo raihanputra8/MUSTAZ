@@ -251,6 +251,11 @@ async function initApp() {
   }
 
   initVisorCoverflowSlider();
+
+  // Remove preload class to activate smooth transitions without initial button glitch
+  requestAnimationFrame(() => {
+    document.body.classList.remove('preload');
+  });
 }
 
 if (document.readyState === 'loading') {
@@ -258,3 +263,7 @@ if (document.readyState === 'loading') {
 } else {
   initApp();
 }
+
+window.addEventListener('load', () => {
+  document.body.classList.remove('preload');
+});

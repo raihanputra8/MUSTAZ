@@ -73,26 +73,30 @@ export function initNavbar() {
       const oldSignIn = actions.querySelector('#headerSignInBtn');
       if (oldSignIn) oldSignIn.remove();
 
-      if (isLoggedIn) {
-        authBtn.innerHTML = `
-          <button id="globalNavLogoutBtn" class="btn-brutal-dark btn-brutal-sm" style="padding:6px 12px;font-size:0.75rem;font-weight:900;color:#ef4444;border-color:#ef4444;display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="Keluar / Ganti Akun">
-            <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
-            <span>LOGOUT</span>
-          </button>
-        `;
-        authBtn.querySelector('#globalNavLogoutBtn')?.addEventListener('click', async () => {
-          if (confirm('Yakin ingin LOG OUT?\nAnda dapat masuk kembali atau berganti ke akun user biasa.')) {
-            const { logoutUser } = await import('../services/authService.js');
-            await logoutUser();
-            window.location.href = 'login.html';
-          }
-        });
-      } else {
-        authBtn.innerHTML = `
-          <a href="login.html" class="nav-btn-pink" style="padding:8px 14px;font-size:0.8rem;text-decoration:none;" title="Masuk ke Akun">
-            SIGN IN
-          </a>
-        `;
+      const expectedMode = isLoggedIn ? 'logout' : 'signin';
+      if (authBtn.dataset.mode !== expectedMode) {
+        authBtn.dataset.mode = expectedMode;
+        if (isLoggedIn) {
+          authBtn.innerHTML = `
+            <button id="globalNavLogoutBtn" class="btn-brutal-dark btn-brutal-sm" style="padding:6px 12px;font-size:0.75rem;font-weight:900;color:#ef4444;border-color:#ef4444;display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="Keluar / Ganti Akun">
+              <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
+              <span>LOGOUT</span>
+            </button>
+          `;
+          authBtn.querySelector('#globalNavLogoutBtn')?.addEventListener('click', async () => {
+            if (confirm('Yakin ingin LOG OUT?\nAnda dapat masuk kembali atau berganti ke akun user biasa.')) {
+              const { logoutUser } = await import('../services/authService.js');
+              await logoutUser();
+              window.location.href = 'login.html';
+            }
+          });
+        } else {
+          authBtn.innerHTML = `
+            <a href="login.html" class="nav-btn-pink" style="padding:8px 14px;font-size:0.8rem;text-decoration:none;" title="Masuk ke Akun">
+              SIGN IN
+            </a>
+          `;
+        }
       }
     }
 

@@ -23,7 +23,7 @@
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
-  <body>
+  <body class="preload">
     <header class="site-header">
       <div class="site-header-inner">
         <!-- Brand Logo: Official MUSTAZ CRAFT Identity -->
@@ -104,7 +104,8 @@
             >
           </button>
 
-          <button
+          <div id="headerAuthBtn" class="header-auth-slot"></div>
+      <button
             class="mobile-menu-toggle"
             id="mobileMenuBtn"
             aria-label="Toggle Navigation"

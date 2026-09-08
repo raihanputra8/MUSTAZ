@@ -69,10 +69,21 @@ p {
   color: var(--text-secondary);
 }
 
+/* Page Load & Navigation Anti-Glitch Protection */
+body.preload,
+body.preload *,
+body.preload *::before,
+body.preload *::after {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;
-  transition: all 0.15s ease;
 }
 
 button {
