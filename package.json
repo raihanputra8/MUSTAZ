@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx -y serve . -p 3000",
     "start": "npx -y serve . -p 3000",
-    "deploy": "git add . && git commit -m \"update website\" && git push origin main"
+    "deploy": "git add . && git commit -m \"update website\" && git push origin main && npx vercel --prod --yes"
   },
   "keywords": [],
   "author": "",
