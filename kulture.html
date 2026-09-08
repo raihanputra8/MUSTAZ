@@ -579,14 +579,9 @@
                   >COMMUNITY DISPATCH</span
                 >
               </div>
-              <h2 class="editorial-title" style="margin-bottom: 10px">
-                RIDER TESTIMONIALS
+              <h2 class="editorial-title" style="margin-bottom: 0">
+                WHAT THEY SAY ABOUT US
               </h2>
-              <p class="editorial-desc" style="max-width: 640px">
-                Testimoni otentik dari kawan-kawan riders di jalanan. Dari booth
-                fitting event kustomfest hingga harian jalanan aspal, pet visor
-                MUSTAZ CRAFT teruji tahan banting, presisi, dan berkarakter.
-              </p>
             </div>
 
             <!-- Rating & Stats Box -->
@@ -809,63 +804,6 @@
                 <span class="testi-gear-tag">BLUE FLAME UNIVERSAL</span>
               </div>
             </article>
-
-            <!-- Testimonial CTA Box: Scheme 1 Verified Review Explanation -->
-            <div
-              class="card-brutal-white"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-                padding: 32px 24px;
-                box-shadow: 8px 8px 0px var(--accent-pink);
-              "
-            >
-              <span class="zine-tag-pink" style="margin-bottom: 12px"
-                >100% VERIFIED COMMUNITY</span
-              >
-              <h3
-                style="
-                  font-family: var(--font-headline);
-                  font-size: 1.85rem;
-                  color: #000;
-                  margin-bottom: 10px;
-                  line-height: 1;
-                "
-              >
-                INGIN BERI ULASAN RIDER?
-              </h3>
-              <p
-                style="
-                  font-family: var(--font-mono-sub);
-                  font-size: 0.82rem;
-                  color: #444;
-                  margin-bottom: 20px;
-                  line-height: 1.5;
-                "
-              >
-                Demi menjamin keaslian dan mencegah spam, rating hanya dapat dikirimkan oleh pembeli sah <strong>[VERIFIED BUYER]</strong> melalui menu Riwayat Pesanan di Akun Anda.
-              </p>
-              <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-                <a
-                  href="account.html#orders"
-                  class="btn-brutal-pink"
-                  style="width: 100%; text-align: center;"
-                >
-                  TULIS DARI PESANAN SAYA →
-                </a>
-                <a
-                  href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT,%20saya%20mau%20kirim%20foto%20motor%20dan%20pet%20helm!"
-                  target="_blank"
-                  class="btn-brutal-ghost"
-                  style="width: 100%; color: #000; border-color: #000; text-align: center;"
-                >
-                  KIRIM FOTO MOTOR VIA WA
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -987,37 +925,6 @@
           const reviews = await getApprovedReviews();
           if (!reviews || reviews.length === 0) return;
 
-          const ctaBox = `
-            <div
-              class="card-brutal-white"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-                padding: 32px 24px;
-                box-shadow: 8px 8px 0px var(--accent-pink);
-              "
-            >
-              <span class="zine-tag-pink" style="margin-bottom: 12px">100% VERIFIED COMMUNITY</span>
-              <h3 style="font-family: var(--font-headline); font-size: 1.85rem; color: #000; margin-bottom: 10px; line-height: 1;">
-                INGIN BERI ULASAN RIDER?
-              </h3>
-              <p style="font-family: var(--font-mono-sub); font-size: 0.82rem; color: #444; margin-bottom: 20px; line-height: 1.5;">
-                Demi menjamin keaslian dan mencegah spam, rating hanya dapat dikirimkan oleh pembeli sah <strong>[VERIFIED BUYER]</strong> melalui menu Riwayat Pesanan di Akun Anda.
-              </p>
-              <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-                <a href="account.html#orders" class="btn-brutal-pink" style="width: 100%; text-align: center;">
-                  TULIS DARI PESANAN SAYA →
-                </a>
-                <a href="https://wa.me/6281234567890?text=Halo%20MUSTAZ%20CRAFT,%20saya%20mau%20kirim%20foto%20motor%20dan%20pet%20helm!" target="_blank" class="btn-brutal-ghost" style="width: 100%; color: #000; border-color: #000; text-align: center;">
-                  KIRIM FOTO MOTOR VIA WA
-                </a>
-              </div>
-            </div>
-          `;
-
           grid.innerHTML = reviews.map((r, idx) => {
             const tapeClass = idx % 2 === 0 ? 'tape-top-left' : 'tape-top-right';
             const tagClass = r.is_verified ? 'zine-tag-pink' : (idx % 2 === 0 ? 'zine-tag-yellow' : 'zine-tag-pink');
@@ -1048,7 +955,7 @@
                 </div>
               </article>
             `;
-          }).join('') + ctaBox;
+          }).join('');
         } catch (err) {
           console.warn('Could not render dynamic testimonials:', err);
         }
