@@ -4,7 +4,8 @@
   "description": "MUSTAZ Garage - Retro Kustom Kultur Web",
   "scripts": {
     "dev": "npx -y serve . -p 3000",
-    "start": "npx -y serve . -p 3000"
+    "start": "npx -y serve . -p 3000",
+    "deploy": "git add . && git commit -m \"update website\" && git push origin main"
   },
   "keywords": [],
   "author": "",
