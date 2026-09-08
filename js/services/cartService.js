@@ -273,8 +273,17 @@ export function getCart() {
 export function addToCart(product) {
   const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
   if (!isLoggedIn) {
-    alert('⚠️ AKSES DIBATASI // MASUK KE GARASI\n\nSilakan Login atau Buat Akun terlebih dahulu sebelum menambahkan barang ke keranjang.');
-    window.location.href = 'login.html';
+    import('../components/modal.js').then(({ showBrutalAlert }) => {
+      showBrutalAlert({
+        title: 'AKSES DIBATASI // MASUK KE GARASI',
+        message: 'Silakan Login atau Buat Akun terlebih dahulu sebelum menambahkan barang ke keranjang.',
+        badge: 'AUTH REQUIRED',
+        okText: 'LOGIN SEKARANG',
+        onOk: () => { window.location.href = 'login.html'; }
+      });
+    }).catch(() => {
+      window.location.href = 'login.html';
+    });
     return [];
   }
 

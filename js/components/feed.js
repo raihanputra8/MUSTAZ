@@ -72,7 +72,14 @@ export function initFeedComponent() {
       msgInput.value = '';
       await loadFeed();
     } catch (err) {
-      alert('Terjadi kesalahan saat menyimpan data: ' + err.message);
+      import('./modal.js').then(({ showBrutalAlert }) => {
+        showBrutalAlert({
+          title: 'GAGAL MENYIMPAN',
+          message: 'Terjadi kesalahan saat menyimpan data: ' + err.message,
+          badge: 'FEED // ERROR',
+          isDanger: true
+        });
+      }).catch(() => {});
     } finally {
       submitBtn.innerText = originalText;
       submitBtn.disabled = false;

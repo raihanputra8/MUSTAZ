@@ -271,7 +271,14 @@
       e.preventDefault();
       const items = getCart();
       if (!items || items.length === 0) {
-        alert('Keranjang belanja Anda masih kosong! Silakan pilih produk terlebih dahulu.');
+        const { showBrutalAlert } = await import('./js/components/modal.js');
+        await showBrutalAlert({
+          title: 'KERANJANG MASIH KOSONG',
+          message: 'Silakan pilih produk pet visor atau hardware terlebih dahulu sebelum melakukan checkout.',
+          badge: 'CHECKOUT WARNING',
+          okText: 'LIHAT KATALOG',
+          onOk: () => { window.location.href = 'parts.html'; }
+        });
         return;
       }
       const name = document.getElementById('chkName').value.trim();

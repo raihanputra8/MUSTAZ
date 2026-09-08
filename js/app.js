@@ -7,6 +7,21 @@ import { initNavbar } from './components/navbar.js';
 import { initPartsPage, initHelmetsPage, initChoppersPage, openProductDetail } from './components/products.js';
 import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts } from './services/cartService.js';
 import { showToast } from './components/toast.js';
+import { showBrutalConfirm, showBrutalAlert, showBrutalFormModal } from './components/modal.js';
+
+// Expose brutalist dialog engine globally and intercept native alert
+if (typeof window !== 'undefined') {
+  window.showBrutalConfirm = showBrutalConfirm;
+  window.showBrutalAlert = showBrutalAlert;
+  window.showBrutalFormModal = showBrutalFormModal;
+  window.alert = (msg) => {
+    showBrutalAlert({
+      title: 'SYSTEM NOTIFICATION',
+      message: String(msg || ''),
+      badge: 'MUSTAZ DISPATCH'
+    });
+  };
+}
 
 async function initApp() {
   // 1. Universal OAuth Return & Session Handling across all pages

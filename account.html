@@ -329,7 +329,7 @@
               <h3 style="font-family:var(--font-headline);font-size:1.3rem;color:#FFF;margin-bottom:20px;">
                 CHANGE ACCESS PASSWORD
               </h3>
-              <form onsubmit="event.preventDefault(); alert('Kata sandi berhasil diperbarui!'); this.reset();">
+              <form onsubmit="event.preventDefault(); import('./js/components/modal.js').then(({showBrutalAlert}) => showBrutalAlert({title:'KATA SANDI DIPERBARUI', message:'Kata sandi akun Anda berhasil diperbarui dengan aman.', badge:'SECURITY // SUCCESS'})); this.reset();">
                 <div class="form-group-brutal">
                   <label class="form-label-brutal">CURRENT PASSWORD</label>
                   <input type="password" class="form-input-brutal" placeholder="••••••••••••" required>
@@ -701,20 +701,29 @@
       `).join('');
     }
 
-    function openAddAddressModal(email, fullName) {
-      const title = prompt('Label Alamat (contoh: RUMAH / KANTOR / BENGKEL):', 'RUMAH');
-      if (!title) return;
-      const address = prompt('Alamat Lengkap & Kota Pengiriman:');
-      if (!address) return;
-      const notes = prompt('Catatan Kurir (opsional):', '');
+    async function openAddAddressModal(email, fullName) {
+      const { showBrutalFormModal } = await import('./js/components/modal.js');
+      const formData = await showBrutalFormModal({
+        title: 'TAMBAH ALAMAT PENGIRIMAN',
+        badge: 'GARAGE DISPATCH // ADDRESS',
+        fields: [
+          { label: 'Label Alamat', name: 'title', placeholder: 'Contoh: RUMAH / KANTOR / BENGKEL', required: true, value: 'RUMAH' },
+          { label: 'Alamat Lengkap & Kota', name: 'address', placeholder: 'Nama Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan, Kota & Kode Pos', required: true, type: 'textarea' },
+          { label: 'Catatan Kurir (Opsional)', name: 'notes', placeholder: 'Patokan rumah / instruksi pengiriman', required: false }
+        ],
+        submitText: 'SIMPAN ALAMAT',
+        cancelText: 'BATAL'
+      });
+
+      if (!formData || !formData.address) return;
 
       const newAddr = {
         id: 'addr-' + Date.now(),
-        title: title.trim().toUpperCase(),
+        title: (formData.title || 'RUMAH').trim().toUpperCase(),
         isDefault: true,
         recipient: fullName || 'MEMBER',
-        address: address.trim(),
-        notes: (notes || '').trim()
+        address: formData.address.trim(),
+        notes: (formData.notes || '').trim()
       };
       saveUserAddress(email, newAddr);
       renderAccountAddresses(email, fullName);

@@ -84,7 +84,16 @@ export function initNavbar() {
             </button>
           `;
           authBtn.querySelector('#globalNavLogoutBtn')?.addEventListener('click', async () => {
-            if (confirm('Yakin ingin LOG OUT?\nAnda dapat masuk kembali atau berganti ke akun user biasa.')) {
+            const { showBrutalConfirm } = await import('./modal.js');
+            const confirmed = await showBrutalConfirm({
+              title: 'YAKIN INGIN LOG OUT?',
+              message: 'Anda dapat masuk kembali atau berganti ke akun user biasa.',
+              badge: 'AUTH // SIGN OUT',
+              confirmText: 'YA, LOG OUT',
+              cancelText: 'BATAL',
+              isDanger: true
+            });
+            if (confirmed) {
               const { logoutUser } = await import('../services/authService.js');
               await logoutUser();
               window.location.href = 'login.html';
@@ -138,9 +147,20 @@ export function initNavbar() {
           </button>
         `;
         mobAuthArea.querySelector('#mobileNavLogoutBtn')?.addEventListener('click', async () => {
-          const { logoutUser } = await import('../services/authService.js');
-          await logoutUser();
-          window.location.href = 'login.html';
+          const { showBrutalConfirm } = await import('./modal.js');
+          const confirmed = await showBrutalConfirm({
+            title: 'YAKIN INGIN LOG OUT?',
+            message: 'Anda dapat masuk kembali atau berganti ke akun user biasa.',
+            badge: 'AUTH // SIGN OUT',
+            confirmText: 'YA, LOG OUT',
+            cancelText: 'BATAL',
+            isDanger: true
+          });
+          if (confirmed) {
+            const { logoutUser } = await import('../services/authService.js');
+            await logoutUser();
+            window.location.href = 'login.html';
+          }
         });
       } else {
         mobAuthArea.innerHTML = `

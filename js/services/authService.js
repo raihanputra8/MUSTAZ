@@ -446,7 +446,15 @@ export async function initAccountAuth() {
     if (oauthError || oauthErrorDesc) {
       const msg = decodeURIComponent(oauthErrorDesc || oauthError).replace(/\+/g, ' ');
       console.error('[Google OAuth Error]', oauthError, oauthErrorDesc);
-      alert(`⚠️ LOGIN GOOGLE GAGAL:\n\n${msg}\n\nJika Google masih dalam status "Testing", pastikan email Anda sudah ditambahkan sebagai "Test User" di Google Cloud Console (OAuth consent screen), atau klik tombol "Publish App".`);
+      import('../components/modal.js').then(({ showBrutalAlert }) => {
+        showBrutalAlert({
+          title: 'LOGIN GOOGLE GAGAL',
+          message: `${msg}\n\nJika Google masih dalam status "Testing", pastikan email Anda sudah ditambahkan sebagai "Test User" di Google Cloud Console (OAuth consent screen), atau klik tombol "Publish App".`,
+          badge: 'OAUTH // ERROR',
+          okText: 'MENGERTI',
+          isDanger: true
+        });
+      }).catch(() => {});
       window.history.replaceState({}, document.title, window.location.pathname);
       return false;
     }

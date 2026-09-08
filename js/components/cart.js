@@ -240,7 +240,15 @@ export function closeCart() {
 export function openCheckout() {
   const items = getCart();
   if (!items || items.length === 0) {
-    alert('⚠️ KERANJANG KOSONG\n\nSilakan pilih produk pet helm atau custom visor terlebih dahulu.');
+    import('./modal.js').then(({ showBrutalAlert }) => {
+      showBrutalAlert({
+        title: 'KERANJANG KOSONG',
+        message: 'Silakan pilih produk pet helm atau custom visor terlebih dahulu sebelum checkout.',
+        badge: 'CART // EMPTY',
+        okText: 'PILIH PRODUK',
+        onOk: () => { window.location.href = 'parts.html'; }
+      });
+    }).catch(() => {});
     return;
   }
 

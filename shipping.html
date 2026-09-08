@@ -190,10 +190,16 @@
   </section>
 </main>
 
-<script>
-  document.getElementById('shippingForm')?.addEventListener('submit', (e) => {
+<script type="module">
+  import { showBrutalAlert } from './js/components/modal.js';
+  document.getElementById('shippingForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    alert('COORDINATES LOCKED IN. PROTOCOL DISPATCHED.');
+    await showBrutalAlert({
+      title: 'COORDINATES LOCKED IN',
+      message: 'Protocol dispatched. Tracking information updated.',
+      badge: 'DISPATCH RADAR',
+      okText: 'CONFIRM'
+    });
     window.location.href = 'index.html';
   });
 </script>

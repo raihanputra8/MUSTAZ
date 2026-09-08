@@ -18,6 +18,7 @@ import {
   generateSlug,
   fetchCloudProducts
 } from './services/supabaseService.js';
+import { showBrutalConfirm, showBrutalAlert } from './components/modal.js';
 
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
@@ -112,7 +113,15 @@ async function initAdminDashboard() {
 
     // Wire Logout Buttons
     const handleLogout = async () => {
-      if (confirm('Yakin ingin LOG OUT dari akun admin?\nSesi admin akan ditutup sehingga Anda dapat berganti ke akun user biasa.')) {
+      const confirmed = await showBrutalConfirm({
+        title: 'LOG OUT DARI AKUN ADMIN?',
+        message: 'Sesi admin akan ditutup sehingga Anda dapat berganti ke akun user biasa.',
+        badge: 'ADMIN SESSION // PROTOCOL',
+        confirmText: 'YA, LOG OUT',
+        cancelText: 'BATAL',
+        isDanger: true
+      });
+      if (confirmed) {
         await logoutUser();
         window.location.href = 'login.html';
       }
@@ -796,8 +805,16 @@ async function initAdminDashboard() {
     showAdminToast('success', 'BACKUP DIEKSPOR', 'File JSON inventaris berhasil diunduh.');
   });
 
-  document.getElementById('btnResetCatalog')?.addEventListener('click', () => {
-    if (confirm("WARNING: Are you sure you want to reset the store inventory back to factory default?\nAny newly added custom products will be removed.")) {
+  document.getElementById('btnResetCatalog')?.addEventListener('click', async () => {
+    const confirmed = await showBrutalConfirm({
+      title: 'RESET STORE INVENTORY?',
+      message: 'PERINGATAN: Apakah Anda yakin ingin mengembalikan inventaris ke setelan pabrik workshop?\nSemua produk kustom baru akan dihapus.',
+      badge: 'DANGER // FACTORY RESET',
+      confirmText: 'YA, RESET INVENTORY',
+      cancelText: 'BATAL',
+      isDanger: true
+    });
+    if (confirmed) {
       resetCatalogToDefault();
       refreshAdminView();
       showAdminToast('success', 'KATALOG DI-RESET', 'Katalog telah dikembalikan ke standar awal workshop.');
