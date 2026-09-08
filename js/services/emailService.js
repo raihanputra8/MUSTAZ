@@ -26,7 +26,7 @@ export function buildOrderInvoiceHTML(order) {
         <td style="padding: 12px 14px; border-bottom: 1px dashed #333333; color: #FFFF00; text-align: center; font-family: monospace; font-size: 13px;">
           x${qty}
         </td>
-        <td style="padding: 12px 14px; border-bottom: 1px dashed #333333; color: #FF008C; text-align: right; font-weight: 900; font-size: 14px;">
+        <td style="padding: 12px 14px; border-bottom: 1px dashed #333333; color: #D9006C; text-align: right; font-weight: 900; font-size: 14px;">
           ${formatRupiah(subtotal)}
         </td>
       </tr>
@@ -45,11 +45,11 @@ export function buildOrderInvoiceHTML(order) {
     <tr>
       <td align="center">
         <!-- Main Card -->
-        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #111111; border: 3px solid #000000; box-shadow: 8px 8px 0px #FF008C;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #111111; border: 3px solid #000000; box-shadow: 8px 8px 0px #D9006C;">
           
           <!-- Header Bar -->
           <tr>
-            <td style="background-color: #FF008C; padding: 18px 24px; border-bottom: 2px solid #000000;">
+            <td style="background-color: #D9006C; padding: 18px 24px; border-bottom: 2px solid #000000;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
