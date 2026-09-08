@@ -108,8 +108,28 @@
 </div>
 
 <main style="padding-top:70px;">
+  <!-- Interactive Product Hero Banner (Hover to Reveal State 2) -->
+  <section class="product-interactive-banner-section">
+    <div class="wrap">
+      <a href="#partsGrid" class="product-interactive-banner" title="Explore MUSTAZ Craft Helmet Accessories">
+        <!-- State 1: Default (Without Text) -->
+        <img
+          src="assets/images/banner_product_default.jpg"
+          alt="MUSTAZ CRAFT Helmet Accessories"
+          class="banner-state-default"
+        />
+        <!-- State 2: Hover (With HANDCRAFT HELMET ACCESORIES & BUY NOW!) -->
+        <img
+          src="assets/images/banner_product_hover.jpg"
+          alt="MUSTAZ CRAFT Handcraft Helmet Accessories - Buy Now"
+          class="banner-state-hover"
+        />
+      </a>
+    </div>
+  </section>
+
   <!-- Catalog Hero Header -->
-  <section class="catalog-hero">
+  <section class="catalog-hero" style="padding-top:14px;">
     <div class="wrap">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
         <span class="zine-tag-yellow">PET HELM // CATALOG</span>
@@ -217,5 +237,14 @@
 </footer>
 
 <script type="module" src="js/app.js"></script>
+<script>
+  // Touch support for mobile devices
+  const banner = document.querySelector('.product-interactive-banner');
+  if (banner) {
+    banner.addEventListener('touchstart', () => {
+      banner.classList.toggle('is-active');
+    }, { passive: true });
+  }
+</script>
 </body>
 </html>
