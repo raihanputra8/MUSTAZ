@@ -22,16 +22,16 @@ Dokumen ini berisi daftar lengkap data pribadi, nomor kontak, email, rekening ba
 Nomor WhatsApp digunakan untuk menerima order otomatis via pesan terstruktur website (*Direct Checkout*), Instant 1-Click Buy, dan bot asisten CS.
 
 ### Data Saat Ini:
-- **Nomor:** `6281234567890` (atau `081234567890`)
+- **Nomor:** `62895402806350` (atau `0895402806350`)
 
 ### Berkas yang Harus Diubah:
 1. **[js/config.js](file:///home/hann/Desktop/mustaz_buildtest/js/config.js)** (Pusat Konfigurasi Utama):
    ```javascript
    // Baris 11:
-   ADMIN_WHATSAPP: "6281234567890", // Ganti dengan nomor WA resmi klien (format: 628...)
+   ADMIN_WHATSAPP: "62895402806350", // Ganti dengan nomor WA resmi klien (format: 628...)
    ```
 2. **Link WA Statis di Footer & Tombol Konsultasi**:
-   Cari teks `https://wa.me/6281234567890` pada berkas-berkas berikut dan ganti dengan nomor baru:
+   Cari teks `https://wa.me/62895402806350` pada berkas-berkas berikut dan ganti dengan nomor baru:
    - `index.html` (Footer)
    - `helmets.html` (Footer)
    - `parts.html` (Footer)
@@ -44,7 +44,7 @@ Nomor WhatsApp digunakan untuk menerima order otomatis via pesan terstruktur web
    - `shipping.html`, `privacy-policy.html`, `terms-of-service.html` (Footer)
    - `admin.html` (Tabel Pesanan & Footer)
 
-> **Tips:** Cukup lakukan fitur **Find in Files / Replace All** di editor untuk `6281234567890` ke `628XXXXXXXXXX`.
+> **Tips:** Cukup lakukan fitur **Find in Files / Replace All** di editor untuk `62895402806350` ke `628XXXXXXXXXX`.
 
 ---
 
@@ -203,7 +203,7 @@ Berikut tabel ringkas kata kunci yang dapat langsung dicari di IDE (*Global Sear
 
 | Kata Kunci Saat Ini (Lama) | Ganti Menjadi (Data Baru Klien) | File Kunci |
 | :--- | :--- | :--- |
-| `6281234567890` | Nomor WA Klien (Contoh: `6281399887766`) | `js/config.js`, seluruh file `.html` |
+| `62895402806350` | Nomor WA Klien (Contoh: `6281399887766`) | `js/config.js`, seluruh file `.html` |
 | `raihanputrairawan8@gmail.com` | Email Admin Baru Klien | `js/services/authService.js`, `admin.html`, `login.html`, `account.html`, `supabase_security_rules.sql` |
 | `admin@mustazcraft.com` | Email Domain Resmi Admin Baru | `js/services/authService.js`, `js/components/navbar.js` |
 | `123-456-7890` (BCA) | Nomor Rekening BCA Klien | `js/services/whatsappCsService.js` |

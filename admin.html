@@ -111,15 +111,15 @@
     try {
       var isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
       var saved = localStorage.getItem('mustaz_user_profile_data');
-      // Set default Admin session if no active session exists
-      if (!isLogged || !saved) {
-        var adminProfile = {
-          email: 'raihanputrairawan8@gmail.com',
-          fullName: 'MUSTAZ CRAFT ADMIN',
-          role: 'admin',
-          phone: '+62 812-3456-7890',
-          alias: 'OWNER / MASTER CRAFT'
-        };
+      var adminProfile = {
+        email: 'raihanputrairawan8@gmail.com',
+        fullName: 'MUSTAZ CRAFT ADMIN',
+        role: 'admin',
+        phone: '+62 895-4028-06350',
+        alias: 'OWNER / MASTER CRAFT'
+      };
+      // Set default Admin session if no active session exists or old number detected
+      if (!isLogged || !saved || saved.indexOf('81234567890') !== -1 || saved.indexOf('812-3456-7890') !== -1) {
         localStorage.setItem('mustaz_auth_logged_in', 'true');
         localStorage.setItem('mustaz_user_profile_data', JSON.stringify(adminProfile));
       }
@@ -778,110 +778,6 @@
 
           </div><!-- /#panel-flash-sale -->
 
-          <!-- RESI INPUT MODAL (FASE 3 ACTION) -->
-          <div class="modal-backdrop" id="csResiModal" style="display:none;">
-            <div class="modal-box" style="max-width:480px;background:#111;border:3px solid #a855f7;box-shadow:8px 8px 0px #000;padding:24px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                <span class="zine-tag-yellow">PHASE 03 // SHIPPING UPDATE</span>
-                <button type="button" id="btnCsCloseResiModal" class="modal-close" style="color:#FFF;">✕</button>
-              </div>
-              <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;margin:0 0 16px;">
-                INPUT RESI PENGIRIMAN
-              </h3>
-
-              <div class="form-group-brutal" style="margin-bottom:12px;">
-                <label class="form-label-brutal">KODE ORDER</label>
-                <input type="text" id="csResiOrderId" class="form-input-brutal" readonly style="background:#181818;color:var(--accent-yellow);">
-              </div>
-
-              <div class="form-group-brutal" style="margin-bottom:12px;">
-                <label class="form-label-brutal">NAMA PEMBELI</label>
-                <input type="text" id="csResiCustomerName" class="form-input-brutal" readonly style="background:#181818;color:#FFF;">
-              </div>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-                <div class="form-group-brutal">
-                  <label class="form-label-brutal">EKSPEDISI *</label>
-                  <select id="csResiCourier" class="form-input-brutal" style="background:#0a0a0a;color:#FFF;">
-                    <option value="J&T Express">J&amp;T Express</option>
-                    <option value="JNE Express">JNE Express</option>
-                    <option value="SiCepat Express">SiCepat Express</option>
-                    <option value="Pos Indonesia">Pos Indonesia</option>
-                    <option value="GoSend / GrabExpress">Instant Courier</option>
-                  </select>
-                </div>
-                <div class="form-group-brutal">
-                  <label class="form-label-brutal">NOMOR RESI *</label>
-                  <input type="text" id="csResiNumber" class="form-input-brutal" placeholder="Contoh: JT-992144" required>
-                </div>
-              </div>
-
-              <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button type="button" id="btnCsCancelResi" class="btn-brutal-dark" style="padding:8px 16px;">BATAL</button>
-                <button type="button" id="btnCsSubmitResi" class="btn-brutal-yellow" style="padding:8px 18px;background:#a855f7;border-color:#c084fc;color:#FFF;">
-                  SIMPAN &amp; GENERATE RESI →
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- PAYMENT RECEIPT PREVIEW & UPLOAD MODAL (USULAN 3) -->
-          <div class="modal-backdrop" id="orderReceiptModal" style="display:none;">
-            <div class="modal-box" style="max-width:540px;background:#111;border:3px solid #38bdf8;box-shadow:8px 8px 0px #000;padding:26px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid #222;padding-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span class="zine-tag-pink">FASE 2 // VERIFIKASI PEMBAYARAN</span>
-                  <span style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;" id="receiptModalOrderCode">#MSTZ-ORDER</span>
-                </div>
-                <button type="button" id="btnCloseReceiptModal" class="modal-close" style="color:#FFF;cursor:pointer;">✕</button>
-              </div>
-
-              <!-- Order Summary & Bank Target -->
-              <div style="background:#181818;border:1px solid #333;padding:14px;margin-bottom:16px;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.8rem;">
-                  <span style="color:#888;">NAMA PEMBELI:</span>
-                  <strong id="receiptModalCustomer" style="color:#FFF;">-</strong>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.8rem;">
-                  <span style="color:#888;">TOTAL TAGIHAN:</span>
-                  <strong id="receiptModalTotal" style="color:var(--accent-yellow);font-family:var(--font-headline);font-size:1.1rem;">-</strong>
-                </div>
-                <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
-                  <span style="color:#888;">REKENING TUJUAN:</span>
-                  <span style="color:#4ade80;">BCA / Mandiri Resmi Toko</span>
-                </div>
-              </div>
-
-              <!-- Receipt Image / Preview Container -->
-              <div class="form-group-brutal" style="margin-bottom:16px;">
-                <label class="form-label-brutal" style="font-size:0.72rem;">PRATINJAU BUKTI TRANSFER PELANGGAN:</label>
-                <div id="receiptImageWrapper" style="width:100%;min-height:180px;max-height:260px;background:#080808;border:2px dashed #444;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;overflow:hidden;position:relative;">
-                  <img id="receiptPreviewImg" src="" alt="Bukti Transfer" style="display:none;max-width:100%;max-height:230px;object-fit:contain;border:1px solid #333;">
-                  <div id="receiptPlaceholder" style="text-align:center;color:#777;font-family:var(--font-mono-sub);font-size:0.75rem;">
-                    <span class="material-symbols-outlined" style="font-size:36px;color:#555;display:block;margin-bottom:6px;">receipt_long</span>
-                    BELUM ADA LAMPIRAN BUKTI TRANSFER
-                    <div style="font-size:0.68rem;color:#555;margin-top:2px;">Unggah screenshot transfer di bawah ini</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- File Input to attach receipt -->
-              <div class="form-group-brutal" style="margin-bottom:20px;">
-                <label class="form-label-brutal" style="font-size:0.7rem;">UNGGAH / LAMPIRKAN BUKTI TRANSFER BARU:</label>
-                <input type="file" id="receiptFileInput" accept="image/*" class="form-input-brutal" style="padding:6px;font-size:0.75rem;background:#050505;cursor:pointer;">
-              </div>
-
-              <!-- Actions -->
-              <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button type="button" id="btnCancelReceiptModal" class="btn-brutal-dark" style="padding:10px 16px;cursor:pointer;">TUTUP</button>
-                <button type="button" id="btnVerifyReceiptPaid" class="btn-brutal-yellow" style="padding:10px 20px;background:#38bdf8;border-color:#0284c7;color:#000;font-weight:900;cursor:pointer;">
-                  ✅ VERIFIKASI LUNAS (PAID_PROCESSING)
-                </button>
-              </div>
-            </div>
-          </div>
-
-
         </div>
 
       </div>
@@ -889,6 +785,109 @@
     </div>
   </section>
 </main>
+
+<!-- RESI INPUT MODAL (FASE 3 ACTION) -->
+<div class="modal-backdrop" id="csResiModal">
+  <div class="modal-box" style="max-width:480px;background:#111;border:3px solid #a855f7;box-shadow:8px 8px 0px #000;padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span class="zine-tag-yellow">PHASE 03 // SHIPPING UPDATE</span>
+      <button type="button" id="btnCsCloseResiModal" class="modal-close" style="color:#FFF;cursor:pointer;">✕</button>
+    </div>
+    <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;margin:0 0 16px;">
+      INPUT RESI PENGIRIMAN
+    </h3>
+
+    <div class="form-group-brutal" style="margin-bottom:12px;">
+      <label class="form-label-brutal">KODE ORDER</label>
+      <input type="text" id="csResiOrderId" class="form-input-brutal" readonly style="background:#181818;color:var(--accent-yellow);">
+    </div>
+
+    <div class="form-group-brutal" style="margin-bottom:12px;">
+      <label class="form-label-brutal">NAMA PEMBELI</label>
+      <input type="text" id="csResiCustomerName" class="form-input-brutal" readonly style="background:#181818;color:#FFF;">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div class="form-group-brutal">
+        <label class="form-label-brutal">EKSPEDISI *</label>
+        <select id="csResiCourier" class="form-input-brutal" style="background:#0a0a0a;color:#FFF;cursor:pointer;">
+          <option value="J&T Express">J&amp;T Express</option>
+          <option value="JNE Express">JNE Express</option>
+          <option value="SiCepat Express">SiCepat Express</option>
+          <option value="Pos Indonesia">Pos Indonesia</option>
+          <option value="GoSend / GrabExpress">Instant Courier</option>
+        </select>
+      </div>
+      <div class="form-group-brutal">
+        <label class="form-label-brutal">NOMOR RESI *</label>
+        <input type="text" id="csResiNumber" class="form-input-brutal" placeholder="Contoh: JT-992144" required>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button type="button" id="btnCsCancelResi" class="btn-brutal-dark" style="padding:8px 16px;cursor:pointer;">BATAL</button>
+      <button type="button" id="btnCsSubmitResi" class="btn-brutal-yellow" style="padding:8px 18px;background:#a855f7;border-color:#c084fc;color:#FFF;cursor:pointer;">
+        SIMPAN &amp; GENERATE RESI →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT RECEIPT PREVIEW & UPLOAD MODAL (USULAN 3) -->
+<div class="modal-backdrop" id="orderReceiptModal">
+  <div class="modal-box" style="max-width:540px;background:#111;border:3px solid #38bdf8;box-shadow:8px 8px 0px #000;padding:26px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid #222;padding-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="zine-tag-pink">FASE 2 // VERIFIKASI PEMBAYARAN</span>
+        <span style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;" id="receiptModalOrderCode">#MSTZ-ORDER</span>
+      </div>
+      <button type="button" id="btnCloseReceiptModal" class="modal-close" style="color:#FFF;cursor:pointer;">✕</button>
+    </div>
+
+    <!-- Order Summary & Bank Target -->
+    <div style="background:#181818;border:1px solid #333;padding:14px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.8rem;">
+        <span style="color:#888;">NAMA PEMBELI:</span>
+        <strong id="receiptModalCustomer" style="color:#FFF;">-</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.8rem;">
+        <span style="color:#888;">TOTAL TAGIHAN:</span>
+        <strong id="receiptModalTotal" style="color:var(--accent-yellow);font-family:var(--font-headline);font-size:1.1rem;">-</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+        <span style="color:#888;">REKENING TUJUAN:</span>
+        <span style="color:#4ade80;">BCA / Mandiri Resmi Toko</span>
+      </div>
+    </div>
+
+    <!-- Receipt Image / Preview Container -->
+    <div class="form-group-brutal" style="margin-bottom:16px;">
+      <label class="form-label-brutal" style="font-size:0.72rem;">PRATINJAU BUKTI TRANSFER PELANGGAN:</label>
+      <div id="receiptImageWrapper" style="width:100%;min-height:180px;max-height:260px;background:#080808;border:2px dashed #444;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;overflow:hidden;position:relative;">
+        <img id="receiptPreviewImg" src="" alt="Bukti Transfer" style="display:none;max-width:100%;max-height:230px;object-fit:contain;border:1px solid #333;">
+        <div id="receiptPlaceholder" style="text-align:center;color:#777;font-family:var(--font-mono-sub);font-size:0.75rem;">
+          <span class="material-symbols-outlined" style="font-size:36px;color:#555;display:block;margin-bottom:6px;">receipt_long</span>
+          BELUM ADA LAMPIRAN BUKTI TRANSFER
+          <div style="font-size:0.68rem;color:#555;margin-top:2px;">Unggah screenshot transfer di bawah ini</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- File Input to attach receipt -->
+    <div class="form-group-brutal" style="margin-bottom:20px;">
+      <label class="form-label-brutal" style="font-size:0.7rem;">UNGGAH / LAMPIRKAN BUKTI TRANSFER BARU:</label>
+      <input type="file" id="receiptFileInput" accept="image/*" class="form-input-brutal" style="padding:6px;font-size:0.75rem;background:#050505;cursor:pointer;">
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button type="button" id="btnCancelReceiptModal" class="btn-brutal-dark" style="padding:10px 16px;cursor:pointer;">TUTUP</button>
+      <button type="button" id="btnVerifyReceiptPaid" class="btn-brutal-yellow" style="padding:10px 20px;background:#38bdf8;border-color:#0284c7;color:#000;font-weight:900;cursor:pointer;">
+        ✅ VERIFIKASI LUNAS (PAID_PROCESSING)
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- EDIT PRODUCT MODAL (Brutalist Garage Box) -->
 <div class="modal-backdrop" id="editProductModal">
@@ -1090,7 +1089,7 @@
 
     <!-- Bottom Social Links -->
     <div class="footer-white-socials">
-      <a href="https://wa.me/6281234567890" target="_blank" rel="noopener" class="footer-white-social-link">WHATSAPP</a>
+      <a href="https://wa.me/62895402806350" target="_blank" rel="noopener" class="footer-white-social-link">WHATSAPP</a>
       <a href="mailto:contact@mustazcraft.com" class="footer-white-social-link">EMAIL</a>
       <a href="https://instagram.com/mustazcraft" target="_blank" rel="noopener" class="footer-white-social-link">INSTAGRAM</a>
       <a href="https://tiktok.com/@mustazcraft" target="_blank" rel="noopener" class="footer-white-social-link">TIKTOK</a>

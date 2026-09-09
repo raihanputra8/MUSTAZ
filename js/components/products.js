@@ -276,14 +276,17 @@ export function openProductDetail(product) {
   `;
 
   document.getElementById('modalAddToCartBtn')?.addEventListener('click', () => {
+    const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
     addToCart(product);
-    showToast({
-      title: product.name,
-      message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
-      image: product.image,
-      actionText: 'LIHAT KERANJANG',
-      onAction: openCart
-    });
+    if (isLoggedIn) {
+      showToast({
+        title: product.name,
+        message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
+        image: product.image,
+        actionText: 'LIHAT KERANJANG',
+        onAction: openCart
+      });
+    }
     closeProductModal();
   });
 
@@ -433,16 +436,19 @@ function renderParts(data) {
   grid.querySelectorAll('.add-to-cart-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+      const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
       const part = getDynamicParts().find(p => p.id === btn.dataset.id);
       if (!part) return;
       addToCart(part);
-      showToast({
-        title: part.name,
-        message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
-        image: part.image,
-        actionText: 'LIHAT KERANJANG',
-        onAction: openCart
-      });
+      if (isLoggedIn) {
+        showToast({
+          title: part.name,
+          message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
+          image: part.image,
+          actionText: 'LIHAT KERANJANG',
+          onAction: openCart
+        });
+      }
     });
   });
 
@@ -616,14 +622,17 @@ function renderHelmets(data) {
     btn.addEventListener('click', () => {
       const chop = CHOPPERS_DATA.find(c => c.id === btn.dataset.id);
       if (!chop) return;
+      const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
       addToCart({ id: chop.id, name: chop.name, price: chop.price, image: chop.image, type: 'choppers' });
-      showToast({
-        title: chop.name,
-        message: `INQUIRY ADDED! Finalize via WhatsApp.`,
-        image: chop.image,
-        actionText: 'LIHAT KERANJANG',
-        onAction: openCart
-      });
+      if (isLoggedIn) {
+        showToast({
+          title: chop.name,
+          message: `INQUIRY ADDED! Finalize via WhatsApp.`,
+          image: chop.image,
+          actionText: 'LIHAT KERANJANG',
+          onAction: openCart
+        });
+      }
     });
   });
 

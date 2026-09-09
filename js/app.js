@@ -66,14 +66,17 @@ async function initApp() {
       const part = getDynamicParts().find(p => p.id === partId);
       if (!part) return;
       const price = btn.dataset.price ? parseInt(btn.dataset.price, 10) : part.price;
+      const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
       addToCart({ ...part, price });
-      showToast({
-        title: part.name,
-        message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
-        image: part.image,
-        actionText: 'LIHAT KERANJANG',
-        onAction: openCart
-      });
+      if (isLoggedIn) {
+        showToast({
+          title: part.name,
+          message: `EQUIPPED! ${getCartCount()} item(s) in garage.`,
+          image: part.image,
+          actionText: 'LIHAT KERANJANG',
+          onAction: openCart
+        });
+      }
     });
   });
 
@@ -175,19 +178,27 @@ async function initApp() {
           const part = getDynamicParts().find(p => p.id === partId);
           if (!part) return;
           const price = btn.dataset.price ? parseInt(btn.dataset.price, 10) : part.price;
+          const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
           addToCart({ ...part, price });
-          showToast({
-            title: part.name,
-            message: `FLASH SALE GRABBED! ${getCartCount()} item(s) in garage.`,
-            image: part.image,
-            actionText: 'LIHAT KERANJANG',
-            onAction: openCart
-          });
+          if (isLoggedIn) {
+            showToast({
+              title: part.name,
+              message: `FLASH SALE GRABBED! ${getCartCount()} item(s) in garage.`,
+              image: part.image,
+              actionText: 'LIHAT KERANJANG',
+              onAction: openCart
+            });
+          }
         });
       });
     }
 
     renderDynamicFlashSaleGrid();
+
+    // Re-render flash sale cards when currency changes
+    window.addEventListener('mustaz:currency_changed', () => {
+      renderDynamicFlashSaleGrid();
+    });
 
     function tick() {
       const now = new Date();
@@ -221,6 +232,48 @@ async function initApp() {
     tick();
     setInterval(tick, 1000);
   }
+
+  // 7.5. Multi-Currency Synchronization for Home Page (Featured Drops & 3D Coverflow)
+  function updateHomePrices() {
+    const dynamicParts = getDynamicParts();
+
+    // 1. Update Featured Drops Cards in index.html
+    document.querySelectorAll('.drops-grid article, .card-brutal-white, .card-brutal-dark').forEach(card => {
+      const addBtn = card.querySelector('[data-add-to-cart]');
+      if (!addBtn) return;
+      const partId = addBtn.dataset.addToCart;
+      const product = dynamicParts.find(p => p.id === partId);
+      if (!product) return;
+
+      const priceEls = card.querySelectorAll('span');
+      priceEls.forEach(el => {
+        const txt = (el.textContent || '').trim();
+        if (txt.includes('IDR') || txt.includes('Rp') || txt.includes('$')) {
+          const fontSize = el.style.fontSize || '';
+          if (fontSize.includes('1.5rem') || fontSize.includes('1.4rem') || fontSize.includes('1.35rem')) {
+            el.textContent = formatRupiah(product.price);
+          }
+        }
+      });
+    });
+
+    // 2. Update 3D Coverflow Slides in index.html
+    document.querySelectorAll('.visor-slide').forEach(slide => {
+      const addBtn = slide.querySelector('[data-add-to-cart]');
+      if (!addBtn) return;
+      const partId = addBtn.dataset.addToCart;
+      const product = dynamicParts.find(p => p.id === partId);
+      if (!product) return;
+
+      const priceEl = slide.querySelector('span[style*="font-size:1.3rem"], span[style*="font-size: 1.3rem"]');
+      if (priceEl) {
+        priceEl.textContent = formatRupiah(product.price);
+      }
+    });
+  }
+
+  updateHomePrices();
+  window.addEventListener('mustaz:currency_changed', updateHomePrices);
 
   initFlashSaleTimer();
 

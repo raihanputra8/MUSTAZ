@@ -164,8 +164,18 @@
               <label class="form-label-brutal">DELIVERY COORDINATES (STREET & SECTOR) *</label>
               <textarea id="chkAddress" class="form-input-brutal" rows="3" placeholder="Full street address, city, postal code" required></textarea>
             </div>
+            <div class="form-group-brutal">
+              <label class="form-label-brutal">05 // LOGISTICS & COURIER *</label>
+              <select id="chkCourier" class="form-input-brutal" style="cursor:pointer;" required>
+                <option value="J&T Express (Reguler / COD)">J&T Express (Reguler / COD)</option>
+                <option value="JNE Trucking / Reguler">JNE Trucking / Reguler</option>
+                <option value="SiCepat Cargo / Best">SiCepat Cargo / Best</option>
+                <option value="GoSend / Grab Instant (JABODETABEK)">GoSend / Grab Instant (JABODETABEK)</option>
+                <option value="Ambil Langsung di Workshop MUSTAZ">Ambil Langsung di Workshop MUSTAZ</option>
+              </select>
+            </div>
             <div class="form-group-brutal" style="margin-bottom:28px;">
-              <label class="form-label-brutal">PAYMENT PROTOCOL *</label>
+              <label class="form-label-brutal">06 // PAYMENT PROTOCOL *</label>
               <select id="chkPayment" class="form-input-brutal" style="cursor:pointer;">
                 <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank (BCA / Mandiri)</option>
                 <option value="QRIS Instant Pay">QRIS Instant Pay</option>
@@ -285,6 +295,7 @@
       const phone = document.getElementById('chkPhone').value.trim();
       const email = document.getElementById('chkEmail').value.trim();
       const address = document.getElementById('chkAddress').value.trim();
+      const courier = document.getElementById('chkCourier')?.value || 'J&T Express (Reguler / COD)';
       const payment = document.getElementById('chkPayment').value;
       const total = getCartTotal();
 
@@ -297,10 +308,11 @@
         phone: phone,
         email: email,
         address: address,
+        courier: courier,
         paymentMethod: payment,
         date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase(),
         status: 'PROCESSING',
-        tracking: 'MENUNGGU PICKUP KURIR',
+        tracking: `MENUNGGU PICKUP [${courier}]`,
         items: items.map(i => ({
           name: i.name,
           spec: i.category || i.sub || 'CUSTOM MUSTAZ PART',
@@ -321,7 +333,7 @@
         customer: name,
         email: email,
         phone: phone,
-        city: address || 'INDONESIA',
+        city: `${address} (Kurir: ${courier})`,
         items: items.map(i => `${i.name} (x${i.quantity})`).join(', '),
         total: total,
         currency: getActiveCurrency(),
@@ -339,8 +351,9 @@
           currency: getActiveCurrency(),
           date: new Date().toISOString().split('T')[0],
           status: 'PENDING',
-          city: address || 'INDONESIA',
+          city: `${address} (${courier})`,
           phone: phone || '',
+          courier: courier,
           receiptImage: ''
         });
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
@@ -357,7 +370,7 @@
       // 4. Show Instant In-App Order Success Modal with Email Delivery Confirmation
       showOrderSuccessModal(orderRecord);
 
-      const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email, orderId: orderId }, items, total, orderId);
+      const url = generateWhatsAppUrl({ name, phone, address, courier, payment, notes: 'Email: ' + email, orderId: orderId }, items, total, orderId);
       const waWin = window.open(url, '_blank');
       if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
         window.location.href = url;
@@ -426,7 +439,7 @@
 
     <!-- Bottom Social Links -->
     <div class="footer-white-socials">
-      <a href="https://wa.me/6281234567890" target="_blank" rel="noopener" class="footer-white-social-link">WHATSAPP</a>
+      <a href="https://wa.me/62895402806350" target="_blank" rel="noopener" class="footer-white-social-link">WHATSAPP</a>
       <a href="mailto:contact@mustazcraft.com" class="footer-white-social-link">EMAIL</a>
       <a href="https://instagram.com/mustazcraft" target="_blank" rel="noopener" class="footer-white-social-link">INSTAGRAM</a>
       <a href="https://tiktok.com/@mustazcraft" target="_blank" rel="noopener" class="footer-white-social-link">TIKTOK</a>

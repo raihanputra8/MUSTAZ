@@ -317,7 +317,7 @@ export function loginAsAdminDirectly() {
     email: 'raihanputrairawan8@gmail.com',
     fullName: 'MUSTAZ CRAFT ADMIN',
     role: 'admin',
-    phone: '+62 812-3456-7890',
+    phone: '+62 895-4028-06350',
     alias: 'OWNER / MASTER CRAFT'
   };
   localStorage.setItem('mustaz_auth_logged_in', 'true');

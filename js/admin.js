@@ -944,12 +944,12 @@ async function initAdminDashboard() {
     renderOrders();
   }
 
-  function openReceiptModal(idx) {
+  function openReceiptModal(idx, id = null) {
     const orders = getAdminOrders();
-    const ord = orders[idx];
+    const ord = (id ? orders.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || orders[idx];
     if (!ord) return;
 
-    currentReceiptOrderIndex = idx;
+    currentReceiptOrderIndex = orders.indexOf(ord);
     stagedReceiptImage = ord.receiptImage || '';
 
     const modal = document.getElementById('orderReceiptModal');
@@ -979,12 +979,20 @@ async function initAdminDashboard() {
       if (placeholderEl) placeholderEl.style.display = 'block';
     }
 
-    if (modal) modal.style.display = 'flex';
+    if (modal) {
+      modal.classList.add('open');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   function closeReceiptModal() {
     const modal = document.getElementById('orderReceiptModal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+      modal.classList.remove('open');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
     currentReceiptOrderIndex = null;
     stagedReceiptImage = '';
   }
@@ -1066,33 +1074,33 @@ async function initAdminDashboard() {
         : (isDelivered ? 'border-left:4px solid #22c55e;' : 'border-left:4px solid transparent;');
 
       // Dynamic 1-Click CS WhatsApp Actions (Bagian 1)
-      const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '6281234567890';
+      const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
       const orderCode = cleanOrderId(ord.id);
       const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
 
       let dynamicActionsHtml = '';
       if (ord.status === 'PENDING' || ord.status === 'PENDING_PAYMENT') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" title="Fase 1: Buka WhatsApp bawa rincian tagihan & rekening resmi" style="padding:6px 10px;font-size:0.7rem;font-weight:900;cursor:pointer;">
+          <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" data-id="${safeId}" title="Fase 1: Buka WhatsApp bawa rincian tagihan & rekening resmi" style="padding:6px 10px;font-size:0.7rem;font-weight:900;cursor:pointer;">
             [1] 💳 KIRIM REKENING &amp; TAGIHAN
           </button>
         `;
       } else if (ord.status === 'PROCESSING' || ord.status === 'PAID_PROCESSING') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" title="Fase 2: Buka WhatsApp konfirmasi pembayaran lunas & packing" style="padding:6px 10px;font-size:0.7rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
+          <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" data-id="${safeId}" title="Fase 2: Buka WhatsApp konfirmasi pembayaran lunas & packing" style="padding:6px 10px;font-size:0.7rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
             [2] ✅ VERIFIKASI LUNAS
           </button>
-          <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" title="Fase 3: Input Resi kurir dan kirimkan ke WhatsApp" style="padding:6px 10px;font-size:0.7rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;">
+          <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" data-id="${safeId}" title="Fase 3: Input Resi kurir dan kirimkan ke WhatsApp" style="padding:6px 10px;font-size:0.7rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;">
             [3] 📦 INPUT RESI &amp; SHIPPED
           </button>
         `;
       } else if (ord.status === 'SHIPPED' || ord.status === 'DELIVERED') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" title="Fase 4: Kirim ajakan review berhadiah voucher MUSTAZ10K" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:800;">
+          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Fase 4: Kirim ajakan review berhadiah voucher MUSTAZ10K" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:800;">
             [4] ⭐ MINTA REVIEW &amp; VOUCHER
           </button>
           ${ord.status === 'SHIPPED' ? `
-            <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" title="Ubah status ke DELIVERED" style="padding:5px 8px;font-size:0.68rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
+            <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Ubah status ke DELIVERED" style="padding:5px 8px;font-size:0.68rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
               ✓ DELIVERED
             </button>
           ` : `
@@ -1171,13 +1179,15 @@ async function initAdminDashboard() {
 
     // Fase 1: Kirim Rekening & Tagihan
     tbody.querySelectorAll('.btn-action-p1').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const idx = Number(btn.dataset.index);
+        const id = btn.dataset.id;
         const all = getAdminOrders();
-        const ord = all[idx];
+        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
         if (!ord) return;
 
-        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '6281234567890';
+        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
         const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
         const data = {
           orderId: cleanOrderId(ord.id),
@@ -1202,13 +1212,15 @@ async function initAdminDashboard() {
 
     // Fase 2: Verifikasi Pembayaran Lunas
     tbody.querySelectorAll('.btn-action-p2').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const idx = Number(btn.dataset.index);
+        const id = btn.dataset.id;
         const all = getAdminOrders();
-        const ord = all[idx];
+        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
         if (!ord) return;
 
-        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '6281234567890';
+        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
         const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
         const data = {
           orderId: cleanOrderId(ord.id),
@@ -1232,25 +1244,34 @@ async function initAdminDashboard() {
 
     // Fase 3: Input Resi & Kirim ke WhatsApp
     tbody.querySelectorAll('.btn-action-p3').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         const idx = Number(btn.dataset.index);
+        const id = btn.dataset.id;
         const all = getAdminOrders();
-        const ord = all[idx];
-        if (ord && typeof globalOpenResiModal === 'function') {
-          globalOpenResiModal(ord);
+        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
+        if (ord) {
+          if (typeof openResiModal === 'function') {
+            openResiModal(ord);
+          } else if (typeof globalOpenResiModal === 'function') {
+            globalOpenResiModal(ord);
+          }
         }
       });
     });
 
     // Fase 4: Minta Review & Kode Voucher
     tbody.querySelectorAll('.btn-action-p4').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const idx = Number(btn.dataset.index);
+        const id = btn.dataset.id;
         const all = getAdminOrders();
-        const ord = all[idx];
+        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
         if (!ord) return;
 
-        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '6281234567890';
+        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
         const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
         const reviewUrl = `https://mustazbuildtest.vercel.app/testimoni.html?review_order=${cleanOrderId(ord.id)}`;
         const data = {
@@ -1274,10 +1295,12 @@ async function initAdminDashboard() {
 
     // Quick Mark Delivered
     tbody.querySelectorAll('.btn-order-quick-delivered').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const idx = Number(btn.dataset.index);
+        const id = btn.dataset.id;
         const all = getAdminOrders();
-        const ord = all[idx];
+        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
         if (ord) {
           ord.status = 'DELIVERED';
           localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
@@ -1289,9 +1312,12 @@ async function initAdminDashboard() {
     });
 
     tbody.querySelectorAll('.btn-view-receipt').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         const idx = Number(btn.dataset.index);
-        openReceiptModal(idx);
+        const id = btn.dataset.id;
+        openReceiptModal(idx, id);
       });
     });
   }
@@ -1464,7 +1490,9 @@ async function initAdminDashboard() {
   const resiModal = document.getElementById('csResiModal');
 
   function openResiModal(order) {
-    if (!resiModal || !order) return;
+    if (!order) return;
+    const modal = document.getElementById('csResiModal') || resiModal;
+    if (!modal) return;
     pendingResiOrder = order;
     const orderIdClean = cleanOrderId(order.id);
     const custName = (order.customer || 'Rider').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
@@ -1478,7 +1506,9 @@ async function initAdminDashboard() {
     if (resiNumInput) resiNumInput.value = order.resi || ('JT-' + Math.floor(100000 + Math.random() * 900000));
     if (courierSelect && order.courier) courierSelect.value = order.courier;
 
-    resiModal.style.display = 'flex';
+    modal.classList.add('open');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   }
 
   globalOpenResiModal = function(order) {
@@ -1486,13 +1516,18 @@ async function initAdminDashboard() {
   };
 
   function closeResiModal() {
-    if (resiModal) resiModal.style.display = 'none';
+    const modal = document.getElementById('csResiModal') || resiModal;
+    if (modal) {
+      modal.classList.remove('open');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
     pendingResiOrder = null;
   }
 
   document.getElementById('btnCsCloseResiModal')?.addEventListener('click', closeResiModal);
   document.getElementById('btnCsCancelResi')?.addEventListener('click', closeResiModal);
-  resiModal?.addEventListener('click', (e) => {
+  document.getElementById('csResiModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'csResiModal') closeResiModal();
   });
 
@@ -1514,7 +1549,7 @@ async function initAdminDashboard() {
     localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
     updateCloudOrderStatus(ord.id, 'SHIPPED', { courier, resiNumber: resiNum }).catch(() => {});
 
-    const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '6281234567890';
+    const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
     const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
     const data = {
       orderId: cleanOrderId(ord.id),
@@ -1796,6 +1831,16 @@ async function initAdminDashboard() {
     populateFsProductSelect();
     renderFsProductsTable();
   }
+
+  // Global Escape key handler to close any active admin modal
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      try { closeReceiptModal(); } catch (_) {}
+      try { closeResiModal(); } catch (_) {}
+      try { closeEditModal(); } catch (_) {}
+      try { closeDeleteModal(); } catch (_) {}
+    }
+  });
 
   // ─── 9. INITIALIZATION (RESILIENT & ISOLATED) ───────────────────────────
   try {

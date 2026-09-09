@@ -557,7 +557,7 @@ export function getUserAddresses(userEmail, defaultName = '', defaultPhone = '')
         id: 'addr-1',
         title: 'HOME & GARAGE',
         isDefault: true,
-        recipient: `${defaultName || 'Raihan Putra'} (${defaultPhone || '+62 812-3456-7890'})`,
+        recipient: `${defaultName || 'Raihan Putra'} (${defaultPhone || '+62 895-4028-06350'})`,
         address: 'Jl. Senopati Raya No. 42B, RT 04 / RW 02, Kebayoran Baru, Kota Jakarta Selatan, DKI Jakarta 12190',
         notes: 'TITIPKAN KE SECURITY JIKA BENGKEL TUTUP'
       }
@@ -645,6 +645,7 @@ export function generateWhatsAppUrl(customerData, cartItems, total, orderIdParam
     `👤 *Nama:* ${customerData.name}`,
     `📱 *WhatsApp:* ${customerData.phone}`,
     `📍 *Alamat Drop:* ${customerData.address}`,
+    ...(customerData.courier ? [`🚚 *Ekspedisi:* ${customerData.courier}`] : []),
     `💳 *Metode Bayar:* ${customerData.payment || 'Direct Negotiation'}`,
     `📝 *Catatan:* ${customerData.notes || '-'}`,
     `--------------------------------`,

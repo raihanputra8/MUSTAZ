@@ -71,7 +71,7 @@ function getCheckoutModalHTML() {
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custPhone">02 // WHATSAPP / COMMS LINE *</label>
-              <input type="tel" id="custPhone" class="form-input-brutal" placeholder="e.g. 081234567890" required>
+              <input type="tel" id="custPhone" class="form-input-brutal" placeholder="e.g. 0895402806350" required>
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custEmail">03 // EMAIL NOTIFIKASI & INVOICE *</label>
@@ -82,7 +82,17 @@ function getCheckoutModalHTML() {
               <textarea id="custAddress" class="form-input-brutal" rows="3" placeholder="Full street address, city, sector, and postal code" required style="resize:vertical;"></textarea>
             </div>
             <div class="form-group-brutal">
-              <label class="form-label-brutal" for="paymentMethod">05 // PAYMENT PROTOCOL *</label>
+              <label class="form-label-brutal" for="custCourier">05 // LOGISTICS & COURIER *</label>
+              <select id="custCourier" class="form-input-brutal" style="cursor:pointer;" required>
+                <option value="J&T Express (Reguler / COD)">J&T Express (Reguler / COD)</option>
+                <option value="JNE Trucking / Reguler">JNE Trucking / Reguler</option>
+                <option value="SiCepat Cargo / Best">SiCepat Cargo / Best</option>
+                <option value="GoSend / Grab Instant (JABODETABEK)">GoSend / Grab Instant (JABODETABEK)</option>
+                <option value="Ambil Langsung di Workshop MUSTAZ">Ambil Langsung di Workshop MUSTAZ</option>
+              </select>
+            </div>
+            <div class="form-group-brutal">
+              <label class="form-label-brutal" for="paymentMethod">06 // PAYMENT PROTOCOL *</label>
               <select id="paymentMethod" class="form-input-brutal" style="cursor:pointer;">
                 <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank (BCA / Mandiri)</option>
                 <option value="QRIS Instant Pay">QRIS Instant Pay</option>
@@ -351,6 +361,7 @@ export function initCart() {
     const phone = document.getElementById('custPhone')?.value.trim();
     const email = document.getElementById('custEmail')?.value.trim();
     const address = document.getElementById('custAddress')?.value.trim();
+    const courier = document.getElementById('custCourier')?.value || 'J&T Express (Reguler / COD)';
     const payment = document.getElementById('paymentMethod')?.value;
     const errEl = document.getElementById('checkoutError');
 
@@ -381,10 +392,11 @@ export function initCart() {
       phone: phone,
       email: email,
       address: address,
+      courier: courier,
       paymentMethod: payment,
       date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
       status: 'PROCESSING',
-      tracking: 'VERIFIKASI ADMIN',
+      tracking: `VERIFIKASI ADMIN [${courier}]`,
       items: cartItems.map(i => ({
         name: i.name,
         spec: i.sub || 'Custom Visor',
@@ -408,7 +420,7 @@ export function initCart() {
         customer: name,
         email: email,
         phone: phone,
-        city: address || 'INDONESIA',
+        city: `${address} (Kurir: ${courier})`,
         items: cartItems.map(i => `${i.name} (x${i.quantity})`).join(', '),
         total: total,
         status: 'PENDING'
@@ -425,8 +437,9 @@ export function initCart() {
         total: total,
         date: new Date().toISOString().split('T')[0],
         status: 'PENDING',
-        city: address || 'INDONESIA',
+        city: `${address} (${courier})`,
         phone: phone || '',
+        courier: courier,
         receiptImage: ''
       });
       localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
@@ -443,7 +456,15 @@ export function initCart() {
     });
 
     // 4. Generate and launch WhatsApp conversation
-    const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email, orderId: orderId }, cartItems, total, orderId);
+    const url = generateWhatsAppUrl({ 
+      name, 
+      phone, 
+      address, 
+      courier, 
+      payment, 
+      notes: `Email: ${email}`, 
+      orderId: orderId 
+    }, cartItems, total, orderId);
     const waWin = window.open(url, '_blank');
     if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
       window.location.href = url;

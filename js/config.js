@@ -10,7 +10,7 @@ export const CONFIG = {
   VERSION: "2.0.0",
 
   // Admin WhatsApp Number for Direct Checkout
-  ADMIN_WHATSAPP: "6281234567890",
+  ADMIN_WHATSAPP: "62895402806350",
 
   // Supabase Project Credentials (Active)
   SUPABASE_URL: "https://hskggocaakmidbysrpnd.supabase.co",
@@ -37,3 +37,45 @@ export function getProductImageUrl(filename) {
   const clean = filename.replace(/^assets\/images\//, '').replace(/^\//, '');
   return `${CONFIG.STORAGE_URL}/${clean}`;
 }
+
+// Auto-sanitize legacy localStorage data containing old demo/testing phone numbers
+(function sanitizeLegacyStorage() {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  try {
+    // 1. Profile data
+    const profileStr = localStorage.getItem('mustaz_user_profile_data');
+    if (profileStr && (profileStr.includes('81234567890') || profileStr.includes('812-3456-7890'))) {
+      const p = JSON.parse(profileStr);
+      p.phone = '+62 895-4028-06350';
+      localStorage.setItem('mustaz_user_profile_data', JSON.stringify(p));
+    }
+
+    // 2. Admin orders cache
+    const adminOrdersStr = localStorage.getItem('mustaz_admin_orders');
+    if (adminOrdersStr && adminOrdersStr.includes('81234567890')) {
+      const orders = JSON.parse(adminOrdersStr);
+      let changed = false;
+      orders.forEach(o => {
+        if (o.phone && o.phone.includes('81234567890')) {
+          o.phone = '0895402806350';
+          changed = true;
+        }
+      });
+      if (changed) {
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
+      }
+    }
+
+    // 3. User saved orders & addresses
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('mustaz_user_orders_') || key.startsWith('mustaz_addresses_'))) {
+        const val = localStorage.getItem(key);
+        if (val && val.includes('81234567890')) {
+          const replaced = val.replace(/81234567890/g, '895402806350');
+          localStorage.setItem(key, replaced);
+        }
+      }
+    }
+  } catch (e) {}
+})();

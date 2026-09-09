@@ -160,7 +160,7 @@ export function buildOrderInvoiceHTML(order) {
                 MUSTAZ CRAFT // KUSTOM HELMET & PET VISORS GARAGE
               </p>
               <p style="font-size: 11px; font-family: monospace; color: #444444; margin: 0;">
-                Jl. Senopati Raya No. 42B, Kebayoran Baru, Jakarta Selatan • Hotline: +62 812-3456-7890
+                Jl. Senopati Raya No. 42B, Kebayoran Baru, Jakarta Selatan • Hotline: +62 895-4028-06350
               </p>
             </td>
           </tr>

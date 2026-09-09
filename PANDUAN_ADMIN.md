@@ -1,4 +1,5 @@
 # ⚡ PANDUAN OPERASIONAL ADMIN — MUSTAZ CRAFT
+
 ## Admin Dashboard Control Console
 
 > Dokumen ini menjelaskan cara lengkap mengoperasikan Dashboard Admin MUSTAZ CRAFT,
@@ -48,24 +49,24 @@ Jika sudah login sebelumnya, langsung buka `/admin.html` atau klik menu **ADMIN*
 
 Setelah berhasil masuk, halaman admin menampilkan **Header Statistik Cepat**:
 
-| Indikator | Keterangan |
-| :--- | :--- |
-| 🟡 **TOTAL VISORS** | Jumlah total produk yang terdaftar di katalog |
-| 🟢 **READY STOCK** | Total unit produk yang masih tersedia |
-| 🔴 **LOW STOCK** | Jumlah produk dengan stok rendah (perlu restock) |
-| 🟡 **TOTAL ASSET** | Estimasi total nilai inventaris (stok × harga) |
+| Indikator           | Keterangan                                       |
+| :------------------ | :----------------------------------------------- |
+| 🟡 **TOTAL VISORS** | Jumlah total produk yang terdaftar di katalog    |
+| 🟢 **READY STOCK**  | Total unit produk yang masih tersedia            |
+| 🔴 **LOW STOCK**    | Jumlah produk dengan stok rendah (perlu restock) |
+| 🟡 **TOTAL ASSET**  | Estimasi total nilai inventaris (stok × harga)   |
 
 ### Sidebar Menu Navigasi:
 
-| Tab | Fungsi |
-| :--- | :--- |
-| 📦 **PRODUCT INVENTORY** | Lihat & kelola semua produk |
-| ➕ **ADD NEW PRODUCT** | Tambah produk baru ke katalog |
-| 🧾 **CUSTOMER ORDERS** | Lihat & proses pesanan masuk |
-| ⭐ **TESTIMONI & ULASAN** | Moderasi ulasan pembeli |
+| Tab                       | Fungsi                         |
+| :------------------------ | :----------------------------- |
+| 📦 **PRODUCT INVENTORY**  | Lihat & kelola semua produk    |
+| ➕ **ADD NEW PRODUCT**    | Tambah produk baru ke katalog  |
+| 🧾 **CUSTOMER ORDERS**    | Lihat & proses pesanan masuk   |
+| ⭐ **TESTIMONI & ULASAN** | Moderasi ulasan pembeli        |
 | ⚡ **FLASH SALE MANAGER** | Atur promosi & countdown timer |
-| 🔗 **VIEW LIVE STORE ↗** | Buka toko langsung di tab baru |
-| 🚪 **LOG OUT** | Keluar dari akun admin |
+| 🔗 **VIEW LIVE STORE ↗**  | Buka toko langsung di tab baru |
+| 🚪 **LOG OUT**            | Keluar dari akun admin         |
 
 ---
 
@@ -75,15 +76,15 @@ Klik tab **PRODUCT INVENTORY** di sidebar.
 
 ### Kolom Tabel Produk:
 
-| Kolom | Keterangan |
-| :--- | :--- |
-| **THUMB** | Foto produk (thumbnail) |
-| **PRODUCT & SLUG** | Nama produk + URL identifier |
-| **CATEGORY** | Jenis produk (Acrylic Pet, Leather Pet, dst.) |
-| **PRICE** | Harga jual dalam Rupiah (IDR) |
-| **STOCK LEVEL** | Jumlah unit tersisa (merah = low stock) |
-| **STATUS** | ACTIVE = tampil di toko / DRAFT = tersembunyi |
-| **ACTIONS** | Tombol Edit & Delete |
+| Kolom              | Keterangan                                    |
+| :----------------- | :-------------------------------------------- |
+| **THUMB**          | Foto produk (thumbnail)                       |
+| **PRODUCT & SLUG** | Nama produk + URL identifier                  |
+| **CATEGORY**       | Jenis produk (Acrylic Pet, Leather Pet, dst.) |
+| **PRICE**          | Harga jual dalam Rupiah (IDR)                 |
+| **STOCK LEVEL**    | Jumlah unit tersisa (merah = low stock)       |
+| **STATUS**         | ACTIVE = tampil di toko / DRAFT = tersembunyi |
+| **ACTIONS**        | Tombol Edit & Delete                          |
 
 ### Filter & Pencarian:
 
@@ -117,17 +118,17 @@ Klik tab **+ ADD NEW PRODUCT** di sidebar.
 
 ### Form Produk Baru:
 
-| Field | Keterangan | Contoh |
-| :--- | :--- | :--- |
-| **PRODUCT NAME** *(wajib)* | Nama produk lengkap | `ACID GHOST ROOF VISOR` |
-| **SLUG / URL** *(wajib)* | Identifier URL (huruf kecil, pakai tanda `-`) | `acid-ghost-roof-visor` |
-| **CATEGORY** *(wajib)* | Jenis produk | `Acrylic Pet` |
-| **STATUS** *(wajib)* | ACTIVE agar langsung tampil di toko | `ACTIVE (LIVE)` |
-| **BADGE** | Label promosi di kartu produk | `NEW`, `HOT DROP`, `BESTSELLER`, `LIMITED` |
-| **SUBTITLE / SPECS** *(wajib)* | Deskripsi singkat spesifikasi | `Acid Neon Acrylic // 3-Snap Universal` |
-| **PRICE (IDR)** *(wajib)* | Harga jual normal | `350000` |
-| **ORIGINAL PRICE** | Harga coret jika ada diskon (opsional) | `450000` |
-| **STOCK QTY** *(wajib)* | Jumlah unit tersedia | `10` |
+| Field                          | Keterangan                                    | Contoh                                     |
+| :----------------------------- | :-------------------------------------------- | :----------------------------------------- |
+| **PRODUCT NAME** _(wajib)_     | Nama produk lengkap                           | `ACID GHOST ROOF VISOR`                    |
+| **SLUG / URL** _(wajib)_       | Identifier URL (huruf kecil, pakai tanda `-`) | `acid-ghost-roof-visor`                    |
+| **CATEGORY** _(wajib)_         | Jenis produk                                  | `Acrylic Pet`                              |
+| **STATUS** _(wajib)_           | ACTIVE agar langsung tampil di toko           | `ACTIVE (LIVE)`                            |
+| **BADGE**                      | Label promosi di kartu produk                 | `NEW`, `HOT DROP`, `BESTSELLER`, `LIMITED` |
+| **SUBTITLE / SPECS** _(wajib)_ | Deskripsi singkat spesifikasi                 | `Acid Neon Acrylic // 3-Snap Universal`    |
+| **PRICE (IDR)** _(wajib)_      | Harga jual normal                             | `350000`                                   |
+| **ORIGINAL PRICE**             | Harga coret jika ada diskon (opsional)        | `450000`                                   |
+| **STOCK QTY** _(wajib)_        | Jumlah unit tersedia                          | `10`                                       |
 
 ### Upload Foto Produk:
 
@@ -153,25 +154,25 @@ Klik tab **CUSTOMER ORDERS** di sidebar.
 
 ### Kolom Tabel Pesanan:
 
-| Kolom | Keterangan |
-| :--- | :--- |
-| **ORDER ID** | ID unik pesanan (format: `#MSTZ-XXXX`) |
-| **CUSTOMER & ALAMAT** | Nama pembeli, nomor WhatsApp, alamat pengiriman |
-| **ITEMS & SPECS** | Daftar produk yang dipesan |
-| **TOTAL TAGIHAN** | Total pembayaran yang harus dibayar |
-| **BUKTI BAYAR** | Status bukti pembayaran |
-| **STATUS** | Status pesanan saat ini |
-| **AKSI CEPAT CS WHATSAPP** | Tombol 1-klik kirim pesan via WhatsApp |
+| Kolom                      | Keterangan                                      |
+| :------------------------- | :---------------------------------------------- |
+| **ORDER ID**               | ID unik pesanan (format: `#MSTZ-XXXX`)          |
+| **CUSTOMER & ALAMAT**      | Nama pembeli, nomor WhatsApp, alamat pengiriman |
+| **ITEMS & SPECS**          | Daftar produk yang dipesan                      |
+| **TOTAL TAGIHAN**          | Total pembayaran yang harus dibayar             |
+| **BUKTI BAYAR**            | Status bukti pembayaran                         |
+| **STATUS**                 | Status pesanan saat ini                         |
+| **AKSI CEPAT CS WHATSAPP** | Tombol 1-klik kirim pesan via WhatsApp          |
 
 ### Status Pesanan:
 
-| Status | Artinya |
-| :--- | :--- |
-| 🟡 **PENDING** | Pesanan masuk, menunggu konfirmasi pembayaran |
-| 🔵 **CONFIRMED** | Pembayaran terkonfirmasi, siap diproses |
-| 🟢 **SHIPPED** | Produk sudah dikirim (ada nomor resi) |
-| ✅ **COMPLETED** | Pesanan selesai, produk diterima pembeli |
-| 🔴 **CANCELLED** | Pesanan dibatalkan |
+| Status           | Artinya                                       |
+| :--------------- | :-------------------------------------------- |
+| 🟡 **PENDING**   | Pesanan masuk, menunggu konfirmasi pembayaran |
+| 🔵 **CONFIRMED** | Pembayaran terkonfirmasi, siap diproses       |
+| 🟢 **SHIPPED**   | Produk sudah dikirim (ada nomor resi)         |
+| ✅ **COMPLETED** | Pesanan selesai, produk diterima pembeli      |
+| 🔴 **CANCELLED** | Pesanan dibatalkan                            |
 
 ### Proses Pesanan via WhatsApp:
 
@@ -193,14 +194,14 @@ Klik tab **TESTIMONI & ULASAN** di sidebar.
 
 ### Kolom Tabel Ulasan:
 
-| Kolom | Keterangan |
-| :--- | :--- |
-| **RIDER / USER** | Nama pengguna yang memberikan ulasan |
-| **PRODUK & ORDER** | Produk yang diulas |
-| **RATING** | Bintang 1–5 |
-| **ULASAN** | Isi teks ulasan pembeli |
-| **STATUS** | PENDING / APPROVED / REJECTED |
-| **MODERASI** | Tombol approve/reject |
+| Kolom              | Keterangan                           |
+| :----------------- | :----------------------------------- |
+| **RIDER / USER**   | Nama pengguna yang memberikan ulasan |
+| **PRODUK & ORDER** | Produk yang diulas                   |
+| **RATING**         | Bintang 1–5                          |
+| **ULASAN**         | Isi teks ulasan pembeli              |
+| **STATUS**         | PENDING / APPROVED / REJECTED        |
+| **MODERASI**       | Tombol approve/reject                |
 
 ### Cara Moderasi:
 
@@ -223,21 +224,23 @@ Klik tab **⚡ FLASH SALE MANAGER** di sidebar.
 
 Mengatur tampilan banner Flash Sale di halaman utama toko.
 
-| Field | Keterangan |
-| :--- | :--- |
-| **JUDUL CAMPAIGN** | Judul besar banner promo (`LIMITED DISPATCH`) |
-| **SUBTITLE / KETERANGAN** | Teks deskripsi promo |
-| **WAKTU MULAI** | Tanggal & jam dimulainya flash sale |
-| **WAKTU BERAKHIR** | Tanggal & jam berakhirnya flash sale |
-| **STATUS AKTIF** | Centang = Flash Sale ON di homepage |
+| Field                     | Keterangan                                    |
+| :------------------------ | :-------------------------------------------- |
+| **JUDUL CAMPAIGN**        | Judul besar banner promo (`LIMITED DISPATCH`) |
+| **SUBTITLE / KETERANGAN** | Teks deskripsi promo                          |
+| **WAKTU MULAI**           | Tanggal & jam dimulainya flash sale           |
+| **WAKTU BERAKHIR**        | Tanggal & jam berakhirnya flash sale          |
+| **STATUS AKTIF**          | Centang = Flash Sale ON di homepage           |
 
 **Cara Mengaktifkan Flash Sale:**
+
 1. Isi semua field.
 2. Centang checkbox **STATUS FLASH SALE AKTIF DI HOME**.
 3. Klik **💾 SIMPAN JADWAL COUNTDOWN**.
 4. Buka halaman utama toko untuk verifikasi countdown berjalan.
 
 **Cara Menonaktifkan Flash Sale:**
+
 1. Hapus centang pada **STATUS FLASH SALE AKTIF DI HOME**.
 2. Klik **💾 SIMPAN JADWAL COUNTDOWN**.
 
@@ -247,32 +250,34 @@ Mengatur tampilan banner Flash Sale di halaman utama toko.
 
 Mendaftarkan produk dengan harga diskon khusus selama Flash Sale.
 
-| Field | Keterangan |
-| :--- | :--- |
-| **PILIH PRODUK** | Dropdown semua produk aktif |
-| **HARGA DISKON** | Harga spesial selama flash sale (IDR) |
+| Field               | Keterangan                               |
+| :------------------ | :--------------------------------------- |
+| **PILIH PRODUK**    | Dropdown semua produk aktif              |
+| **HARGA DISKON**    | Harga spesial selama flash sale (IDR)    |
 | **STOK FLASH SALE** | Kuota unit yang dialokasikan untuk promo |
 
 **Cara Daftarkan Produk:**
+
 1. Pilih produk dari dropdown.
 2. Masukkan harga diskon dan kuota stok.
 3. Klik **➕ TAMBAHKAN KE FLASH SALE**.
 
 **Cara Hapus dari Flash Sale:**
+
 - Klik **❌ REMOVE** pada baris produk di daftar Flash Sale.
 
 ---
 
 ## 8. Tips & Troubleshooting
 
-| Masalah | Solusi |
-| :--- | :--- |
-| Tabel produk kosong | Klik **SYNC SUPABASE**, pastikan internet stabil, refresh halaman |
-| Tab sidebar tidak bisa diklik | Refresh halaman (`F5`), cek browser Console (`F12`) untuk error |
-| Produk baru tidak muncul di toko | Pastikan status `ACTIVE`, klik SYNC SUPABASE, buka toko di tab baru |
-| Ubah stok cepat | Edit produk → ubah **STOCK QTY** → SAVE CHANGES |
-| Sembunyikan produk tanpa hapus | Edit produk → ubah STATUS ke `DRAFT (HIDDEN)` → SAVE CHANGES |
-| Lupa password admin | Gunakan fitur "Lupa Password" di halaman login, atau minta developer reset |
+| Masalah                          | Solusi                                                                     |
+| :------------------------------- | :------------------------------------------------------------------------- |
+| Tabel produk kosong              | Klik **SYNC SUPABASE**, pastikan internet stabil, refresh halaman          |
+| Tab sidebar tidak bisa diklik    | Refresh halaman (`F5`), cek browser Console (`F12`) untuk error            |
+| Produk baru tidak muncul di toko | Pastikan status `ACTIVE`, klik SYNC SUPABASE, buka toko di tab baru        |
+| Ubah stok cepat                  | Edit produk → ubah **STOCK QTY** → SAVE CHANGES                            |
+| Sembunyikan produk tanpa hapus   | Edit produk → ubah STATUS ke `DRAFT (HIDDEN)` → SAVE CHANGES               |
+| Lupa password admin              | Gunakan fitur "Lupa Password" di halaman login, atau minta developer reset |
 
 ---
 
@@ -284,6 +289,6 @@ Mendaftarkan produk dengan harga diskon khusus selama Flash Sale.
 
 ---
 
-> 📞 **Butuh bantuan teknis?** Hubungi developer  
-> 🌐 **Live Store:** https://mustazbuildtest.vercel.app  
+> 📞 **Butuh bantuan teknis?** Hubungi developer
+> 🌐 **Live Store:** https://mustazbuildtest.vercel.app
 > 🛠️ **Admin Panel:** https://mustazbuildtest.vercel.app/admin.html

@@ -118,7 +118,7 @@ export async function submitOrder(customerDetails, cartItems, totalAmount) {
  * Generate Direct WhatsApp Checkout Link with Formatted Order Message
  */
 export function generateWhatsAppOrderUrl(customerDetails, cartItems, totalAmount, orderId = 'ORD-NEW') {
-  const adminNumber = CONFIG.ADMIN_WHATSAPP || '6281234567890';
+  const adminNumber = CONFIG.ADMIN_WHATSAPP || '62895402806350';
   
   let itemListText = '';
   cartItems.forEach((item, index) => {
