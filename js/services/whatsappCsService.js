@@ -31,12 +31,6 @@ export const OFFICIAL_PAYMENT_ACCOUNTS = {
   }
 };
 
-export const REVIEW_INCENTIVE = {
-  voucherCode: 'MUSTAZ10K',
-  discountAmount: 10000,
-  formattedDiscount: 'Rp 10.000'
-};
-
 // ─── 2. Helpers & Formatting ────────────────────────────────────────────────
 export function formatRupiahNumber(amount) {
   const num = typeof amount === 'number' ? amount : Number(String(amount).replace(/[^0-9]/g, '')) || 0;
@@ -229,11 +223,10 @@ export function generatePhase3Response(shippingData) {
 /**
  * Phase 4: Follow-Up & Minta Ulasan (Status -> DELIVERED)
  */
-export function generatePhase4Response(reviewData, customReviewUrl = null, voucherCode = 'MUSTAZ10K') {
+export function generatePhase4Response(reviewData, customReviewUrl = null) {
   const name = reviewData.customerName || 'Pembeli';
   const orderId = cleanOrderId(reviewData.orderId);
   const reviewLink = reviewData.reviewUrl || customReviewUrl || buildReviewUrl(orderId, name);
-  const voucher = reviewData.voucherCode || voucherCode || 'MUSTAZ10K';
 
   return [
     `Halo Kak ${name}! 👋`,
@@ -244,7 +237,7 @@ export function generatePhase4Response(reviewData, customReviewUrl = null, vouch
     `Bolehkah minta waktunya 1 menit untuk memberikan ulasan & foto produk pada link berikut?`,
     `👉 ${reviewLink}`,
     ``,
-    `🎁 *Bonus:* Gunakan kode voucher *${voucher}* (potongan Rp 10.000) untuk pesanan berikutnya setelah Kakak mengirimkan ulasan resmi. Terima kasih banyak!`
+    `Ulasan dari Kakak sangat berarti bagi workshop kami untuk terus berkarya. Terima kasih banyak ya Kak!`
   ].join('\n');
 }
 

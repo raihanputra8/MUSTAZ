@@ -29,7 +29,6 @@ import { showBrutalConfirm, showBrutalAlert } from './components/modal.js';
 import { getAllReviews, updateReviewStatus, deleteReview } from './services/reviewsService.js';
 import {
   OFFICIAL_PAYMENT_ACCOUNTS,
-  REVIEW_INCENTIVE,
   parseIncomingOrder,
   generatePhase1Response,
   generatePhase2Response,
@@ -1096,8 +1095,8 @@ async function initAdminDashboard() {
         `;
       } else if (ord.status === 'SHIPPED' || ord.status === 'DELIVERED') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Fase 4: Kirim ajakan review berhadiah voucher MUSTAZ10K" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:800;">
-            [4] ⭐ MINTA REVIEW &amp; VOUCHER
+          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Fase 4: Kirim ajakan ulasan ke pembeli via WhatsApp" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:800;">
+            [4] ⭐ MINTA ULASAN / REVIEW
           </button>
           ${ord.status === 'SHIPPED' ? `
             <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Ubah status ke DELIVERED" style="padding:5px 8px;font-size:0.68rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
@@ -1261,7 +1260,7 @@ async function initAdminDashboard() {
       });
     });
 
-    // Fase 4: Minta Review & Kode Voucher
+    // Fase 4: Minta Review & Ulasan Pelanggan
     tbody.querySelectorAll('.btn-action-p4').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1279,7 +1278,7 @@ async function initAdminDashboard() {
           customerName: custName,
           phone: cleanPhone
         };
-        const msg = generatePhase4Response(data, reviewUrl, 'MUSTAZ10K');
+        const msg = generatePhase4Response(data, reviewUrl);
 
         ord.status = 'DELIVERED';
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
@@ -1288,7 +1287,7 @@ async function initAdminDashboard() {
         const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
 
-        showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Status DELIVERED aktif. Link ulasan & voucher dikirim ke WhatsApp.`);
+        showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Status DELIVERED aktif. Link ulasan resmi dikirim ke WhatsApp.`);
         renderOrders();
       });
     });
