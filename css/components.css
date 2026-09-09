@@ -1749,14 +1749,66 @@
   box-shadow: 4px 4px 0px #000;
 }
 
-/* ── MOBILE GRID POLISH ── */
-@media (max-width: 640px) {
-  #partsGrid {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
+/* ── UTILITY CLASSES FOR CATALOG GRID & CARDS ── */
+.grid { display: grid; }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gap-2 { gap: 0.5rem; }
+.p-2 { padding: 0.5rem; }
+.border-2 { border-width: 2px; }
+.aspect-square { aspect-ratio: 1 / 1; }
+.aspect-\[4\/5\] { aspect-ratio: 4 / 5; }
+.object-cover { object-fit: cover; }
+.w-full { width: 100%; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.text-xs { font-size: 0.75rem; line-height: 1rem; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.font-bold { font-weight: 700; }
+.font-black { font-weight: 900; }
+.bg-pink-600 { background-color: var(--accent-pink, #db2777); }
+.text-white { color: #ffffff; }
+
+@media (min-width: 768px) {
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .md\:gap-4 { gap: 1rem; }
+  .md\:p-4 { padding: 1rem; }
+  .md\:p-6 { padding: 1.5rem; }
+  .md\:border-4 { border-width: 4px; }
+  .md\:text-base { font-size: 1rem; line-height: 1.5rem; }
+  .md\:text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+  .md\:text-xs { font-size: 0.75rem; line-height: 1rem; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ── MANDATORY 2-COLUMN ON MOBILE SCREENS <= 767px ── */
+@media (max-width: 767px) {
+  #partsGrid,
+  .products-catalog-grid,
+  .grid.grid-cols-2,
+  div[class*="grid-cols-2"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 4px 0 !important;
   }
   .part-card {
     transform: none !important;
+    height: 100% !important;
+  }
+  .part-card-inner {
+    padding: 8px !important;
+    border-width: 2px !important;
+  }
+  .part-card-img-box {
+    aspect-ratio: 1 / 1 !important;
+  }
+  .part-card-img-box img {
+    height: 100% !important;
+    max-height: none !important;
+    object-fit: cover !important;
   }
 }
 

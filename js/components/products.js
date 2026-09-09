@@ -340,36 +340,43 @@ function renderParts(data) {
 
   grid.innerHTML = data.map((part, index) => {
     const num = String(index + 1).padStart(2, '0');
-    // Rotate every 3rd card slightly for brutalist zine variety
+    // Rotate every 3rd card slightly for brutalist zine variety (desktop)
     const tiltStyle = index % 3 === 1 ? 'transform: rotate(1deg);' : index % 3 === 2 ? 'transform: rotate(-1deg);' : '';
     
     return `
       <article class="part-card group" data-category="${part.category}" style="${tiltStyle}transition:all 0.2s ease;">
-        <div class="part-card-inner" style="background:#FFFFFF;color:#000;border:3px solid #000;box-shadow:8px 8px 0px var(--accent-pink);padding:18px;position:relative;display:flex;flex-direction:column;height:100%;">
+        <div class="part-card-inner p-2 md:p-4 border-2 md:border-4" style="background:#FFFFFF;color:#000;box-shadow:6px 6px 0px var(--accent-pink);position:relative;display:flex;flex-direction:column;height:100%;">
           <div class="tape-decor tape-top-left" style="background:rgba(255,230,0,0.75);"></div>
           
           <!-- Top Row: Number + Category Tag + Tape -->
-          <div class="part-card-top" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <span class="part-card-num" style="font-family:var(--font-headline);font-weight:900;font-size:1.4rem;color:#000;line-height:1;">
+          <div class="part-card-top" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span class="part-card-num" style="font-family:var(--font-headline);font-weight:900;font-size:1.15rem;color:#000;line-height:1;">
               ${num}
             </span>
-            <div style="display:flex;align-items:center;gap:6px;">
+            <div style="display:flex;align-items:center;gap:4px;">
               ${_isAdminCached && part.status === 'Draft' ? `
-                <span class="part-card-draft-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.62rem;padding:2px 6px;text-transform:uppercase;letter-spacing:0.08em;">
+                <span class="part-card-draft-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.58rem;padding:2px 4px;text-transform:uppercase;letter-spacing:0.06em;">
                   [DRAFT]
                 </span>
               ` : ''}
-              <span class="part-card-cat" style="background:#000;color:#FFF;font-family:var(--font-mono-sub);font-weight:800;font-size:0.68rem;padding:3px 8px;text-transform:uppercase;letter-spacing:0.12em;">
+              <span class="part-card-cat" style="background:#000;color:#FFF;font-family:var(--font-mono-sub);font-weight:800;font-size:0.62rem;padding:2px 6px;text-transform:uppercase;letter-spacing:0.08em;">
                 ${part.category}
               </span>
             </div>
           </div>
 
-          <!-- Product Image with raw border (4:5 proportional ratio, 1:1 on mobile) -->
-          <div class="part-card-img-box quick-view-trigger" style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;cursor:pointer;" data-id="${part.id}">
-            ${part.badge ? `<div class="zine-tag-pink part-card-badge" style="position:absolute;top:8px;left:8px;z-index:10;">${part.badge}</div>` : ''}
+          <!-- Product Image: aspect-[4/5] on desktop, aspect-square on mobile -->
+          <div class="part-card-img-box aspect-[4/5] aspect-square quick-view-trigger" style="position:relative;width:100%;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:8px;cursor:pointer;" data-id="${part.id}">
+            ${part.badge ? `<div class="zine-tag-pink part-card-badge text-[10px] md:text-xs" style="position:absolute;top:6px;left:6px;z-index:10;">${part.badge}</div>` : ''}
+            
+            <!-- Secondary Action: Compact Overlay Badge on Photo -->
+            <button type="button" class="quick-view-btn quick-view-overlay-btn" data-id="${part.id}" title="Quick View" aria-label="Lihat Detail Produk" style="position:absolute;top:6px;right:6px;z-index:12;background:rgba(0,0,0,0.85);color:#FFF;border:1.5px solid #FFF;width:26px;height:26px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;">
+              <span class="material-symbols-outlined" style="font-size:15px;line-height:1;color:#FFF;">open_in_full</span>
+            </button>
+
             <img src="${part.image}" alt="${part.name}"
-              style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);transition:all 0.3s ease;"
+              class="part-card-img object-cover"
+              style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);transition:all 0.3s ease;display:block;"
               onerror="this.onerror=null;this.src='assets/images/Product1.png';"
               onmouseover="this.style.filter='contrast(125%)';this.style.transform='scale(1.04)';"
               onmouseout="this.style.filter='contrast(110%)';this.style.transform='scale(1)';">
@@ -377,49 +384,48 @@ function renderParts(data) {
 
           <!-- Product Info -->
           <div class="part-card-body" style="flex-grow:1;display:flex;flex-direction:column;">
-            <h3 class="part-card-title quick-view-trigger" style="font-family:var(--font-headline);font-size:1.35rem;color:#000;text-transform:uppercase;line-height:0.95;margin-bottom:6px;cursor:pointer;" data-id="${part.id}">
+            <h3 class="part-card-title quick-view-trigger text-xs md:text-base font-bold" style="font-family:var(--font-headline);color:#000;text-transform:uppercase;line-height:1.05;margin-bottom:4px;cursor:pointer;" data-id="${part.id}">
               ${part.name}
             </h3>
-            <p class="part-card-sub" style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#555;text-transform:uppercase;margin-bottom:14px;">
+            <p class="part-card-sub" style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#555;text-transform:uppercase;margin-bottom:8px;">
               ${part.sub}
             </p>
 
             <!-- Price & Stock -->
-            <div class="part-card-price-row" style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #000;padding-top:10px;margin-top:auto;margin-bottom:12px;">
-              <span class="part-card-price" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:var(--accent-pink);">
+            <div class="part-card-price-row" style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #000;padding-top:6px;margin-top:auto;margin-bottom:8px;">
+              <span class="part-card-price text-sm md:text-lg font-black" style="font-family:var(--font-headline);color:var(--accent-pink);line-height:1;">
                 ${formatRupiah(part.price)}
               </span>
               ${part.stock <= 3 && part.stock > 0 ? `
-                <span class="stock-pulse-badge part-card-stock-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.68rem;padding:3px 8px;letter-spacing:0.06em;border:1px solid #000;">
-                  ⚡ SISA ${part.stock} PCS
+                <span class="stock-pulse-badge part-card-stock-badge text-[10px] md:text-xs" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;padding:2px 4px;letter-spacing:0.04em;border:1px solid #000;">
+                  ⚡ ${part.stock} PCS
                 </span>
               ` : part.stock <= 0 ? `
-                <span class="part-card-stock-badge" style="background:#444;color:#AAA;font-family:var(--font-mono-sub);font-weight:900;font-size:0.68rem;padding:3px 8px;border:1px solid #000;">
-                  SOLD OUT
+                <span class="part-card-stock-badge text-[10px] md:text-xs" style="background:#444;color:#AAA;font-family:var(--font-mono-sub);font-weight:900;padding:2px 4px;border:1px solid #000;">
+                  SOLD
                 </span>
               ` : part.stock <= 5 ? `
-                <span class="part-card-stock-badge" style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:var(--accent-pink);">
+                <span class="part-card-stock-badge text-[10px] md:text-xs" style="font-family:var(--font-mono-sub);font-weight:700;color:var(--accent-pink);">
                   ⚠️ ${part.stock} LEFT
                 </span>
               ` : `
-                <span class="part-card-stock-badge" style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:#333;">
-                  IN STOCK (${part.stock})
+                <span class="part-card-stock-badge text-[10px] md:text-xs" style="font-family:var(--font-mono-sub);font-weight:700;color:#333;">
+                  IN STOCK
                 </span>
               `}
             </div>
 
-            <!-- Action Buttons: Add to Cart + Quick View -->
-            <div class="part-card-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
-              <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.92rem;justify-content:center;letter-spacing:0.04em;">
+            <!-- Action Buttons: 2-Column Compact Friendly -->
+            <div class="part-card-actions" style="display:flex;gap:6px;align-items:center;width:100%;">
+              <button class="add-to-cart-btn w-full py-1 px-2 text-xs font-bold bg-pink-600 text-white" data-id="${part.id}" style="cursor:pointer;">
                 <span class="btn-text-full">+ KERANJANG</span>
                 <span class="btn-text-mobile" style="display:none;">+ CART</span>
               </button>
-              <button class="quick-view-btn" data-id="${part.id}" style="background:#000;color:#FFF;border:2px solid #000;padding:10px 14px;font-family:var(--font-headline);font-size:0.92rem;cursor:pointer;letter-spacing:0.04em;" title="Lihat Detail">
-                <span class="detail-label-desktop">DETAIL →</span>
-                <span class="detail-label-mobile" style="display:none;">→</span>
+              <button class="quick-view-btn desktop-quick-view-btn" data-id="${part.id}" style="background:#000;color:#FFF;border:2px solid #000;padding:6px 10px;font-family:var(--font-headline);font-size:0.78rem;cursor:pointer;letter-spacing:0.04em;white-space:nowrap;" title="Lihat Detail">
+                DETAIL →
               </button>
               ${_isAdminCached ? `
-                <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(part.id)}" class="admin-card-edit-btn" style="background:#FFFF00;color:#000;border:2px solid #000;padding:10px 12px;font-family:var(--font-headline);font-size:0.85rem;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" title="Admin Quick Edit">
+                <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(part.id)}" class="admin-card-edit-btn" style="background:#FFFF00;color:#000;border:2px solid #000;padding:6px 8px;font-family:var(--font-headline);font-size:0.75rem;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" title="Admin Quick Edit">
                   ✏️
                 </a>
               ` : ''}
@@ -449,8 +455,9 @@ function renderParts(data) {
   });
 
   // Wire quick-view triggers
-  grid.querySelectorAll('.quick-view-btn, .quick-view-trigger').forEach(el => {
-    el.addEventListener('click', () => {
+  grid.querySelectorAll('.quick-view-btn, .quick-view-trigger, .quick-view-overlay-btn').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
       const part = getDynamicParts().find(p => p.id === el.dataset.id);
       if (part) openProductDetail(part);
     });
