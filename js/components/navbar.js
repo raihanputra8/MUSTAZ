@@ -234,6 +234,12 @@ export function initNavbar() {
 
       if (isLoggedIn) {
         mobAuthArea.innerHTML = `
+          <div style="margin-bottom:12px;">
+            <a href="${isAdmin ? 'admin.html' : 'account.html'}" class="btn-brutal-yellow" style="width:100%;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;font-size:0.95rem;margin-bottom:10px;">
+              <span class="material-symbols-outlined" style="font-size:20px;">${isAdmin ? 'admin_panel_settings' : 'account_circle'}</span>
+              <span>${isAdmin ? 'ADMIN CONTROL DESK →' : 'AKUN SAYA // PESANAN →'}</span>
+            </a>
+          </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
             <span style="font-size:0.75rem;color:#888;">STATUS: <strong style="color:${isAdmin ? 'var(--accent-yellow)' : '#4ade80'};">${isAdmin ? 'ADMIN' : 'USER BIASA'}</strong></span>
             <span style="font-size:0.7rem;color:#AAA;">${profile.email || ''}</span>
@@ -261,7 +267,7 @@ export function initNavbar() {
         });
       } else {
         mobAuthArea.innerHTML = `
-          <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:space-between;">
+          <a href="login.html" class="btn-brutal-pink" style="width:100%;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;font-size:0.95rem;">
             <span>MEMBER LOGIN →</span>
             <span class="material-symbols-outlined">login</span>
           </a>
