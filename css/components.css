@@ -5,26 +5,16 @@
 /* ── TORN PAPER EDGE MASK ── */
 .raw-paper-edge {
   mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10V4L5 1L10 5L15 0L21 6L26 2L32 8L38 1L45 7L52 2L59 9L67 3L74 10L82 2L89 7L95 1L100 5V10H0Z' fill='black'/%3E%3C/svg%3E");
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10V4L5 1L10 5L15 0L21 6L26 2L32 8L38 1L45 7L52 2L59 9L67 3L74 10L82 2L89 7L95 1L100 5V10H0Z' fill='black'/%3E%3C/svg%3E");
   mask-size: 160px 10px;
-  -webkit-mask-size: 160px 10px;
   mask-repeat: repeat-x;
-  -webkit-mask-repeat: repeat-x;
   mask-position: bottom;
-  -webkit-mask-position: bottom;
-  max-width: 100%;
 }
 
 .raw-paper-edge-top {
   mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0V6L5 9L10 5L15 10L21 4L26 8L32 2L38 9L45 3L52 8L59 1L67 7L74 0L82 8L89 3L95 9L100 5V0H0Z' fill='black'/%3E%3C/svg%3E");
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0V6L5 9L10 5L15 10L21 4L26 8L32 2L38 9L45 3L52 8L59 1L67 7L74 0L82 8L89 3L95 9L100 5V0H0Z' fill='black'/%3E%3C/svg%3E");
   mask-size: 160px 10px;
-  -webkit-mask-size: 160px 10px;
   mask-repeat: repeat-x;
-  -webkit-mask-repeat: repeat-x;
   mask-position: top;
-  -webkit-mask-position: top;
-  max-width: 100%;
 }
 
 /* ── INDUSTRIAL METAL CHAIN / DOTTED DIVIDER ── */
@@ -186,22 +176,6 @@
 .btn-brutal-sm {
   padding: 8px 16px;
   font-size: 0.95rem;
-}
-
-@media (max-width: 767px) {
-  .btn-brutal-pink,
-  .btn-brutal-white,
-  .btn-brutal-yellow,
-  .btn-brutal-ghost,
-  .btn-brutal-dark {
-    padding: 6px 12px !important;
-    font-size: 0.75rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 0.06em !important;
-    border-width: 1.5px !important;
-    box-shadow: 2.5px 2.5px 0px #000 !important;
-    min-height: 34px !important;
-  }
 }
 
 /* ── ZINE BADGES & STAMPS ── */
@@ -504,7 +478,7 @@
   position: relative;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .catalog-hero {
     padding: 48px 0 36px;
   }
@@ -544,7 +518,7 @@
   font-weight: 900;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .filter-tabs-container > span {
     display: none;
   }
@@ -1007,7 +981,7 @@
   gap: 24px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .flash-sale-banner {
     flex-direction: column;
     align-items: stretch;
@@ -1032,9 +1006,8 @@
     font-size: 1.35rem;
   }
   .flash-sale-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
 }
 
@@ -1376,7 +1349,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .visor-slider-stage {
     height: 270px;
   }
@@ -1640,7 +1613,7 @@
   transform: scale(1);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .product-interactive-banner-section {
     padding: 16px 0 6px;
   }
@@ -1776,300 +1749,18 @@
   box-shadow: 4px 4px 0px #000;
 }
 
-/* ── UTILITY CLASSES FOR CATALOG GRID & CARDS ── */
-.grid { display: grid; }
-.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.gap-2 { gap: 0.5rem; }
-.p-2 { padding: 0.5rem; }
-.border-2 { border-width: 2px; }
-.aspect-square { aspect-ratio: 1 / 1; }
-.aspect-\[4\/5\] { aspect-ratio: 4 / 5; }
-.object-cover { object-fit: cover; }
-.w-full { width: 100%; }
-.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
-.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-.text-xs { font-size: 0.75rem; line-height: 1rem; }
-.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-.font-bold { font-weight: 700; }
-.font-black { font-weight: 900; }
-.bg-pink-600 { background-color: var(--accent-pink, #db2777); }
-.text-white { color: #ffffff; }
-
-@media (min-width: 768px) {
-  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .md\:gap-4 { gap: 1rem; }
-  .md\:p-4 { padding: 1rem; }
-  .md\:p-6 { padding: 1.5rem; }
-  .md\:border-4 { border-width: 4px; }
-  .md\:text-base { font-size: 1rem; line-height: 1.5rem; }
-  .md\:text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-  .md\:text-xs { font-size: 0.75rem; line-height: 1rem; }
-}
-
-@media (min-width: 1024px) {
-  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
-/* ── MANDATORY 2-COLUMN ON MOBILE SCREENS <= 767px ── */
-@media (max-width: 767px) {
-  #partsGrid,
-  #flashSaleGrid,
-  .products-catalog-grid,
-  .flash-sale-grid,
-  .home-drops-grid,
-  .category-tiles-grid,
-  .grid.grid-cols-2,
-  div[class*="grid-cols-2"] {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-    padding: 4px 0 !important;
+/* ── MOBILE GRID POLISH ── */
+@media (max-width: 640px) {
+  #partsGrid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
   }
   .part-card {
     transform: none !important;
-    height: 100% !important;
-  }
-  .part-card-inner {
-    padding: 8px !important;
-    border-width: 2px !important;
-  }
-  .part-card-img-box {
-    aspect-ratio: 1 / 1 !important;
-  }
-  .part-card-img-box img {
-    height: 100% !important;
-    max-height: none !important;
-    object-fit: cover !important;
-  }
-
-  /* Flash Sale Compact Mobile Cards */
-  .card-flash-sale {
-    padding: 8px !important;
-    border-width: 2px !important;
-    box-shadow: 3px 3px 0px var(--accent-pink) !important;
-    height: 100% !important;
-  }
-  .card-flash-sale .card-img-box {
-    aspect-ratio: 1 / 1 !important;
-    margin-bottom: 6px !important;
-    border-width: 1.5px !important;
-  }
-  .card-flash-sale .flash-discount-tag {
-    top: 4px !important;
-    right: 4px !important;
-    font-size: 0.62rem !important;
-    padding: 2px 5px !important;
-    border-width: 1.5px !important;
-  }
-  .card-flash-sale h3 {
-    font-size: 0.78rem !important;
-    line-height: 1.15 !important;
-    margin-bottom: 2px !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-    height: 2.3em !important;
-  }
-  .card-flash-sale p {
-    display: none !important;
-  }
-  .card-flash-sale .flash-stock-wrap {
-    margin: 4px 0 6px !important;
-  }
-  .card-flash-sale .flash-stock-info {
-    font-size: 0.55rem !important;
-    margin-bottom: 2px !important;
-  }
-  .card-flash-sale .flash-price-orig {
-    font-size: 0.58rem !important;
-  }
-  .card-flash-sale .flash-price-sale {
-    font-size: 0.88rem !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-  }
-  .card-flash-sale .btn-brutal-sm {
-    padding: 4px 8px !important;
-    font-size: 0.70rem !important;
-    min-height: 28px !important;
-  }
-
-  /* Home Drops Compact Mobile Cards */
-  .home-drops-grid .card-brutal-white,
-  .home-drops-grid .card-brutal-dark {
-    padding: 8px !important;
-    border-width: 2px !important;
-    box-shadow: 3px 3px 0px var(--accent-pink) !important;
-    transform: none !important;
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  .home-drops-grid .card-img-box {
-    aspect-ratio: 1 / 1 !important;
-    margin-bottom: 6px !important;
-    border-width: 1.5px !important;
-  }
-  .home-drops-grid .drop-card-title {
-    font-size: 0.78rem !important;
-    line-height: 1.15 !important;
-    margin-bottom: 2px !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-    height: 2.3em !important;
-  }
-  .home-drops-grid .drop-card-desc,
-  .home-drops-grid .drop-spec-grid {
-    display: none !important;
-  }
-  .home-drops-grid .drop-card-price {
-    font-size: 0.88rem !important;
-    font-weight: 900 !important;
-  }
-  .home-drops-grid .btn-brutal-sm {
-    padding: 4px 8px !important;
-    font-size: 0.70rem !important;
-    min-height: 28px !important;
-  }
-
-  /* Testimonials Horizontal Carousel on Mobile */
-  .testi-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    gap: 10px !important;
-    padding: 4px 4px 14px !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  .card-testi-brutal {
-    flex: 0 0 82vw !important;
-    width: 82vw !important;
-    max-width: 300px !important;
-    scroll-snap-align: center !important;
-    padding: 12px !important;
-    border-width: 2px !important;
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.8) !important;
-  }
-  .testi-photo-box {
-    width: 100% !important;
-    height: 120px !important;
-    aspect-ratio: auto !important;
-    margin-bottom: 8px !important;
-    border-width: 1.5px !important;
-  }
-  .testi-photo-box img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-  .testi-quote {
-    font-size: 0.75rem !important; /* text-xs */
-    line-height: 1.35 !important; /* leading-snug */
-    font-style: italic !important;
-    margin-bottom: 8px !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 3 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-  }
-  .testi-author-block {
-    padding-top: 6px !important;
-  }
-  .testi-author-name {
-    font-size: 0.68rem !important; /* text-[11px] */
-    font-weight: 700 !important;
-  }
-  .testi-author-bike {
-    font-size: 0.62rem !important; /* text-[10px] */
-  }
-  .testi-gear-tag {
-    font-size: 0.55rem !important;
-    padding: 1px 4px !important;
-  }
-
-  /* Story Bento Horizontal Carousel on Mobile */
-  .home-story-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    gap: 10px !important;
-    padding: 4px 4px 14px !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  .home-story-card {
-    flex: 0 0 80% !important;
-    max-width: 280px !important;
-    scroll-snap-align: center !important;
-    min-height: 200px !important;
-    aspect-ratio: auto !important;
-  }
-
-  /* Category Tiles 2x2 */
-  .category-tiles-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-  }
-  .cat-tile-card {
-    border-width: 2px !important;
-  }
-
-  /* Mobile Background Shield & Card Softening */
-  .card-brutal-dark {
-    background: rgba(14, 14, 14, 0.94) !important;
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
-  }
-  .tape-decor {
-    width: 60px !important;
-    height: 18px !important;
-    opacity: 0.8 !important;
   }
 }
 
-/* ── FEATURED VISOR IMAGE & BANNER ASPECT RATIO PRESERVATION ── */
-.featured-visor-img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
-}
 
-@media (max-width: 767px) {
-  .featured-visor-img {
-    aspect-ratio: 4 / 3;
-    max-width: 100% !important;
-    height: auto !important;
-  }
-}
 
-/* ── OVERLAY & READABILITY UTILITIES (DESKTOP & MOBILE) ── */
-.bg-black\/80,
-.bg-black-80 {
-  background-color: rgba(0, 0, 0, 0.80) !important;
-}
 
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-}
 
-.backdrop-blur-md {
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-}
-
-.relative-clarity-overlay {
-  position: relative;
-  background-color: rgba(0, 0, 0, 0.80);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}

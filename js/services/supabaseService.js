@@ -83,14 +83,8 @@ export async function fetchCloudProducts() {
         image: getProductImageUrl(p.image || p.image_url || 'pet_visor_yellow_flame.png'),
         stock: Number(p.stock) || 0
       }));
-      if (typeof localStorage !== 'undefined') {
-        try {
-          localStorage.setItem('mustaz_catalog_products_v3', JSON.stringify(mapped));
-          localStorage.setItem('mustaz_catalog_products', JSON.stringify(mapped));
-        } catch (storageErr) {
-          console.warn('[SupabaseService] localStorage write warning:', storageErr);
-        }
-      }
+      localStorage.setItem('mustaz_catalog_products_v3', JSON.stringify(mapped));
+      localStorage.setItem('mustaz_catalog_products', JSON.stringify(mapped));
       return mapped;
     }
   } catch (err) {

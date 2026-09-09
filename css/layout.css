@@ -364,12 +364,9 @@
   display: block;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .footer-torn-transition {
-    height: 160px !important;
-    background-size: cover !important;
-    background-position: center bottom !important;
-    background-repeat: no-repeat !important;
+    height: 240px;
   }
 }
 
@@ -566,100 +563,65 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .wrap, .wrap-tight {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
   
-  /* ── 1. HEADER & NAVBAR MOBILE (CLEAN 4-ELEMENT ARCHITECTURE) ── */
+  /* Header & Navigation Polish */
   .site-header {
-    height: 52px !important;
+    height: 60px;
   }
   .site-header-inner {
-    padding: 0 10px !important;
-    height: 100% !important;
+    padding: 0 14px;
   }
   .brand-badge {
-    gap: 7px !important;
+    gap: 8px;
     min-width: 0;
     flex-shrink: 1;
   }
   .brand-logo-img {
-    height: 30px !important;
+    height: 36px;
     flex-shrink: 0;
   }
   .brand-text-block .brand-name {
-    font-size: 1.05rem !important;
-    line-height: 1 !important;
+    font-size: 1.15rem !important;
+    line-height: 1;
   }
   .brand-text-block .brand-sub {
-    font-size: 0.5rem !important;
-    letter-spacing: 0.08em !important;
+    font-size: 0.52rem !important;
+    letter-spacing: 0.1em !important;
   }
   .nav-actions {
-    gap: 6px !important;
-    align-items: center !important;
+    gap: 6px;
   }
-  /* Hide search, account/person icon, and logout button on mobile header to leave exactly 4 elements: [LOGO] | [CURRENCY] | [CART] | [BURGER] */
+  /* Hide search icon and text sign in button on mobile top bar (clean mobile navbar) */
   .nav-actions #headerSearchBtn,
-  .nav-actions a.nav-btn-icon,
-  .nav-actions a[href*="account"],
-  .nav-actions a[href*="admin"],
-  .nav-actions a[href*="login"],
-  .nav-actions #headerAuthBtn,
   .nav-actions .nav-btn-pink {
     display: none !important;
   }
-  /* Mobile Currency Select - Compact Brutalist */
-  #headerCurrencySlot {
-    display: inline-flex !important;
-    margin: 0 !important;
+  .nav-btn-icon {
+    width: 36px;
+    height: 36px;
   }
-  #headerCurrencySelect {
-    height: 32px !important;
-    padding: 2px 6px !important;
-    font-size: 0.68rem !important;
-    border-width: 1.5px !important;
-    box-shadow: 1.5px 1.5px 0px #000 !important;
-  }
-  /* Mobile Cart Button */
   .nav-cart-btn {
-    height: 34px !important;
-    padding: 0 8px !important;
-    gap: 4px !important;
-    font-size: 0.78rem !important;
-    box-shadow: 2px 2px 0px #FFFFFF !important;
-    border-width: 1.5px !important;
+    height: 36px;
+    padding: 0 9px;
+    gap: 5px;
+    font-size: 0.85rem;
+    box-shadow: 2px 2px 0px #FFFFFF;
   }
-  .nav-cart-btn .material-symbols-outlined {
-    font-size: 18px !important;
-  }
-  .nav-cart-btn .cart-label {
-    font-size: 0.72rem !important;
-  }
-  .nav-cart-btn .cart-count-badge {
-    min-width: 16px !important;
-    height: 16px !important;
-    font-size: 0.62rem !important;
-  }
-  /* Mobile Burger Menu Button */
   .mobile-menu-toggle {
-    width: 34px !important;
-    height: 34px !important;
-    border-width: 1.5px !important;
-    box-shadow: 2px 2px 0px #000 !important;
-  }
-  .mobile-menu-toggle span {
-    font-size: 20px !important;
+    width: 36px;
+    height: 36px;
   }
 
   /* Mobile Drawer */
   .mobile-nav-drawer {
-    top: 52px !important;
-    padding: 16px 14px !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
+    top: 60px;
+    padding: 20px 16px;
+    overflow-y: auto;
   }
 
   /* Universal Mobile Typography Scaling */
@@ -828,318 +790,43 @@
     text-align: center;
   }
 
-  /* ── 2. KATALOG PRODUK MOBILE (2-COLUMN GRID SYSTEM) ── */
-  .products-catalog-grid,
-  #partsGrid,
-  #helmetsGrid,
-  #choppersGrid,
-  .products-catalog-grid,
-  .home-drops-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-    align-items: stretch !important;
-  }
+  /* Product Grid & Card Refinements on Mobile */
   .part-card, .helmet-card, .chopper-card {
     transform: none !important;
-    height: 100% !important;
   }
-  .part-card > div,
-  .part-card-inner {
-    border-width: 2px !important;
-    box-shadow: 3px 3px 0px var(--accent-pink) !important;
-    padding: 8px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100% !important;
-  }
-  .part-card .part-card-top {
+  .part-card h3 {
+    font-size: 1.15rem !important;
     margin-bottom: 4px !important;
   }
-  .part-card .part-card-num {
-    font-size: 0.85rem !important;
+  .helmet-card h2 {
+    font-size: 1.35rem !important;
+    margin-bottom: 4px !important;
   }
-  .part-card .part-card-cat {
-    font-size: 0.55rem !important;
-    padding: 2px 4px !important;
-    letter-spacing: 0.04em !important;
-  }
-  .part-card .part-card-draft-badge {
-    font-size: 0.50rem !important;
-    padding: 1px 3px !important;
-  }
-  .part-card .part-card-img-box,
-  .part-card .quick-view-trigger:first-of-type {
-    aspect-ratio: 1 / 1 !important;
-    margin-bottom: 6px !important;
-    border-width: 1.5px !important;
-  }
-  .part-card .part-card-img-box img,
-  .part-card-img {
-    width: 100% !important;
-    height: 100% !important;
-    max-height: none !important;
-    object-fit: cover !important;
-  }
-  .part-card .part-card-badge {
-    font-size: 0.52rem !important;
-    padding: 1px 4px !important;
-    top: 4px !important;
-    left: 4px !important;
-  }
-  .part-card .quick-view-overlay-btn {
-    display: flex !important;
-    position: absolute !important;
-    top: 4px !important;
-    right: 4px !important;
-    z-index: 12 !important;
-    width: 24px !important;
-    height: 24px !important;
-  }
-  .part-card h3,
-  .part-card .part-card-title {
-    font-size: 0.78rem !important;
-    font-weight: 800 !important;
-    line-height: 1.15 !important;
-    margin-bottom: 3px !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-    height: 2.3em !important;
-  }
-  .part-card .part-card-sub {
-    display: none !important;
-  }
-  .part-card .part-card-price-row {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 2px !important;
-    border-top: 1px dashed #DDD !important;
-    padding-top: 4px !important;
-    margin-top: auto !important;
-    margin-bottom: 6px !important;
-  }
-  .part-card .part-card-price {
-    font-size: 0.92rem !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-  }
-  .part-card .stock-pulse-badge,
-  .part-card .part-card-stock-badge {
-    font-size: 0.55rem !important;
-    padding: 1px 4px !important;
-    white-space: nowrap !important;
-  }
-  .part-card .part-card-actions {
-    display: flex !important;
-    gap: 4px !important;
-    width: 100% !important;
-    margin-bottom: 0 !important;
-  }
-  .part-card .add-to-cart-btn {
-    width: 100% !important;
-    flex: 1 1 100% !important;
-    padding: 6px 4px !important;
-    font-size: 0.75rem !important;
-    font-weight: 800 !important;
-    min-height: 30px !important;
-    letter-spacing: 0.02em !important;
-    border-width: 1.5px !important;
-    justify-content: center !important;
-    white-space: nowrap !important;
-    background: var(--accent-pink) !important;
-    color: #FFF !important;
-    box-shadow: 2px 2px 0px #000 !important;
-  }
-  .part-card .add-to-cart-btn .btn-text-full {
-    display: none !important;
-  }
-  .part-card .add-to-cart-btn .btn-text-mobile {
-    display: inline !important;
-  }
-  .part-card .desktop-quick-view-btn,
-  .part-card .quick-view-btn:not(.quick-view-overlay-btn) {
-    display: none !important;
-  }
-  .part-card .admin-card-edit-btn {
-    padding: 4px 6px !important;
-    font-size: 0.72rem !important;
-    min-height: 30px !important;
-    border-width: 1.5px !important;
-  }
-  .part-card .tape-decor {
-    display: none !important;
-  }
-
-  /* ── 3. HERO SECTION & TYPOGRAPHY ADJUSTMENT (MOBILE) ── */
-  .home-hero-section {
-    padding: 16px 0 28px !important;
-  }
-  .hero-editorial-panel {
-    padding: 14px 12px !important;
-    background: rgba(8, 8, 8, 0.70) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 4px 4px 0px var(--accent-pink) !important;
-    margin-bottom: 8px !important;
-  }
-  .hero-bg-watermark {
-    opacity: 0.015 !important;
-    font-size: clamp(3rem, 16vw, 6rem) !important;
-    right: 0 !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-  }
-  .hero-editorial-panel .editorial-title {
-    font-size: 1.5rem !important; /* text-2xl */
-    line-height: 1 !important;
-    margin-bottom: 8px !important;
-  }
-  .hero-editorial-panel p,
-  .hero-editorial-desc {
-    font-size: 0.75rem !important; /* text-xs */
-    line-height: 1.45 !important;
-    padding-left: 10px !important;
-    border-left: 3px solid var(--accent-yellow) !important;
-    margin-bottom: 14px !important;
-    max-width: 100% !important;
-  }
-  .hero-cta-group {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 8px !important;
-    width: 100% !important;
-    align-items: center !important;
-  }
-  .hero-cta-group a {
-    flex: 1 1 auto !important;
-    width: auto !important;
-    text-align: center !important;
-    justify-content: center !important;
-    padding: 6px 12px !important;
-    font-size: 0.75rem !important;
-    font-weight: 900 !important;
-    min-height: 34px !important;
-    letter-spacing: 0.06em !important;
-    border-width: 1.5px !important;
-  }
-  .hero-photo-frame {
-    max-width: 100% !important;
-    transform: none !important;
-    border-width: 2px !important;
-    box-shadow: 4px 4px 0px var(--accent-pink) !important;
-    padding: 8px !important;
-  }
-  .hero-sub-badge {
-    bottom: -10px !important;
-    left: -6px !important;
-    padding: 6px 10px !important;
-    border-width: 2px !important;
-  }
-  .hero-tech-marking {
-    margin-top: 14px !important;
+  #partsGrid, #helmetsGrid, #choppersGrid {
+    gap: 16px !important;
   }
 
   /* Flash Sale & Price Tag Offsets */
-  .flash-sale-section {
-    padding: 20px 0 32px !important;
-  }
-  .flash-sale-banner {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    padding: 12px 14px !important;
-    gap: 10px !important;
-    box-shadow: 4px 4px 0px var(--accent-pink) !important;
-  }
-  .flash-sale-title {
-    font-size: 1.15rem !important;
-  }
-  .flash-sale-timer-wrap {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 8px !important;
-    border-top: 1px dashed #333 !important;
-    padding-top: 8px !important;
-    margin: 0 auto !important;
-  }
-  .timer-blocks {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 4px !important;
-  }
-  .timer-box {
-    min-width: 32px !important;
-    padding: 2px 5px !important;
-  }
-  .timer-box .time-val {
-    font-size: 0.95rem !important;
-  }
-  .timer-box .time-lbl {
-    font-size: 0.52rem !important;
-  }
-  .timer-colon {
-    font-size: 0.85rem !important;
-    padding: 0 1px !important;
-  }
   .raw-paper-edge {
     position: static !important;
     right: auto !important;
     bottom: auto !important;
     transform: none !important;
-    margin-top: 8px !important;
+    margin-top: 10px !important;
     display: inline-block !important;
-    padding: 4px 10px !important;
+    padding: 6px 14px !important;
   }
   .raw-paper-edge span {
-    font-size: 1.05rem !important;
-  }
-
-  /* Compact Section Paddings & Testimonials Touch Carousel */
-  .home-drops-section,
-  .home-featured-section,
-  .visor-showcase-section,
-  .home-story-section,
-  .home-testi-section {
-    padding: 24px 0 !important;
-  }
-
-  .testi-grid,
-  .testi-carousel-container {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    gap: 12px !important;
-    padding: 8px 16px 16px !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  .card-testi-brutal {
-    width: 82vw !important;
-    max-width: 300px !important;
-    flex-shrink: 0 !important;
-    scroll-snap-align: center !important;
-  }
-  .editorial-title {
-    font-size: clamp(1.4rem, 5vw, 1.9rem) !important;
-    line-height: 1 !important;
-  }
-  .editorial-desc {
-    font-size: 0.75rem !important;
-    margin-top: 3px !important;
+    font-size: 1.2rem !important;
   }
 
   /* Slider Responsive Stage */
   .visor-slider-stage {
-    height: 220px !important;
+    height: 250px !important;
   }
   .visor-slide {
-    width: 160px !important;
-    height: 145px !important;
+    width: 175px !important;
+    height: 160px !important;
   }
 
   /* Filter Tabs & Search on Mobile */
@@ -1302,7 +989,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .footer-manifesto {
     padding: 70px 16px 110px;
   }
