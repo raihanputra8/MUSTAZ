@@ -1,9 +1,8 @@
 /**
  * Supabase Client Initialization
- * Loads Supabase ESM module directly from CDN
+ * Safe initialization using window.supabase with lazy fallback
  */
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm';
 import { CONFIG } from '../config.js';
 
 let supabaseInstance = null;
@@ -18,13 +17,34 @@ export const isSupabaseConfigured = () => {
 };
 
 export const getSupabaseClient = () => {
-  if (!supabaseInstance && isSupabaseConfigured()) {
+  if (supabaseInstance) return supabaseInstance;
+
+  if (isSupabaseConfigured()) {
     try {
-      supabaseInstance = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-      console.log('⚡ Supabase Client initialized successfully!');
+      if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
+        supabaseInstance = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        console.log('⚡ Supabase Client initialized successfully via window.supabase!');
+        return supabaseInstance;
+      }
     } catch (error) {
-      console.error('❌ Failed to initialize Supabase client:', error);
+      console.warn('❌ Failed to initialize Supabase client:', error);
     }
   }
   return supabaseInstance;
+};
+
+export const initSupabaseClientAsync = async () => {
+  if (supabaseInstance) return supabaseInstance;
+  const client = getSupabaseClient();
+  if (client) return client;
+
+  try {
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm');
+    supabaseInstance = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    console.log('⚡ Supabase Client initialized via dynamic import!');
+    return supabaseInstance;
+  } catch (err) {
+    console.warn('[SupabaseClient] Dynamic import fallback failed:', err);
+    return null;
+  }
 };

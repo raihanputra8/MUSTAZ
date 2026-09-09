@@ -4,14 +4,22 @@
 
 import { CONFIG } from '../config.js';
 
-export function formatRupiah(amount) {
-  return CONFIG.CURRENCY + ' ' + (Number(amount) || 0).toLocaleString('id-ID');
+export function formatRupiah(amount, forceCurrency = null) {
+  const currency = (forceCurrency || 'IDR').toUpperCase();
+  const num = Number(amount) || 0;
+  if (currency === 'USD') {
+    const rate = Number(CONFIG.EXCHANGE_RATE_USD) || 15500;
+    const usdVal = num / rate;
+    return `$${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
+  }
+  return (CONFIG.CURRENCY || 'Rp') + ' ' + Math.round(num).toLocaleString('id-ID');
 }
 
 /**
  * 1. Build High-Impact Retro Brutalist HTML Invoice Email Template
  */
 export function buildOrderInvoiceHTML(order) {
+  const cur = (order.currency || 'IDR').toUpperCase();
   const itemsRows = (order.items || []).map(item => {
     const name = typeof item === 'string' ? item : item.name;
     const qty = item.quantity || item.qty || 1;
@@ -27,7 +35,7 @@ export function buildOrderInvoiceHTML(order) {
           x${qty}
         </td>
         <td style="padding: 12px 14px; border-bottom: 1px dashed #333333; color: #D9006C; text-align: right; font-weight: 900; font-size: 14px;">
-          ${formatRupiah(subtotal)}
+          ${formatRupiah(subtotal, cur)}
         </td>
       </tr>
     `;

@@ -5,6 +5,8 @@
 export const CONFIG = {
   APP_NAME: "MUSTAZ CRAFT",
   CURRENCY: "Rp",
+  DEFAULT_CURRENCY: "IDR",
+  EXCHANGE_RATE_USD: 15500, // 1 USD = Rp 15.500
   VERSION: "2.0.0",
 
   // Admin WhatsApp Number for Direct Checkout

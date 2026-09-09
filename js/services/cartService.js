@@ -578,22 +578,70 @@ export function saveUserAddress(userEmail, newAddress) {
   return true;
 }
 
-// ─── Utilities ─────────────────────────────────────────────────────────────
+// ─── Multi-Currency Engine (IDR ⇄ USD) ──────────────────────────────────────
 
-export function formatRupiah(amount) {
+let _inMemoryCurrency = null;
+
+export function getActiveCurrency() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('mustaz_currency');
+      if (stored) return stored.toUpperCase();
+    }
+  } catch {}
+  return _inMemoryCurrency || CONFIG.DEFAULT_CURRENCY || 'IDR';
+}
+
+export function setActiveCurrency(currencyCode) {
+  const code = (currencyCode || 'IDR').toUpperCase().trim();
+  _inMemoryCurrency = code;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('mustaz_currency', code);
+    }
+  } catch {}
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('mustaz:currency_changed', { detail: { currency: code } }));
+  }
+  return code;
+}
+
+export function formatPrice(amount, forceCurrency = null) {
+  const currency = (forceCurrency || getActiveCurrency() || 'IDR').toUpperCase();
   const num = Number(amount) || 0;
-  return (CONFIG.CURRENCY || 'Rp') + ' ' + num.toLocaleString('id-ID');
+
+  if (currency === 'USD') {
+    const rate = Number(CONFIG.EXCHANGE_RATE_USD) || 15500;
+    const usdVal = num / rate;
+    return `$${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  // IDR format (Rp 350.000)
+  return (CONFIG.CURRENCY || 'Rp') + ' ' + Math.round(num).toLocaleString('id-ID');
+}
+
+// Backward-compatible alias that dynamically respects selected currency
+export function formatRupiah(amount, forceCurrency = null) {
+  return formatPrice(amount, forceCurrency);
 }
 
 export function generateWhatsAppUrl(customerData, cartItems, total, orderIdParam) {
+  const currency = getActiveCurrency();
   const orderId = orderIdParam || customerData.orderId || customerData.id || ('MSTZ-' + Math.floor(1000 + Math.random() * 9000));
   const itemsFormatted = (cartItems || []).map(i => 
-    typeof i === 'string' ? i : `• ${i.name} x${i.quantity} = ${formatRupiah(i.price * i.quantity)}`
+    typeof i === 'string' ? i : `• ${i.name} x${i.quantity} = ${formatPrice(i.price * i.quantity, currency)}`
   );
+
+  const totalFormatted = formatPrice(total, currency);
+  const rateNote = currency === 'USD' 
+    ? `\n💵 *Kurs Acuan:* 1 USD = Rp ${(CONFIG.EXCHANGE_RATE_USD || 15500).toLocaleString('id-ID')}\n🇮🇩 *Setara IDR:* Rp ${Math.round(total).toLocaleString('id-ID')}`
+    : '';
+
   const lines = [
     `*⚡ FORMAT PESANAN RESMI WEB // MUSTAZ CRAFT*`,
     `--------------------------------`,
     `📌 *Kode Order:* #${orderId}`,
+    `🌐 *Mata Uang:* ${currency}`,
     `👤 *Nama:* ${customerData.name}`,
     `📱 *WhatsApp:* ${customerData.phone}`,
     `📍 *Alamat Drop:* ${customerData.address}`,
@@ -603,7 +651,7 @@ export function generateWhatsAppUrl(customerData, cartItems, total, orderIdParam
     `📦 *ITEM YANG DIBELI:*`,
     ...itemsFormatted,
     `--------------------------------`,
-    `💰 *Total Tagihan:* ${formatRupiah(total)}`,
+    `💰 *Total Tagihan:* ${totalFormatted}${rateNote}`,
     `--------------------------------`,
     `_Mohon instruksi pembayaran dan nomor rekening resmi toko ya Kak CS._`
   ];

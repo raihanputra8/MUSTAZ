@@ -186,7 +186,7 @@
 </main>
 
 <script type="module">
-  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, deductProductStock } from './js/services/cartService.js';
+  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, deductProductStock, getActiveCurrency } from './js/services/cartService.js';
   import { saveCloudOrder } from './js/services/supabaseService.js';
   import { sendOrderSuccessEmail, showOrderSuccessModal } from './js/services/emailService.js';
 
@@ -308,7 +308,8 @@
           price: i.price,
           image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
         })),
-        total: total
+        total: total,
+        currency: getActiveCurrency()
       };
 
       // 1. Send Order Confirmation Email to Buyer
@@ -323,6 +324,7 @@
         city: address || 'INDONESIA',
         items: items.map(i => `${i.name} (x${i.quantity})`).join(', '),
         total: total,
+        currency: getActiveCurrency(),
         status: 'PENDING'
       }).catch(() => {});
 
@@ -334,6 +336,7 @@
           customer: name + (email ? ` (${email})` : ''),
           items: items.map(i => `${i.name} x${i.quantity}`).join(', '),
           total: total,
+          currency: getActiveCurrency(),
           date: new Date().toISOString().split('T')[0],
           status: 'PENDING',
           city: address || 'INDONESIA',
@@ -360,6 +363,10 @@
         window.location.href = url;
       }
       clearCart();
+    });
+
+    window.addEventListener('mustaz:currency_changed', () => {
+      renderPageCheckout();
     });
   });
 </script>

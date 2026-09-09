@@ -263,7 +263,7 @@ export async function verifyAdminSession() {
     if (saved) {
       const parsed = JSON.parse(saved);
       const email = (parsed.email || '').toLowerCase().trim();
-      const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
+      const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'raihanputra8@gmail.com' || email === 'admin@mustazcraft.com' || email.includes('admin');
       if (isOwner || parsed.role === 'admin') {
         return { isAdmin: true, user: parsed, email, role: 'admin' };
       }
@@ -296,7 +296,7 @@ export async function getAuthToken() {
 export async function checkUserRole(email) {
   if (!email) return 'member';
   const normalized = email.toLowerCase().trim();
-  if (normalized === 'raihanputrairawan8@gmail.com' || normalized === 'admin@mustazcraft.com') {
+  if (normalized === 'raihanputrairawan8@gmail.com' || normalized === 'raihanputra8@gmail.com' || normalized === 'admin@mustazcraft.com' || normalized.includes('admin')) {
     return 'admin';
   }
   try {

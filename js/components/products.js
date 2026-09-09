@@ -125,18 +125,8 @@ window.addEventListener('mustaz:logout', () => {
 });
 
 export function mountAdminPublicFloatingBadge() {
-  if (document.getElementById('adminPublicFloatBadge')) return;
-  const badge = document.createElement('aside');
-  badge.className = 'admin-public-float-badge';
-  badge.id = 'adminPublicFloatBadge';
-  badge.innerHTML = `
-    <a href="/admin.html?tab=inventory" class="admin-float-link" title="Buka Admin Dashboard">
-      <span class="admin-float-icon">⚡</span>
-      <span>ADMIN DASHBOARD</span>
-      <span class="admin-float-badge">LIVE</span>
-    </a>
-  `;
-  document.body.appendChild(badge);
+  // Public floating button removed as per requirements - admin is accessed via official header link
+  document.getElementById('adminPublicFloatBadge')?.remove();
 }
 
 // ─── PRODUCT DETAIL MODAL COMPONENT ────────────────────────────────────────
@@ -268,11 +258,12 @@ export function openProductDetail(product) {
 
         <!-- CTA BUTTONS (Usulan 1) -->
         <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;" id="modalActionButtons">
-          <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:14px;font-size:1.05rem;min-width:160px;">
-            ADD TO GARAGE →
+          <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:14px;font-size:1.05rem;min-width:160px;letter-spacing:0.04em;">
+            + TAMBAH KE KERANJANG
           </button>
-          <button id="modalInstantWaBtn" class="instant-wa-buy-btn" data-id="${product.id}" style="flex:1;padding:14px;font-size:0.95rem;margin:0;min-width:180px;display:flex;align-items:center;justify-content:center;gap:6px;">
-            ⚡ BELI CEPAT VIA WHATSAPP
+          <button id="modalInstantWaBtn" class="btn-brutal-dark" data-id="${product.id}" style="flex:1;padding:14px;font-size:0.92rem;margin:0;min-width:180px;display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--accent-yellow);color:var(--accent-yellow);letter-spacing:0.05em;background:#141414;cursor:pointer;" title="Order express langsung via WhatsApp">
+            <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-yellow);">bolt</span>
+            <span>EXPRESS ORDER (WA)</span>
           </button>
           ${_isAdminCached ? `
             <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(product.id)}" class="btn-brutal-white admin-modal-edit-btn" style="padding:14px;font-size:0.95rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;border:2px solid #FFF;" title="Edit Produk di Admin">
@@ -431,11 +422,6 @@ function renderParts(data) {
                 </a>
               ` : ''}
             </div>
-
-            <!-- Usulan 1: Instant Buy via WhatsApp -->
-            <button class="instant-wa-buy-btn" data-id="${part.id}" style="width:100%;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:6px;">
-              ⚡ BELI CEPAT VIA WHATSAPP
-            </button>
           </div>
 
         </div>
@@ -457,15 +443,6 @@ function renderParts(data) {
         actionText: 'LIHAT KERANJANG',
         onAction: openCart
       });
-    });
-  });
-
-  // Wire instant WhatsApp buy (Usulan 1)
-  grid.querySelectorAll('.instant-wa-buy-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const part = getDynamicParts().find(p => p.id === btn.dataset.id);
-      if (part) executeInstantWaBuy(part);
     });
   });
 
@@ -532,11 +509,13 @@ export function initPartsPage() {
   // Asynchronously verify admin status and enhance UI if admin
   checkAdminStatus().then(isAdmin => {
     if (isAdmin) {
-      mountAdminPublicFloatingBadge();
       applyFilters();
     }
   });
 
+  window.addEventListener('mustaz:currency_changed', () => {
+    applyFilters();
+  });
   window.addEventListener('mustaz_products_updated', () => {
     applyFilters();
   });
@@ -700,10 +679,8 @@ export function initHelmetsPage() {
 
   applyFilters();
 
-  checkAdminStatus().then(isAdmin => {
-    if (isAdmin) {
-      mountAdminPublicFloatingBadge();
-    }
+  window.addEventListener('mustaz:currency_changed', () => {
+    applyFilters();
   });
 }
 

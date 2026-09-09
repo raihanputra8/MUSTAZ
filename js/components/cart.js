@@ -455,9 +455,13 @@ export function initCart() {
     document.getElementById('checkoutForm')?.reset();
   });
 
-  // Listen to cart updates, auth changes, and logout events from any page
+  // Listen to cart updates, auth changes, currency changes, and logout events from any page
   window.addEventListener('cart:updated', () => renderCartItems());
   window.addEventListener('mustaz:auth_synced', () => renderCartItems());
+  window.addEventListener('mustaz:currency_changed', () => {
+    renderCartItems();
+    renderCheckoutSummary();
+  });
   window.addEventListener('mustaz:logout', () => {
     renderCartItems();
     closeCart();

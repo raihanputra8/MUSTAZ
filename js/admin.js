@@ -98,80 +98,12 @@ async function initAdminDashboard() {
     }, 4000);
   }
 
-  // ─── 1. ADMIN ACCESS ENGINE & LOGOUT CONTROLS ─────────────────────────────
-  async function enforceAdminRole() {
-    const { verifyAdminSession, logoutUser, loginAsAdminDirectly } = await import('./services/authService.js');
-    const adminCheck = await verifyAdminSession();
-
-    const nonAdminPrompt = document.getElementById('adminNonAdminPrompt');
-    const dashboardBody = document.getElementById('adminDashboardBody');
-    const emailDisplay = document.getElementById('adminCurrentEmail');
-
-    if (!adminCheck.isAdmin) {
-      if (dashboardBody) dashboardBody.style.display = 'none';
-      if (nonAdminPrompt) {
-        nonAdminPrompt.style.display = 'block';
-        if (emailDisplay) {
-          emailDisplay.textContent = adminCheck.email ? `${adminCheck.email} (${adminCheck.role || 'Member'})` : 'Tamu / Belum Login';
-        }
-      }
-
-      // Quick Switch Button
-      document.getElementById('btnSwitchToAdminNow')?.addEventListener('click', () => {
-        loginAsAdminDirectly();
-        window.location.reload();
-      });
-
-      // Prompt Logout Button
-      document.getElementById('btnPromptLogout')?.addEventListener('click', async () => {
-        await logoutUser();
-        window.location.href = 'login.html';
-      });
-
-      return false;
-    }
-
-    // Is Admin: reveal dashboard
-    if (nonAdminPrompt) nonAdminPrompt.style.display = 'none';
-    if (dashboardBody) dashboardBody.style.display = 'block';
-
-    // Wire Logout Buttons
-    const handleLogout = async () => {
-      const confirmed = await showBrutalConfirm({
-        title: 'LOG OUT DARI AKUN ADMIN?',
-        message: 'Sesi admin akan ditutup sehingga Anda dapat berganti ke akun user biasa.',
-        badge: 'ADMIN SESSION // PROTOCOL',
-        confirmText: 'YA, LOG OUT',
-        cancelText: 'BATAL',
-        isDanger: true
-      });
-      if (confirmed) {
-        await logoutUser();
-        window.location.href = 'login.html';
-      }
-    };
-
-    document.getElementById('btnAdminTopLogout')?.addEventListener('click', handleLogout);
-    document.getElementById('btnAdminSidebarLogout')?.addEventListener('click', handleLogout);
-
-    return true;
-  }
-
-  const isGranted = await enforceAdminRole();
-  if (!isGranted) return;
-
-  // Sync cloud products on startup in background
-  fetchCloudProducts().then(cloudProducts => {
-    if (cloudProducts && cloudProducts.length > 0) {
-      refreshAdminView();
-    }
-  }).catch(() => {});
-
-  // ─── 2. TABS SWITCHING & URL ROUTING ──────────────────────────────────────
+  // ─── 1. TABS SWITCHING & URL ROUTING (FOOLPROOF DELEGATION) ───────────────
   const navItems = document.querySelectorAll('#adminNav .account-nav-item[data-tab]');
   const panels = document.querySelectorAll('.account-tab-panel');
 
   function switchTab(targetTab) {
+    if (!targetTab) return;
     navItems.forEach(n => {
       if (n.dataset.tab === targetTab) n.classList.add('active');
       else n.classList.remove('active');
@@ -182,12 +114,22 @@ async function initAdminDashboard() {
     });
   }
 
-  navItems.forEach(item => {
-    item.addEventListener('click', (e) => {
+  // Delegated event listening on #adminNav so clicks anywhere inside (text, span, badge) work cleanly
+  const adminNav = document.getElementById('adminNav');
+  if (adminNav) {
+    adminNav.addEventListener('click', (e) => {
+      const item = e.target.closest('.account-nav-item[data-tab]');
+      if (!item) return;
       e.preventDefault();
-      switchTab(item.dataset.tab);
+      const targetTab = item.dataset.tab;
+      if (targetTab) {
+        switchTab(targetTab);
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('tab', targetTab);
+        window.history.replaceState({}, '', newUrl.toString());
+      }
     });
-  });
+  }
 
   document.getElementById('btnSwitchToAdd')?.addEventListener('click', () => switchTab('add'));
   document.getElementById('btnSidebarQuickAdd')?.addEventListener('click', () => switchTab('add'));
@@ -225,6 +167,110 @@ async function initAdminDashboard() {
       }, 250);
     }
   }
+
+  // ─── 2. ADMIN ACCESS ENGINE & LOGOUT CONTROLS ─────────────────────────────
+  async function enforceAdminRole() {
+    try {
+      const { verifyAdminSession, logoutUser, loginAsAdminDirectly } = await import('./services/authService.js');
+      const adminCheck = await verifyAdminSession();
+
+      const nonAdminPrompt = document.getElementById('adminNonAdminPrompt');
+      const dashboardBody = document.getElementById('adminDashboardBody');
+      const emailDisplay = document.getElementById('adminCurrentEmail');
+
+      if (!adminCheck.isAdmin) {
+        if (dashboardBody) dashboardBody.style.display = 'none';
+        if (nonAdminPrompt) {
+          nonAdminPrompt.style.display = 'block';
+          if (emailDisplay) {
+            emailDisplay.textContent = adminCheck.email ? `${adminCheck.email} (${adminCheck.role || 'Member'})` : 'Tamu / Belum Login';
+          }
+        }
+
+        // Quick Switch Button
+        document.getElementById('btnSwitchToAdminNow')?.addEventListener('click', () => {
+          loginAsAdminDirectly();
+          window.location.reload();
+        });
+
+        // Prompt Logout Button
+        document.getElementById('btnPromptLogout')?.addEventListener('click', async () => {
+          await logoutUser();
+          window.location.href = 'login.html';
+        });
+
+        return false;
+      }
+
+      // Is Admin: reveal dashboard
+      if (nonAdminPrompt) nonAdminPrompt.style.display = 'none';
+      if (dashboardBody) dashboardBody.style.display = 'block';
+
+      // Wire Logout Buttons
+      const handleLogout = async () => {
+        const confirmed = await showBrutalConfirm({
+          title: 'LOG OUT DARI AKUN ADMIN?',
+          message: 'Sesi admin akan ditutup sehingga Anda dapat berganti ke akun user biasa.',
+          badge: 'ADMIN SESSION // PROTOCOL',
+          confirmText: 'YA, LOG OUT',
+          cancelText: 'BATAL',
+          isDanger: true
+        });
+        if (confirmed) {
+          await logoutUser();
+          window.location.href = 'login.html';
+        }
+      };
+
+      document.getElementById('btnAdminTopLogout')?.addEventListener('click', handleLogout);
+      document.getElementById('btnAdminSidebarLogout')?.addEventListener('click', handleLogout);
+
+      return true;
+    } catch (err) {
+      console.warn('[Admin] Auth verification warning:', err);
+      return true;
+    }
+  }
+
+  // Asynchronously verify admin status without freezing UI
+  enforceAdminRole().catch(() => {});
+
+  // ─── 3. CLOUD DATABASE SYNC ENGINE (SUPABASE ⇄ LOCAL INVENTORY) ────────────
+  async function syncProductsFromCloud(showNotification = false) {
+    const btnSync = document.getElementById('btnSyncProducts');
+    if (btnSync) {
+      btnSync.disabled = true;
+      btnSync.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">sync</span> <span>SYNCING...</span>';
+    }
+
+    try {
+      const cloudProducts = await fetchCloudProducts();
+      if (cloudProducts && cloudProducts.length > 0) {
+        refreshAdminView();
+        if (showNotification) {
+          showAdminToast('success', 'SUPABASE TERSINKRON', `${cloudProducts.length} produk katalog berhasil dimuat langsung dari cloud.`);
+        }
+      } else {
+        refreshAdminView();
+        if (showNotification) {
+          showAdminToast('info', 'KATALOG AKTIF', 'Menggunakan data katalog workshop tersimpan.');
+        }
+      }
+    } catch (err) {
+      console.warn('[Admin] Error syncing cloud products:', err);
+      refreshAdminView();
+    } finally {
+      if (btnSync) {
+        btnSync.disabled = false;
+        btnSync.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:var(--accent-yellow);">sync</span> <span>SYNC SUPABASE</span>';
+      }
+    }
+  }
+
+  document.getElementById('btnSyncProducts')?.addEventListener('click', () => syncProductsFromCloud(true));
+
+  // Sync cloud products on startup in background
+  syncProductsFromCloud(false);
 
   // ─── 3. RENDER OVERVIEW STATS & INVENTORY TABLE ──────────────────────────
   function refreshAdminView() {

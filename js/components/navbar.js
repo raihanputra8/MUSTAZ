@@ -3,12 +3,109 @@
  */
 
 import { openCart } from './cart.js';
+import { getActiveCurrency, setActiveCurrency } from '../services/cartService.js';
 
 let _navbarEventsWired = false;
 
 export function initNavbar() {
   const header = document.querySelector('header');
   if (!header) return;
+
+  // 0. Mount and Sync Multi-Currency Dropdown (Desktop & Mobile)
+  function syncCurrencySwitchers() {
+    const currentCurrency = getActiveCurrency();
+
+    // Desktop Header Switcher
+    const actions = header.querySelector('.nav-actions');
+    if (actions) {
+      let slot = actions.querySelector('#headerCurrencySlot');
+      if (!slot) {
+        slot = document.createElement('div');
+        slot.id = 'headerCurrencySlot';
+        slot.className = 'currency-switcher-slot';
+        slot.style.cssText = 'display:inline-flex;align-items:center;margin:0 2px;';
+        slot.innerHTML = `
+          <select id="headerCurrencySelect" aria-label="Select Currency" style="
+            background: #0d0d0d;
+            color: var(--accent-yellow);
+            border: 2px solid #333;
+            font-family: var(--font-mono-sub);
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            height: 38px;
+            cursor: pointer;
+            outline: none;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px #000;
+            transition: all 0.15s ease;
+          ">
+            <option value="IDR">IDR (Rp)</option>
+            <option value="USD">USD ($)</option>
+          </select>
+        `;
+        // Insert right before headerCartBtn or headerAuthBtn
+        const cartBtn = actions.querySelector('#headerCartBtn') || actions.querySelector('.mobile-menu-toggle');
+        actions.insertBefore(slot, cartBtn);
+
+        const select = slot.querySelector('#headerCurrencySelect');
+        select?.addEventListener('change', (e) => {
+          setActiveCurrency(e.target.value);
+        });
+      }
+      const select = slot.querySelector('#headerCurrencySelect');
+      if (select && select.value !== currentCurrency) {
+        select.value = currentCurrency;
+      }
+    }
+
+    // Mobile Drawer Switcher
+    const mobileDrawer = document.getElementById('mobileNavDrawer');
+    if (mobileDrawer) {
+      let mobSlot = mobileDrawer.querySelector('#mobileCurrencySlot');
+      if (!mobSlot) {
+        mobSlot = document.createElement('div');
+        mobSlot.id = 'mobileCurrencySlot';
+        mobSlot.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px dashed #333;border-bottom:1px dashed #333;margin:14px 0;';
+        mobSlot.innerHTML = `
+          <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;font-weight:800;letter-spacing:0.08em;">CURRENCY / MATA UANG:</span>
+          <select id="mobileCurrencySelect" style="
+            background: #161616;
+            color: var(--accent-yellow);
+            border: 2px solid #333;
+            font-family: var(--font-mono-sub);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 5px 10px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+            outline: none;
+          ">
+            <option value="IDR">IDR (Rp)</option>
+            <option value="USD">USD ($)</option>
+          </select>
+        `;
+        const mobLinks = mobileDrawer.querySelector('.mobile-nav-link:last-of-type');
+        if (mobLinks) {
+          mobLinks.after(mobSlot);
+        } else {
+          mobileDrawer.prepend(mobSlot);
+        }
+
+        const mobSelect = mobSlot.querySelector('#mobileCurrencySelect');
+        mobSelect?.addEventListener('change', (e) => {
+          setActiveCurrency(e.target.value);
+        });
+      }
+      const mobSelect = mobSlot.querySelector('#mobileCurrencySelect');
+      if (mobSelect && mobSelect.value !== currentCurrency) {
+        mobSelect.value = currentCurrency;
+      }
+    }
+  }
+
+  syncCurrencySwitchers();
 
   // 1. Synchronize Authentication Status & Logout Buttons across navigation & footer
   function syncNavbarState() {
@@ -201,6 +298,7 @@ export function initNavbar() {
 
   window.addEventListener('mustaz:auth_synced', syncNavbarState);
   window.addEventListener('mustaz:logout', syncNavbarState);
+  window.addEventListener('mustaz:currency_changed', syncCurrencySwitchers);
 
   // Wire cart open on cart buttons
   document.querySelectorAll('[data-open-cart], #headerCartBtn').forEach(btn => {
