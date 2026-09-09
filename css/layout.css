@@ -352,11 +352,11 @@
 /* ── TORN PAPER SEAMLESS TRANSITION TO FOOTER ── */
 .footer-torn-transition {
   width: 100%;
-  height: 360px;
+  height: 480px;
   background-color: var(--bg-deep);
   background-image: url('../assets/images/bg_footer_torn_paper.jpg');
-  background-position: center bottom;
-  background-size: cover;
+  background-position: center top;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
@@ -364,7 +364,7 @@
   display: block;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .footer-torn-transition {
     height: 160px !important;
     background-size: cover !important;
@@ -566,7 +566,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .wrap, .wrap-tight {
     padding-left: 14px !important;
     padding-right: 14px !important;
@@ -1302,7 +1302,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .footer-manifesto {
     padding: 70px 16px 110px;
   }

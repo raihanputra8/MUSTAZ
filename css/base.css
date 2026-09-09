@@ -47,7 +47,7 @@ body {
 }
 
 /* Mobile Background Optimization & Full Underground Chain Asset Visibility */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   body {
     background-image: url('../assets/images/bg_underground_chain_hd.webp') !important;
     background-repeat: repeat-y !important;
@@ -67,7 +67,7 @@ body::after {
   z-index: 99999;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   body::after {
     opacity: 0.018 !important;
   }

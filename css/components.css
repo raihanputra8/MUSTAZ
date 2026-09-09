@@ -46,37 +46,35 @@
   margin: 32px 0;
 }
 
-/* ── BRUTALIST BUTTONS (COMPACT & SLEEK PROPORTIONS) ── */
+/* ── BRUTALIST BUTTONS ── */
 .btn-brutal-pink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--accent-pink);
   color: #FFFFFF;
   font-family: var(--font-headline);
-  font-size: 0.85rem;
-  font-weight: 900;
+  font-size: 1.15rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 8px 16px;
+  padding: 14px 28px;
   border: 2px solid #000000;
-  box-shadow: 3px 3px 0px #FFFFFF;
+  box-shadow: 4px 4px 0px #FFFFFF;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
-  line-height: 1.2;
 }
 
 .btn-brutal-pink:hover {
   background: var(--accent-yellow);
   color: #000000;
-  box-shadow: 3px 3px 0px var(--accent-pink);
-  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4px 4px 0px var(--accent-pink);
+  transform: translate(-2px, -2px);
 }
 
 .btn-brutal-pink:active {
-  transform: translate(1px, 1px);
+  transform: translate(2px, 2px);
   box-shadow: 1px 1px 0px #000000;
 }
 
@@ -84,85 +82,79 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   background: #FFFFFF;
   color: #000000;
   font-family: var(--font-headline);
-  font-size: 0.85rem;
-  font-weight: 900;
+  font-size: 1.15rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 8px 16px;
+  padding: 14px 28px;
   border: 2px solid #000000;
-  box-shadow: 3px 3px 0px var(--accent-pink);
+  box-shadow: 4px 4px 0px var(--accent-pink);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
-  line-height: 1.2;
 }
 
 .btn-brutal-white:hover {
   background: var(--accent-pink);
   color: #000000;
-  box-shadow: 3px 3px 0px #FFFFFF;
-  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4px 4px 0px #FFFFFF;
+  transform: translate(-2px, -2px);
 }
 
 .btn-brutal-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   background: #080808;
   color: #FFFFFF;
   font-family: var(--font-headline);
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 1.1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 8px 16px;
+  padding: 13px 26px;
   border: 2px solid #FFFFFF;
-  box-shadow: 3px 3px 0px var(--accent-pink);
+  box-shadow: 4px 4px 0px var(--accent-pink);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
-  line-height: 1.2;
 }
 
 .btn-brutal-ghost:hover {
   background: var(--accent-pink);
   color: #000000;
   border-color: #000000;
-  box-shadow: 3px 3px 0px #FFFFFF;
-  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4px 4px 0px #FFFFFF;
+  transform: translate(-2px, -2px);
 }
 
 .btn-brutal-yellow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--accent-yellow);
   color: #000000;
   font-family: var(--font-headline);
-  font-size: 0.85rem;
-  font-weight: 900;
+  font-size: 1.15rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 8px 16px;
+  padding: 14px 28px;
   border: 2px solid #000000;
-  box-shadow: 3px 3px 0px var(--accent-pink);
+  box-shadow: 4px 4px 0px var(--accent-pink);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
-  line-height: 1.2;
 }
 
 .btn-brutal-yellow:hover {
   background: #FFFFFF;
   color: #000000;
-  box-shadow: 3px 3px 0px var(--accent-yellow);
-  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4px 4px 0px var(--accent-yellow);
+  transform: translate(-2px, -2px);
 }
 
 .btn-brutal-dark {
@@ -173,17 +165,15 @@
   background: #111111;
   color: #FFFFFF;
   font-family: var(--font-headline);
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 8px 16px;
+  padding: 12px 24px;
   border: 2px solid #333333;
   box-shadow: 3px 3px 0px #000000;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   text-decoration: none;
-  line-height: 1.2;
 }
 
 .btn-brutal-dark:hover {
@@ -194,12 +184,11 @@
 }
 
 .btn-brutal-sm {
-  padding: 5px 10px;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  padding: 8px 16px;
+  font-size: 0.95rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .btn-brutal-pink,
   .btn-brutal-white,
   .btn-brutal-yellow,
@@ -515,7 +504,7 @@
   position: relative;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .catalog-hero {
     padding: 48px 0 36px;
   }
@@ -555,7 +544,7 @@
   font-weight: 900;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .filter-tabs-container > span {
     display: none;
   }
@@ -1018,7 +1007,7 @@
   gap: 24px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .flash-sale-banner {
     flex-direction: column;
     align-items: stretch;
@@ -1387,7 +1376,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .visor-slider-stage {
     height: 270px;
   }
@@ -1651,7 +1640,7 @@
   transform: scale(1);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .product-interactive-banner-section {
     padding: 16px 0 6px;
   }
@@ -2054,7 +2043,7 @@
   display: block;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .featured-visor-img {
     aspect-ratio: 4 / 3;
     max-width: 100% !important;
