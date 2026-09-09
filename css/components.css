@@ -1957,8 +1957,9 @@
     -webkit-overflow-scrolling: touch !important;
   }
   .card-testi-brutal {
-    flex: 0 0 80% !important;
-    max-width: 280px !important;
+    flex: 0 0 82vw !important;
+    width: 82vw !important;
+    max-width: 300px !important;
     scroll-snap-align: center !important;
     padding: 12px !important;
     border-width: 2px !important;
@@ -1971,9 +1972,15 @@
     margin-bottom: 8px !important;
     border-width: 1.5px !important;
   }
+  .testi-photo-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
   .testi-quote {
-    font-size: 0.75rem !important;
-    line-height: 1.4 !important;
+    font-size: 0.75rem !important; /* text-xs */
+    line-height: 1.35 !important; /* leading-snug */
+    font-style: italic !important;
     margin-bottom: 8px !important;
     display: -webkit-box !important;
     -webkit-line-clamp: 3 !important;
@@ -1984,10 +1991,11 @@
     padding-top: 6px !important;
   }
   .testi-author-name {
-    font-size: 0.88rem !important;
+    font-size: 0.68rem !important; /* text-[11px] */
+    font-weight: 700 !important;
   }
   .testi-author-bike {
-    font-size: 0.60rem !important;
+    font-size: 0.62rem !important; /* text-[10px] */
   }
   .testi-gear-tag {
     font-size: 0.55rem !important;

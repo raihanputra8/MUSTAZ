@@ -362,6 +362,45 @@ async function initApp() {
 
   initVisorCoverflowSlider();
 
+  // 9. Mobile Testimonials Touch Carousel Slider with Dots
+  function initTestimonialsSlider() {
+    const track = document.getElementById('testiSliderTrack');
+    const dotsWrap = document.getElementById('testiDots');
+    if (!track || !dotsWrap) return;
+
+    const cards = Array.from(track.querySelectorAll('.card-testi-brutal'));
+    const dots = Array.from(dotsWrap.querySelectorAll('[data-dot]'));
+    if (!cards.length || !dots.length) return;
+
+    function updateActiveDot() {
+      const scrollLeft = track.scrollLeft;
+      const cardWidth = cards[0].offsetWidth + 12; // card width + gap
+      const activeIdx = Math.min(dots.length - 1, Math.max(0, Math.round(scrollLeft / cardWidth)));
+
+      dots.forEach((dot, idx) => {
+        if (idx === activeIdx) {
+          dot.className = 'w-2.5 h-1.5 rounded-full bg-yellow-400 transition-all cursor-pointer';
+        } else {
+          dot.className = 'w-1.5 h-1.5 rounded-full bg-gray-600 transition-all cursor-pointer';
+        }
+      });
+    }
+
+    track.addEventListener('scroll', () => {
+      requestAnimationFrame(updateActiveDot);
+    }, { passive: true });
+
+    dots.forEach((dot, idx) => {
+      dot.addEventListener('click', () => {
+        if (cards[idx]) {
+          cards[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    });
+  }
+
+  initTestimonialsSlider();
+
   // Remove preload class to activate smooth transitions without initial button glitch
   requestAnimationFrame(() => {
     document.body.classList.remove('preload');

@@ -1115,12 +1115,12 @@
     overflow-x: auto !important;
     scroll-snap-type: x mandatory !important;
     gap: 12px !important;
-    padding: 8px 4px 16px !important;
+    padding: 8px 16px 16px !important;
     -webkit-overflow-scrolling: touch !important;
   }
   .card-testi-brutal {
-    width: 85vw !important;
-    max-width: 320px !important;
+    width: 82vw !important;
+    max-width: 300px !important;
     flex-shrink: 0 !important;
     scroll-snap-align: center !important;
   }
