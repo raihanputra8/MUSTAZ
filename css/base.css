@@ -22,7 +22,7 @@ body {
   background-image: url('../assets/images/bg_underground_chain_hd.webp');
   background-repeat: repeat-y;
   background-position: center top;
-  background-size: 100% auto;
+  background-size: cover;
   background-attachment: scroll;
   color: var(--text-primary);
   line-height: 1.5;
@@ -30,6 +30,17 @@ body {
   overflow-x: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Mobile Background Optimization & Readability Shield */
+@media (max-width: 768px) {
+  body {
+    background-image: linear-gradient(rgba(6, 6, 6, 0.80), rgba(6, 6, 6, 0.80)), url('../assets/images/bg_underground_chain_hd.webp');
+    background-size: cover !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-attachment: scroll !important;
+  }
 }
 
 /* Subtle Photocopier Noise / Grain Overlay */
@@ -40,6 +51,12 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 99999;
+}
+
+@media (max-width: 768px) {
+  body::after {
+    opacity: 0.018 !important;
+  }
 }
 
 /* Custom Scrollbar */

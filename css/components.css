@@ -5,16 +5,26 @@
 /* ── TORN PAPER EDGE MASK ── */
 .raw-paper-edge {
   mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10V4L5 1L10 5L15 0L21 6L26 2L32 8L38 1L45 7L52 2L59 9L67 3L74 10L82 2L89 7L95 1L100 5V10H0Z' fill='black'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10V4L5 1L10 5L15 0L21 6L26 2L32 8L38 1L45 7L52 2L59 9L67 3L74 10L82 2L89 7L95 1L100 5V10H0Z' fill='black'/%3E%3C/svg%3E");
   mask-size: 160px 10px;
+  -webkit-mask-size: 160px 10px;
   mask-repeat: repeat-x;
+  -webkit-mask-repeat: repeat-x;
   mask-position: bottom;
+  -webkit-mask-position: bottom;
+  max-width: 100%;
 }
 
 .raw-paper-edge-top {
   mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0V6L5 9L10 5L15 10L21 4L26 8L32 2L38 9L45 3L52 8L59 1L67 7L74 0L82 8L89 3L95 9L100 5V0H0Z' fill='black'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='100' height='10' viewBox='0 0 100 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0V6L5 9L10 5L15 10L21 4L26 8L32 2L38 9L45 3L52 8L59 1L67 7L74 0L82 8L89 3L95 9L100 5V0H0Z' fill='black'/%3E%3C/svg%3E");
   mask-size: 160px 10px;
+  -webkit-mask-size: 160px 10px;
   mask-repeat: repeat-x;
+  -webkit-mask-repeat: repeat-x;
   mask-position: top;
+  -webkit-mask-position: top;
+  max-width: 100%;
 }
 
 /* ── INDUSTRIAL METAL CHAIN / DOTTED DIVIDER ── */
@@ -1984,9 +1994,58 @@
   .cat-tile-card {
     border-width: 2px !important;
   }
+
+  /* Mobile Background Shield & Card Softening */
+  .card-brutal-dark {
+    background: rgba(14, 14, 14, 0.94) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+  .tape-decor {
+    width: 60px !important;
+    height: 18px !important;
+    opacity: 0.8 !important;
+  }
 }
 
+/* ── FEATURED VISOR IMAGE & BANNER ASPECT RATIO PRESERVATION ── */
+.featured-visor-img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
 
+@media (max-width: 768px) {
+  .featured-visor-img {
+    aspect-ratio: 4 / 3;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
 
+/* ── OVERLAY & READABILITY UTILITIES (DESKTOP & MOBILE) ── */
+.bg-black\/80,
+.bg-black-80 {
+  background-color: rgba(0, 0, 0, 0.80) !important;
+}
 
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
 
+.backdrop-blur-md {
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.relative-clarity-overlay {
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.80);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
