@@ -28,7 +28,7 @@ body {
   background-image: url('../assets/images/bg_underground_chain_hd.webp');
   background-repeat: repeat-y;
   background-position: center top;
-  background-size: cover;
+  background-size: 100% auto;
   background-attachment: scroll;
   color: var(--text-primary);
   line-height: 1.5;
@@ -46,13 +46,13 @@ body {
   scrollbar-width: none !important;
 }
 
-/* Mobile Background Optimization & Readability Shield */
+/* Mobile Background Optimization & Full Underground Chain Asset Visibility */
 @media (max-width: 768px) {
   body {
-    background-image: linear-gradient(rgba(6, 6, 6, 0.80), rgba(6, 6, 6, 0.80)), url('../assets/images/bg_underground_chain_hd.webp');
-    background-size: cover !important;
+    background-image: url('../assets/images/bg_underground_chain_hd.webp') !important;
+    background-repeat: repeat-y !important;
     background-position: center top !important;
-    background-repeat: no-repeat !important;
+    background-size: 100% auto !important;
     background-attachment: scroll !important;
   }
 }
