@@ -417,7 +417,7 @@ export function initCart() {
     } catch {}
 
     // 4. Generate and launch WhatsApp conversation
-    const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email }, cartItems, total);
+    const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email, orderId: orderId }, cartItems, total, orderId);
     const waWin = window.open(url, '_blank');
     if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
       window.location.href = url;

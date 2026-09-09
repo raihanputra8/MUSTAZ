@@ -165,6 +165,26 @@
   <section style="padding:70px 0 100px;background:transparent;">
     <div class="wrap">
       
+      <!-- Unique Order Review Banner (Phase 4 Hook) -->
+      <div id="uniqueReviewBanner" style="display:none;background:#141414;border:3px solid var(--accent-yellow);box-shadow:8px 8px 0px var(--accent-pink);padding:24px 28px;margin-bottom:40px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;">
+          <div>
+            <span class="zine-tag-yellow">SPECIAL BUYER REVIEW DISPATCH // FASE 4</span>
+            <h3 style="font-family:var(--font-headline);font-size:1.85rem;color:#FFF;margin:8px 0 4px;line-height:1.1;">
+              HALO KAK <span id="reviewBuyerName" style="color:var(--accent-yellow);">RIDERS</span>! PAKET <span id="reviewOrderCode" style="color:var(--accent-pink);">#MSTZ-ORDER</span> TELAH TIBA
+            </h3>
+            <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#CCC;margin:0;line-height:1.5;">
+              Bantu kami memberikan rating &amp; ulasan autentik. Dapatkan <strong style="color:var(--accent-yellow);">VOUCHER POTONGAN RP 10.000 (KODE: MUSTAZ10K)</strong> untuk pesanan berikutnya!
+            </p>
+          </div>
+          <div>
+            <button id="btnOpenUniqueReview" type="button" class="btn-brutal-yellow" style="padding:14px 24px;font-size:0.95rem;cursor:pointer;">
+              ⭐ BERIKAN ULASAN &amp; KLAIM VOUCHER →
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="testi-grid">
 
         <!-- Testimonial 1: Dimas (TESTI.png) -->
@@ -375,5 +395,81 @@
 </footer>
 
 <script type="module" src="js/app.js"></script>
+<script type="module">
+  import { showBrutalReviewModal, showBrutalAlert } from './js/components/modal.js';
+  import { submitVerifiedReview } from './js/services/reviewsService.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('review_order') || params.get('orderId');
+    const buyerName = params.get('buyer') || params.get('name') || 'RIDERS';
+
+    if (orderId) {
+      const banner = document.getElementById('uniqueReviewBanner');
+      const orderEl = document.getElementById('reviewOrderCode');
+      const buyerEl = document.getElementById('reviewBuyerName');
+      const btn = document.getElementById('btnOpenUniqueReview');
+
+      if (banner) banner.style.display = 'block';
+      if (orderEl) orderEl.textContent = '#' + orderId.replace(/^#+/, '');
+      if (buyerEl) buyerEl.textContent = buyerName.toUpperCase();
+
+      const launchReview = async () => {
+        const result = await showBrutalReviewModal({
+          orderId: orderId.replace(/^#+/, ''),
+          productName: 'MUSTAZ CUSTOM PET HELMET VISOR',
+          productImage: 'assets/images/pet_visor_yellow_flame.png',
+          productSpec: 'AUTHENTIC RIDERS DISPATCH // SERI CUSTOM',
+          riderName: buyerName !== 'RIDERS' ? buyerName : '',
+          bikeModel: 'CUSTOM MOTORCYCLE',
+          city: 'INDONESIA',
+          existingRating: 5,
+          existingComment: ''
+        });
+
+        if (result) {
+          try {
+            await submitVerifiedReview({
+              order_id: orderId.replace(/^#+/, ''),
+              user_email: `${buyerName.toLowerCase().replace(/[^a-z0-9]/g, '')}@riders.mustaz.id`,
+              user_name: buyerName !== 'RIDERS' ? buyerName : 'VERIFIED RIDER',
+              bike_model: result.bikeModel,
+              city: result.city,
+              product_name: 'MUSTAZ CUSTOM PET HELMET VISOR',
+              product_image: 'assets/images/pet_visor_yellow_flame.png',
+              rating: result.rating,
+              comment: result.comment
+            });
+
+            showBrutalAlert({
+              title: '🎁 KLAIM VOUCHER BERHASIL!',
+              message: `Terima kasih banyak Kak ${buyerName}! Ulasan Anda telah terverifikasi. Gunakan kode voucher berikut saat checkout berikutnya untuk potongan Rp 10.000:\n\n👉 KODE VOUCHER: MUSTAZ10K`,
+              badge: 'VOUCHER ACTIVE // RP 10.000',
+              okText: 'SALIN & MULAI BELANJA'
+            });
+
+            if (banner) {
+              banner.innerHTML = `
+                <div style="text-align:center;padding:12px;">
+                  <span class="zine-tag-yellow">ULASAN TERVERIFIKASI ✅</span>
+                  <h3 style="font-family:var(--font-headline);font-size:1.8rem;color:#FFF;margin:8px 0;">TERIMA KASIH KAK ${buyerName.toUpperCase()}!</h3>
+                  <p style="font-family:var(--font-mono-sub);font-size:0.9rem;color:#4ade80;">Gunakan Voucher Diskon Rp 10.000 Anda: <strong>MUSTAZ10K</strong></p>
+                </div>
+              `;
+            }
+          } catch (err) {
+            showBrutalAlert({
+              title: 'GAGAL MENYIMPAN ULASAN',
+              message: err.message || 'Terjadi kesalahan sistem saat menyimpan ulasan.',
+              isDanger: true
+            });
+          }
+        }
+      };
+
+      if (btn) btn.addEventListener('click', launchReview);
+    }
+  });
+</script>
 </body>
 </html>

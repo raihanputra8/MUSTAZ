@@ -1624,6 +1624,143 @@
   }
 }
 
+/* ── EQUAL HEIGHT PRODUCT CARD & BRUTALIST POLISH ── */
+.part-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.part-card > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+}
+
+/* ── STOCK URGENCY PULSE (USULAN 4) ── */
+@keyframes pulseUrgency {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    transform: scale(1);
+  }
+}
+
+.stock-pulse-badge {
+  animation: pulseUrgency 1.8s infinite ease-in-out;
+  display: inline-block;
+}
+
+/* ── ADMIN ORDER STATUS TABS & TOOLBAR (USULAN 2) ── */
+.order-filter-tab {
+  background: #181818;
+  color: #AAA;
+  border: 1px solid #333;
+  padding: 8px 14px;
+  font-family: var(--font-mono-sub);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 2px;
+}
+
+.order-filter-tab:hover {
+  color: #FFF;
+  border-color: #555;
+  background: #222;
+}
+
+.order-filter-tab.active {
+  background: var(--accent-yellow);
+  color: #000;
+  border-color: var(--accent-yellow);
+  box-shadow: 3px 3px 0px #000;
+}
+
+.order-count-pill {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  border-radius: 2px;
+}
+
+.order-filter-tab.active .order-count-pill {
+  background: #000;
+  color: var(--accent-yellow);
+}
+
+/* ── RECEIPT PREVIEW BADGE & MODAL (USULAN 3) ── */
+.receipt-preview-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #131d24;
+  color: #38bdf8;
+  border: 1px solid #0284c7;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono-sub);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+}
+
+.receipt-preview-btn:hover {
+  background: #0284c7;
+  color: #FFF;
+}
+
+/* ── INSTANT WHATSAPP BUY BUTTON (USULAN 1) ── */
+.instant-wa-buy-btn {
+  background: #22c55e;
+  color: #000;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0px #000;
+  font-family: var(--font-headline);
+  font-weight: 900;
+  font-size: 0.88rem;
+  padding: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.instant-wa-buy-btn:hover {
+  background: #4ade80;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #000;
+}
+
+/* ── MOBILE GRID POLISH ── */
+@media (max-width: 640px) {
+  #partsGrid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  .part-card {
+    transform: none !important;
+  }
+}
+
+
 
 
 

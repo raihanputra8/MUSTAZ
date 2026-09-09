@@ -20,6 +20,22 @@ import {
 } from './services/supabaseService.js';
 import { showBrutalConfirm, showBrutalAlert } from './components/modal.js';
 import { getAllReviews, updateReviewStatus, deleteReview } from './services/reviewsService.js';
+import {
+  OFFICIAL_PAYMENT_ACCOUNTS,
+  REVIEW_INCENTIVE,
+  parseIncomingOrder,
+  generatePhase1Response,
+  generatePhase2Response,
+  generatePhase3Response,
+  generatePhase4Response,
+  handleCustomerMessage,
+  createDirectWhatsAppUrl,
+  cleanOrderId,
+  cleanPhoneNumber,
+  buildTrackingUrl,
+  buildReviewUrl,
+  formatRupiahNumber
+} from './services/whatsappCsService.js';
 
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
@@ -190,6 +206,8 @@ async function initAdminDashboard() {
       switchTab('orders');
     } else if (tabParam === 'reviews') {
       switchTab('reviews');
+    } else if (tabParam === 'whatsapp-cs' || tabParam === 'cs') {
+      switchTab('whatsapp-cs');
     } else {
       switchTab('inventory');
     }
@@ -735,21 +753,131 @@ async function initAdminDashboard() {
     return DEFAULT_ADMIN_ORDERS;
   }
 
-  function renderOrders() {
+  // State for order filters & receipt modal (Usulan 2 & 3)
+  let activeOrderStatusFilter = 'ALL';
+  let orderSearchTerm = '';
+  let currentReceiptOrderIndex = null;
+  let stagedReceiptImage = '';
+
+  function openReceiptModal(idx) {
     const orders = getAdminOrders();
+    const ord = orders[idx];
+    if (!ord) return;
+
+    currentReceiptOrderIndex = idx;
+    stagedReceiptImage = ord.receiptImage || '';
+
+    const modal = document.getElementById('orderReceiptModal');
+    const orderCodeEl = document.getElementById('receiptModalOrderCode');
+    const customerEl = document.getElementById('receiptModalCustomer');
+    const totalEl = document.getElementById('receiptModalTotal');
+    const imgEl = document.getElementById('receiptPreviewImg');
+    const placeholderEl = document.getElementById('receiptPlaceholder');
+    const fileInput = document.getElementById('receiptFileInput');
+
+    if (orderCodeEl) orderCodeEl.textContent = '#' + (ord.id || '');
+    if (customerEl) customerEl.textContent = ord.customer || '-';
+    if (totalEl) totalEl.textContent = formatRupiah(ord.total);
+    if (fileInput) fileInput.value = '';
+
+    if (stagedReceiptImage) {
+      if (imgEl) {
+        imgEl.src = stagedReceiptImage;
+        imgEl.style.display = 'block';
+      }
+      if (placeholderEl) placeholderEl.style.display = 'none';
+    } else {
+      if (imgEl) {
+        imgEl.src = '';
+        imgEl.style.display = 'none';
+      }
+      if (placeholderEl) placeholderEl.style.display = 'block';
+    }
+
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeReceiptModal() {
+    const modal = document.getElementById('orderReceiptModal');
+    if (modal) modal.style.display = 'none';
+    currentReceiptOrderIndex = null;
+    stagedReceiptImage = '';
+  }
+
+  function renderOrders() {
+    const allOrders = getAdminOrders();
     const tbody = document.getElementById('adminOrdersTbody');
     if (!tbody) return;
 
-    tbody.innerHTML = orders.map((ord, idx) => {
+    // 1. Update filter tab counts (Usulan 2)
+    const countAll = allOrders.length;
+    const countPending = allOrders.filter(o => o.status === 'PENDING').length;
+    const countPaid = allOrders.filter(o => o.status === 'PAID_PROCESSING' || o.status === 'PROCESSING').length;
+    const countShipped = allOrders.filter(o => o.status === 'SHIPPED' || o.status === 'IN TRANSIT').length;
+    const countDelivered = allOrders.filter(o => o.status === 'DELIVERED').length;
+    const countCancelled = allOrders.filter(o => o.status === 'CANCELLED').length;
+
+    const cntAllEl = document.getElementById('cntStatusAll');
+    if (cntAllEl) cntAllEl.textContent = countAll;
+    const cntPendingEl = document.getElementById('cntStatusPending');
+    if (cntPendingEl) cntPendingEl.textContent = countPending;
+    const cntPaidEl = document.getElementById('cntStatusPaid');
+    if (cntPaidEl) cntPaidEl.textContent = countPaid;
+    const cntShippedEl = document.getElementById('cntStatusShipped');
+    if (cntShippedEl) cntShippedEl.textContent = countShipped;
+    const cntDeliveredEl = document.getElementById('cntStatusDelivered');
+    if (cntDeliveredEl) cntDeliveredEl.textContent = countDelivered;
+    const cntCancelledEl = document.getElementById('cntStatusCancelled');
+    if (cntCancelledEl) cntCancelledEl.textContent = countCancelled;
+
+    // 2. Filter list by tab and search
+    let filteredOrders = allOrders.map((ord, originalIdx) => ({ ord, originalIdx }));
+
+    if (activeOrderStatusFilter !== 'ALL') {
+      filteredOrders = filteredOrders.filter(({ ord }) => {
+        if (activeOrderStatusFilter === 'PAID_PROCESSING') {
+          return ord.status === 'PAID_PROCESSING' || ord.status === 'PROCESSING';
+        }
+        if (activeOrderStatusFilter === 'SHIPPED') {
+          return ord.status === 'SHIPPED' || ord.status === 'IN TRANSIT';
+        }
+        return ord.status === activeOrderStatusFilter;
+      });
+    }
+
+    if (orderSearchTerm) {
+      filteredOrders = filteredOrders.filter(({ ord }) => {
+        const q = orderSearchTerm.toLowerCase();
+        const idMatch = ord.id && ord.id.toLowerCase().includes(q);
+        const custMatch = ord.customer && ord.customer.toLowerCase().includes(q);
+        const itemMatch = ord.items && ord.items.toLowerCase().includes(q);
+        return idMatch || custMatch || itemMatch;
+      });
+    }
+
+    if (filteredOrders.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center;padding:36px;color:#888;font-family:var(--font-mono-sub);font-size:0.82rem;">
+            ⚡ TIDAK ADA PESANAN YANG SESUAI FILTER ATAU PENCARIAN.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filteredOrders.map(({ ord, originalIdx }) => {
       const safeId = escapeHtml(ord.id);
       const safeCustomer = escapeHtml(ord.customer);
       const safeItems = escapeHtml(ord.items);
       const safeDate = escapeHtml(ord.date);
+      const hasReceipt = Boolean(ord.receiptImage);
 
       return `
         <tr>
           <td>
             <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
+            <div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#777;margin-top:2px;">${safeDate}</div>
           </td>
           <td>
             <div style="font-weight:700;color:#FFF;">${safeCustomer}</div>
@@ -760,18 +888,24 @@ async function initAdminDashboard() {
           <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;">
             ${formatRupiah(ord.total)}
           </td>
-          <td style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">
-            ${safeDate}
+          <td>
+            <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}">
+              ${hasReceipt ? '📸 LIHAT BUKTI' : '+ LAMPIRKAN'}
+            </button>
           </td>
           <td>
-            <select class="form-input-brutal order-status-select" data-index="${idx}" style="padding:6px 10px;font-size:0.75rem;background:#111;color:#FFF;border-color:#444;width:auto;">
-              <option value="PROCESSING" ${ord.status === 'PROCESSING' ? 'selected' : ''}>PROCESSING</option>
-              <option value="IN TRANSIT" ${ord.status === 'IN TRANSIT' ? 'selected' : ''}>IN TRANSIT</option>
+            <select class="form-input-brutal order-status-select" data-index="${originalIdx}" style="padding:6px 10px;font-size:0.75rem;background:#111;color:#FFF;border-color:#444;width:auto;">
+              <option value="PENDING" ${ord.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
+              <option value="PAID_PROCESSING" ${(ord.status === 'PAID_PROCESSING' || ord.status === 'PROCESSING') ? 'selected' : ''}>PAID_PROCESSING</option>
+              <option value="SHIPPED" ${(ord.status === 'SHIPPED' || ord.status === 'IN TRANSIT') ? 'selected' : ''}>SHIPPED</option>
               <option value="DELIVERED" ${ord.status === 'DELIVERED' ? 'selected' : ''}>DELIVERED</option>
               <option value="CANCELLED" ${ord.status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
             </select>
           </td>
-          <td style="text-align:right;">
+          <td style="text-align:right;white-space:nowrap;">
+            <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-open-cs-tab" data-order-id="${safeId}" style="padding:6px 10px;font-size:0.7rem;cursor:pointer;margin-right:6px;">
+              CS BOT ⚡
+            </button>
             <a href="https://wa.me/6281234567890?text=Halo%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20${encodeURIComponent(ord.id)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;">
               WHATSAPP
             </a>
@@ -784,17 +918,88 @@ async function initAdminDashboard() {
       sel.addEventListener('change', (e) => {
         const idx = Number(e.target.dataset.index);
         const newStatus = e.target.value;
-        orders[idx].status = newStatus;
-        localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
+        const all = getAdminOrders();
+        if (all[idx]) {
+          all[idx].status = newStatus;
+          localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
 
-        import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
-          updateCloudOrderStatus(orders[idx].id, newStatus);
-        }).catch(() => {});
+          import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
+            updateCloudOrderStatus(all[idx].id, newStatus);
+          }).catch(() => {});
 
-        showAdminToast('success', 'STATUS DIPERBARUI', `Pesanan #${orders[idx].id} diubah ke ${newStatus}.`);
+          showAdminToast('success', 'STATUS DIPERBARUI', `Pesanan #${all[idx].id} diubah ke ${newStatus}.`);
+          renderOrders();
+        }
+      });
+    });
+
+    tbody.querySelectorAll('.btn-view-receipt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        openReceiptModal(idx);
       });
     });
   }
+
+  // Wire up filter tabs and search events (Usulan 2)
+  document.querySelectorAll('#orderStatusFilterTabs .order-filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#orderStatusFilterTabs .order-filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeOrderStatusFilter = tab.dataset.status || 'ALL';
+      renderOrders();
+    });
+  });
+
+  document.getElementById('adminOrderSearchInput')?.addEventListener('input', (e) => {
+    orderSearchTerm = e.target.value.toLowerCase().trim();
+    renderOrders();
+  });
+
+  // Wire up Receipt Modal events (Usulan 3)
+  document.getElementById('btnCloseReceiptModal')?.addEventListener('click', closeReceiptModal);
+  document.getElementById('btnCancelReceiptModal')?.addEventListener('click', closeReceiptModal);
+  document.getElementById('orderReceiptModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'orderReceiptModal') closeReceiptModal();
+  });
+
+  document.getElementById('receiptFileInput')?.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      stagedReceiptImage = evt.target.result;
+      const imgEl = document.getElementById('receiptPreviewImg');
+      const placeholderEl = document.getElementById('receiptPlaceholder');
+      if (imgEl) {
+        imgEl.src = stagedReceiptImage;
+        imgEl.style.display = 'block';
+      }
+      if (placeholderEl) placeholderEl.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('btnVerifyReceiptPaid')?.addEventListener('click', () => {
+    if (currentReceiptOrderIndex === null) return;
+    const orders = getAdminOrders();
+    const ord = orders[currentReceiptOrderIndex];
+    if (!ord) return;
+
+    if (stagedReceiptImage) {
+      ord.receiptImage = stagedReceiptImage;
+    }
+    ord.status = 'PAID_PROCESSING';
+    localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
+
+    import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
+      updateCloudOrderStatus(ord.id, 'PAID_PROCESSING');
+    }).catch(() => {});
+
+    showAdminToast('success', 'PEMBAYARAN DIVERIFIKASI', `Pesanan #${ord.id} telah diverifikasi LUNAS & bukti transfer tersimpan.`);
+    closeReceiptModal();
+    renderOrders();
+  });
 
   document.getElementById('btnRefreshOrders')?.addEventListener('click', renderOrders);
 
@@ -896,10 +1101,557 @@ async function initAdminDashboard() {
   document.getElementById('btnRefreshReviews')?.addEventListener('click', renderAdminReviews);
   window.addEventListener('mustaz:reviews_updated', renderAdminReviews);
 
+  // ─── 8C. CS ONLINE STORE WHATSAPP AUTOMATION ENGINE ──────────────────────
+  function initCsWhatsAppAutomation() {
+    let activeOrderData = {
+      orderId: 'MSTZ-9942',
+      customerName: 'Raihan Putra',
+      phone: '081234567890',
+      total: 2200000,
+      totalFormatted: '2.200.000',
+      address: 'Jl. Senopati Raya No. 42B, Kebayoran Baru, Jakarta Selatan',
+      items: ['THE FLAME PILOT HELMET x1', 'Y-TWO ROOF VISOR x1']
+    };
+
+    let chatSessionContext = {
+      orderId: 'MSTZ-9942',
+      customerName: 'Raihan Putra',
+      total: 2200000,
+      totalFormatted: '2.200.000',
+      status: 'PENDING'
+    };
+
+    const outTextarea = document.getElementById('csGeneratedOutput');
+    const phaseTag = document.getElementById('csCurrentPhaseTag');
+    const waLink = document.getElementById('btnCsSendDirectWa');
+
+    function updateOrderStatusInStore(orderId, newStatus, extra = {}) {
+      const orders = getAdminOrders();
+      const target = orders.find(o => cleanOrderId(o.id) === cleanOrderId(orderId));
+      if (target) {
+        target.status = newStatus;
+        if (extra.courier) target.courier = extra.courier;
+        if (extra.resiNumber) target.resi = extra.resiNumber;
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
+
+        import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
+          updateCloudOrderStatus(target.id, newStatus);
+        }).catch(() => {});
+
+        renderOrders();
+        renderCsOrdersTable();
+      }
+    }
+
+    function renderCsOrdersTable() {
+      const orders = getAdminOrders();
+      const tbody = document.getElementById('csOrdersTbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = orders.map((ord) => {
+        const safeId = escapeHtml(ord.id);
+        const safeCustomer = escapeHtml(ord.customer);
+        const safeItems = escapeHtml(ord.items || '-');
+        const rawStatus = (ord.status || 'PENDING').toUpperCase();
+
+        let statusColor = '#eab308';
+        let statusBg = '#ca8a0422';
+        let statusBorder = '#eab308';
+        if (rawStatus === 'PAID_PROCESSING' || rawStatus === 'PROCESSING') {
+          statusColor = '#38bdf8';
+          statusBg = '#0284c722';
+          statusBorder = '#38bdf8';
+        } else if (rawStatus === 'SHIPPED' || rawStatus === 'IN TRANSIT') {
+          statusColor = '#c084fc';
+          statusBg = '#9333ea22';
+          statusBorder = '#a855f7';
+        } else if (rawStatus === 'DELIVERED') {
+          statusColor = '#4ade80';
+          statusBg = '#16a34a22';
+          statusBorder = '#22c55e';
+        } else if (rawStatus === 'CANCELLED') {
+          statusColor = '#f87171';
+          statusBg = '#dc262622';
+          statusBorder = '#ef4444';
+        }
+
+        return `
+          <tr style="border-bottom:1px solid #222;">
+            <td style="padding:12px 14px;">
+              <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
+            </td>
+            <td style="padding:12px 14px;">
+              <div style="font-weight:700;color:#FFF;font-size:0.9rem;">${safeCustomer}</div>
+              <div style="font-size:0.75rem;color:#888;">${safeItems}</div>
+            </td>
+            <td style="padding:12px 14px;font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);font-weight:900;">
+              ${formatRupiah(ord.total || 0)}
+            </td>
+            <td style="padding:12px 14px;">
+              <span style="display:inline-block;padding:3px 8px;font-size:0.68rem;font-weight:800;border:1px solid ${statusBorder};background:${statusBg};color:${statusColor};letter-spacing:0.05em;">
+                ${rawStatus}
+              </span>
+            </td>
+            <td style="padding:12px 14px;text-align:right;white-space:nowrap;">
+              <div style="display:inline-flex;gap:4px;">
+                <button type="button" class="btn-brutal-dark btn-brutal-sm btn-cs-row-phase1" data-id="${safeId}" title="Fase 1: Instruksi Pembayaran" style="padding:4px 7px;font-size:0.68rem;color:var(--accent-yellow);border-color:var(--accent-yellow);">
+                  [1] BAYAR
+                </button>
+                <button type="button" class="btn-brutal-dark btn-brutal-sm btn-cs-row-phase2" data-id="${safeId}" title="Fase 2: Verifikasi Pembayaran" style="padding:4px 7px;font-size:0.68rem;color:#38bdf8;border-color:#38bdf8;">
+                  [2] VERIFIKASI
+                </button>
+                <button type="button" class="btn-brutal-dark btn-brutal-sm btn-cs-row-phase3" data-id="${safeId}" title="Fase 3: Input Resi Pengiriman" style="padding:4px 7px;font-size:0.68rem;color:#c084fc;border-color:#a855f7;">
+                  [3] RESI
+                </button>
+                <button type="button" class="btn-brutal-dark btn-brutal-sm btn-cs-row-phase4" data-id="${safeId}" title="Fase 4: Follow-Up & Ulasan" style="padding:4px 7px;font-size:0.68rem;color:var(--accent-pink);border-color:var(--accent-pink);">
+                  [4] REVIEW
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.querySelectorAll('.btn-cs-row-phase1').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ord = orders.find(o => o.id === btn.dataset.id);
+          if (ord) setAndTriggerOrderPhase(ord, 1);
+        });
+      });
+      tbody.querySelectorAll('.btn-cs-row-phase2').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ord = orders.find(o => o.id === btn.dataset.id);
+          if (ord) setAndTriggerOrderPhase(ord, 2);
+        });
+      });
+      tbody.querySelectorAll('.btn-cs-row-phase3').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ord = orders.find(o => o.id === btn.dataset.id);
+          if (ord) openResiModal(ord);
+        });
+      });
+      tbody.querySelectorAll('.btn-cs-row-phase4').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ord = orders.find(o => o.id === btn.dataset.id);
+          if (ord) setAndTriggerOrderPhase(ord, 4);
+        });
+      });
+    }
+
+    function setAndTriggerOrderPhase(order, phaseNum) {
+      const cleanCustomer = (order.customer || 'Kakak').split('//')[0].trim();
+      activeOrderData = {
+        orderId: cleanOrderId(order.id),
+        customerName: cleanCustomer,
+        phone: order.phone || '081234567890',
+        total: Number(order.total) || 0,
+        totalFormatted: formatRupiahNumber(order.total || 0),
+        address: order.address || 'Alamat pembeli terdaftar',
+        items: [order.items || 'Custom Helmet Visor']
+      };
+
+      updateExtractedDisplay(activeOrderData, true);
+
+      if (phaseNum === 1) {
+        displayPhase1(activeOrderData);
+      } else if (phaseNum === 2) {
+        displayPhase2(activeOrderData);
+      } else if (phaseNum === 3) {
+        openResiModal(order);
+      } else if (phaseNum === 4) {
+        displayPhase4(activeOrderData);
+      }
+
+      document.getElementById('csInputMessage')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function updateExtractedDisplay(data, isValid) {
+      const box = document.getElementById('csExtractedBox');
+      const statusEl = document.getElementById('csGuardrailStatus');
+      const badge = document.getElementById('csDetectionBadge');
+
+      if (!box || !statusEl) return;
+      box.style.display = 'block';
+
+      if (isValid) {
+        statusEl.textContent = '✅ VALID ORDER WEB';
+        statusEl.style.background = '#22c55e22';
+        statusEl.style.color = '#4ade80';
+        statusEl.style.border = '1px solid #22c55e';
+        if (badge) {
+          badge.textContent = 'VALID ORDER IDENTIFIED';
+          badge.className = 'zine-tag-yellow';
+        }
+
+        document.getElementById('csMetaOrderId').textContent = '#' + (data.orderId || '-');
+        document.getElementById('csMetaCustomer').textContent = data.customerName || '-';
+        document.getElementById('csMetaPhone').textContent = data.phone || '-';
+        document.getElementById('csMetaTotal').textContent = 'Rp ' + (data.totalFormatted || formatRupiahNumber(data.total || 0));
+        document.getElementById('csMetaAddress').textContent = data.address || '-';
+        document.getElementById('csMetaItems').textContent = Array.isArray(data.items) ? data.items.join(', ') : (data.items || '-');
+      } else {
+        statusEl.textContent = '⚠️ GUARDRAIL: KODE ORDER DITOLAK';
+        statusEl.style.background = '#ef444422';
+        statusEl.style.color = '#f87171';
+        statusEl.style.border = '1px solid #ef4444';
+        if (badge) {
+          badge.textContent = 'GUARDRAIL REJECTED';
+          badge.className = 'zine-tag-pink';
+        }
+
+        document.getElementById('csMetaOrderId').textContent = 'TIDAK ADA KODE ORDER';
+        document.getElementById('csMetaCustomer').textContent = data.customerName || '-';
+        document.getElementById('csMetaPhone').textContent = data.phone || '-';
+        document.getElementById('csMetaTotal').textContent = '-';
+        document.getElementById('csMetaAddress').textContent = '-';
+        document.getElementById('csMetaItems').textContent = '-';
+      }
+    }
+
+    function setOutput(text, phaseTitle, phone) {
+      if (outTextarea) outTextarea.value = text;
+      if (phaseTag) phaseTag.textContent = phaseTitle;
+      if (waLink) {
+        waLink.href = createDirectWhatsAppUrl(phone || activeOrderData.phone, text);
+      }
+    }
+
+    function displayPhase1(data) {
+      const msg = generatePhase1Response(data);
+      setOutput(msg, 'PHASE 1: INSTRUKSI PEMBAYARAN', data.phone);
+      showAdminToast('success', 'FASE 1 DIAKTIFKAN', `Instruksi pembayaran resmi dibuat untuk #${data.orderId}.`);
+    }
+
+    function displayPhase2(data) {
+      const msg = generatePhase2Response(data);
+      setOutput(msg, 'PHASE 2: PEMBAYARAN TERVERIFIKASI', data.phone);
+      updateOrderStatusInStore(data.orderId, 'PAID_PROCESSING');
+      showAdminToast('success', 'FASE 2: STATUS PAID_PROCESSING', `Pesanan #${data.orderId} diverifikasi lunas. Diteruskan ke Tim Gudang.`);
+    }
+
+    function displayPhase3(data, courier, resiNumber) {
+      const msg = generatePhase3Response({
+        customerName: data.customerName,
+        orderId: data.orderId,
+        courier: courier || 'J&T Express',
+        resiNumber: resiNumber || 'JT-992144'
+      });
+      setOutput(msg, 'PHASE 3: UPDATE NOMOR RESI', data.phone);
+      updateOrderStatusInStore(data.orderId, 'SHIPPED', { courier, resiNumber });
+      showAdminToast('success', 'FASE 3: STATUS SHIPPED', `Nomor resi ${resiNumber} dikirimkan untuk #${data.orderId}.`);
+    }
+
+    function displayPhase4(data) {
+      const msg = generatePhase4Response({
+        customerName: data.customerName,
+        orderId: data.orderId
+      });
+      setOutput(msg, 'PHASE 4: FOLLOW-UP & ULASAN VOUCHER', data.phone);
+      updateOrderStatusInStore(data.orderId, 'DELIVERED');
+      showAdminToast('success', 'FASE 4: STATUS DELIVERED', `Link ulasan unik & voucher Rp 10.000 disiapkan untuk #${data.orderId}.`);
+    }
+
+    // Process pasted message button
+    document.getElementById('btnCsProcessMessage')?.addEventListener('click', () => {
+      const input = (document.getElementById('csInputMessage')?.value || '').trim();
+      if (!input) {
+        showAdminToast('error', 'INPUT KOSONG', 'Tempelkan pesan WhatsApp dari pembeli terlebih dahulu.');
+        return;
+      }
+
+      // Check for guardrails: unofficial bank requests
+      if (/rekening\s*(lain|bni|bri|dana|ovo|gopay|pribadi)/i.test(input)) {
+        const warning = [
+          `Halo Kak! Mohon maaf demi keamanan transaksi, kami *hanya menerima pembayaran ke rekening resmi toko* yang terdaftar:`,
+          ``,
+          `🏦 *BCA:* 123-456-7890 a.n. Toko Saya`,
+          `🏦 *Mandiri:* 098-765-4321 a.n. Toko Saya`,
+          `📱 *QRIS:* https://mustaz-craft.com/assets/images/qris_official.png`,
+          ``,
+          `Kami tidak pernah memberikan nomor rekening selain rekening resmi di atas ya Kak. Terima kasih! 🙏`
+        ].join('\n');
+        setOutput(warning, 'GUARDRAIL: REKENING RESMI ONLY');
+        showAdminToast('error', 'GUARDRAIL TRIGGERED', 'Dilarang memberikan rekening selain rekening resmi toko!');
+        return;
+      }
+
+      const parsed = parseIncomingOrder(input);
+      if (!parsed.hasOrderId) {
+        updateExtractedDisplay({ customerName: 'Pembeli' }, false);
+        const rejectMsg = [
+          `Halo Kak! 👋 Terima kasih sudah menghubungi kami.`,
+          ``,
+          `Mohon maaf, pesanan belum dapat kami proses karena *tidak menyertakan Kode Order resmi dari web*.`,
+          ``,
+          `Silakan menyelesaikan checkout terlebih dahulu melalui website kami untuk mendapatkan Kode Order (contoh: *#MSTZ-9942*), lalu kirimkan kembali format rinciannya ke sini ya Kak. Kami siap membantu! 🙏`
+        ].join('\n');
+        setOutput(rejectMsg, 'GUARDRAIL: REJECTED (NO ORDER ID)');
+        showAdminToast('error', 'GUARDRAIL: NO ORDER ID', 'Pesanan ditolak karena pembeli tidak mengirimkan Kode Order dari web.');
+        return;
+      }
+
+      activeOrderData = parsed;
+      updateExtractedDisplay(parsed, true);
+      displayPhase1(parsed);
+    });
+
+    // Phase Buttons
+    document.getElementById('btnCsActionPhase1')?.addEventListener('click', () => {
+      displayPhase1(activeOrderData);
+    });
+
+    document.getElementById('btnCsActionPhase2')?.addEventListener('click', () => {
+      displayPhase2(activeOrderData);
+    });
+
+    document.getElementById('btnCsActionPhase3')?.addEventListener('click', () => {
+      openResiModal({
+        id: activeOrderData.orderId,
+        customer: activeOrderData.customerName
+      });
+    });
+
+    document.getElementById('btnCsActionPhase4')?.addEventListener('click', () => {
+      displayPhase4(activeOrderData);
+    });
+
+    // Copy text
+    document.getElementById('btnCsCopyText')?.addEventListener('click', () => {
+      const txt = outTextarea ? outTextarea.value : '';
+      if (!txt) return;
+      navigator.clipboard.writeText(txt).then(() => {
+        showAdminToast('success', 'DISALIN KE CLIPBOARD', 'Teks template WhatsApp siap ditempel.');
+      }).catch(() => {
+        outTextarea.select();
+        document.execCommand('copy');
+        showAdminToast('success', 'DISALIN', 'Teks telah disalin.');
+      });
+    });
+
+    // Clear input
+    document.getElementById('btnCsClearInput')?.addEventListener('click', () => {
+      const input = document.getElementById('csInputMessage');
+      if (input) input.value = '';
+      const box = document.getElementById('csExtractedBox');
+      if (box) box.style.display = 'none';
+      const badge = document.getElementById('csDetectionBadge');
+      if (badge) {
+        badge.textContent = 'READY FOR INPUT';
+        badge.className = 'zine-tag-yellow';
+      }
+    });
+
+    // Sample Loaders
+    document.getElementById('btnLoadValidSample')?.addEventListener('click', () => {
+      const input = document.getElementById('csInputMessage');
+      if (input) {
+        input.value = [
+          `*⚡ FORMAT PESANAN RESMI WEB // MUSTAZ CRAFT*`,
+          `--------------------------------`,
+          `📌 *Kode Order:* #MSTZ-9942`,
+          `👤 *Nama:* Raihan Putra`,
+          `📱 *WhatsApp:* 081234567890`,
+          `📍 *Alamat Drop:* Jl. Senopati Raya No. 42B, Kebayoran Baru, Jakarta Selatan`,
+          `💳 *Metode Bayar:* Transfer Bank (BCA / Mandiri)`,
+          `📝 *Catatan:* Tolong packing aman bubble wrap tebal`,
+          `--------------------------------`,
+          `📦 *ITEM YANG DIBELI:*`,
+          `• THE FLAME PILOT HELMET x1 = Rp 1.850.000`,
+          `• Y-TWO ROOF VISOR x1 = Rp 350.000`,
+          `--------------------------------`,
+          `💰 *Total Tagihan:* Rp 2.200.000`,
+          `--------------------------------`,
+          `_Mohon instruksi pembayaran dan nomor rekening resmi toko ya Kak CS._`
+        ].join('\n');
+        document.getElementById('btnCsProcessMessage')?.click();
+      }
+    });
+
+    document.getElementById('btnLoadInvalidSample')?.addEventListener('click', () => {
+      const input = document.getElementById('csInputMessage');
+      if (input) {
+        input.value = `Halo kak, saya mau pesan helm visor 1 biji warna acid yellow kirim ke Senopati, totalnya berapa dan transfer ke mana?`;
+        document.getElementById('btnCsProcessMessage')?.click();
+      }
+    });
+
+    document.getElementById('btnLoadOtherBankSample')?.addEventListener('click', () => {
+      const input = document.getElementById('csInputMessage');
+      if (input) {
+        input.value = `Halo CS, untuk pesanan #MSTZ-9942 bisa transfer via rekening BNI atau DANA pribadi gak ya?`;
+        document.getElementById('btnCsProcessMessage')?.click();
+      }
+    });
+
+    document.getElementById('btnLoadProofSample')?.addEventListener('click', () => {
+      const input = document.getElementById('csInputMessage');
+      if (input) {
+        input.value = `Halo Kak, berikut bukti transfer lunas untuk pesanan #MSTZ-9942 sebesar Rp 2.200.000 via BCA a.n. Raihan Putra. Mohon segera dipacking ya!`;
+        displayPhase2(activeOrderData);
+      }
+    });
+
+    // Resi Modal Logic
+    const resiModal = document.getElementById('csResiModal');
+    function openResiModal(order) {
+      if (!resiModal) return;
+      document.getElementById('csResiOrderId').value = '#' + cleanOrderId(order.id);
+      document.getElementById('csResiCustomerName').value = (order.customer || activeOrderData.customerName || 'Kakak').split('//')[0].trim();
+      document.getElementById('csResiNumber').value = 'JT-' + Math.floor(100000 + Math.random() * 900000);
+      resiModal.style.display = 'flex';
+      pendingResiOrderId = cleanOrderId(order.id);
+    }
+
+    function closeResiModal() {
+      if (resiModal) resiModal.style.display = 'none';
+      pendingResiOrderId = null;
+    }
+
+    document.getElementById('btnCsCloseResiModal')?.addEventListener('click', closeResiModal);
+    document.getElementById('btnCsCancelResi')?.addEventListener('click', closeResiModal);
+
+    document.getElementById('btnCsSubmitResi')?.addEventListener('click', () => {
+      const courier = document.getElementById('csResiCourier')?.value || 'J&T Express';
+      const resiNum = (document.getElementById('csResiNumber')?.value || '').trim();
+      if (!resiNum) {
+        showAdminToast('error', 'RESI KOSONG', 'Nomor resi wajib diisi.');
+        return;
+      }
+
+      displayPhase3({
+        orderId: pendingResiOrderId || activeOrderData.orderId,
+        customerName: activeOrderData.customerName,
+        phone: activeOrderData.phone
+      }, courier, resiNum);
+
+      closeResiModal();
+    });
+
+    // Refresh Queue Button
+    document.getElementById('btnCsRefreshOrders')?.addEventListener('click', () => {
+      renderCsOrdersTable();
+      showAdminToast('success', 'QUEUE DIPERBARUI', 'Data pesanan toko tersinkronisasi.');
+    });
+
+    // Interactive WhatsApp Chat Simulator
+    const chatBox = document.getElementById('csChatBox');
+    const simInput = document.getElementById('csSimInput');
+    const simSendBtn = document.getElementById('btnCsSimSend');
+
+    function appendMessage(sender, text, isUser) {
+      if (!chatBox) return;
+      const msgEl = document.createElement('div');
+      const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+      if (isUser) {
+        msgEl.style.cssText = `
+          align-self: flex-end;
+          max-width: 85%;
+          background: #065f46;
+          border: 1px solid #059669;
+          padding: 10px 12px;
+          color: #FFF;
+          border-radius: 2px;
+        `;
+        msgEl.innerHTML = `
+          <div style="font-size:0.68rem;color:#6ee7b7;font-weight:700;margin-bottom:4px;">PEMBELI</div>
+          <div style="white-space:pre-line;">${escapeHtml(text)}</div>
+          <div style="text-align:right;font-size:0.6rem;color:#a7f3d0;margin-top:4px;">${time} ✓✓</div>
+        `;
+      } else {
+        msgEl.style.cssText = `
+          align-self: flex-start;
+          max-width: 85%;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-left: 3px solid var(--accent-yellow);
+          padding: 10px 12px;
+          color: #EEE;
+          border-radius: 2px;
+        `;
+        msgEl.innerHTML = `
+          <div style="font-size:0.68rem;color:var(--accent-yellow);font-weight:700;margin-bottom:4px;">CS ONLINE STORE</div>
+          <div style="white-space:pre-line;">${escapeHtml(text)}</div>
+          <div style="text-align:right;font-size:0.6rem;color:#666;margin-top:4px;">${time}</div>
+        `;
+      }
+
+      chatBox.appendChild(msgEl);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleSimSend() {
+      const text = (simInput ? simInput.value : '').trim();
+      if (!text) return;
+      simInput.value = '';
+
+      appendMessage('PEMBELI', text, true);
+
+      // Process message through CS Engine
+      setTimeout(() => {
+        const result = handleCustomerMessage(text, chatSessionContext);
+        chatSessionContext = result.context || chatSessionContext;
+
+        if (result.newStatus) {
+          updateOrderStatusInStore(chatSessionContext.orderId || 'MSTZ-9942', result.newStatus);
+        }
+
+        appendMessage('CS ONLINE STORE', result.response, false);
+      }, 350);
+    }
+
+    if (simSendBtn) simSendBtn.addEventListener('click', handleSimSend);
+    if (simInput) {
+      simInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSimSend();
+        }
+      });
+    }
+
+    document.getElementById('btnResetChatSim')?.addEventListener('click', () => {
+      if (chatBox) {
+        chatBox.innerHTML = `
+          <div style="align-self:flex-start;max-width:85%;background:#1a1a1a;border:1px solid #333;border-left:3px solid var(--accent-yellow);padding:10px 12px;color:#EEE;border-radius:2px;">
+            <div style="font-size:0.68rem;color:var(--accent-yellow);font-weight:700;margin-bottom:4px;">CS ONLINE STORE</div>
+            Halo Kak! Selamat datang di Direct WhatsApp <strong>MUSTAZ CRAFT</strong>. Ada yang bisa kami bantu seputar visor helm custom atau transaksi pesanan web Anda hari ini? 👋
+            <div style="text-align:right;font-size:0.6rem;color:#666;margin-top:4px;">10:00</div>
+          </div>
+        `;
+      }
+      chatSessionContext = {
+        orderId: 'MSTZ-9942',
+        customerName: 'Raihan Putra',
+        total: 2200000,
+        totalFormatted: '2.200.000',
+        status: 'PENDING'
+      };
+    });
+
+    // Setup initial view
+    renderCsOrdersTable();
+    updateExtractedDisplay(activeOrderData, true);
+    displayPhase1(activeOrderData);
+
+    // Wire up global click for `.btn-open-cs-tab` from orders table
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-open-cs-tab');
+      if (btn) {
+        const ordId = btn.dataset.orderId;
+        const orders = getAdminOrders();
+        const ord = orders.find(o => cleanOrderId(o.id) === cleanOrderId(ordId));
+        switchTab('whatsapp-cs');
+        if (ord) setAndTriggerOrderPhase(ord, 1);
+      }
+    });
+  }
+
   // ─── 9. INITIALIZATION ──────────────────────────────────────────────────
   refreshAdminView();
   renderOrders();
   renderAdminReviews();
+  initCsWhatsAppAutomation();
   updatePreview();
   handleUrlRouting();
 }

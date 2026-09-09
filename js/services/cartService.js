@@ -455,26 +455,29 @@ export function formatRupiah(amount) {
   return CONFIG.CURRENCY + ' ' + amount.toLocaleString('id-ID');
 }
 
-export function generateWhatsAppUrl(customerData, cartItems, total) {
+export function generateWhatsAppUrl(customerData, cartItems, total, orderIdParam) {
+  const orderId = orderIdParam || customerData.orderId || customerData.id || ('MSTZ-' + Math.floor(1000 + Math.random() * 9000));
   const itemsFormatted = (cartItems || []).map(i => 
     typeof i === 'string' ? i : `• ${i.name} x${i.quantity} = ${formatRupiah(i.price * i.quantity)}`
   );
   const lines = [
-    `*⚡ ORDER BARU - MUSTAZ CRAFT*`,
+    `*⚡ FORMAT PESANAN RESMI WEB // MUSTAZ CRAFT*`,
     `--------------------------------`,
-    `Nama: ${customerData.name}`,
-    `WhatsApp: ${customerData.phone}`,
-    `Alamat Drop: ${customerData.address}`,
-    `Metode Bayar: ${customerData.payment || 'Direct Negotiation'}`,
-    `Catatan: ${customerData.notes || '-'}`,
+    `📌 *Kode Order:* #${orderId}`,
+    `👤 *Nama:* ${customerData.name}`,
+    `📱 *WhatsApp:* ${customerData.phone}`,
+    `📍 *Alamat Drop:* ${customerData.address}`,
+    `💳 *Metode Bayar:* ${customerData.payment || 'Direct Negotiation'}`,
+    `📝 *Catatan:* ${customerData.notes || '-'}`,
     `--------------------------------`,
-    `*ITEM YANG DIBELI:*`,
+    `📦 *ITEM YANG DIBELI:*`,
     ...itemsFormatted,
     `--------------------------------`,
-    `*TOTAL: ${formatRupiah(total)}*`,
+    `💰 *Total Tagihan:* ${formatRupiah(total)}`,
     `--------------------------------`,
-    `_Dikirim dari mustaz-craft.com_`
+    `_Mohon instruksi pembayaran dan nomor rekening resmi toko ya Kak CS._`
   ];
   const text = encodeURIComponent(lines.join('\n'));
   return `https://wa.me/${CONFIG.ADMIN_WHATSAPP}?text=${text}`;
 }
+

@@ -2,10 +2,104 @@
  * MUSTAZ Garage Zine - Catalog & Product Detail Engine
  */
 
-import { HELMETS_DATA, CHOPPERS_DATA, PARTS_DATA, getDynamicParts, getActiveParts, addToCart, formatRupiah, getCartCount } from '../services/cartService.js';
+import {
+  HELMETS_DATA,
+  CHOPPERS_DATA,
+  PARTS_DATA,
+  getDynamicParts,
+  getActiveParts,
+  addToCart,
+  formatRupiah,
+  getCartCount,
+  getActiveUserEmail,
+  saveUserOrder,
+  generateWhatsAppUrl
+} from '../services/cartService.js';
 import { openCart } from './cart.js';
 import { showToast } from './toast.js';
 import { verifyAdminSession } from '../services/authService.js';
+
+// ─── ⚡ INSTANT BUY VIA WHATSAPP (USULAN 1) ──────────────────────────────────
+
+export function executeInstantWaBuy(part) {
+  if (!part) return;
+
+  if (part.stock !== undefined && part.stock <= 0) {
+    showToast({
+      title: 'STOK HABIS',
+      message: 'Item ini sedang sold out. Silakan hubungi CS untuk ketersediaan batch berikutnya.'
+    });
+    return;
+  }
+
+  const activeEmail = getActiveUserEmail();
+  const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
+  const customerName = activeEmail ? (activeEmail.split('@')[0].toUpperCase()) : 'RIDER MUSTAZ';
+
+  const customerData = {
+    name: customerName,
+    phone: '-',
+    address: 'Direct WhatsApp Order',
+    payment: 'Transfer Bank / QRIS',
+    notes: 'Instant 1-Click Buy via Storefront',
+    orderId: orderId
+  };
+
+  const item = {
+    id: part.id,
+    name: part.name,
+    price: part.price,
+    quantity: 1,
+    image: part.image
+  };
+
+  const orderRecord = {
+    id: orderId,
+    customer: customerName,
+    items: `${part.name} x1`,
+    total: part.price,
+    date: new Date().toISOString().split('T')[0],
+    status: 'PENDING',
+    receiptImage: ''
+  };
+
+  try {
+    const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+    adminOrders.unshift(orderRecord);
+    localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
+  } catch {}
+
+  if (activeEmail) {
+    try {
+      saveUserOrder(activeEmail, orderRecord);
+    } catch {}
+  }
+
+  import('../services/supabaseService.js').then(({ saveCloudOrder }) => {
+    saveCloudOrder({
+      customer: customerName,
+      email: activeEmail || 'direct@mustazcraft.com',
+      items: `${part.name} (x1)`,
+      total: part.price,
+      status: 'PENDING'
+    });
+  }).catch(() => {});
+
+  const url = generateWhatsAppUrl(customerData, [item], part.price, orderId);
+
+  showToast({
+    title: '⚡ INSTANT BUY DIKIRIM KE CS',
+    message: `Pesanan #${orderId} disiapkan. Mengalihkan ke WhatsApp resmi toko...`,
+    image: part.image
+  });
+
+  setTimeout(() => {
+    const waWin = window.open(url, '_blank');
+    if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+      window.location.href = url;
+    }
+  }, 350);
+}
 
 // ─── HYBRID ADMIN STATE & CONTROLS ─────────────────────────────────────────
 
@@ -149,11 +243,21 @@ export function openProductDetail(product) {
               <span style="color:#888;font-family:var(--font-mono-sub);">FINISH</span>
               <span style="color:#FFF;font-weight:700;">Industrial Graded / Unpolished</span>
             </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:6px 0;">
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:6px 0;align-items:center;">
               <span style="color:#888;font-family:var(--font-mono-sub);">STOCK STATUS</span>
-              <span style="color:${(product.stock || 10) <= 5 ? 'var(--accent-pink)' : '#4ADE80'};font-weight:700;">
-                ${(product.stock || 10) <= 5 ? `CRITICAL - ${(product.stock || 5)} REMAINING` : `VERIFIED AVAILABLE (${product.stock || 10})`}
-              </span>
+              ${(product.stock || 10) <= 3 && (product.stock || 10) > 0 ? `
+                <span class="stock-pulse-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.72rem;padding:3px 8px;letter-spacing:0.06em;border:1px solid #000;">
+                  ⚡ SISA ${(product.stock || 1)} PCS // SEGERA HABIS
+                </span>
+              ` : (product.stock || 10) <= 0 ? `
+                <span style="background:#444;color:#AAA;font-family:var(--font-mono-sub);font-weight:900;font-size:0.72rem;padding:3px 8px;">
+                  SOLD OUT
+                </span>
+              ` : `
+                <span style="color:${(product.stock || 10) <= 5 ? 'var(--accent-pink)' : '#4ADE80'};font-weight:700;">
+                  ${(product.stock || 10) <= 5 ? `CRITICAL - ${(product.stock || 5)} REMAINING` : `VERIFIED AVAILABLE (${product.stock || 10})`}
+                </span>
+              `}
             </div>
           `}
         </div>
@@ -162,13 +266,16 @@ export function openProductDetail(product) {
           Each item is hand inspected in our industrial garage before packaging. Built for durability in extreme street and dirt environments.
         </p>
 
-        <!-- CTA BUTTONS -->
-        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;" id="modalActionButtons">
-          <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:16px;font-size:1.15rem;min-width:180px;">
+        <!-- CTA BUTTONS (Usulan 1) -->
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;" id="modalActionButtons">
+          <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:14px;font-size:1.05rem;min-width:160px;">
             ADD TO GARAGE →
           </button>
+          <button id="modalInstantWaBtn" class="instant-wa-buy-btn" data-id="${product.id}" style="flex:1;padding:14px;font-size:0.95rem;margin:0;min-width:180px;display:flex;align-items:center;justify-content:center;gap:6px;">
+            ⚡ BELI CEPAT VIA WHATSAPP
+          </button>
           ${_isAdminCached ? `
-            <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(product.id)}" class="btn-brutal-white admin-modal-edit-btn" style="padding:16px;font-size:0.95rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;border:2px solid #FFF;" title="Edit Produk di Admin">
+            <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(product.id)}" class="btn-brutal-white admin-modal-edit-btn" style="padding:14px;font-size:0.95rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;border:2px solid #FFF;" title="Edit Produk di Admin">
               ✏️ ADMIN EDIT
             </a>
           ` : ''}
@@ -186,6 +293,11 @@ export function openProductDetail(product) {
       actionText: 'LIHAT KERANJANG',
       onAction: openCart
     });
+    closeProductModal();
+  });
+
+  document.getElementById('modalInstantWaBtn')?.addEventListener('click', () => {
+    executeInstantWaBuy(product);
     closeProductModal();
   });
 
@@ -281,18 +393,32 @@ function renderParts(data) {
               ${part.sub}
             </p>
 
-            <!-- Price & Stock -->
-            <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed #000;padding-top:10px;margin-top:auto;margin-bottom:14px;">
+            <!-- Price & Stock (Usulan 4) -->
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #000;padding-top:10px;margin-top:auto;margin-bottom:12px;">
               <span style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:var(--accent-pink);">
                 ${formatRupiah(part.price)}
               </span>
-              <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:${part.stock <= 5 ? 'var(--accent-pink)' : '#333'};">
-                ${part.stock <= 5 ? `⚠️ ${part.stock} REMAINING` : `IN STOCK (${part.stock})`}
-              </span>
+              ${part.stock <= 3 && part.stock > 0 ? `
+                <span class="stock-pulse-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.68rem;padding:3px 8px;letter-spacing:0.06em;border:1px solid #000;">
+                  ⚡ SISA ${part.stock} PCS // SEGERA HABIS
+                </span>
+              ` : part.stock <= 0 ? `
+                <span style="background:#444;color:#AAA;font-family:var(--font-mono-sub);font-weight:900;font-size:0.68rem;padding:3px 8px;border:1px solid #000;">
+                  SOLD OUT
+                </span>
+              ` : part.stock <= 5 ? `
+                <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:var(--accent-pink);">
+                  ⚠️ ${part.stock} REMAINING
+                </span>
+              ` : `
+                <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:#333;">
+                  IN STOCK (${part.stock})
+                </span>
+              `}
             </div>
 
             <!-- Action Buttons: Add to Cart + Quick View -->
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
               <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.92rem;justify-content:center;letter-spacing:0.04em;">
                 + KERANJANG
               </button>
@@ -305,6 +431,11 @@ function renderParts(data) {
                 </a>
               ` : ''}
             </div>
+
+            <!-- Usulan 1: Instant Buy via WhatsApp -->
+            <button class="instant-wa-buy-btn" data-id="${part.id}" style="width:100%;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:6px;">
+              ⚡ BELI CEPAT VIA WHATSAPP
+            </button>
           </div>
 
         </div>
@@ -326,6 +457,15 @@ function renderParts(data) {
         actionText: 'LIHAT KERANJANG',
         onAction: openCart
       });
+    });
+  });
+
+  // Wire instant WhatsApp buy (Usulan 1)
+  grid.querySelectorAll('.instant-wa-buy-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const part = getDynamicParts().find(p => p.id === btn.dataset.id);
+      if (part) executeInstantWaBuy(part);
     });
   });
 
