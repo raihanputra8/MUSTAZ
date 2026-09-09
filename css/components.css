@@ -1006,8 +1006,9 @@
     font-size: 1.35rem;
   }
   .flash-sale-grid {
-    grid-template-columns: 1fr;
-    gap: 18px;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
   }
 }
 
@@ -1786,7 +1787,11 @@
 /* ── MANDATORY 2-COLUMN ON MOBILE SCREENS <= 767px ── */
 @media (max-width: 767px) {
   #partsGrid,
+  #flashSaleGrid,
   .products-catalog-grid,
+  .flash-sale-grid,
+  .home-drops-grid,
+  .category-tiles-grid,
   .grid.grid-cols-2,
   div[class*="grid-cols-2"] {
     display: grid !important;
@@ -1809,6 +1814,175 @@
     height: 100% !important;
     max-height: none !important;
     object-fit: cover !important;
+  }
+
+  /* Flash Sale Compact Mobile Cards */
+  .card-flash-sale {
+    padding: 8px !important;
+    border-width: 2px !important;
+    box-shadow: 3px 3px 0px var(--accent-pink) !important;
+    height: 100% !important;
+  }
+  .card-flash-sale .card-img-box {
+    aspect-ratio: 1 / 1 !important;
+    margin-bottom: 6px !important;
+    border-width: 1.5px !important;
+  }
+  .card-flash-sale .flash-discount-tag {
+    top: 4px !important;
+    right: 4px !important;
+    font-size: 0.62rem !important;
+    padding: 2px 5px !important;
+    border-width: 1.5px !important;
+  }
+  .card-flash-sale h3 {
+    font-size: 0.78rem !important;
+    line-height: 1.15 !important;
+    margin-bottom: 2px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    height: 2.3em !important;
+  }
+  .card-flash-sale p {
+    display: none !important;
+  }
+  .card-flash-sale .flash-stock-wrap {
+    margin: 4px 0 6px !important;
+  }
+  .card-flash-sale .flash-stock-info {
+    font-size: 0.55rem !important;
+    margin-bottom: 2px !important;
+  }
+  .card-flash-sale .flash-price-orig {
+    font-size: 0.58rem !important;
+  }
+  .card-flash-sale .flash-price-sale {
+    font-size: 0.88rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+  .card-flash-sale .btn-brutal-sm {
+    padding: 4px 8px !important;
+    font-size: 0.70rem !important;
+    min-height: 28px !important;
+  }
+
+  /* Home Drops Compact Mobile Cards */
+  .home-drops-grid .card-brutal-white,
+  .home-drops-grid .card-brutal-dark {
+    padding: 8px !important;
+    border-width: 2px !important;
+    box-shadow: 3px 3px 0px var(--accent-pink) !important;
+    transform: none !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .home-drops-grid .card-img-box {
+    aspect-ratio: 1 / 1 !important;
+    margin-bottom: 6px !important;
+    border-width: 1.5px !important;
+  }
+  .home-drops-grid .drop-card-title {
+    font-size: 0.78rem !important;
+    line-height: 1.15 !important;
+    margin-bottom: 2px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    height: 2.3em !important;
+  }
+  .home-drops-grid .drop-card-desc,
+  .home-drops-grid .drop-spec-grid {
+    display: none !important;
+  }
+  .home-drops-grid .drop-card-price {
+    font-size: 0.88rem !important;
+    font-weight: 900 !important;
+  }
+  .home-drops-grid .btn-brutal-sm {
+    padding: 4px 8px !important;
+    font-size: 0.70rem !important;
+    min-height: 28px !important;
+  }
+
+  /* Testimonials Horizontal Carousel on Mobile */
+  .testi-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 10px !important;
+    padding: 4px 4px 14px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .card-testi-brutal {
+    flex: 0 0 80% !important;
+    max-width: 280px !important;
+    scroll-snap-align: center !important;
+    padding: 12px !important;
+    border-width: 2px !important;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.8) !important;
+  }
+  .testi-photo-box {
+    width: 100% !important;
+    height: 120px !important;
+    aspect-ratio: auto !important;
+    margin-bottom: 8px !important;
+    border-width: 1.5px !important;
+  }
+  .testi-quote {
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 8px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  .testi-author-block {
+    padding-top: 6px !important;
+  }
+  .testi-author-name {
+    font-size: 0.88rem !important;
+  }
+  .testi-author-bike {
+    font-size: 0.60rem !important;
+  }
+  .testi-gear-tag {
+    font-size: 0.55rem !important;
+    padding: 1px 4px !important;
+  }
+
+  /* Story Bento Horizontal Carousel on Mobile */
+  .home-story-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 10px !important;
+    padding: 4px 4px 14px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .home-story-card {
+    flex: 0 0 80% !important;
+    max-width: 280px !important;
+    scroll-snap-align: center !important;
+    min-height: 200px !important;
+    aspect-ratio: auto !important;
+  }
+
+  /* Category Tiles 2x2 */
+  .category-tiles-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .cat-tile-card {
+    border-width: 2px !important;
   }
 }
 

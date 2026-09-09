@@ -970,65 +970,127 @@
   }
 
   /* ── 3. HERO SECTION & TYPOGRAPHY ADJUSTMENT (MOBILE) ── */
+  .home-hero-section {
+    padding: 20px 0 32px !important;
+  }
   .hero-editorial-panel {
     padding: 0 !important;
   }
   .hero-editorial-panel .editorial-title {
-    font-size: clamp(2rem, 8vw, 2.45rem) !important;
-    line-height: 0.95 !important;
-    margin-bottom: 12px !important;
+    font-size: 1.5rem !important; /* text-2xl */
+    line-height: 1 !important;
+    margin-bottom: 8px !important;
   }
-  .hero-editorial-panel p {
-    font-size: 0.88rem !important;
-    line-height: 1.5 !important;
-    padding-left: 12px !important;
+  .hero-editorial-panel p,
+  .hero-editorial-desc {
+    font-size: 0.75rem !important; /* text-xs */
+    line-height: 1.45 !important;
+    padding-left: 10px !important;
     border-left: 3px solid var(--accent-yellow) !important;
-    margin-bottom: 18px !important;
+    margin-bottom: 14px !important;
     max-width: 100% !important;
   }
   .hero-cta-group {
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
     gap: 8px !important;
     width: 100% !important;
+    align-items: center !important;
   }
   .hero-cta-group a {
-    width: 100% !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
     text-align: center !important;
     justify-content: center !important;
-    padding: 10px 16px !important;
-    font-size: 0.95rem !important;
-    min-height: 40px !important;
+    padding: 8px 12px !important; /* py-2 px-3 */
+    font-size: 0.75rem !important; /* text-xs */
+    min-height: 34px !important;
+    letter-spacing: 0.02em !important;
   }
   .hero-photo-frame {
     max-width: 100% !important;
     transform: none !important;
     border-width: 2px !important;
     box-shadow: 4px 4px 0px var(--accent-pink) !important;
-    padding: 10px !important;
+    padding: 8px !important;
+  }
+  .hero-sub-badge {
+    bottom: -10px !important;
+    left: -6px !important;
+    padding: 6px 10px !important;
+    border-width: 2px !important;
+  }
+  .hero-tech-marking {
+    margin-top: 14px !important;
   }
 
   /* Flash Sale & Price Tag Offsets */
+  .flash-sale-section {
+    padding: 20px 0 32px !important;
+  }
+  .flash-sale-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 12px 14px !important;
+    gap: 10px !important;
+    box-shadow: 4px 4px 0px var(--accent-pink) !important;
+  }
+  .flash-sale-title {
+    font-size: 1.25rem !important;
+  }
+  .flash-sale-timer-wrap {
+    width: 100% !important;
+    justify-content: space-between !important;
+    border-top: 1px dashed #333 !important;
+    padding-top: 8px !important;
+  }
+  .timer-box {
+    min-width: 36px !important;
+    padding: 2px 4px !important;
+  }
+  .timer-box .time-val {
+    font-size: 1.1rem !important;
+  }
+  .timer-box .time-lbl {
+    font-size: 0.55rem !important;
+  }
   .raw-paper-edge {
     position: static !important;
     right: auto !important;
     bottom: auto !important;
     transform: none !important;
-    margin-top: 10px !important;
+    margin-top: 8px !important;
     display: inline-block !important;
-    padding: 6px 14px !important;
+    padding: 4px 10px !important;
   }
   .raw-paper-edge span {
-    font-size: 1.2rem !important;
+    font-size: 1.05rem !important;
+  }
+
+  /* Compact Section Paddings */
+  .home-drops-section,
+  .home-featured-section,
+  .visor-showcase-section,
+  .home-story-section,
+  .home-testi-section {
+    padding: 24px 0 !important;
+  }
+  .editorial-title {
+    font-size: clamp(1.4rem, 5vw, 1.9rem) !important;
+    line-height: 1 !important;
+  }
+  .editorial-desc {
+    font-size: 0.75rem !important;
+    margin-top: 3px !important;
   }
 
   /* Slider Responsive Stage */
   .visor-slider-stage {
-    height: 250px !important;
+    height: 220px !important;
   }
   .visor-slide {
-    width: 175px !important;
-    height: 160px !important;
+    width: 160px !important;
+    height: 145px !important;
   }
 
   /* Filter Tabs & Search on Mobile */
