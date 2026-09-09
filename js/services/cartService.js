@@ -235,7 +235,7 @@ function toSlug(str) {
 export function getDynamicParts() {
   try {
     if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem(PRODUCTS_STORAGE_KEY);
+      const saved = localStorage.getItem(PRODUCTS_STORAGE_KEY) || localStorage.getItem('mustaz_catalog_products');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -581,7 +581,8 @@ export function saveUserAddress(userEmail, newAddress) {
 // ─── Utilities ─────────────────────────────────────────────────────────────
 
 export function formatRupiah(amount) {
-  return CONFIG.CURRENCY + ' ' + amount.toLocaleString('id-ID');
+  const num = Number(amount) || 0;
+  return (CONFIG.CURRENCY || 'Rp') + ' ' + num.toLocaleString('id-ID');
 }
 
 export function generateWhatsAppUrl(customerData, cartItems, total, orderIdParam) {

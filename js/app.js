@@ -142,7 +142,7 @@ async function initApp() {
               ${p.name}
             </h3>
             <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#555;margin-bottom:8px;line-height:1.4;">
-              ${p.desc || 'Premium hand-forged custom hardware with precision fit.'}
+              ${p.desc || p.sub || 'Premium hand-forged custom hardware with precision fit.'}
             </p>
 
             <div class="flash-stock-wrap">

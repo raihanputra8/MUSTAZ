@@ -294,127 +294,132 @@ async function initAdminDashboard() {
     const tbody = document.getElementById('adminProductsTbody');
     if (!tbody) return;
 
-    if (items.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:48px 16px;color:#888;font-family:var(--font-mono-sub);">NO HARDWARE FOUND MATCHING SEARCH / FILTER CRITERIA</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = items.map((part) => {
-      const stock = Number(part.stock) || 0;
-      let stockBadgeClass = 'stock-badge-good';
-      let stockLabel = 'IN STOCK';
-      if (stock === 0) {
-        stockBadgeClass = 'stock-badge-zero';
-        stockLabel = 'OUT OF STOCK';
-      } else if (stock <= 5) {
-        stockBadgeClass = 'stock-badge-low';
-        stockLabel = 'LOW STOCK';
+    try {
+      if (!items || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:48px 16px;color:#888;font-family:var(--font-mono-sub);">NO HARDWARE FOUND MATCHING SEARCH / FILTER CRITERIA</td></tr>';
+        return;
       }
 
-      const safeId = escapeHtml(part.id);
-      const safeName = escapeHtml(part.name);
-      const safeSlug = escapeHtml(part.slug || generateSlug(part.name));
-      const safeCategory = escapeHtml(part.category);
-      const safeSub = escapeHtml(part.sub);
-      const safeStatus = (part.status || 'Active').toLowerCase() === 'draft' ? 'Draft' : 'Active';
-      const safeImage = part.image ? getProductImageUrl(part.image) : getProductImageUrl('Product1.png');
-
-      const isDraft = safeStatus === 'Draft';
-      const statusBadge = isDraft 
-        ? `<span style="background:#262626;border:1px dashed #737373;color:#a3a3a3;font-family:var(--font-mono-sub);font-size:0.68rem;padding:3px 8px;font-weight:700;">DRAFT</span>`
-        : `<span style="background:#064e3b;border:1px solid #10b981;color:#6ee7b7;font-family:var(--font-mono-sub);font-size:0.68rem;padding:3px 8px;font-weight:700;">LIVE ACTIVE</span>`;
-
-      return `
-        <tr>
-          <td>
-            <img src="${safeImage}" alt="${safeName}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" style="width:52px;height:52px;object-fit:cover;border:1.5px solid #333;background:#000;border-radius:4px;">
-          </td>
-          <td>
-            <div style="font-family:var(--font-headline);font-size:1.08rem;color:#FFF;letter-spacing:0.02em;line-height:1.2;">${safeName}</div>
-            <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
-              <span style="font-family:var(--font-mono-sub);font-size:0.68rem;background:#1e1e1e;border:1px solid #333;padding:2px 6px;color:#aaa;font-weight:700;">${safeId.toUpperCase()}</span>
-              <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);font-weight:700;">/${safeSlug}</span>
-            </div>
-            ${safeSub ? `<div style="font-size:0.75rem;color:#777;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;">${safeSub}</div>` : ''}
-          </td>
-          <td>
-            <span style="background:#181818;border:1px solid #2e2e2e;color:var(--accent-yellow);font-family:var(--font-mono-sub);font-size:0.72rem;font-weight:800;padding:4px 10px;white-space:nowrap;letter-spacing:0.04em;">
-              ${safeCategory}
-            </span>
-          </td>
-          <td style="white-space:nowrap;">
-            <span style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;letter-spacing:0.02em;">
-              ${formatRupiah(part.price)}
-            </span>
-          </td>
-          <td style="text-align:center;">
-            <div style="display:inline-flex;align-items:center;background:#141414;border:1px solid #333;padding:2px 4px;margin-bottom:6px;">
-              <button class="qty-control-btn btn-stock-dec" data-id="${safeId}" style="width:22px;height:22px;font-size:0.9rem;cursor:pointer;">-</button>
-              <span style="font-family:var(--font-headline);font-size:1.1rem;min-width:32px;text-align:center;color:#FFF;font-weight:900;">${stock}</span>
-              <button class="qty-control-btn btn-stock-inc" data-id="${safeId}" style="width:22px;height:22px;font-size:0.9rem;cursor:pointer;">+</button>
-            </div>
-            <div>
-              <span class="${stockBadgeClass}">${stockLabel}</span>
-            </div>
-          </td>
-          <td style="text-align:center;white-space:nowrap;">
-            ${statusBadge}
-          </td>
-          <td style="text-align:right;white-space:nowrap;">
-            <div style="display:inline-flex;gap:6px;align-items:center;justify-content:flex-end;">
-              <button class="btn-admin-edit btn-brutal-ghost btn-brutal-sm" data-id="${safeId}" style="padding:6px 12px;font-size:0.75rem;display:inline-flex;align-items:center;gap:4px;" title="Edit Produk">
-                <span class="material-symbols-outlined" style="font-size:15px;">edit</span>
-                <span>EDIT</span>
-              </button>
-              <button class="btn-admin-del btn-brutal-dark btn-brutal-sm" data-id="${safeId}" style="padding:6px 12px;font-size:0.75rem;background:#35000a;border-color:#e11d48;color:#fecdd3;display:inline-flex;align-items:center;gap:4px;" title="Hapus Produk">
-                <span class="material-symbols-outlined" style="font-size:15px;">delete</span>
-                <span>HAPUS</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    // Wire stock controls
-    tbody.querySelectorAll('.btn-stock-inc').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const part = items.find(p => p.id === id);
-        if (part) {
-          updateProduct(id, { stock: (Number(part.stock) || 0) + 1 });
-          refreshAdminView();
+      tbody.innerHTML = items.filter(Boolean).map((part) => {
+        const stock = Number(part.stock) || 0;
+        let stockBadgeClass = 'stock-badge-good';
+        let stockLabel = 'IN STOCK';
+        if (stock === 0) {
+          stockBadgeClass = 'stock-badge-zero';
+          stockLabel = 'OUT OF STOCK';
+        } else if (stock <= 5) {
+          stockBadgeClass = 'stock-badge-low';
+          stockLabel = 'LOW STOCK';
         }
-      });
-    });
 
-    tbody.querySelectorAll('.btn-stock-dec').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const part = items.find(p => p.id === id);
-        if (part) {
-          const current = Number(part.stock) || 0;
-          if (current > 0) {
-            updateProduct(id, { stock: current - 1 });
+        const safeId = escapeHtml(part.id || '');
+        const safeName = escapeHtml(part.name || 'CUSTOM PART');
+        const safeSlug = escapeHtml(part.slug || generateSlug(part.name || 'part'));
+        const safeCategory = escapeHtml(part.category || 'Retro Visor');
+        const safeSub = escapeHtml(part.sub || '');
+        const safeStatus = (part.status || 'Active').toLowerCase() === 'draft' ? 'Draft' : 'Active';
+        const safeImage = part.image ? getProductImageUrl(part.image) : getProductImageUrl('Product1.png');
+
+        const isDraft = safeStatus === 'Draft';
+        const statusBadge = isDraft 
+          ? `<span style="background:#262626;border:1px dashed #737373;color:#a3a3a3;font-family:var(--font-mono-sub);font-size:0.68rem;padding:3px 8px;font-weight:700;">DRAFT</span>`
+          : `<span style="background:#064e3b;border:1px solid #10b981;color:#6ee7b7;font-family:var(--font-mono-sub);font-size:0.68rem;padding:3px 8px;font-weight:700;">LIVE ACTIVE</span>`;
+
+        return `
+          <tr>
+            <td>
+              <img src="${safeImage}" alt="${safeName}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" style="width:52px;height:52px;object-fit:cover;border:1.5px solid #333;background:#000;border-radius:4px;">
+            </td>
+            <td>
+              <div style="font-family:var(--font-headline);font-size:1.08rem;color:#FFF;letter-spacing:0.02em;line-height:1.2;">${safeName}</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                <span style="font-family:var(--font-mono-sub);font-size:0.68rem;background:#1e1e1e;border:1px solid #333;padding:2px 6px;color:#aaa;font-weight:700;">${safeId.toUpperCase()}</span>
+                <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);font-weight:700;">/${safeSlug}</span>
+              </div>
+              ${safeSub ? `<div style="font-size:0.75rem;color:#777;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;">${safeSub}</div>` : ''}
+            </td>
+            <td>
+              <span style="background:#181818;border:1px solid #2e2e2e;color:var(--accent-yellow);font-family:var(--font-mono-sub);font-size:0.72rem;font-weight:800;padding:4px 10px;white-space:nowrap;letter-spacing:0.04em;">
+                ${safeCategory}
+              </span>
+            </td>
+            <td style="white-space:nowrap;">
+              <span style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;letter-spacing:0.02em;">
+                ${formatRupiah(part.price)}
+              </span>
+            </td>
+            <td style="text-align:center;">
+              <div style="display:inline-flex;align-items:center;background:#141414;border:1px solid #333;padding:2px 4px;margin-bottom:6px;">
+                <button class="qty-control-btn btn-stock-dec" data-id="${safeId}" style="width:22px;height:22px;font-size:0.9rem;cursor:pointer;">-</button>
+                <span style="font-family:var(--font-headline);font-size:1.1rem;min-width:32px;text-align:center;color:#FFF;font-weight:900;">${stock}</span>
+                <button class="qty-control-btn btn-stock-inc" data-id="${safeId}" style="width:22px;height:22px;font-size:0.9rem;cursor:pointer;">+</button>
+              </div>
+              <div>
+                <span class="${stockBadgeClass}">${stockLabel}</span>
+              </div>
+            </td>
+            <td style="text-align:center;white-space:nowrap;">
+              ${statusBadge}
+            </td>
+            <td style="text-align:right;white-space:nowrap;">
+              <div style="display:inline-flex;gap:6px;align-items:center;justify-content:flex-end;">
+                <button class="btn-admin-edit btn-brutal-ghost btn-brutal-sm" data-id="${safeId}" style="padding:6px 12px;font-size:0.75rem;display:inline-flex;align-items:center;gap:4px;" title="Edit Produk">
+                  <span class="material-symbols-outlined" style="font-size:15px;">edit</span>
+                  <span>EDIT</span>
+                </button>
+                <button class="btn-admin-del btn-brutal-dark btn-brutal-sm" data-id="${safeId}" style="padding:6px 12px;font-size:0.75rem;background:#35000a;border-color:#e11d48;color:#fecdd3;display:inline-flex;align-items:center;gap:4px;" title="Hapus Produk">
+                  <span class="material-symbols-outlined" style="font-size:15px;">delete</span>
+                  <span>HAPUS</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Wire stock controls
+      tbody.querySelectorAll('.btn-stock-inc').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const part = items.find(p => p.id === id);
+          if (part) {
+            updateProduct(id, { stock: (Number(part.stock) || 0) + 1 });
             refreshAdminView();
           }
-        }
+        });
       });
-    });
 
-    // Wire edit buttons
-    tbody.querySelectorAll('.btn-admin-edit').forEach(btn => {
-      btn.addEventListener('click', () => {
-        openEditModal(btn.dataset.id);
+      tbody.querySelectorAll('.btn-stock-dec').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const part = items.find(p => p.id === id);
+          if (part) {
+            const current = Number(part.stock) || 0;
+            if (current > 0) {
+              updateProduct(id, { stock: current - 1 });
+              refreshAdminView();
+            }
+          }
+        });
       });
-    });
 
-    // Wire delete buttons (Brutalist Confirmation Dialog)
-    tbody.querySelectorAll('.btn-admin-del').forEach(btn => {
-      btn.addEventListener('click', () => {
-        openDeleteModal(btn.dataset.id);
+      // Wire edit buttons
+      tbody.querySelectorAll('.btn-admin-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openEditModal(btn.dataset.id);
+        });
       });
-    });
+
+      // Wire delete buttons (Brutalist Confirmation Dialog)
+      tbody.querySelectorAll('.btn-admin-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openDeleteModal(btn.dataset.id);
+        });
+      });
+    } catch (err) {
+      console.error('[Admin] Error rendering product table rows:', err);
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#ef4444;font-family:var(--font-mono-sub);">ERROR RENDERING PRODUCTS: ${escapeHtml(err.message)}</td></tr>`;
+    }
   }
 
   // ─── 4. SEARCH & FILTER EVENT LISTENERS ──────────────────────────────────
