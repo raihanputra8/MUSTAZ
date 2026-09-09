@@ -229,10 +229,11 @@ export function generatePhase3Response(shippingData) {
 /**
  * Phase 4: Follow-Up & Minta Ulasan (Status -> DELIVERED)
  */
-export function generatePhase4Response(reviewData) {
+export function generatePhase4Response(reviewData, customReviewUrl = null, voucherCode = 'MUSTAZ10K') {
   const name = reviewData.customerName || 'Pembeli';
   const orderId = cleanOrderId(reviewData.orderId);
-  const reviewLink = reviewData.reviewUrl || buildReviewUrl(orderId, name);
+  const reviewLink = reviewData.reviewUrl || customReviewUrl || buildReviewUrl(orderId, name);
+  const voucher = reviewData.voucherCode || voucherCode || 'MUSTAZ10K';
 
   return [
     `Halo Kak ${name}! 👋`,
@@ -243,7 +244,7 @@ export function generatePhase4Response(reviewData) {
     `Bolehkah minta waktunya 1 menit untuk memberikan ulasan & foto produk pada link berikut?`,
     `👉 ${reviewLink}`,
     ``,
-    `🎁 *Bonus:* Dapatkan voucher potongan harga Rp 10.000 untuk pesanan berikutnya setelah Kakak mengirimkan ulasan. Terima kasih banyak!`
+    `🎁 *Bonus:* Gunakan kode voucher *${voucher}* (potongan Rp 10.000) untuk pesanan berikutnya setelah Kakak mengirimkan ulasan resmi. Terima kasih banyak!`
   ].join('\n');
 }
 

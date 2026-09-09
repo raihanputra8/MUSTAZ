@@ -5,7 +5,8 @@
 import {
   getCart, removeFromCart, updateCartQty, clearCart,
   getCartTotal, getCartCount, formatRupiah, generateWhatsAppUrl,
-  getActiveUserEmail, getUserAddresses, saveUserOrder
+  getActiveUserEmail, getUserAddresses, saveUserOrder,
+  deductProductStock
 } from '../services/cartService.js';
 import { sendOrderSuccessEmail, showOrderSuccessModal } from '../services/emailService.js';
 import { saveCloudOrder } from '../services/supabaseService.js';
@@ -435,6 +436,11 @@ export function initCart() {
     try {
       saveUserOrder(email, orderRecord);
     } catch {}
+
+    // Deduct inventory & promo stock
+    cartItems.forEach(item => {
+      if (item.id) deductProductStock(item.id, item.quantity || 1);
+    });
 
     // 4. Generate and launch WhatsApp conversation
     const url = generateWhatsAppUrl({ name, phone, address, payment, notes: 'Email: ' + email, orderId: orderId }, cartItems, total, orderId);

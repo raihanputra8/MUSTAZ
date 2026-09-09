@@ -186,7 +186,7 @@
 </main>
 
 <script type="module">
-  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail } from './js/services/cartService.js';
+  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, deductProductStock } from './js/services/cartService.js';
   import { saveCloudOrder } from './js/services/supabaseService.js';
   import { sendOrderSuccessEmail, showOrderSuccessModal } from './js/services/emailService.js';
 
@@ -345,6 +345,11 @@
 
       // 3. Save to user's localized order history
       saveUserOrder(email || activeEmail, orderRecord);
+
+      // Deduct inventory & promo stock
+      items.forEach(i => {
+        if (i.id) deductProductStock(i.id, i.quantity || 1);
+      });
 
       // 4. Show Instant In-App Order Success Modal with Email Delivery Confirmation
       showOrderSuccessModal(orderRecord);

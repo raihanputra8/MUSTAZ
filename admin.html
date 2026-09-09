@@ -222,10 +222,10 @@
               <span>TESTIMONI &amp; ULASAN</span>
               <span class="account-nav-badge" id="navBadgeReviews">5</span>
             </button>
-            <button class="account-nav-item" data-tab="whatsapp-cs">
-              <span class="material-symbols-outlined">support_agent</span>
-              <span>CS WA AUTOMATION</span>
-              <span class="account-nav-badge" id="navBadgeCs" style="background:var(--accent-pink);color:#000;font-weight:900;">BOT</span>
+            <button class="account-nav-item" data-tab="flash-sale">
+              <span class="material-symbols-outlined" style="color:var(--accent-pink);">bolt</span>
+              <span>⚡ FLASH SALE MANAGER</span>
+              <span class="account-nav-badge" id="navBadgeFlashSale" style="background:var(--accent-pink);color:#000;font-weight:900;">LIVE</span>
             </button>
             <hr style="border:none;border-top:1px dashed #2a2a2a;margin:10px 0;">
             <a href="parts.html" target="_blank" class="account-nav-item" style="color:var(--accent-yellow);">
@@ -556,7 +556,7 @@
                     <th style="padding:12px 14px;">TOTAL TAGIHAN</th>
                     <th style="padding:12px 14px;">BUKTI BAYAR</th>
                     <th style="padding:12px 14px;">STATUS</th>
-                    <th style="padding:12px 14px;text-align:right;">AKSI</th>
+                    <th style="padding:12px 14px;text-align:right;">AKSI CEPAT CS WHATSAPP</th>
                   </tr>
                 </thead>
                 <tbody id="adminOrdersTbody">
@@ -605,278 +605,156 @@
           </div>
 
           <!-- ══════════════════════════════════════════════════════════════ -->
-          <!-- PANEL 5: CS ONLINE STORE WHATSAPP AUTOMATION -->
+          <!-- PANEL: FLASH SALE & PROMO MANAGER -->
           <!-- ══════════════════════════════════════════════════════════════ -->
-          <div class="account-tab-panel" id="panel-whatsapp-cs">
-            <!-- Header Row -->
+          <div class="account-tab-panel" id="panel-flash-sale">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
               <div>
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                  <span class="zine-tag-yellow">COMMERCE BOT V2.0</span>
-                  <span class="zine-tag-pink">GUARDRAILS ENFORCED</span>
-                  <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#4ade80;">● SYSTEM OPERATIONAL</span>
+                  <span class="zine-tag-pink">HOT DROP PROMO</span>
+                  <span class="zine-tag-yellow">LIMITED DISPATCH</span>
+                  <span style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#4ade80;" id="fsStatusIndicator">● CAMPAIGN LIVE</span>
                 </div>
                 <h2 class="editorial-title" style="font-size:2.2rem;margin:0 0 4px;line-height:1;">
-                  CS ONLINE STORE // WHATSAPP AUTOMATION
+                  ⚡ FLASH SALE &amp; PROMO MANAGER
                 </h2>
-                <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#AAA;margin:0;max-width:700px;">
-                  Otomasi asisten virtual profesional untuk memproses pesanan web, instruksi pembayaran resmi, verifikasi bukti transfer, update nomor resi pengiriman, dan follow-up ulasan berhadiah voucher.
+                <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#AAA;margin:0;max-width:750px;">
+                  Atur jadwal countdown timer etalase depan toko, pilih produk katalog untuk diskon kilat, tentukan harga promo, serta alokasi kuota stok flash sale secara real-time.
                 </p>
               </div>
 
               <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                <div style="background:#111;border:1px solid #333;padding:8px 14px;font-family:var(--font-mono-sub);font-size:0.72rem;color:#FFF;">
-                  <span style="color:#888;">REKENING RESMI:</span> <strong style="color:var(--accent-yellow);">BCA &amp; MANDIRI</strong>
-                </div>
-                <button type="button" id="btnCsRefreshOrders" class="btn-brutal-dark btn-brutal-sm" style="cursor:pointer;">
-                  REFRESH QUEUE ↻
+                <button type="button" id="btnRefreshFlashSale" class="btn-brutal-dark btn-brutal-sm" style="cursor:pointer;">
+                  REFRESH DATA ↻
                 </button>
               </div>
             </div>
 
-            <!-- Workflow 4-Phase Visual Pipeline Overview -->
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px;margin-bottom:32px;">
-              <!-- Step 1 -->
-              <div class="card-brutal-dark" style="background:#111;border-top:4px solid var(--accent-yellow);padding:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                  <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:var(--accent-yellow);font-weight:700;">PHASE 01</span>
-                  <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-yellow);">shopping_cart_checkout</span>
-                </div>
-                <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 6px;">INCOMING ORDER</h4>
-                <p style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;margin:0;line-height:1.4;">
-                  Deteksi Kode Order web, sapa ramah nama pembeli, berikan nomor rekening resmi BCA/Mandiri &amp; QRIS, minta bukti transfer.
-                </p>
-              </div>
-
-              <!-- Step 2 -->
-              <div class="card-brutal-dark" style="background:#111;border-top:4px solid #38bdf8;padding:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                  <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#38bdf8;font-weight:700;">PHASE 02</span>
-                  <span class="material-symbols-outlined" style="font-size:18px;color:#38bdf8;">verified</span>
-                </div>
-                <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 6px;">VERIFIKASI BAYAR</h4>
-                <p style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;margin:0;line-height:1.4;">
-                  Validasi nominal transfer bukti pembayaran, ubah status pesanan ke <strong style="color:#FFF;">PAID_PROCESSING</strong>, konfirmasi teruskan ke Gudang Packing.
-                </p>
-              </div>
-
-              <!-- Step 3 -->
-              <div class="card-brutal-dark" style="background:#111;border-top:4px solid #a855f7;padding:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                  <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#a855f7;font-weight:700;">PHASE 03</span>
-                  <span class="material-symbols-outlined" style="font-size:18px;color:#a855f7;">local_shipping</span>
-                </div>
-                <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 6px;">SHIPPING &amp; RESI</h4>
-                <p style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;margin:0;line-height:1.4;">
-                  Input nomor resi kurir, ubah status ke <strong style="color:#FFF;">SHIPPED</strong>, kirim notifikasi otomatis beserta tautan lacak paket live.
-                </p>
-              </div>
-
-              <!-- Step 4 -->
-              <div class="card-brutal-dark" style="background:#111;border-top:4px solid var(--accent-pink);padding:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                  <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:var(--accent-pink);font-weight:700;">PHASE 04</span>
-                  <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-pink);">redeem</span>
-                </div>
-                <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 6px;">FOLLOW-UP &amp; REVIEW</h4>
-                <p style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;margin:0;line-height:1.4;">
-                  Saat status <strong style="color:#FFF;">DELIVERED</strong>, kirim pesan ramah, link form ulasan web unik, dan bonus voucher potongan Rp 10.000.
-                </p>
-              </div>
-            </div>
-
-            <!-- Two-Column Workspace: Message Parser / Generator (Left) + Interactive Live Simulator (Right) -->
-            <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:start;margin-bottom:36px;">
+            <!-- Two-Column Grid: Config & Product Enroll -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;margin-bottom:32px;">
               
-              <!-- LEFT COLUMN: SMART MESSAGE PARSER & TEMPLATE GENERATOR -->
-              <div class="card-brutal-dark" style="background:#121212;border:2px solid #282828;padding:24px;box-shadow:6px 6px 0px #000;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-                  <div>
-                    <h3 style="font-family:var(--font-headline);font-size:1.4rem;color:#FFF;margin:0;">
-                      INCOMING WHATSAPP MESSAGE PROCESSOR
-                    </h3>
-                    <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;">
-                      TEMPEL CHAT DARI PEMBELI UNTUK DIPROSES OTOMATIS
-                    </span>
-                  </div>
-                  <span class="zine-tag-yellow" id="csDetectionBadge">READY FOR INPUT</span>
+              <!-- Left Card: Banner & Countdown Schedule -->
+              <div class="card-brutal-dark" style="background:#111;border:2px solid #282828;padding:24px;box-shadow:6px 6px 0px #000;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid #222;padding-bottom:10px;">
+                  <h3 style="font-family:var(--font-headline);font-size:1.3rem;color:var(--accent-yellow);margin:0;">
+                    1. JADWAL COUNTDOWN TIMER
+                  </h3>
+                  <span class="zine-tag-yellow" style="font-size:0.65rem;">HOME BANNER</span>
                 </div>
 
-                <!-- Quick Load Sample Buttons -->
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-                  <button type="button" class="btn-brutal-dark btn-brutal-sm" id="btnLoadValidSample" style="font-size:0.68rem;padding:4px 8px;">
-                    📋 Contoh Order Web (Valid)
-                  </button>
-                  <button type="button" class="btn-brutal-dark btn-brutal-sm" id="btnLoadInvalidSample" style="font-size:0.68rem;padding:4px 8px;color:#f87171;border-color:#ef4444;">
-                    ⚠️ Tanpa Kode Order (Uji Guardrail)
-                  </button>
-                  <button type="button" class="btn-brutal-dark btn-brutal-sm" id="btnLoadOtherBankSample" style="font-size:0.68rem;padding:4px 8px;color:#facc15;border-color:#eab308;">
-                    🚫 Tanya Bank Lain (Uji Guardrail)
-                  </button>
-                  <button type="button" class="btn-brutal-dark btn-brutal-sm" id="btnLoadProofSample" style="font-size:0.68rem;padding:4px 8px;color:#38bdf8;border-color:#38bdf8;">
-                    📸 Kirim Bukti Transfer
-                  </button>
+                <div class="form-group-brutal" style="margin-bottom:12px;">
+                  <label class="form-label-brutal">JUDUL CAMPAIGN *</label>
+                  <input type="text" id="fsCampaignTitle" class="form-input-brutal" placeholder="e.g. LIMITED DISPATCH" style="background:#0a0a0a;color:#FFF;">
                 </div>
 
-                <!-- Textarea input -->
                 <div class="form-group-brutal" style="margin-bottom:14px;">
-                  <textarea id="csInputMessage" class="form-input-brutal" style="height:130px;font-family:monospace;font-size:0.8rem;background:#0a0a0a;line-height:1.4;" placeholder="Paste pesan WhatsApp masuk dari pembeli di sini..."></textarea>
+                  <label class="form-label-brutal">SUBTITLE / KETERANGAN PROMO</label>
+                  <input type="text" id="fsCampaignSubtitle" class="form-input-brutal" placeholder="e.g. POTONGAN HARGA S/D 30% // BERAKHIR MALAM INI" style="background:#0a0a0a;color:#FFF;">
                 </div>
 
-                <!-- Process Button -->
-                <div style="display:flex;gap:10px;margin-bottom:20px;">
-                  <button type="button" id="btnCsProcessMessage" class="btn-brutal-yellow" style="flex:1;padding:10px;font-size:0.85rem;cursor:pointer;">
-                    ⚡ EKSTRAK DATA &amp; JALANKAN WORKFLOW
-                  </button>
-                  <button type="button" id="btnCsClearInput" class="btn-brutal-dark" style="padding:10px 14px;cursor:pointer;">
-                    RESET
-                  </button>
-                </div>
-
-                <!-- Extracted Metadata Card -->
-                <div id="csExtractedBox" style="display:none;background:#181818;border:1px solid #333;padding:16px;margin-bottom:20px;">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                    <span style="font-family:var(--font-headline);font-size:1rem;color:var(--accent-yellow);">
-                      HASIL DETEKSI ENTITAS PESAN:
-                    </span>
-                    <span id="csGuardrailStatus" style="font-family:var(--font-mono-sub);font-size:0.7rem;padding:2px 8px;font-weight:700;"></span>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">WAKTU MULAI *</label>
+                    <input type="datetime-local" id="fsStartTimeInput" class="form-input-brutal" style="background:#0a0a0a;color:#FFF;font-size:0.75rem;">
                   </div>
-
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.78rem;margin-bottom:12px;">
-                    <div><span style="color:#888;">KODE ORDER:</span> <strong id="csMetaOrderId" style="color:#FFF;">-</strong></div>
-                    <div><span style="color:#888;">NAMA PEMBELI:</span> <strong id="csMetaCustomer" style="color:#FFF;">-</strong></div>
-                    <div><span style="color:#888;">WHATSAPP:</span> <strong id="csMetaPhone" style="color:#FFF;">-</strong></div>
-                    <div><span style="color:#888;">TOTAL TAGIHAN:</span> <strong id="csMetaTotal" style="color:var(--accent-yellow);">-</strong></div>
-                  </div>
-                  <div style="font-size:0.75rem;margin-bottom:8px;">
-                    <span style="color:#888;">ALAMAT DROP:</span> <span id="csMetaAddress" style="color:#DDD;">-</span>
-                  </div>
-                  <div style="font-size:0.75rem;">
-                    <span style="color:#888;">ITEMS:</span> <span id="csMetaItems" style="color:#AAA;">-</span>
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">WAKTU BERAKHIR *</label>
+                    <input type="datetime-local" id="fsEndTimeInput" class="form-input-brutal" style="background:#0a0a0a;color:#FFF;font-size:0.75rem;">
                   </div>
                 </div>
 
-                <!-- Manual Phase Generator Buttons -->
-                <div style="margin-bottom:16px;">
-                  <label class="form-label-brutal" style="font-size:0.72rem;margin-bottom:8px;">
-                    PILIH TINDAKAN / TEMPLATE FASE UNTUK PESANAN INI:
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--font-mono-sub);font-size:0.75rem;color:#FFF;">
+                    <input type="checkbox" id="fsToggleActive" checked style="accent-color:var(--accent-pink);width:16px;height:16px;">
+                    <span>STATUS FLASH SALE AKTIF DI HOME</span>
                   </label>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    <button type="button" id="btnCsActionPhase1" class="btn-brutal-dark" style="font-size:0.75rem;padding:8px;text-align:left;border-color:var(--accent-yellow);color:#FFF;">
-                      <span style="color:var(--accent-yellow);font-weight:900;">[FASE 1]</span> Instruksi Bayar
-                    </button>
-                    <button type="button" id="btnCsActionPhase2" class="btn-brutal-dark" style="font-size:0.75rem;padding:8px;text-align:left;border-color:#38bdf8;color:#FFF;">
-                      <span style="color:#38bdf8;font-weight:900;">[FASE 2]</span> Verifikasi (PAID)
-                    </button>
-                    <button type="button" id="btnCsActionPhase3" class="btn-brutal-dark" style="font-size:0.75rem;padding:8px;text-align:left;border-color:#a855f7;color:#FFF;">
-                      <span style="color:#a855f7;font-weight:900;">[FASE 3]</span> Update Resi Kirim
-                    </button>
-                    <button type="button" id="btnCsActionPhase4" class="btn-brutal-dark" style="font-size:0.75rem;padding:8px;text-align:left;border-color:var(--accent-pink);color:#FFF;">
-                      <span style="color:var(--accent-pink);font-weight:900;">[FASE 4]</span> Follow-Up &amp; Ulasan
-                    </button>
-                  </div>
                 </div>
 
-                <!-- Generated Official Output Box -->
-                <div>
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                    <label class="form-label-brutal" style="margin:0;font-size:0.75rem;">
-                      TEMPLAT RESPON RESMI CS ONLINE STORE:
-                    </label>
-                    <span id="csCurrentPhaseTag" class="zine-tag-yellow" style="font-size:0.65rem;">TEMPLATE PREVIEW</span>
-                  </div>
-
-                  <div class="form-group-brutal" style="margin-bottom:12px;">
-                    <textarea id="csGeneratedOutput" class="form-input-brutal" style="height:170px;font-family:monospace;font-size:0.8rem;background:#080808;color:#4ade80;line-height:1.45;border-color:#333;" readonly placeholder="Respons chat otomatis yang siap dikirim akan muncul di sini..."></textarea>
-                  </div>
-
-                  <!-- Copy & Open WhatsApp Actions -->
-                  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                    <button type="button" id="btnCsCopyText" class="btn-brutal-yellow" style="flex:1;padding:10px 16px;font-size:0.85rem;cursor:pointer;">
-                      📋 SALIN TEKS WHATSAPP
-                    </button>
-                    <a id="btnCsSendDirectWa" href="#" target="_blank" class="btn-brutal-pink" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;font-size:0.85rem;text-decoration:none;background:#22c55e;border-color:#16a34a;color:#000;font-weight:800;">
-                      💬 BUKA CHAT PEMBELI (WA.ME) →
-                    </a>
-                  </div>
-                </div>
-
+                <button type="button" id="btnSaveFsSchedule" class="btn-brutal-yellow" style="width:100%;padding:10px;font-size:0.85rem;cursor:pointer;">
+                  💾 SIMPAN JADWAL COUNTDOWN
+                </button>
               </div>
 
-              <!-- RIGHT COLUMN: INTERACTIVE LIVE CHAT SIMULATOR (SMARTPHONE VIEW) -->
-              <div class="card-brutal-dark" style="background:#0c0c0c;border:2px solid #282828;padding:20px;box-shadow:6px 6px 0px #000;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #222;">
-                  <div style="display:flex;align-items:center;gap:10px;">
-                    <div style="width:36px;height:36px;background:var(--accent-yellow);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;">
-                      <span class="material-symbols-outlined" style="font-size:20px;">support_agent</span>
-                    </div>
-                    <div>
-                      <div style="font-weight:800;color:#FFF;font-size:0.9rem;">CS Online Store (MUSTAZ)</div>
-                      <div style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#4ade80;">● Online • Virtual Assistant</div>
-                    </div>
-                  </div>
-                  <button type="button" id="btnResetChatSim" class="btn-brutal-dark btn-brutal-sm" style="font-size:0.65rem;padding:3px 8px;">
-                    BERSIHKAN CHAT
-                  </button>
+              <!-- Right Card: Add Product to Flash Sale -->
+              <div class="card-brutal-dark" style="background:#111;border:2px solid #282828;padding:24px;box-shadow:6px 6px 0px #000;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid #222;padding-bottom:10px;">
+                  <h3 style="font-family:var(--font-headline);font-size:1.3rem;color:var(--accent-pink);margin:0;">
+                    2. DAFTARKAN PRODUK PROMO
+                  </h3>
+                  <span class="zine-tag-pink" style="font-size:0.65rem;">DISCOUNT &amp; STOCK</span>
                 </div>
 
-                <!-- Chat Messages Scroll Container -->
-                <div id="csChatBox" style="height:440px;overflow-y:auto;background:#050505;border:1px solid #222;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:12px;font-size:0.8rem;line-height:1.4;">
-                  <!-- Initial Assistant Greeting -->
-                  <div style="align-self:flex-start;max-width:85%;background:#1a1a1a;border:1px solid #333;border-left:3px solid var(--accent-yellow);padding:10px 12px;color:#EEE;border-radius:2px;">
-                    <div style="font-size:0.68rem;color:var(--accent-yellow);font-weight:700;margin-bottom:4px;">CS ONLINE STORE</div>
-                    Halo Kak! Selamat datang di Direct WhatsApp <strong>MUSTAZ CRAFT</strong>. Ada yang bisa kami bantu seputar visor helm custom atau transaksi pesanan web Anda hari ini? 👋
-                    <div style="text-align:right;font-size:0.6rem;color:#666;margin-top:4px;">10:00</div>
+                <div class="form-group-brutal" style="margin-bottom:12px;">
+                  <label class="form-label-brutal">PILIH PRODUK DARI KATALOG *</label>
+                  <select id="fsProductSelect" class="form-input-brutal" style="background:#0a0a0a;color:#FFF;">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">HARGA ASLI (NORMAL)</label>
+                    <input type="text" id="fsOriginalPriceDisplay" class="form-input-brutal" readonly style="background:#181818;color:#AAA;" placeholder="Rp 0">
+                  </div>
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">HARGA PROMO FLASH SALE (RP) *</label>
+                    <input type="number" id="fsPriceInput" class="form-input-brutal" placeholder="e.g. 245000" style="background:#0a0a0a;color:#4ade80;font-weight:700;">
                   </div>
                 </div>
 
-                <!-- Chat Input Controls -->
-                <div style="display:flex;gap:8px;">
-                  <input type="text" id="csSimInput" class="form-input-brutal" style="flex:1;padding:8px 12px;font-size:0.8rem;background:#111;" placeholder="Ketik pesan pembeli di sini...">
-                  <button type="button" id="btnCsSimSend" class="btn-brutal-yellow" style="padding:8px 16px;font-size:0.8rem;cursor:pointer;">
-                    KIRIM
-                  </button>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                  <div class="form-group-brutal">
+                    <label class="form-label-brutal">KUOTA STOK PROMO *</label>
+                    <input type="number" id="fsStockInput" class="form-input-brutal" placeholder="e.g. 5" style="background:#0a0a0a;color:#FFF;">
+                  </div>
+                  <div class="form-group-brutal" style="display:flex;flex-direction:column;justify-content:center;">
+                    <span style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;margin-bottom:4px;">ESTIMASI DISKON:</span>
+                    <span id="fsDiscountPreview" class="zine-tag-pink" style="align-self:flex-start;font-size:0.85rem;padding:4px 10px;">-0%</span>
+                  </div>
                 </div>
-                <div style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#777;margin-top:6px;">
-                  Tip: Coba ketik <em>"Berikut bukti transfer pesanan #MSTZ-9942"</em>, <em>"Kapan resi dikirim?"</em>, atau <em>"Paket sudah sampai"</em> untuk menguji respon bot!
-                </div>
+
+                <button type="button" id="btnAddFsProduct" class="btn-brutal-pink" style="width:100%;padding:10px;font-size:0.85rem;cursor:pointer;">
+                  + MASUKKAN KE FLASH SALE
+                </button>
               </div>
 
             </div>
 
-            <!-- Fast Actions Table for Store Orders -->
-            <div class="card-brutal-dark" style="background:#111;border:2px solid #282828;padding:24px;">
+            <!-- Active Flash Sale Products Table -->
+            <div class="card-brutal-dark" style="background:#111;border:2px solid #282828;padding:24px;box-shadow:6px 6px 0px #000;">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
                 <div>
                   <h3 style="font-family:var(--font-headline);font-size:1.5rem;color:#FFF;margin:0 0 4px;">
-                    ACTIVE STORE ORDERS // FAST WORKFLOW ACTIONS
+                    DAFTAR PRODUK FLASH SALE
                   </h3>
                   <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
-                    PILIH PESANAN DARI DATABASE TOKO UNTUK MENGIRIMKAN RESPON FASE SECARA LANGSUNG DENGAN 1-KLIK.
+                    PRODUK YANG DITAMPILKAN DI SECTION FLASH SALE BERDASARKAN JADWAL AKTIF.
                   </p>
                 </div>
-                <span class="zine-tag-pink">STATUS SYNCED TO SUPABASE &amp; LOCAL</span>
+                <span class="zine-tag-yellow" id="fsActiveCountBadge">0 PRODUK PROMO</span>
               </div>
 
               <div class="table-container" style="background:#0c0c0c;border:1px solid #222;overflow-x:auto;">
                 <table style="width:100%;border-collapse:collapse;text-align:left;">
                   <thead>
                     <tr style="border-bottom:2px solid #333;background:#181818;font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);text-transform:uppercase;">
-                      <th style="padding:10px 14px;">KODE ORDER</th>
-                      <th style="padding:10px 14px;">PEMBELI</th>
-                      <th style="padding:10px 14px;">TAGIHAN</th>
-                      <th style="padding:10px 14px;">STATUS SAAT INI</th>
-                      <th style="padding:10px 14px;text-align:right;">AKSI FASE WHATSAPP</th>
+                      <th style="padding:12px 14px;">PRODUK</th>
+                      <th style="padding:12px 14px;">HARGA NORMAL</th>
+                      <th style="padding:12px 14px;">HARGA PROMO</th>
+                      <th style="padding:12px 14px;text-align:center;">DISKON</th>
+                      <th style="padding:12px 14px;text-align:center;">KUOTA PROMO</th>
+                      <th style="padding:12px 14px;text-align:center;">STATUS PROMO</th>
+                      <th style="padding:12px 14px;text-align:right;">AKSI</th>
                     </tr>
                   </thead>
-                  <tbody id="csOrdersTbody">
+                  <tbody id="fsProductsTbody">
                     <!-- Populated dynamically -->
                   </tbody>
                 </table>
               </div>
             </div>
 
-          </div><!-- /#panel-whatsapp-cs -->
+          </div><!-- /#panel-flash-sale -->
 
           <!-- RESI INPUT MODAL (FASE 3 ACTION) -->
           <div class="modal-backdrop" id="csResiModal" style="display:none;">

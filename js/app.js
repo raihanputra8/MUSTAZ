@@ -5,7 +5,8 @@
 import { initCart, openCart } from './components/cart.js';
 import { initNavbar } from './components/navbar.js';
 import { initPartsPage, initHelmetsPage, initChoppersPage, openProductDetail } from './components/products.js';
-import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts } from './services/cartService.js';
+import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts, getFlashSaleConfig, getActiveFlashSaleProducts, formatRupiah } from './services/cartService.js';
+import { getProductImageUrl } from './config.js';
 import { showToast } from './components/toast.js';
 import { showBrutalConfirm, showBrutalAlert, showBrutalFormModal } from './components/modal.js';
 
@@ -101,18 +102,112 @@ async function initApp() {
     });
   });
 
-  // 7. Live Flash Sale Countdown Timer
+  // 7. Live Flash Sale Countdown Timer & Dynamic Grid
   function initFlashSaleTimer() {
     const hoursEl = document.getElementById('fsHours');
     const minsEl = document.getElementById('fsMins');
     const secsEl = document.getElementById('fsSecs');
+    const headingEl = document.getElementById('fsCampaignHeading');
+    const subHeadingEl = document.getElementById('fsCampaignSubheading');
+    const gridEl = document.getElementById('flashSaleGrid');
     if (!hoursEl || !minsEl || !secsEl) return;
+
+    const cfg = getFlashSaleConfig();
+    if (headingEl && cfg.title) headingEl.textContent = cfg.title;
+    if (subHeadingEl && cfg.subtitle) subHeadingEl.textContent = cfg.subtitle;
+
+    function renderDynamicFlashSaleGrid() {
+      if (!gridEl) return;
+      const activeProducts = getActiveFlashSaleProducts();
+      if (!activeProducts || activeProducts.length === 0) return;
+
+      gridEl.innerHTML = activeProducts.map((p, idx) => {
+        const origPrice = Number(p.price) || 0;
+        const salePrice = Number(p.flash_sale_price) || origPrice;
+        const discountPct = origPrice > 0 && salePrice < origPrice ? Math.round(((origPrice - salePrice) / origPrice) * 100) : 25;
+        const stockLeft = p.flash_sale_stock ?? 5;
+        const stockPercent = Math.min(100, Math.max(15, Math.round((stockLeft / 10) * 100)));
+        const imgUrl = getProductImageUrl(p.image);
+        const tagClass = idx % 2 === 0 ? 'zine-tag-yellow' : 'zine-tag-pink';
+        const tagLabel = p.badge || (idx % 2 === 0 ? 'ACID DROP' : 'HOT DROP');
+
+        return `
+          <article class="card-flash-sale">
+            <span class="flash-discount-tag">-${discountPct}%</span>
+            <div class="card-img-box">
+              <img src="${imgUrl}" onerror="this.onerror=null;this.src='assets/images/placeholder.jpg';" alt="${p.name}">
+            </div>
+            <span class="${tagClass}" style="align-self:flex-start;margin-bottom:6px;">${tagLabel}</span>
+            <h3 style="font-family:var(--font-headline);font-size:1.45rem;color:#000;margin-bottom:4px;line-height:0.95;">
+              ${p.name}
+            </h3>
+            <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#555;margin-bottom:8px;line-height:1.4;">
+              ${p.desc || 'Premium hand-forged custom hardware with precision fit.'}
+            </p>
+
+            <div class="flash-stock-wrap">
+              <div class="flash-stock-info">
+                <span>STOCK FLASH:</span>
+                <span style="color:var(--accent-pink);">SISA ${stockLeft} PCS</span>
+              </div>
+              <div class="flash-stock-bar">
+                <div class="flash-stock-fill" style="width: ${stockPercent}%;"></div>
+              </div>
+            </div>
+
+            <div class="flash-price-row">
+              <div>
+                <span class="flash-price-orig">${formatRupiah(origPrice)}</span>
+                <div class="flash-price-sale">${formatRupiah(salePrice)}</div>
+              </div>
+              <button class="btn-brutal-pink btn-brutal-sm btn-flash-grab" data-add-to-cart="${p.id}" data-price="${salePrice}" style="margin-left:auto;">
+                + GRAB
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      // Wire buttons
+      gridEl.querySelectorAll('.btn-flash-grab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const partId = btn.dataset.addToCart;
+          const part = getDynamicParts().find(p => p.id === partId);
+          if (!part) return;
+          const price = btn.dataset.price ? parseInt(btn.dataset.price, 10) : part.price;
+          addToCart({ ...part, price });
+          showToast({
+            title: part.name,
+            message: `FLASH SALE GRABBED! ${getCartCount()} item(s) in garage.`,
+            image: part.image,
+            actionText: 'LIHAT KERANJANG',
+            onAction: openCart
+          });
+        });
+      });
+    }
+
+    renderDynamicFlashSaleGrid();
 
     function tick() {
       const now = new Date();
-      const endOfDay = new Date(now);
-      endOfDay.setHours(23, 59, 59, 999);
-      const totalSeconds = Math.max(0, Math.floor((endOfDay - now) / 1000));
+      const targetEnd = cfg.endTime ? new Date(cfg.endTime) : null;
+      let totalSeconds = 0;
+
+      if (targetEnd && !isNaN(targetEnd.getTime())) {
+        totalSeconds = Math.max(0, Math.floor((targetEnd - now) / 1000));
+      } else {
+        const endOfDay = new Date(now);
+        endOfDay.setHours(23, 59, 59, 999);
+        totalSeconds = Math.max(0, Math.floor((endOfDay - now) / 1000));
+      }
+
+      if (cfg.isActive === false || totalSeconds <= 0) {
+        hoursEl.textContent = '00';
+        minsEl.textContent = '00';
+        secsEl.textContent = '00';
+        return;
+      }
 
       const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
       const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');

@@ -43,6 +43,8 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-1', type: 'parts', category: 'Acrylic Pet',
     name: 'Y-TWO ROOF VISOR', slug: 'y-two-roof-visor', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
     price: 350000, original_price: 450000, badge: 'BESTSELLER', status: 'Active', stock: 12,
+    is_flash_sale: true, flash_sale_price: 245000, flash_sale_stock: 3,
+    flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
     image: getProductImageUrl('Product1.png'),
     fallback: 'assets/images/Product1.png'
   },
@@ -50,6 +52,8 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-2', type: 'parts', category: 'Leather Pet',
     name: 'STUDDED LID FLAME VISOR', slug: 'studded-lid-flame-visor', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
     price: 380000, original_price: null, badge: 'HOT DROP', status: 'Active', stock: 8,
+    is_flash_sale: true, flash_sale_price: 285000, flash_sale_stock: 5,
+    flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
     image: getProductImageUrl('Product2.png'),
     fallback: 'assets/images/Product2.png'
   },
@@ -57,6 +61,8 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-3', type: 'parts', category: 'Retro Visor',
     name: 'CHECKER RACER DUCKBILL', slug: 'checker-racer-duckbill', sub: 'Monochrome Checkered Motocross Visor // Chrome Snaps',
     price: 280000, original_price: 320000, badge: 'LIMITED', status: 'Active', stock: 15,
+    is_flash_sale: true, flash_sale_price: 210000, flash_sale_stock: 4,
+    flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
     image: getProductImageUrl('Product3.png'),
     fallback: 'assets/images/Product3.png'
   },
@@ -64,6 +70,7 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-4', type: 'parts', category: 'Drop Sets',
     name: 'MUSTAZ OFFICIAL BUNDLE SET', slug: 'mustaz-official-bundle-set', sub: 'Pet Visor + Custom Packaging Bag + Zine + Sticker Pack',
     price: 450000, original_price: 520000, badge: 'BUNDLE', status: 'Active', stock: 10,
+    is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('mustaz_booth_event.png'),
     fallback: 'assets/images/mustaz_booth_event.png'
   },
@@ -71,6 +78,7 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-5', type: 'parts', category: 'Acrylic Pet',
     name: 'ACID YELLOW SPIKED PET', slug: 'acid-yellow-spiked-pet', sub: 'Acid Yellow High-Voltage Acrylic // Punk Spike Hardware',
     price: 360000, original_price: null, badge: 'NEW', status: 'Active', stock: 18,
+    is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('Product1.png'),
     fallback: 'assets/images/Product1.png'
   },
@@ -78,6 +86,7 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-6', type: 'parts', category: 'Retro Visor',
     name: 'SMOKE TINT SHORT PEAK', slug: 'smoke-tint-short-peak', sub: 'Dark Smoke Polycarbonate // Universal 3-Snap Fit',
     price: 220000, original_price: 270000, badge: 'SALE', status: 'Active', stock: 24,
+    is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('Product2.png'),
     fallback: 'assets/images/Product2.png'
   },
@@ -85,6 +94,7 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-7', type: 'parts', category: 'Leather Pet',
     name: 'VINTAGE HIGHWAY EAR GUARDS', slug: 'vintage-highway-ear-guards', sub: 'Vintage Leather Side Covers with Brass Rivets',
     price: 195000, original_price: null, badge: 'CORE', status: 'Active', stock: 14,
+    is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('Product3.png'),
     fallback: 'assets/images/Product3.png'
   },
@@ -92,10 +102,129 @@ export const DEFAULT_PARTS_DATA = [
     id: 'pet-8', type: 'parts', category: 'Drop Sets',
     name: 'MUSTAZ EVENT EDITION PACK', slug: 'mustaz-event-edition-pack', sub: 'Special Event Pack // Limited Screenprinted Ziplock',
     price: 490000, original_price: 550000, badge: 'ARCHIVE', status: 'Active', stock: 5,
+    is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('mustaz_booth_event.png'),
     fallback: 'assets/images/mustaz_booth_event.png'
   }
 ];
+
+export const FLASH_SALE_CONFIG_KEY = 'mustaz_flash_sale_config_v1';
+let _flashSaleConfigMem = null;
+
+export function getFlashSaleConfig() {
+  const defaultStart = new Date();
+  const defaultEnd = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const defaults = {
+    active: true,
+    isActive: true,
+    title: 'LIMITED DISPATCH',
+    subtitle: 'POTONGAN HARGA S/D 30% // BERAKHIR MALAM INI',
+    startTime: defaultStart.toISOString(),
+    endTime: defaultEnd.toISOString()
+  };
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem(FLASH_SALE_CONFIG_KEY);
+      if (saved) return { ...defaults, ...JSON.parse(saved) };
+    } else if (_flashSaleConfigMem) {
+      return { ...defaults, ..._flashSaleConfigMem };
+    }
+  } catch {}
+  return defaults;
+}
+
+export function saveFlashSaleConfig(config) {
+  try {
+    const current = getFlashSaleConfig();
+    const updated = { ...current, ...config };
+    if (config.isActive !== undefined && config.active === undefined) {
+      updated.active = config.isActive;
+    }
+    _flashSaleConfigMem = updated;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(FLASH_SALE_CONFIG_KEY, JSON.stringify(updated));
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('flash-sale:updated', { detail: updated }));
+    }
+    return updated;
+  } catch (err) {
+    console.error('Failed to save flash sale config:', err);
+    return config;
+  }
+}
+
+export function getActiveFlashSaleProducts() {
+  const config = getFlashSaleConfig();
+  const isPromoActive = config.isActive !== undefined ? config.isActive : (config.active !== false);
+  if (!isPromoActive) return [];
+
+  const now = new Date().getTime();
+  const start = config.startTime ? new Date(config.startTime).getTime() : 0;
+  const end = config.endTime ? new Date(config.endTime).getTime() : Infinity;
+
+  if (now < start || now > end) return [];
+
+  const allParts = getDynamicParts();
+  return allParts.filter(p => {
+    if (!p.is_flash_sale) return false;
+    const price = Number(p.flash_sale_price);
+    if (!price || price <= 0) return false;
+    if (p.flash_sale_start && new Date(p.flash_sale_start).getTime() > now) return false;
+    if (p.flash_sale_end && new Date(p.flash_sale_end).getTime() < now) return false;
+    return true;
+  });
+}
+
+export function setProductFlashSale(productId, fsData) {
+  const parts = getDynamicParts();
+  const target = parts.find(p => p.id === productId);
+  if (!target) return null;
+
+  target.is_flash_sale = Boolean(fsData.is_flash_sale);
+  if (fsData.flash_sale_price !== undefined) target.flash_sale_price = Number(fsData.flash_sale_price) || 0;
+  else if (fsData.price !== undefined) target.flash_sale_price = Number(fsData.price) || 0;
+
+  if (fsData.flash_sale_stock !== undefined) target.flash_sale_stock = Number(fsData.flash_sale_stock) || 0;
+  else if (fsData.stock !== undefined) target.flash_sale_stock = Number(fsData.stock) || 0;
+
+  if (fsData.flash_sale_start !== undefined) target.flash_sale_start = fsData.flash_sale_start;
+  else if (fsData.start !== undefined) target.flash_sale_start = fsData.start;
+
+  if (fsData.flash_sale_end !== undefined) target.flash_sale_end = fsData.flash_sale_end;
+  else if (fsData.end !== undefined) target.flash_sale_end = fsData.end;
+
+  saveDynamicParts(parts);
+
+  // Sync to cloud
+  import('./supabaseService.js').then(sb => {
+    sb.updateCloudProduct(productId, {
+      is_flash_sale: target.is_flash_sale,
+      flash_sale_price: target.flash_sale_price,
+      flash_sale_stock: target.flash_sale_stock,
+      flash_sale_start: target.flash_sale_start,
+      flash_sale_end: target.flash_sale_end
+    }).catch(() => {});
+  }).catch(() => {});
+
+  return target;
+}
+
+export function deductProductStock(productId, quantity = 1) {
+  const parts = getDynamicParts();
+  const target = parts.find(p => p.id === productId);
+  if (!target) return;
+
+  if (typeof target.stock === 'number') {
+    target.stock = Math.max(0, target.stock - quantity);
+  }
+  if (target.is_flash_sale && typeof target.flash_sale_stock === 'number') {
+    target.flash_sale_stock = Math.max(0, target.flash_sale_stock - quantity);
+  }
+
+  saveDynamicParts(parts);
+}
 
 const PRODUCTS_STORAGE_KEY = 'mustaz_catalog_products_v3';
 
