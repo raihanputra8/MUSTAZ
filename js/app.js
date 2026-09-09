@@ -379,7 +379,7 @@ async function initApp() {
 
       dots.forEach((dot, idx) => {
         if (idx === activeIdx) {
-          dot.className = 'w-2.5 h-1.5 rounded-full bg-yellow-400 transition-all cursor-pointer';
+          dot.className = 'w-2 h-2 rounded-full bg-yellow-400 transition-all cursor-pointer';
         } else {
           dot.className = 'w-1.5 h-1.5 rounded-full bg-gray-600 transition-all cursor-pointer';
         }
