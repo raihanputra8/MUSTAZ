@@ -345,12 +345,12 @@ function renderParts(data) {
     
     return `
       <article class="part-card group" data-category="${part.category}" style="${tiltStyle}transition:all 0.2s ease;">
-        <div style="background:#FFFFFF;color:#000;border:3px solid #000;box-shadow:8px 8px 0px var(--accent-pink);padding:18px;position:relative;display:flex;flex-direction:column;height:100%;">
+        <div class="part-card-inner" style="background:#FFFFFF;color:#000;border:3px solid #000;box-shadow:8px 8px 0px var(--accent-pink);padding:18px;position:relative;display:flex;flex-direction:column;height:100%;">
           <div class="tape-decor tape-top-left" style="background:rgba(255,230,0,0.75);"></div>
           
           <!-- Top Row: Number + Category Tag + Tape -->
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <span style="font-family:var(--font-headline);font-weight:900;font-size:1.4rem;color:#000;line-height:1;">
+          <div class="part-top-row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span class="part-num" style="font-family:var(--font-headline);font-weight:900;font-size:1.4rem;color:#000;line-height:1;">
               ${num}
             </span>
             <div style="display:flex;align-items:center;gap:6px;">
@@ -359,14 +359,14 @@ function renderParts(data) {
                   [DRAFT]
                 </span>
               ` : ''}
-              <span style="background:#000;color:#FFF;font-family:var(--font-mono-sub);font-weight:800;font-size:0.68rem;padding:3px 8px;text-transform:uppercase;letter-spacing:0.12em;">
+              <span class="part-cat-badge" style="background:#000;color:#FFF;font-family:var(--font-mono-sub);font-weight:800;font-size:0.68rem;padding:3px 8px;text-transform:uppercase;letter-spacing:0.12em;">
                 ${part.category}
               </span>
             </div>
           </div>
 
           <!-- Product Image with raw border (4:5 proportional ratio) -->
-          <div style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;cursor:pointer;" class="quick-view-trigger" data-id="${part.id}">
+          <div class="part-img-box quick-view-trigger" style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;cursor:pointer;" data-id="${part.id}">
             ${part.badge ? `<div class="zine-tag-pink" style="position:absolute;top:8px;left:8px;z-index:10;">${part.badge}</div>` : ''}
             <img src="${part.image}" alt="${part.name}"
               style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);transition:all 0.3s ease;"
@@ -376,17 +376,17 @@ function renderParts(data) {
           </div>
 
           <!-- Product Info -->
-          <div style="flex-grow:1;display:flex;flex-direction:column;">
-            <h3 style="font-family:var(--font-headline);font-size:1.35rem;color:#000;text-transform:uppercase;line-height:0.95;margin-bottom:6px;cursor:pointer;" class="quick-view-trigger" data-id="${part.id}">
+          <div class="part-info" style="flex-grow:1;display:flex;flex-direction:column;">
+            <h3 class="part-title quick-view-trigger" style="font-family:var(--font-headline);font-size:1.35rem;color:#000;text-transform:uppercase;line-height:0.95;margin-bottom:6px;cursor:pointer;" data-id="${part.id}">
               ${part.name}
             </h3>
-            <p style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#555;text-transform:uppercase;margin-bottom:14px;">
+            <p class="part-sub" style="font-family:var(--font-mono-sub);font-size:0.78rem;color:#555;text-transform:uppercase;margin-bottom:14px;">
               ${part.sub}
             </p>
 
             <!-- Price & Stock (Usulan 4) -->
-            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #000;padding-top:10px;margin-top:auto;margin-bottom:12px;">
-              <span style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:var(--accent-pink);">
+            <div class="part-price-row" style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #000;padding-top:10px;margin-top:auto;margin-bottom:12px;">
+              <span class="part-price" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:var(--accent-pink);">
                 ${formatRupiah(part.price)}
               </span>
               ${part.stock <= 3 && part.stock > 0 ? `
@@ -409,7 +409,7 @@ function renderParts(data) {
             </div>
 
             <!-- Action Buttons: Add to Cart + Quick View -->
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+            <div class="part-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
               <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.92rem;justify-content:center;letter-spacing:0.04em;">
                 + KERANJANG
               </button>

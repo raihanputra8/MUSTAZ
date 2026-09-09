@@ -238,6 +238,10 @@ export function initNavbar() {
             <span style="font-size:0.75rem;color:#888;">STATUS: <strong style="color:${isAdmin ? 'var(--accent-yellow)' : '#4ade80'};">${isAdmin ? 'ADMIN' : 'USER BIASA'}</strong></span>
             <span style="font-size:0.7rem;color:#AAA;">${profile.email || ''}</span>
           </div>
+          <a href="${isAdmin ? 'admin.html' : 'account.html'}" class="mobile-nav-link" style="padding:10px 0;font-size:1.05rem;color:var(--accent-yellow);display:flex;align-items:center;justify-content:space-between;text-decoration:none;border-bottom:1px solid #222;margin-bottom:12px;">
+            <span>${isAdmin ? 'ADMIN DASHBOARD' : 'AKUN SAYA // PROFILE'}</span>
+            <span class="material-symbols-outlined">${isAdmin ? 'shield_person' : 'person'}</span>
+          </a>
           <button id="mobileNavLogoutBtn" style="width:100%;background:#b91c1c;color:#FFF;border:2px solid #ef4444;font-weight:900;padding:10px;font-family:var(--font-headline);display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">
             <span class="material-symbols-outlined">logout</span>
             <span>LOG OUT (GANTI AKUN)</span>

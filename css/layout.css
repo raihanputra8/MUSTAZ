@@ -364,7 +364,7 @@
   display: block;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .footer-torn-transition {
     height: 240px;
   }
@@ -563,7 +563,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .wrap, .wrap-tight {
     padding-left: 16px !important;
     padding-right: 16px !important;
@@ -989,7 +989,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .footer-manifesto {
     padding: 70px 16px 110px;
   }
