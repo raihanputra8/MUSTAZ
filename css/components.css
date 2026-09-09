@@ -46,35 +46,37 @@
   margin: 32px 0;
 }
 
-/* ── BRUTALIST BUTTONS ── */
+/* ── BRUTALIST BUTTONS (COMPACT & SLEEK PROPORTIONS) ── */
 .btn-brutal-pink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: var(--accent-pink);
   color: #FFFFFF;
   font-family: var(--font-headline);
-  font-size: 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 14px 28px;
+  padding: 8px 16px;
   border: 2px solid #000000;
-  box-shadow: 4px 4px 0px #FFFFFF;
+  box-shadow: 3px 3px 0px #FFFFFF;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
+  line-height: 1.2;
 }
 
 .btn-brutal-pink:hover {
   background: var(--accent-yellow);
   color: #000000;
-  box-shadow: 4px 4px 0px var(--accent-pink);
-  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0px var(--accent-pink);
+  transform: translate(-1.5px, -1.5px);
 }
 
 .btn-brutal-pink:active {
-  transform: translate(2px, 2px);
+  transform: translate(1px, 1px);
   box-shadow: 1px 1px 0px #000000;
 }
 
@@ -82,79 +84,85 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: #FFFFFF;
   color: #000000;
   font-family: var(--font-headline);
-  font-size: 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 14px 28px;
+  padding: 8px 16px;
   border: 2px solid #000000;
-  box-shadow: 4px 4px 0px var(--accent-pink);
+  box-shadow: 3px 3px 0px var(--accent-pink);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
+  line-height: 1.2;
 }
 
 .btn-brutal-white:hover {
   background: var(--accent-pink);
   color: #000000;
-  box-shadow: 4px 4px 0px #FFFFFF;
-  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0px #FFFFFF;
+  transform: translate(-1.5px, -1.5px);
 }
 
 .btn-brutal-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: #080808;
   color: #FFFFFF;
   font-family: var(--font-headline);
-  font-size: 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 13px 26px;
+  padding: 8px 16px;
   border: 2px solid #FFFFFF;
-  box-shadow: 4px 4px 0px var(--accent-pink);
+  box-shadow: 3px 3px 0px var(--accent-pink);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
+  line-height: 1.2;
 }
 
 .btn-brutal-ghost:hover {
   background: var(--accent-pink);
   color: #000000;
   border-color: #000000;
-  box-shadow: 4px 4px 0px #FFFFFF;
-  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0px #FFFFFF;
+  transform: translate(-1.5px, -1.5px);
 }
 
 .btn-brutal-yellow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: var(--accent-yellow);
   color: #000000;
   font-family: var(--font-headline);
-  font-size: 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 14px 28px;
+  padding: 8px 16px;
   border: 2px solid #000000;
-  box-shadow: 4px 4px 0px var(--accent-pink);
+  box-shadow: 3px 3px 0px var(--accent-pink);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   text-decoration: none;
+  line-height: 1.2;
 }
 
 .btn-brutal-yellow:hover {
   background: #FFFFFF;
   color: #000000;
-  box-shadow: 4px 4px 0px var(--accent-yellow);
-  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0px var(--accent-yellow);
+  transform: translate(-1.5px, -1.5px);
 }
 
 .btn-brutal-dark {
@@ -165,15 +173,17 @@
   background: #111111;
   color: #FFFFFF;
   font-family: var(--font-headline);
-  font-size: 1rem;
+  font-size: 0.85rem;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 12px 24px;
+  padding: 8px 16px;
   border: 2px solid #333333;
   box-shadow: 3px 3px 0px #000000;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   text-decoration: none;
+  line-height: 1.2;
 }
 
 .btn-brutal-dark:hover {
@@ -184,8 +194,25 @@
 }
 
 .btn-brutal-sm {
-  padding: 8px 16px;
-  font-size: 0.95rem;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 768px) {
+  .btn-brutal-pink,
+  .btn-brutal-white,
+  .btn-brutal-yellow,
+  .btn-brutal-ghost,
+  .btn-brutal-dark {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.06em !important;
+    border-width: 1.5px !important;
+    box-shadow: 2.5px 2.5px 0px #000 !important;
+    min-height: 34px !important;
+  }
 }
 
 /* ── ZINE BADGES & STAMPS ── */

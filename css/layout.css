@@ -1018,10 +1018,12 @@
     width: auto !important;
     text-align: center !important;
     justify-content: center !important;
-    padding: 8px 12px !important; /* py-2 px-3 */
-    font-size: 0.75rem !important; /* text-xs */
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    font-weight: 900 !important;
     min-height: 34px !important;
-    letter-spacing: 0.02em !important;
+    letter-spacing: 0.06em !important;
+    border-width: 1.5px !important;
   }
   .hero-photo-frame {
     max-width: 100% !important;
@@ -1052,23 +1054,37 @@
     box-shadow: 4px 4px 0px var(--accent-pink) !important;
   }
   .flash-sale-title {
-    font-size: 1.25rem !important;
+    font-size: 1.15rem !important;
   }
   .flash-sale-timer-wrap {
     width: 100% !important;
-    justify-content: space-between !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
     border-top: 1px dashed #333 !important;
     padding-top: 8px !important;
+    margin: 0 auto !important;
+  }
+  .timer-blocks {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
   }
   .timer-box {
-    min-width: 36px !important;
-    padding: 2px 4px !important;
+    min-width: 32px !important;
+    padding: 2px 5px !important;
   }
   .timer-box .time-val {
-    font-size: 1.1rem !important;
+    font-size: 0.95rem !important;
   }
   .timer-box .time-lbl {
-    font-size: 0.55rem !important;
+    font-size: 0.52rem !important;
+  }
+  .timer-colon {
+    font-size: 0.85rem !important;
+    padding: 0 1px !important;
   }
   .raw-paper-edge {
     position: static !important;
@@ -1083,13 +1099,30 @@
     font-size: 1.05rem !important;
   }
 
-  /* Compact Section Paddings */
+  /* Compact Section Paddings & Testimonials Touch Carousel */
   .home-drops-section,
   .home-featured-section,
   .visor-showcase-section,
   .home-story-section,
   .home-testi-section {
     padding: 24px 0 !important;
+  }
+
+  .testi-grid,
+  .testi-carousel-container {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 12px !important;
+    padding: 8px 4px 16px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .card-testi-brutal {
+    width: 85vw !important;
+    max-width: 320px !important;
+    flex-shrink: 0 !important;
+    scroll-snap-align: center !important;
   }
   .editorial-title {
     font-size: clamp(1.4rem, 5vw, 1.9rem) !important;
