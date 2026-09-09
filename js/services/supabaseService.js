@@ -311,12 +311,18 @@ export async function deleteAssetFromStorage(imageUrl) {
 /**
  * 5b. Update Order Status in Supabase
  */
-export async function updateCloudOrderStatus(orderId, status) {
+export async function updateCloudOrderStatus(orderId, status, extra = {}) {
   try {
     const safeId = encodeURIComponent(orderId.trim());
+    const body = { status };
+    if (extra.courier && (extra.resiNumber || extra.resi)) {
+      body.city = `[${extra.courier}: ${extra.resiNumber || extra.resi}]`;
+    } else if (extra.city) {
+      body.city = extra.city;
+    }
     await supabaseRest(`${CONFIG.TABLES.ORDERS}?id=eq.${safeId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ status })
+      body: JSON.stringify(body)
     });
     return true;
   } catch (err) {
@@ -330,20 +336,57 @@ export async function updateCloudOrderStatus(orderId, status) {
  */
 export async function createCloudOrder(order) {
   try {
+    const orderId = order.id || order.orderId || ('MSTZ-' + Math.floor(1000 + Math.random() * 9000));
+    const customer = (order.customer || order.customer_name || order.name || 'RIDER MUSTAZ').trim();
+    const phone = order.phone || '';
+    let city = order.city || order.address || 'INDONESIA';
+    if (order.courier && order.resi) {
+      city += ` [${order.courier}: ${order.resi}]`;
+    }
+    const fullCustomerName = (customer.includes('@') || !order.email) ? customer : `${customer} (${order.email})`;
+
+    let itemsStr = '';
+    if (typeof order.items === 'string') {
+      itemsStr = order.items;
+    } else if (Array.isArray(order.items)) {
+      itemsStr = order.items.map(i => typeof i === 'string' ? i : `${i.name} (x${i.quantity || i.qty || 1})`).join(', ');
+    }
+
     const payload = [{
-      id: order.id,
-      customer_name: order.customer,
-      items: order.items,
-      total_amount: Number(order.total),
-      status: order.status || 'PROCESSING',
-      city: order.city || 'JAKARTA',
-      phone: order.phone || ''
+      id: orderId,
+      customer_name: fullCustomerName,
+      items: itemsStr,
+      total_amount: Number(order.total || order.total_amount || 0),
+      status: order.status || 'PENDING',
+      city: city,
+      phone: phone
     }];
 
     await supabaseRest(CONFIG.TABLES.ORDERS, {
       method: 'POST',
       body: JSON.stringify(payload)
     });
+
+    // Also update local cache in localStorage
+    try {
+      const saved = localStorage.getItem('mustaz_admin_orders');
+      const list = saved ? JSON.parse(saved) : [];
+      if (!list.some(l => l.id === orderId)) {
+        list.unshift({
+          id: orderId,
+          customer: fullCustomerName,
+          items: itemsStr,
+          total: Number(order.total || order.total_amount || 0),
+          date: new Date().toISOString().split('T')[0],
+          status: order.status || 'PENDING',
+          city,
+          phone,
+          receiptImage: order.receiptImage || ''
+        });
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(list));
+      }
+    } catch {}
+
     return true;
   } catch (err) {
     console.warn('Order saved locally (cloud error):', err.message);
@@ -359,16 +402,32 @@ export const saveCloudOrder = createCloudOrder;
 export async function fetchCloudOrders() {
   try {
     const data = await supabaseRest(`${CONFIG.TABLES.ORDERS}?select=*&order=created_at.desc`);
-    if (Array.isArray(data) && data.length > 0) {
-      const mapped = data.map(o => ({
-        id: o.id,
-        customer: o.customer_name || o.customer,
-        items: o.items,
-        total: Number(o.total_amount || o.total) || 0,
-        date: o.created_at ? new Date(o.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TODAY',
-        status: o.status || 'PROCESSING'
-      }));
-      localStorage.setItem('mustaz_admin_orders', JSON.stringify(mapped));
+    if (Array.isArray(data)) {
+      const mapped = data.map(o => {
+        let courier = '';
+        let resi = '';
+        let cleanCity = o.city || 'INDONESIA';
+        const match = cleanCity.match(/\[(.*?):\s*(.*?)\]/);
+        if (match) {
+          courier = match[1].trim();
+          resi = match[2].trim();
+          cleanCity = cleanCity.replace(/\[.*?\]/, '').trim();
+        }
+
+        return {
+          id: o.id,
+          customer: o.customer_name || o.customer || 'Pelanggan',
+          items: o.items || '',
+          total: Number(o.total_amount || o.total) || 0,
+          date: o.created_at ? new Date(o.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TODAY',
+          status: o.status || 'PENDING',
+          city: cleanCity,
+          phone: o.phone || '',
+          courier,
+          resi,
+          created_at: o.created_at
+        };
+      });
       return mapped;
     }
   } catch (err) {

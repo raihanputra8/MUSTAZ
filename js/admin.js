@@ -16,8 +16,11 @@ import {
   uploadAssetWithProgress,
   deleteAssetFromStorage,
   generateSlug,
-  fetchCloudProducts
+  fetchCloudProducts,
+  fetchCloudOrders,
+  updateCloudOrderStatus
 } from './services/supabaseService.js';
+import { getSupabaseClient } from './services/supabaseClient.js';
 import { showBrutalConfirm, showBrutalAlert } from './components/modal.js';
 import { getAllReviews, updateReviewStatus, deleteReview } from './services/reviewsService.js';
 import {
@@ -758,6 +761,87 @@ async function initAdminDashboard() {
   let orderSearchTerm = '';
   let currentReceiptOrderIndex = null;
   let stagedReceiptImage = '';
+  let previousPendingCount = null;
+  let globalOpenResiModal = null;
+
+  function playOrderPingSound() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      const now = ctx.currentTime;
+      osc.frequency.setValueAtTime(587.33, now); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.28, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch (err) {
+      console.warn('[Admin] Audio ping notification error:', err);
+    }
+  }
+
+  async function syncAndRenderOrders(silent = false) {
+    try {
+      const cloudOrders = await fetchCloudOrders();
+      const localOrders = getAdminOrders();
+
+      if (cloudOrders && cloudOrders.length > 0) {
+        const cloudMap = new Map();
+        cloudOrders.forEach(co => cloudMap.set(cleanOrderId(co.id), co));
+
+        const merged = cloudOrders.map(co => {
+          const match = localOrders.find(lo => cleanOrderId(lo.id) === cleanOrderId(co.id));
+          return {
+            ...co,
+            receiptImage: match?.receiptImage || co.receiptImage || ''
+          };
+        });
+
+        // Retain local mock orders not present in cloud
+        localOrders.forEach(lo => {
+          if (!cloudMap.has(cleanOrderId(lo.id))) {
+            merged.push(lo);
+          }
+        });
+
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(merged));
+      }
+    } catch (err) {
+      console.warn('[Admin] syncAndRenderOrders fetch error:', err);
+    }
+
+    const allOrders = getAdminOrders();
+    const pendingCount = allOrders.filter(o => o.status === 'PENDING' || o.status === 'PROCESSING').length;
+
+    // Trigger audio ping notification when new pending orders arrive
+    if (previousPendingCount !== null && pendingCount > previousPendingCount && !silent) {
+      playOrderPingSound();
+    }
+    previousPendingCount = pendingCount;
+
+    // Update sidebar navigation badge
+    const badge = document.getElementById('navBadgeOrders');
+    if (badge) {
+      badge.textContent = pendingCount;
+      badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+    }
+
+    renderOrders();
+  }
 
   function openReceiptModal(idx) {
     const orders = getAdminOrders();
@@ -872,28 +956,40 @@ async function initAdminDashboard() {
       const safeItems = escapeHtml(ord.items);
       const safeDate = escapeHtml(ord.date);
       const hasReceipt = Boolean(ord.receiptImage);
+      const isNewOrder = ord.status === 'PENDING' || ord.status === 'PROCESSING';
+      const isDelivered = ord.status === 'DELIVERED';
+      const hasTracking = Boolean(ord.courier || ord.resi);
+
+      const rowStyle = isNewOrder 
+        ? 'background:rgba(255,230,0,0.06);border-left:4px solid var(--accent-yellow);'
+        : (isDelivered ? 'border-left:4px solid #22c55e;' : 'border-left:4px solid transparent;');
 
       return `
-        <tr>
-          <td>
-            <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
+        <tr style="${rowStyle}">
+          <td style="padding:12px 14px;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
+              ${isNewOrder ? `<span class="zine-tag-yellow" style="font-size:0.62rem;padding:2px 6px;animation:pulseUrgency 1.5s infinite;">⚡ BARU</span>` : ''}
+            </div>
             <div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#777;margin-top:2px;">${safeDate}</div>
+            ${hasTracking ? `<div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#c084fc;margin-top:4px;">🚚 ${escapeHtml(ord.courier || 'Ekspedisi')}: <b>${escapeHtml(ord.resi || '-')}</b></div>` : ''}
           </td>
-          <td>
+          <td style="padding:12px 14px;">
             <div style="font-weight:700;color:#FFF;">${safeCustomer}</div>
+            ${ord.phone ? `<div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;margin-top:2px;">📱 ${escapeHtml(ord.phone)}</div>` : ''}
           </td>
-          <td style="font-size:0.85rem;color:#AAA;">
+          <td style="font-size:0.85rem;color:#AAA;padding:12px 14px;">
             ${safeItems}
           </td>
-          <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;">
+          <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;padding:12px 14px;">
             ${formatRupiah(ord.total)}
           </td>
-          <td>
+          <td style="padding:12px 14px;">
             <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}">
               ${hasReceipt ? '📸 LIHAT BUKTI' : '+ LAMPIRKAN'}
             </button>
           </td>
-          <td>
+          <td style="padding:12px 14px;">
             <select class="form-input-brutal order-status-select" data-index="${originalIdx}" style="padding:6px 10px;font-size:0.75rem;background:#111;color:#FFF;border-color:#444;width:auto;">
               <option value="PENDING" ${ord.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
               <option value="PAID_PROCESSING" ${(ord.status === 'PAID_PROCESSING' || ord.status === 'PROCESSING') ? 'selected' : ''}>PAID_PROCESSING</option>
@@ -902,13 +998,25 @@ async function initAdminDashboard() {
               <option value="CANCELLED" ${ord.status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
             </select>
           </td>
-          <td style="text-align:right;white-space:nowrap;">
-            <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-open-cs-tab" data-order-id="${safeId}" style="padding:6px 10px;font-size:0.7rem;cursor:pointer;margin-right:6px;">
-              CS BOT ⚡
-            </button>
-            <a href="https://wa.me/6281234567890?text=Halo%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20${encodeURIComponent(ord.id)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;">
-              WHATSAPP
-            </a>
+          <td style="text-align:right;white-space:nowrap;padding:12px 14px;">
+            <div style="display:inline-flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap;">
+              <button type="button" class="btn-brutal-sm btn-quick-resi" data-index="${originalIdx}" title="Input Resi Pengiriman" style="padding:5px 8px;font-size:0.68rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;">
+                📦 RESI
+              </button>
+              ${!isDelivered ? `
+                <button type="button" class="btn-brutal-sm btn-quick-delivered" data-index="${originalIdx}" title="Ubah status ke DELIVERED" style="padding:5px 8px;font-size:0.68rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
+                  ✅ SELESAI
+                </button>
+              ` : `
+                <span style="color:#4ade80;font-size:0.68rem;font-weight:bold;padding:4px 6px;border:1px solid #22c55e44;background:#14301c33;">✓ FINISH</span>
+              `}
+              <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-open-cs-tab" data-order-id="${safeId}" style="padding:5px 8px;font-size:0.68rem;cursor:pointer;">
+                CS BOT ⚡
+              </button>
+              <a href="https://wa.me/${ord.phone ? cleanPhoneNumber(ord.phone) : '6281234567890'}?text=Halo%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20${encodeURIComponent(ord.id)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;padding:5px 8px;font-size:0.68rem;">
+                WA
+              </a>
+            </div>
           </td>
         </tr>
       `;
@@ -923,11 +1031,35 @@ async function initAdminDashboard() {
           all[idx].status = newStatus;
           localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
 
-          import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
-            updateCloudOrderStatus(all[idx].id, newStatus);
-          }).catch(() => {});
+          updateCloudOrderStatus(all[idx].id, newStatus).catch(() => {});
 
           showAdminToast('success', 'STATUS DIPERBARUI', `Pesanan #${all[idx].id} diubah ke ${newStatus}.`);
+          renderOrders();
+        }
+      });
+    });
+
+    tbody.querySelectorAll('.btn-quick-resi').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        const all = getAdminOrders();
+        const ord = all[idx];
+        if (ord && typeof globalOpenResiModal === 'function') {
+          globalOpenResiModal(ord);
+        }
+      });
+    });
+
+    tbody.querySelectorAll('.btn-quick-delivered').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        const all = getAdminOrders();
+        const ord = all[idx];
+        if (ord) {
+          ord.status = 'DELIVERED';
+          localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+          updateCloudOrderStatus(ord.id, 'DELIVERED').catch(() => {});
+          showAdminToast('success', 'STATUS DELIVERED', `Pesanan #${ord.id} telah ditandai SELESAI (DELIVERED). Pembeli kini dapat memberikan ulasan.`);
           renderOrders();
         }
       });
@@ -992,16 +1124,18 @@ async function initAdminDashboard() {
     ord.status = 'PAID_PROCESSING';
     localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
 
-    import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
-      updateCloudOrderStatus(ord.id, 'PAID_PROCESSING');
-    }).catch(() => {});
+    updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
 
     showAdminToast('success', 'PEMBAYARAN DIVERIFIKASI', `Pesanan #${ord.id} telah diverifikasi LUNAS & bukti transfer tersimpan.`);
     closeReceiptModal();
     renderOrders();
   });
 
-  document.getElementById('btnRefreshOrders')?.addEventListener('click', renderOrders);
+  document.getElementById('btnRefreshOrders')?.addEventListener('click', async () => {
+    showAdminToast('info', 'SINKRONISASI...', 'Mengambil pesanan terbaru dari Supabase...');
+    await syncAndRenderOrders(false);
+    showAdminToast('success', 'TERHUBUNG', 'Daftar pesanan cloud telah diperbarui.');
+  });
 
   // ─── 8B. TESTIMONI & ULASAN MODERATION (SCHEME 1) ────────────────────────
   async function renderAdminReviews() {
@@ -1134,9 +1268,7 @@ async function initAdminDashboard() {
         if (extra.resiNumber) target.resi = extra.resiNumber;
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
 
-        import('./services/supabaseService.js').then(({ updateCloudOrderStatus }) => {
-          updateCloudOrderStatus(target.id, newStatus);
-        }).catch(() => {});
+        updateCloudOrderStatus(target.id, newStatus, extra).catch(() => {});
 
         renderOrders();
         renderCsOrdersTable();
@@ -1494,13 +1626,27 @@ async function initAdminDashboard() {
     // Resi Modal Logic
     const resiModal = document.getElementById('csResiModal');
     function openResiModal(order) {
-      if (!resiModal) return;
-      document.getElementById('csResiOrderId').value = '#' + cleanOrderId(order.id);
-      document.getElementById('csResiCustomerName').value = (order.customer || activeOrderData.customerName || 'Kakak').split('//')[0].trim();
-      document.getElementById('csResiNumber').value = 'JT-' + Math.floor(100000 + Math.random() * 900000);
+      if (!resiModal || !order) return;
+      const orderIdClean = cleanOrderId(order.id);
+      const custName = (order.customer || activeOrderData.customerName || 'Kakak').split('//')[0].trim();
+      document.getElementById('csResiOrderId').value = '#' + orderIdClean;
+      document.getElementById('csResiCustomerName').value = custName;
+      document.getElementById('csResiNumber').value = order.resi || ('JT-' + Math.floor(100000 + Math.random() * 900000));
+      if (order.courier) {
+        const courierSelect = document.getElementById('csResiCourier');
+        if (courierSelect) courierSelect.value = order.courier;
+      }
       resiModal.style.display = 'flex';
-      pendingResiOrderId = cleanOrderId(order.id);
+      pendingResiOrderId = orderIdClean;
     }
+
+    globalOpenResiModal = function(order) {
+      if (!order) return;
+      activeOrderData.orderId = cleanOrderId(order.id);
+      activeOrderData.customerName = (order.customer || '').split('//')[0].trim() || 'Rider';
+      activeOrderData.phone = order.phone || '6281234567890';
+      openResiModal(order);
+    };
 
     function closeResiModal() {
       if (resiModal) resiModal.style.display = 'none';
@@ -1525,6 +1671,7 @@ async function initAdminDashboard() {
       }, courier, resiNum);
 
       closeResiModal();
+      renderOrders();
     });
 
     // Refresh Queue Button
@@ -1649,11 +1796,35 @@ async function initAdminDashboard() {
 
   // ─── 9. INITIALIZATION ──────────────────────────────────────────────────
   refreshAdminView();
-  renderOrders();
-  renderAdminReviews();
   initCsWhatsAppAutomation();
+  syncAndRenderOrders();
+  renderAdminReviews();
   updatePreview();
   handleUrlRouting();
+
+  // Supabase Realtime Subscription for Orders
+  try {
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      supabase
+        .channel('admin-orders-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+          console.log('⚡ [Supabase Realtime] Orders table change event:', payload);
+          playOrderPingSound();
+          syncAndRenderOrders(true);
+        })
+        .subscribe((status) => {
+          console.log('📡 [Supabase Realtime] Subscription status:', status);
+        });
+    }
+  } catch (err) {
+    console.warn('[Admin] Realtime subscription init error:', err);
+  }
+
+  // Periodic polling fallback every 12 seconds
+  setInterval(() => {
+    syncAndRenderOrders(true);
+  }, 12000);
 }
 
 // Bootstrap dashboard immediately if DOM is already ready, or on DOMContentLoaded

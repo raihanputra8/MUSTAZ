@@ -403,12 +403,32 @@ export function initCart() {
     // 2. Save order to Supabase Cloud
     try {
       saveCloudOrder({
+        id: orderId,
         customer: name,
         email: email,
+        phone: phone,
+        city: address || 'INDONESIA',
         items: cartItems.map(i => `${i.name} (x${i.quantity})`).join(', '),
         total: total,
-        status: 'PROCESSING'
+        status: 'PENDING'
       }).catch(() => {});
+    } catch {}
+
+    // Also update localized admin orders cache
+    try {
+      const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+      adminOrders.unshift({
+        id: orderId,
+        customer: name + (email ? ` (${email})` : ''),
+        items: cartItems.map(i => `${i.name} x${i.quantity}`).join(', '),
+        total: total,
+        date: new Date().toISOString().split('T')[0],
+        status: 'PENDING',
+        city: address || 'INDONESIA',
+        phone: phone || '',
+        receiptImage: ''
+      });
+      localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
     } catch {}
 
     // 3. Save to user's localized order history

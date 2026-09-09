@@ -373,12 +373,13 @@
 </main>
 
 <script type="module">
-  import { saveCloudAccount, fetchCloudAccount } from './js/services/supabaseService.js';
+  import { saveCloudAccount, fetchCloudAccount, fetchCloudOrders } from './js/services/supabaseService.js';
   import { initAccountAuth } from './js/services/authService.js';
   import { getUserOrders, getUserWishlist, getUserAddresses, saveUserAddress, formatRupiah } from './js/services/cartService.js';
   import { initNavbar } from './js/components/navbar.js';
   import { showBrutalReviewModal, showBrutalAlert, showBrutalConfirm, showBrutalFormModal } from './js/components/modal.js';
   import { getOrderReview, submitVerifiedReview, getUserReviews } from './js/services/reviewsService.js';
+  import { buildTrackingUrl } from './js/services/whatsappCsService.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // 0. Synchronize navigation bar & logout state
@@ -515,7 +516,58 @@
       const metricSpent = document.getElementById('metricTotalSpent');
       const navBadge = document.getElementById('navBadgeOrders');
 
-      const orders = getUserOrders(email);
+      let orders = getUserOrders(email);
+
+      // 1. Sync User Orders with Supabase Cloud
+      try {
+        const cloudOrders = await fetchCloudOrders();
+        if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
+          let changed = false;
+          orders.forEach(locOrd => {
+            const match = cloudOrders.find(c => String(c.id).replace(/[^a-zA-Z0-9]/g, '') === String(locOrd.id).replace(/[^a-zA-Z0-9]/g, ''));
+            if (match) {
+              if (match.status && locOrd.status !== match.status) {
+                locOrd.status = match.status;
+                changed = true;
+              }
+              if (match.resi && locOrd.resi !== match.resi) {
+                locOrd.resi = match.resi;
+                locOrd.courier = match.courier || locOrd.courier || 'J&T Express';
+                changed = true;
+              }
+            }
+          });
+          // Check if any cloud order belongs to this user but missing in local storage
+          cloudOrders.forEach(c => {
+            const belongsToUser = c.customer && (
+              c.customer.toLowerCase().includes(email.toLowerCase()) ||
+              (email.split('@')[0] && c.customer.toLowerCase().includes(email.split('@')[0].toLowerCase()))
+            );
+            if (belongsToUser) {
+              const exists = orders.some(o => String(o.id).replace(/[^a-zA-Z0-9]/g, '') === String(c.id).replace(/[^a-zA-Z0-9]/g, ''));
+              if (!exists) {
+                orders.unshift({
+                  id: c.id,
+                  items: typeof c.items === 'string' ? [{ name: c.items, qty: 1, price: c.total, image: 'assets/images/Product1.png' }] : c.items,
+                  total: c.total,
+                  date: c.date,
+                  status: c.status,
+                  courier: c.courier || '',
+                  resi: c.resi || ''
+                });
+                changed = true;
+              }
+            }
+          });
+          if (changed) {
+            const key = `mustaz_orders_${email.replace(/[^a-z0-9]/g, '_')}`;
+            localStorage.setItem(key, JSON.stringify(orders));
+          }
+        }
+      } catch (err) {
+        console.warn('Could not sync user orders from Supabase:', err);
+      }
+
       const totalSpent = orders.reduce((sum, ord) => sum + (ord.total || 0), 0);
 
       if (metricOrders) metricOrders.textContent = orders.length;
@@ -548,10 +600,47 @@
       } catch {}
 
       container.innerHTML = orders.map(order => {
-        const isTransit = order.status === 'IN TRANSIT';
-        const statusClass = isTransit ? 'status-badge-transit' : 'status-badge-delivered';
-        const statusIcon = isTransit ? 'local_shipping' : 'check_circle';
-        const borderColor = isTransit ? 'var(--accent-yellow)' : '#282828';
+        const rawStatus = (order.status || 'PENDING').toUpperCase().trim();
+        const isDelivered = rawStatus === 'DELIVERED' || rawStatus === 'COMPLETED';
+        const isTransit = rawStatus === 'SHIPPED' || rawStatus === 'IN TRANSIT';
+        const isPaidOrProcessing = rawStatus === 'PAID_PROCESSING' || rawStatus === 'PROCESSING' || rawStatus === 'PAID';
+        const isPending = rawStatus === 'PENDING';
+        const isCancelled = rawStatus === 'CANCELLED';
+
+        let statusText = 'PENDING // MENUNGGU VERIFIKASI';
+        let statusBadgeClass = 'zine-tag-pink';
+        let statusIcon = 'hourglass_top';
+        let statusDesc = 'Sedang Menunggu Verifikasi Pembayaran Admin / CS WhatsApp.';
+        let borderColor = '#333';
+
+        if (isDelivered) {
+          statusText = 'DELIVERED // PESANAN TELAH TIBA';
+          statusBadgeClass = 'status-badge-delivered';
+          statusIcon = 'check_circle';
+          statusDesc = 'Paket telah berhasil mendarat di alamat tujuan Anda.';
+          borderColor = '#22c55e';
+        } else if (isTransit) {
+          statusText = 'SHIPPED // DALAM PENGIRIMAN EKSPEDISI';
+          statusBadgeClass = 'status-badge-transit';
+          statusIcon = 'local_shipping';
+          statusDesc = 'Paket sedang dalam perjalanan bersama kurir ekspedisi menuju lokasi Anda.';
+          borderColor = 'var(--accent-yellow)';
+        } else if (isPaidOrProcessing) {
+          statusText = 'PAID // SEDANG DIPROSES WORKSHOP (QC)';
+          statusBadgeClass = 'zine-tag-yellow';
+          statusIcon = 'inventory_2';
+          statusDesc = 'Pembayaran terverifikasi! Pesanan sedang disiapkan & quality control di garasi.';
+          borderColor = '#38bdf8';
+        } else if (isCancelled) {
+          statusText = 'CANCELLED // DIBATALKAN';
+          statusBadgeClass = 'zine-tag-dark';
+          statusIcon = 'cancel';
+          statusDesc = 'Pesanan ini telah dibatalkan.';
+          borderColor = '#ef4444';
+        }
+
+        const hasResi = Boolean(order.resi);
+        const trackingLink = hasResi ? buildTrackingUrl(order.courier || 'J&T', order.resi) : '';
 
         const itemsHtml = (order.items || []).map(item => {
           const normItemName = String(item.name || '').trim().toLowerCase();
@@ -560,28 +649,11 @@
             String(r.product_name || '').trim().toLowerCase() === normItemName
           );
 
-          return `
-            <div class="order-item-block" style="border-bottom: 1px dashed #222; padding-bottom: 14px; margin-bottom: 14px;">
-              <div class="order-item-row">
-                <img src="${item.image || 'assets/images/pet_visor_yellow_flame.png'}" alt="${item.name}" class="order-item-thumb">
-                <div style="flex:1;">
-                  <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
-                    ${item.name}
-                  </h4>
-                  <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
-                    ${item.spec || 'CUSTOM MUSTAZ SPEC'}
-                  </p>
-                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
-                    QTY: ${item.qty || 1} × ${formatRupiah(item.price || 0)}
-                  </span>
-                </div>
-                <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
-                  ${formatRupiah((item.price || 0) * (item.qty || 1))}
-                </div>
-              </div>
-
-              <!-- Scheme 1: Verified Buyer Review Action -->
-              ${existingReview ? `
+          // Review button logic: ONLY unlocked if DELIVERED or COMPLETED
+          let reviewActionBlock = '';
+          if (isDelivered) {
+            if (existingReview) {
+              reviewActionBlock = `
                 <div style="background:#131313;border-left:3px solid var(--accent-yellow);padding:8px 12px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
                   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                     <span style="color:var(--accent-yellow);font-size:0.95rem;letter-spacing:2px;">${'★'.repeat(existingReview.rating || 5)}</span>
@@ -605,48 +677,128 @@
                     EDIT ULASAN ✎
                   </button>
                 </div>
-              ` : `
+              `;
+            } else {
+              reviewActionBlock = `
                 <div style="display:flex;justify-content:flex-end;margin-top:10px;">
                   <button type="button" class="btn-review-trigger btn-brutal-pink btn-brutal-sm"
                     data-order-id="${order.id}"
                     data-item-name="${encodeURIComponent(item.name)}"
                     data-item-image="${encodeURIComponent(item.image || 'assets/images/pet_visor_yellow_flame.png')}"
                     data-item-spec="${encodeURIComponent(item.spec || 'OFFICIAL MUSTAZ SPEC')}"
-                    style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;font-size:0.8rem;box-shadow:3px 3px 0px #000;">
+                    style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:0.82rem;box-shadow:3px 3px 0px #000;cursor:pointer;">
                     <span>⭐</span> BERI ULASAN RESMI [VERIFIED RIDER]
                   </button>
                 </div>
-              `}
+              `;
+            }
+          } else if (isTransit) {
+            reviewActionBlock = `
+              <div style="background:#0a120a;border:1px solid #166534;padding:8px 12px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#4ade80;display:inline-flex;align-items:center;gap:6px;">
+                  <span class="material-symbols-outlined" style="font-size:16px;">local_shipping</span>
+                  🚚 PAKET DALAM PENGIRIMAN // Tombol ulasan terbuka setelah pesanan tiba
+                </span>
+                ${hasResi ? `
+                  <a href="${trackingLink}" target="_blank" rel="noopener" style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#4ade80;text-decoration:underline;">
+                    Lacak Kurir ↗
+                  </a>
+                ` : ''}
+              </div>
+            `;
+          } else if (isPaidOrProcessing) {
+            reviewActionBlock = `
+              <div style="background:#0c131a;border:1px solid #0369a1;padding:8px 12px;margin-top:10px;display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined" style="font-size:16px;color:#38bdf8;">inventory_2</span>
+                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#38bdf8;">
+                  📦 PAKET SEDANG DIPROSES WORKSHOP // Tombol ulasan terbuka setelah pesanan berstatus DELIVERED
+                </span>
+              </div>
+            `;
+          } else {
+            reviewActionBlock = `
+              <div style="background:#161005;border:1px solid #854d0e;padding:8px 12px;margin-top:10px;display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined" style="font-size:16px;color:#facc15;">hourglass_top</span>
+                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#facc15;">
+                  ⏳ MENUNGGU PEMBAYARAN // Silakan transfer &amp; konfirmasi bukti bayar ke CS WhatsApp
+                </span>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="order-item-block" style="border-bottom: 1px dashed #222; padding-bottom: 14px; margin-bottom: 14px;">
+              <div class="order-item-row">
+                <img src="${item.image || 'assets/images/pet_visor_yellow_flame.png'}" alt="${item.name}" class="order-item-thumb">
+                <div style="flex:1;">
+                  <h4 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 2px;">
+                    ${item.name}
+                  </h4>
+                  <p style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin:0;">
+                    ${item.spec || 'CUSTOM MUSTAZ SPEC'}
+                  </p>
+                  <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--accent-pink);">
+                    QTY: ${item.qty || 1} × ${formatRupiah(item.price || 0)}
+                  </span>
+                </div>
+                <div style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;font-weight:900;">
+                  ${formatRupiah((item.price || 0) * (item.qty || 1))}
+                </div>
+              </div>
+
+              <!-- Locked or Unlocked Review Action -->
+              ${reviewActionBlock}
             </div>
           `;
         }).join('');
 
         return `
-          <div class="account-order-card" style="border-color:${borderColor};margin-bottom:20px;">
-            <div class="order-header-bar">
-              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-                <span style="font-family:var(--font-headline);font-size:1.2rem;color:#FFF;letter-spacing:0.04em;">
-                  ORDER #${order.id}
-                </span>
-                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">
-                  PLACED ON ${order.date || 'RECENT'}
-                </span>
-              </div>
+          <div class="account-order-card" style="border-color:${borderColor};margin-bottom:24px;border-width:2px;box-shadow:6px 6px 0px #000;">
+            <!-- Header Bar -->
+            <div class="order-header-bar" style="border-bottom:1px solid #222;padding-bottom:12px;margin-bottom:14px;">
               <div>
-                <span class="${statusClass}">
-                  <span class="material-symbols-outlined" style="font-size:16px;">${statusIcon}</span>
-                  ${order.status} // ${order.tracking || 'KURIR EKSPEDISI'}
-                </span>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
+                  <span style="font-family:var(--font-headline);font-size:1.35rem;color:var(--accent-yellow);letter-spacing:0.04em;">
+                    #${order.id}
+                  </span>
+                  <span class="${statusBadgeClass}" style="font-size:0.72rem;padding:4px 8px;">
+                    <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-right:2px;">${statusIcon}</span>
+                    ${statusText}
+                  </span>
+                </div>
+                <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#aaa;">
+                  DIPESAN PADA ${order.date || 'TERBARU'} // ${statusDesc}
+                </div>
               </div>
             </div>
 
+            <!-- Resi & Ekspedisi Box (if available) -->
+            ${hasResi ? `
+              <div style="background:#0a120a;border:2px solid #22c55e;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <div>
+                  <span style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;display:block;letter-spacing:0.08em;text-transform:uppercase;">
+                    🚚 EKSPEDISI &amp; NOMOR RESI RESMI
+                  </span>
+                  <span style="font-family:var(--font-headline);font-size:1.2rem;color:#4ade80;font-weight:900;letter-spacing:0.04em;">
+                    ${order.courier || 'J&T EXPRESS'} // ${order.resi}
+                  </span>
+                </div>
+                <a href="${trackingLink}" target="_blank" rel="noopener" class="btn-brutal-yellow btn-brutal-sm" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:0.78rem;background:#4ade80;color:#000;border-color:#22c55e;font-weight:900;">
+                  <span class="material-symbols-outlined" style="font-size:16px;">travel_explore</span>
+                  LACAK PAKET ↗
+                </a>
+              </div>
+            ` : ''}
+
+            <!-- Items List -->
             <div class="order-items-list">
               ${itemsHtml}
             </div>
 
-            <div class="order-footer-bar">
+            <!-- Footer Bar -->
+            <div class="order-footer-bar" style="border-top:1px solid #222;padding-top:12px;margin-top:12px;">
               <div>
-                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;display:block;">TOTAL TRANSACTION</span>
+                <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;display:block;">TOTAL TRANSAKSI</span>
                 <span style="font-family:var(--font-headline);font-size:1.4rem;color:var(--accent-yellow);font-weight:900;">
                   ${formatRupiah(order.total || 0)}
                 </span>
