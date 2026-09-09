@@ -98,41 +98,79 @@ async function initAdminDashboard() {
     }, 4000);
   }
 
-  // ─── 1. TABS SWITCHING & URL ROUTING (FOOLPROOF DELEGATION) ───────────────
-  const navItems = document.querySelectorAll('#adminNav .account-nav-item[data-tab]');
-  const panels = document.querySelectorAll('.account-tab-panel');
+  // ─── 1. TABS SWITCHING & URL ROUTING (ROBUST DELEGATION & DIRECT BINDING) ──
+  function initAdminTabs() {
+    const navItems = document.querySelectorAll('#adminNav .account-nav-item[data-tab]');
+    const panels = document.querySelectorAll('.account-tab-panel');
 
-  function switchTab(targetTab) {
-    if (!targetTab) return;
-    navItems.forEach(n => {
-      if (n.dataset.tab === targetTab) n.classList.add('active');
-      else n.classList.remove('active');
-    });
-    panels.forEach(panel => {
-      if (panel.id === 'panel-' + targetTab) panel.classList.add('active');
-      else panel.classList.remove('active');
-    });
-  }
-
-  // Delegated event listening on #adminNav so clicks anywhere inside (text, span, badge) work cleanly
-  const adminNav = document.getElementById('adminNav');
-  if (adminNav) {
-    adminNav.addEventListener('click', (e) => {
-      const item = e.target.closest('.account-nav-item[data-tab]');
-      if (!item) return;
-      e.preventDefault();
-      const targetTab = item.dataset.tab;
-      if (targetTab) {
-        switchTab(targetTab);
+    function switchTab(targetTab) {
+      if (!targetTab) return;
+      navItems.forEach(n => {
+        if (n.dataset.tab === targetTab) n.classList.add('active');
+        else n.classList.remove('active');
+      });
+      panels.forEach(panel => {
+        if (panel.id === 'panel-' + targetTab) panel.classList.add('active');
+        else panel.classList.remove('active');
+      });
+      try {
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.set('tab', targetTab);
         window.history.replaceState({}, '', newUrl.toString());
-      }
+      } catch {}
+    }
+
+    // Expose for external calls
+    window.switchAdminTab = switchTab;
+
+    // Direct event listener on each tab button
+    navItems.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = btn.dataset.tab;
+        if (tab) switchTab(tab);
+      });
+    });
+
+    // Delegated fallback listener on #adminNav container
+    const adminNav = document.getElementById('adminNav');
+    if (adminNav) {
+      adminNav.addEventListener('click', (e) => {
+        const item = e.target.closest('.account-nav-item[data-tab]');
+        if (!item) return;
+        e.preventDefault();
+        const targetTab = item.dataset.tab;
+        if (targetTab) switchTab(targetTab);
+      });
+    }
+
+    // Quick Action button helpers
+    document.getElementById('btnSwitchToAdd')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab('add');
+    });
+    document.getElementById('btnSidebarQuickAdd')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab('add');
     });
   }
 
-  document.getElementById('btnSwitchToAdd')?.addEventListener('click', () => switchTab('add'));
-  document.getElementById('btnSidebarQuickAdd')?.addEventListener('click', () => switchTab('add'));
+  function switchTab(targetTab) {
+    if (typeof window.switchAdminTab === 'function') {
+      window.switchAdminTab(targetTab);
+    } else {
+      const navItems = document.querySelectorAll('#adminNav .account-nav-item[data-tab]');
+      const panels = document.querySelectorAll('.account-tab-panel');
+      navItems.forEach(n => {
+        if (n.dataset.tab === targetTab) n.classList.add('active');
+        else n.classList.remove('active');
+      });
+      panels.forEach(panel => {
+        if (panel.id === 'panel-' + targetTab) panel.classList.add('active');
+        else panel.classList.remove('active');
+      });
+    }
+  }
 
   // Handle URL Routing & Quick-Edit parameters (?tab=... & ?edit=...)
   function handleUrlRouting() {
@@ -342,7 +380,14 @@ async function initAdminDashboard() {
 
     try {
       if (!items || items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:48px 16px;color:#888;font-family:var(--font-mono-sub);">NO HARDWARE FOUND MATCHING SEARCH / FILTER CRITERIA</td></tr>';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center;padding:48px 16px;color:#888;font-family:var(--font-mono-sub);">
+              <div style="font-family:var(--font-headline);font-size:1.1rem;color:#FFF;margin-bottom:6px;">BELUM ADA PRODUK ATAU DATA GAGAL DIMUAT</div>
+              <div style="font-size:0.8rem;color:#AAA;">Tidak ada produk yang cocok dengan filter atau database katalog kosong.</div>
+            </td>
+          </tr>
+        `;
         return;
       }
 
@@ -362,9 +407,10 @@ async function initAdminDashboard() {
         const safeName = escapeHtml(part.name || 'CUSTOM PART');
         const safeSlug = escapeHtml(part.slug || generateSlug(part.name || 'part'));
         const safeCategory = escapeHtml(part.category || 'Retro Visor');
-        const safeSub = escapeHtml(part.sub || '');
+        const safeSub = escapeHtml(part.sub || part.description || '');
         const safeStatus = (part.status || 'Active').toLowerCase() === 'draft' ? 'Draft' : 'Active';
-        const safeImage = part.image ? getProductImageUrl(part.image) : getProductImageUrl('Product1.png');
+        const rawImg = part.image || part.image_url || 'Product1.png';
+        const safeImage = rawImg ? getProductImageUrl(rawImg) : getProductImageUrl('Product1.png');
 
         const isDraft = safeStatus === 'Draft';
         const statusBadge = isDraft 
@@ -1019,40 +1065,6 @@ async function initAdminDashboard() {
         ? 'background:rgba(255,230,0,0.06);border-left:4px solid var(--accent-yellow);'
         : (isDelivered ? 'border-left:4px solid #22c55e;' : 'border-left:4px solid transparent;');
 
-      return `
-        <tr style="${rowStyle}">
-          <td style="padding:12px 14px;">
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
-              ${isNewOrder ? `<span class="zine-tag-yellow" style="font-size:0.62rem;padding:2px 6px;animation:pulseUrgency 1.5s infinite;">⚡ BARU</span>` : ''}
-            </div>
-            <div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#777;margin-top:2px;">${safeDate}</div>
-            ${hasTracking ? `<div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#c084fc;margin-top:4px;">🚚 ${escapeHtml(ord.courier || 'Ekspedisi')}: <b>${escapeHtml(ord.resi || '-')}</b></div>` : ''}
-          </td>
-          <td style="padding:12px 14px;">
-            <div style="font-weight:700;color:#FFF;">${safeCustomer}</div>
-            ${ord.phone ? `<div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;margin-top:2px;">📱 ${escapeHtml(ord.phone)}</div>` : ''}
-          </td>
-          <td style="font-size:0.85rem;color:#AAA;padding:12px 14px;">
-            ${safeItems}
-          </td>
-          <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;padding:12px 14px;">
-            ${formatRupiah(ord.total)}
-          </td>
-          <td style="padding:12px 14px;">
-            <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}">
-              ${hasReceipt ? '📸 LIHAT BUKTI' : '+ LAMPIRKAN'}
-            </button>
-          </td>
-          <td style="padding:12px 14px;">
-            <select class="form-input-brutal order-status-select" data-index="${originalIdx}" style="padding:6px 10px;font-size:0.75rem;background:#111;color:#FFF;border-color:#444;width:auto;">
-              <option value="PENDING" ${ord.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
-              <option value="PAID_PROCESSING" ${(ord.status === 'PAID_PROCESSING' || ord.status === 'PROCESSING') ? 'selected' : ''}>PAID_PROCESSING</option>
-              <option value="SHIPPED" ${(ord.status === 'SHIPPED' || ord.status === 'IN TRANSIT') ? 'selected' : ''}>SHIPPED</option>
-              <option value="DELIVERED" ${ord.status === 'DELIVERED' ? 'selected' : ''}>DELIVERED</option>
-              <option value="CANCELLED" ${ord.status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
-            </select>
-          </td>
       // Dynamic 1-Click CS WhatsApp Actions (Bagian 1)
       const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '6281234567890';
       const orderCode = cleanOrderId(ord.id);
@@ -1785,13 +1797,48 @@ async function initAdminDashboard() {
     renderFsProductsTable();
   }
 
-  // ─── 9. INITIALIZATION ──────────────────────────────────────────────────
-  refreshAdminView();
-  initFlashSaleManager();
-  syncAndRenderOrders();
-  renderAdminReviews();
-  updatePreview();
-  handleUrlRouting();
+  // ─── 9. INITIALIZATION (RESILIENT & ISOLATED) ───────────────────────────
+  try {
+    initAdminTabs();
+  } catch (err) {
+    console.error('[Admin] Tab initialization error:', err);
+  }
+
+  try {
+    refreshAdminView();
+  } catch (err) {
+    console.error('[Admin] Product inventory render error:', err);
+  }
+
+  try {
+    initFlashSaleManager();
+  } catch (err) {
+    console.error('[Admin] Flash sale manager error:', err);
+  }
+
+  try {
+    syncAndRenderOrders();
+  } catch (err) {
+    console.error('[Admin] Orders sync error:', err);
+  }
+
+  try {
+    renderAdminReviews();
+  } catch (err) {
+    console.error('[Admin] Reviews render error:', err);
+  }
+
+  try {
+    updatePreview();
+  } catch (err) {
+    console.error('[Admin] Preview update error:', err);
+  }
+
+  try {
+    handleUrlRouting();
+  } catch (err) {
+    console.error('[Admin] URL routing error:', err);
+  }
 
   // Supabase Realtime Subscription for Orders
   try {
