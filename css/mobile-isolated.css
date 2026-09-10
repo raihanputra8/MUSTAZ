@@ -278,261 +278,295 @@
 
 
   /* ══════════════════════════════════════════════════════════════════════════
-     §4. PRODUCT CATALOG — E-COMMERCE GRID (ROMBAKAN TOTAL)
-     Style: Tokopedia/Shopee card — compact, no gap, professional
-     KUNCI: align-items:start di grid → card tinggi = konten, bukan row
+     §4. PRODUCT CATALOG — COMPACT E-COMMERCE GRID (SHOPEE/TOKOPEDIA STYLE)
+     - 2-column balanced grid
+     - Compact padding (6px), 1:1 square image
+     - Clamped 2-line title, single-line price, full-width button
+     - No cut-off buttons, no wrapped words
      ══════════════════════════════════════════════════════════════════════════ */
 
-  /* ── 4A. GRID CONTAINER ────────────────────────────────────────────────── */
+  /* ── 4A. GRID CONTAINER (PARTS & HOME DROPS) ───────────────────────────── */
   #partsGrid,
-  .products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-    padding: 0 10px !important;
-    align-items: start !important;   /* ← INI KUNCINYA: card = tinggi natural */
-  }
-
-  /* Home drops / flash sale juga 2 col */
+  .products-grid,
   .drops-grid,
   .flash-sale-grid,
   #flashSaleGrid,
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-    padding: 0 10px !important;
-    align-items: start !important;
+    gap: 8px !important;
+    padding: 0 8px !important;
+    align-items: stretch !important;
   }
 
-  /* ── 4B. ARTICLE WRAPPER ───────────────────────────────────────────────── */
+  /* ── 4B. ARTICLE / CARD WRAPPER ────────────────────────────────────────── */
   .part-card {
-    height: auto !important;         /* ← card tidak paksa stretch */
+    height: 100% !important;
     transform: none !important;
     margin: 0 !important;
-    display: block !important;
-  }
-
-  /* ── 4C. CARD INNER (KOTAK PUTIH) ─────────────────────────────────────── */
-  .part-card-inner {
     display: flex !important;
     flex-direction: column !important;
-    height: auto !important;         /* ← override inline height:100% */
-    padding: 8px !important;
+  }
+
+  /* ── 4C. CARD INNER (PARTS & HOME DROPS) ───────────────────────────────── */
+  .part-card-inner,
+  .drops-grid > article,
+  .card-flash-sale,
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] > article {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    padding: 6px !important;
     border: 2px solid #000 !important;
-    box-shadow: 3px 3px 0px var(--accent-pink) !important;
+    box-shadow: 2px 2px 0px var(--accent-pink) !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
     background: #FFFFFF !important;
+    transform: none !important;
   }
 
-  /* ── 4D. IMAGE BOX — Square 1:1 ─────────────────────────────────────────  */
+  .drops-grid > article.card-brutal-dark {
+    background: #111111 !important;
+    box-shadow: 2px 2px 0px var(--accent-yellow) !important;
+    border-color: var(--accent-yellow) !important;
+  }
+
+  /* ── 4D. TOP HEADER ROW (NUMBER / SERIES + BADGE) ──────────────────────── */
+  .part-top-row,
+  .part-card > div > .part-top-row,
+  .drops-grid > article > div:first-of-type,
+  .drops-grid > article > div[style*="justify-content:space-between"] {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 4px !important;
+    gap: 4px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Nomor produk & Series header (SERIES 01 // ACID, etc.) */
+  .part-num,
+  .part-card span[style*="1.4rem"],
+  .drops-grid > article > div:first-of-type > span,
+  .drops-grid > article > div[style*="justify-content:space-between"] > span {
+    font-size: 0.62rem !important;
+    font-weight: 900 !important;
+    color: #555 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 60% !important;
+    word-break: normal !important;
+  }
+  .card-brutal-dark > div:first-of-type > span {
+    color: var(--accent-yellow) !important;
+  }
+
+  /* Badges & Tags (BESTSELLER, IN STOCK, EVENT PACK, CATEGORY) */
+  .part-cat-badge,
+  .part-card span[style*="padding:3px 8px"],
+  .drops-grid > article .zine-tag-yellow,
+  .drops-grid > article .zine-tag-white,
+  .drops-grid > article .zine-tag-pink,
+  .zine-tag-yellow,
+  .zine-tag-white,
+  .zine-tag-pink {
+    font-size: 0.5rem !important;
+    padding: 2px 4px !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    line-height: 1.2 !important;
+    max-width: 40% !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+  }
+
+  /* ── 4E. PRODUCT IMAGE BOX (Square 1:1) ────────────────────────────────── */
   .part-img-box,
+  .card-img-box,
+  .drops-grid > article .card-img-box,
+  .drops-grid > article div[style*="margin-bottom:18px"],
   .part-card div[style*="aspect-ratio"] {
     aspect-ratio: 1 / 1 !important;
     width: 100% !important;
     height: auto !important;
-    margin-bottom: 8px !important;
-    border: 1.5px solid #000 !important;
+    margin-bottom: 6px !important;
+    border: 1px solid #000 !important;
     overflow: hidden !important;
     position: relative !important;
+    background: #0d0d0d !important;
   }
 
   .part-img-box img,
-  .part-card img {
+  .card-img-box img,
+  .part-card img,
+  .drops-grid > article img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    display: block !important;
   }
 
-  /* ── 4E. BADGE (BESTSELLER / HOT DROP) ──────────────────────────────────  */
+  /* Badge floating on image */
   .part-img-box .zine-tag-pink,
   .part-img-box .zine-tag-yellow,
-  .part-card .zine-tag-pink,
-  .part-card .zine-tag-yellow {
-    font-size: 0.5rem !important;
-    padding: 2px 5px !important;
-    letter-spacing: 0.05em !important;
+  .card-img-box .zine-tag-pink,
+  .card-img-box .zine-tag-yellow {
+    font-size: 0.48rem !important;
+    padding: 1px 4px !important;
+    top: 3px !important;
+    left: 3px !important;
+    position: absolute !important;
   }
 
-  /* ── 4F. TOP ROW (NO. + CATEGORY BADGE) ─────────────────────────────────  */
-  .part-top-row,
-  .part-card > div > .part-top-row {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 6px !important;
-  }
-
-  /* Nomor produk */
-  .part-num,
-  .part-card span[style*="1.4rem"] {
-    font-size: 0.85rem !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-  }
-
-  /* Kategori badge */
-  .part-cat-badge,
-  .part-card span[style*="padding:3px 8px"] {
-    font-size: 0.5rem !important;
-    padding: 2px 5px !important;
-    letter-spacing: 0.05em !important;
-    white-space: nowrap !important;
-  }
-
-  /* ── 4G. PART-INFO (CONTENT AREA — NO FLEX-GROW) ────────────────────────  */
+  /* ── 4F. CONTENT WRAPPER ───────────────────────────────────────────────── */
   .part-info {
     display: flex !important;
     flex-direction: column !important;
-    flex-grow: 0 !important;         /* ← override inline flex-grow:1 */
+    flex: 1 1 auto !important;
+    justify-content: space-between !important;
     gap: 0 !important;
   }
 
-  /* ── 4H. JUDUL — 2-line clamp ─────────────────────────────────────────── */
+  /* ── 4G. PRODUCT TITLE (2-Line Clamp, Equal Height) ────────────────────── */
   .part-title,
-  .part-card h3 {
-    font-size: 0.75rem !important;
-    font-weight: 900 !important;
-    line-height: 1.2 !important;
-    color: #000 !important;
-    text-transform: uppercase !important;
-    margin-bottom: 6px !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-  }
-
-  /* ── 4I. DESKRIPSI — SEMBUNYIKAN (variabel panjang → penyebab gap) ─────── */
-  .part-sub,
-  .part-info > p,
-  .part-card p[style*="font-mono-sub"],
-  .part-card p[style*="color:#555"] {
-    display: none !important;
-  }
-
-  /* ── 4J. PRICE ROW — margin-top:0 karena card tidak stretch ─────────────  */
-  .part-price-row,
-  .part-card div[style*="border-top:1px dashed"],
-  .part-card div[style*="border-top: 1px dashed"] {
-    margin-top: 4px !important;      /* ← override inline margin-top:auto */
-    margin-bottom: 6px !important;
-    padding-top: 6px !important;
-    border-top: 1px dashed #999 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 2px !important;
-  }
-
-  /* Harga */
-  .part-price,
-  .part-card span[style*="color:var(--accent-pink)"][style*="font-size:1.35rem"] {
-    font-size: 0.9rem !important;
-    font-weight: 900 !important;
-    color: var(--accent-pink) !important;
-    line-height: 1.1 !important;
-  }
-
-  /* Stock info */
-  .part-card span[style*="IN STOCK"],
-  .part-card span[style*="REMAINING"],
-  .stock-pulse-badge {
-    font-size: 0.55rem !important;
-    padding: 1px 4px !important;
-    line-height: 1.3 !important;
-  }
-
-  /* ── 4K. ACTION BUTTONS ──────────────────────────────────────────────────  */
-  .part-actions {
-    display: flex !important;
-    gap: 4px !important;
-    flex-wrap: nowrap !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* + KERANJANG button: flex grow fill */
-  .add-to-cart-btn {
-    flex: 1 !important;
-    padding: 7px 4px !important;
-    font-size: 0.62rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 0 !important;
-    white-space: nowrap !important;
-    text-align: center !important;
-    justify-content: center !important;
-    box-shadow: 2px 2px 0px #000 !important;
-    min-height: unset !important;
-    line-height: 1.2 !important;
-  }
-
-  /* DETAIL → button: fixed width, tidak flex */
-  .quick-view-btn {
-    flex: 0 0 auto !important;
-    padding: 7px 8px !important;
-    font-size: 0.62rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 0 !important;
-    white-space: nowrap !important;
-    box-shadow: 2px 2px 0px #000 !important;
-    min-height: unset !important;
-    line-height: 1.2 !important;
-  }
-
-  /* Hide admin edit button on mobile */
-  .admin-card-edit-btn {
-    display: none !important;
-  }
-
-  /* ── 4L. TAPE DECOR — SEMBUNYIKAN ───────────────────────────────────────  */
-  .part-card .tape-decor,
-  .drops-grid .tape-decor,
-  article .tape-decor {
-    display: none !important;
-  }
-
-  /* ── 4M. HOME DROPS / FLASH SALE CARDS ──────────────────────────────────  */
-  /* These use different templates — simplify to e-commerce standard */
-  .drops-grid > article,
-  .card-flash-sale,
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] > article {
-    height: auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
-    padding: 8px !important;
-    box-sizing: border-box !important;
-    border: 2px solid #000 !important;
-    box-shadow: 3px 3px 0px var(--accent-pink) !important;
-  }
-
-  /* Home drops — hide verbose spec boxes, keep image + title + price + button */
-  .drops-grid > article > div[style*="display:grid"],
-  .drops-grid > article > div[style*="display: grid"],
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article > div[style*="display:grid"] {
-    display: none !important;
-  }
-
-  /* Home drops description text → hide */
-  .drops-grid > article > p,
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article > p {
-    display: none !important;
-  }
-
-  /* Home drops article h3/h2 */
+  .part-card h3,
   .drops-grid > article h3,
   .drops-grid > article h2,
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article h3,
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article h2 {
-    font-size: 0.75rem !important;
-    line-height: 1.2 !important;
-    margin-bottom: 4px !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    color: #000 !important;
+    text-transform: uppercase !important;
+    margin: 0 0 4px 0 !important;
+    min-height: 2.5em !important;
+    max-height: 2.5em !important;
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important;
     -webkit-box-orient: vertical !important;
     overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: normal !important;
+  }
+  .card-brutal-dark h3 {
+    color: #FFFFFF !important;
+  }
+
+  /* ── 4H. HIDE VERBOSE DESCRIPTIONS & SPEC BOXES ON MOBILE CARDS ────────── */
+  .part-sub,
+  .part-info > p,
+  .drops-grid > article > p,
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article > p,
+  .drops-grid > article > div[style*="display:grid"],
+  .drops-grid > article > div[style*="display: grid"],
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article > div[style*="display:grid"],
+  .tape-decor,
+  article .tape-decor {
+    display: none !important;
+  }
+
+  /* ── 4I. PRICE & STOCK (CLEAN & NON-WRAPPING) ──────────────────────────── */
+  .part-price-row,
+  .part-card div[style*="border-top:1px dashed"],
+  .part-card div[style*="border-top: 1px dashed"] {
+    margin-top: auto !important;
+    margin-bottom: 6px !important;
+    padding-top: 4px !important;
+    border-top: 1px dashed #ccc !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1px !important;
+  }
+
+  /* Home drops bottom container (Price + Button stacked) */
+  .drops-grid > article > div[style*="border-top"],
+  .drops-grid > article div[style*="padding-top:14px"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    border-top: 1px dashed #ccc !important;
+    padding-top: 4px !important;
+    margin-top: auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Price Typography */
+  .part-price,
+  .product-price,
+  .part-card span[style*="color:var(--accent-pink)"][style*="font-size:1.35rem"],
+  .drops-grid > article .product-price {
+    font-size: 0.85rem !important;
+    font-weight: 900 !important;
+    color: var(--accent-pink) !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    text-align: left !important;
+    display: block !important;
+  }
+  .card-brutal-dark .product-price {
+    color: var(--accent-yellow) !important;
+  }
+
+  /* Stock badge (minimal & clean) */
+  .part-card span[style*="IN STOCK"],
+  .part-card span[style*="REMAINING"],
+  .stock-pulse-badge {
+    font-size: 0.55rem !important;
+    color: #666 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+  }
+
+  /* ── 4J. ACTION BUTTONS (FULL WIDTH, NO CUT OFF) ───────────────────────── */
+  .part-actions {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* + KERANJANG / + ADD button: Full Width, Compact, Clean */
+  .add-to-cart-btn,
+  .drops-grid > article button[data-add-to-cart],
+  .drops-grid > article .btn-brutal-pink,
+  .drops-grid > article .btn-brutal-yellow {
+    display: flex !important;
+    width: 100% !important;
+    padding: 6px 0 !important;
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-shadow: 2px 2px 0px #000 !important;
+    border: 1.5px solid #000 !important;
+    min-height: unset !important;
+    line-height: 1.2 !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+  }
+
+  /* Sembunyikan tombol DETAIL di mobile agar tidak terpotong (klik gambar/judul langsung buka detail) */
+  .quick-view-btn,
+  .admin-card-edit-btn {
+    display: none !important;
   }
 
   /* Flash sale countdown compact */
@@ -711,8 +745,12 @@
     gap: 16px !important;
   }
 
-  .card-brutal-white,
-  .card-brutal-dark {
+  .checkout-container .card-brutal-white,
+  .checkout-container .card-brutal-dark,
+  #checkoutPage .card-brutal-white,
+  #checkoutPage .card-brutal-dark,
+  form .card-brutal-white,
+  form .card-brutal-dark {
     padding: 14px !important;
     border-width: 2px !important;
     box-shadow: 4px 4px 0px #000 !important;
@@ -1128,13 +1166,18 @@
     max-width: 100% !important;
   }
 
-  /* Jika konten card melebihi lebar: potong rapi */
-  .part-card-inner *,
-  .card-brutal-white *,
-  .card-brutal-dark * {
+  /* Pastikan card dan teks tidak overflow, tapi jangan patahkan kata badge/harga */
+  .part-card-inner,
+  .card-brutal-white,
+  .card-brutal-dark {
     max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .part-card-inner p,
+  .card-brutal-white p,
+  .card-brutal-dark p {
     overflow-wrap: break-word !important;
-    word-break: break-word !important;
   }
 
   /* Img di dalam card: tidak stretching keluar */
