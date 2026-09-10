@@ -411,7 +411,7 @@
     object-fit: cover !important;
   }
 
-  /* Product Title — clamp 2 baris agar setiap kartu sejajar */
+  /* Product Title — clamp 3 baris max, lebih info karena sub dihide */
   .part-card h3,
   .drops-grid article h3,
   .card-flash-sale h3,
@@ -419,26 +419,23 @@
     font-size: 0.78rem !important;
     font-weight: 800 !important;
     line-height: 1.15 !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 0 !important;
     display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
+    -webkit-line-clamp: 3 !important;
     -webkit-box-orient: vertical !important;
     overflow: hidden !important;
-    min-height: 1.8em !important;
   }
 
-  /* Deskripsi produk — clamp 2 baris, cegah kartu jomplang */
-  .part-card p,
-  .drops-grid article p,
-  .card-flash-sale p,
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article p {
-    display: -webkit-box !important;
-    font-size: 0.7rem !important;
-    line-height: 1.35 !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-    margin-bottom: 6px !important;
+  /* ── SEMBUNYIKAN DESKRIPSI PRODUK DI MOBILE 2-KOLOM ────────────────────
+     p.part-sub punya panjang teks berbeda-beda antar kartu.
+     Menyembunyikannya menghilangkan gap kotak putih yang tidak rata.
+     margin-top:auto pada .part-price-row lalu bekerja sempurna:
+     harga & tombol SELALU menempel di dasar kartu tanpa gap. */
+  .part-card p.part-sub,
+  .part-card p[style*="font-mono-sub"],
+  .part-card > div > div > p,
+  .part-info > p {
+    display: none !important;
   }
 
   /* Flash Sale Countdown / Stock info */
