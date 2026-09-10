@@ -360,6 +360,9 @@
     max-width: 60% !important;
     word-break: normal !important;
   }
+  .drops-grid > article.card-brutal-dark > div:first-of-type > span,
+  .drops-grid > article.card-brutal-dark > div[style*="justify-content:space-between"] > span,
+  article.card-brutal-dark > div:first-of-type > span,
   .card-brutal-dark > div:first-of-type > span {
     color: var(--accent-yellow) !important;
   }
@@ -454,7 +457,15 @@
     text-overflow: ellipsis !important;
     word-break: normal !important;
   }
-  .card-brutal-dark h3 {
+  /* JUDUL KARTU HITAM (RETRO RUN / CHECKER RACER PET) - WAJIB PUTIH KONTRAS TINGGI */
+  .drops-grid > article.card-brutal-dark h3,
+  .drops-grid > article.card-brutal-dark h2,
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article.card-brutal-dark h3,
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article.card-brutal-dark h2,
+  article.card-brutal-dark h3,
+  article.card-brutal-dark h2,
+  .card-brutal-dark h3,
+  .card-brutal-dark h2 {
     color: #FFFFFF !important;
   }
 
@@ -513,8 +524,19 @@
     text-align: left !important;
     display: block !important;
   }
+  /* HARGA PADA KARTU HITAM - KUNING MENYALA */
+  .drops-grid > article.card-brutal-dark .product-price,
+  .drops-grid > article.card-brutal-dark .part-price,
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article.card-brutal-dark .product-price,
+  article.card-brutal-dark .product-price,
   .card-brutal-dark .product-price {
     color: var(--accent-yellow) !important;
+  }
+
+  /* Garis putus-putus pada kartu hitam */
+  .drops-grid > article.card-brutal-dark div[style*="border-top"],
+  article.card-brutal-dark div[style*="border-top"] {
+    border-top: 1px dashed #444 !important;
   }
 
   /* Stock badge (minimal & clean) */
@@ -633,10 +655,24 @@
     box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85) !important;
   }
 
+  /* Card Testi Foto 1:1 Full View */
   .testi-photo-box {
-    aspect-ratio: 16 / 9 !important;
-    max-height: 150px !important;
-    margin-bottom: 10px !important;
+    aspect-ratio: 1 / 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin-bottom: 12px !important;
+    border: 1.5px solid #000 !important;
+    overflow: hidden !important;
+    background: #080808 !important;
+  }
+
+  .testi-photo-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
   }
 
   .testi-quote {
