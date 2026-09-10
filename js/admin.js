@@ -1603,7 +1603,7 @@ async function initAdminDashboard() {
       if (subtitleInput) subtitleInput.value = cfg.subtitle || 'POTONGAN HARGA S/D 30% // BERAKHIR MALAM INI';
       if (startInput) startInput.value = toDateTimeLocal(cfg.startTime);
       if (endInput) endInput.value = toDateTimeLocal(cfg.endTime);
-      if (toggleActive) toggleActive.checked = cfg.isActive !== false;
+      if (toggleActive) toggleActive.checked = Boolean(cfg.isActive);
 
       updateStatusIndicator(cfg);
     }
@@ -1666,14 +1666,18 @@ async function initAdminDashboard() {
     // Save Countdown Schedule
     if (btnSaveSchedule) {
       btnSaveSchedule.addEventListener('click', () => {
+        if (toggleActive?.checked && !endInput?.value) {
+          showAdminToast('error', 'WAKTU BERAKHIR WAJIB DIISI', 'Tentukan tanggal dan jam berakhirnya promo Flash Sale.');
+          return;
+        }
         const startTime = startInput?.value ? new Date(startInput.value).toISOString() : new Date().toISOString();
-        const endTime = endInput?.value ? new Date(endInput.value).toISOString() : new Date(Date.now() + 86400000).toISOString();
+        const endTime = endInput?.value ? new Date(endInput.value).toISOString() : '';
         const cfg = {
           title: (titleInput?.value || 'LIMITED DISPATCH').trim(),
           subtitle: (subtitleInput?.value || '').trim(),
           startTime,
           endTime,
-          isActive: toggleActive ? toggleActive.checked : true
+          isActive: toggleActive ? toggleActive.checked : false
         };
         saveFlashSaleConfig(cfg);
         updateStatusIndicator(cfg);

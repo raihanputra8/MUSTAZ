@@ -5,7 +5,7 @@
 import { initCart, openCart } from './components/cart.js';
 import { initNavbar } from './components/navbar.js';
 import { initPartsPage, initHelmetsPage, initChoppersPage, openProductDetail } from './components/products.js';
-import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts, getFlashSaleConfig, getActiveFlashSaleProducts, formatRupiah } from './services/cartService.js';
+import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts, getFlashSaleConfig, getActiveFlashSaleProducts, isFlashSaleActive, formatRupiah } from './services/cartService.js';
 import { getProductImageUrl } from './config.js';
 import { showToast } from './components/toast.js';
 import { showBrutalConfirm, showBrutalAlert, showBrutalFormModal } from './components/modal.js';
@@ -107,22 +107,33 @@ async function initApp() {
 
   // 7. Live Flash Sale Countdown Timer & Dynamic Grid
   function initFlashSaleTimer() {
+    const sectionEl = document.getElementById('flashSaleSection');
     const hoursEl = document.getElementById('fsHours');
     const minsEl = document.getElementById('fsMins');
     const secsEl = document.getElementById('fsSecs');
     const headingEl = document.getElementById('fsCampaignHeading');
     const subHeadingEl = document.getElementById('fsCampaignSubheading');
     const gridEl = document.getElementById('flashSaleGrid');
-    if (!hoursEl || !minsEl || !secsEl) return;
+    if (!hoursEl || !minsEl || !secsEl || !sectionEl) return;
 
-    const cfg = getFlashSaleConfig();
-    if (headingEl && cfg.title) headingEl.textContent = cfg.title;
-    if (subHeadingEl && cfg.subtitle) subHeadingEl.textContent = cfg.subtitle;
+    let timerInterval = null;
 
     function renderDynamicFlashSaleGrid() {
+      const cfg = getFlashSaleConfig();
+      const live = isFlashSaleActive();
+      const activeProducts = live ? getActiveFlashSaleProducts() : [];
+
+      if (!live || activeProducts.length === 0) {
+        sectionEl.style.display = 'none';
+        return;
+      }
+
+      sectionEl.style.display = '';
+
+      if (headingEl && cfg.title) headingEl.textContent = cfg.title;
+      if (subHeadingEl && cfg.subtitle) subHeadingEl.textContent = cfg.subtitle;
+
       if (!gridEl) return;
-      const activeProducts = getActiveFlashSaleProducts();
-      if (!activeProducts || activeProducts.length === 0) return;
 
       gridEl.innerHTML = activeProducts.map((p, idx) => {
         const origPrice = Number(p.price) || 0;
@@ -193,30 +204,27 @@ async function initApp() {
       });
     }
 
-    renderDynamicFlashSaleGrid();
-
-    // Re-render flash sale cards when currency changes
-    window.addEventListener('mustaz:currency_changed', () => {
-      renderDynamicFlashSaleGrid();
-    });
-
     function tick() {
-      const now = new Date();
-      const targetEnd = cfg.endTime ? new Date(cfg.endTime) : null;
-      let totalSeconds = 0;
-
-      if (targetEnd && !isNaN(targetEnd.getTime())) {
-        totalSeconds = Math.max(0, Math.floor((targetEnd - now) / 1000));
-      } else {
-        const endOfDay = new Date(now);
-        endOfDay.setHours(23, 59, 59, 999);
-        totalSeconds = Math.max(0, Math.floor((endOfDay - now) / 1000));
-      }
-
-      if (cfg.isActive === false || totalSeconds <= 0) {
+      const cfg = getFlashSaleConfig();
+      if (!isFlashSaleActive()) {
         hoursEl.textContent = '00';
         minsEl.textContent = '00';
         secsEl.textContent = '00';
+        sectionEl.style.display = 'none';
+        if (timerInterval) clearInterval(timerInterval);
+        return;
+      }
+
+      const now = Date.now();
+      const targetEnd = cfg.endTime ? new Date(cfg.endTime).getTime() : 0;
+      const totalSeconds = Math.max(0, Math.floor((targetEnd - now) / 1000));
+
+      if (totalSeconds <= 0) {
+        hoursEl.textContent = '00';
+        minsEl.textContent = '00';
+        secsEl.textContent = '00';
+        sectionEl.style.display = 'none';
+        if (timerInterval) clearInterval(timerInterval);
         return;
       }
 
@@ -229,41 +237,62 @@ async function initApp() {
       secsEl.textContent = s;
     }
 
+    renderDynamicFlashSaleGrid();
     tick();
-    setInterval(tick, 1000);
+    timerInterval = setInterval(tick, 1000);
+
+    // Re-render flash sale cards when currency changes
+    window.addEventListener('mustaz:currency_changed', () => {
+      renderDynamicFlashSaleGrid();
+    });
+
+    // Re-render when admin updates flash sale schedule or products
+    window.addEventListener('flash-sale:updated', () => {
+      renderDynamicFlashSaleGrid();
+      tick();
+    });
   }
 
-  // 7.5. Multi-Currency Synchronization for Home Page (Featured Drops & 3D Coverflow)
+  // 7.5. Multi-Currency Synchronization for Home Page (Featured Drops, Hero Visor & Coverflow)
   function updateHomePrices() {
     const dynamicParts = getDynamicParts();
 
-    // 1. Update Featured Drops Cards in index.html
+    // 1. Explicit data-product-price hooks (Drops Grid & Hero Visor in index.html)
+    document.querySelectorAll('[data-product-price]').forEach(el => {
+      const partId = el.dataset.productPrice;
+      const product = dynamicParts.find(p => p.id === partId);
+      if (product && product.price) {
+        el.textContent = formatRupiah(product.price);
+      }
+    });
+
+    // 2. Generic cards containing data-add-to-cart (Featured Drops, Hero Card, etc.)
     document.querySelectorAll('.drops-grid article, .card-brutal-white, .card-brutal-dark').forEach(card => {
       const addBtn = card.querySelector('[data-add-to-cart]');
       if (!addBtn) return;
       const partId = addBtn.dataset.addToCart;
       const product = dynamicParts.find(p => p.id === partId);
-      if (!product) return;
+      if (!product || !product.price) return;
 
-      const priceEls = card.querySelectorAll('span');
+      const priceEls = card.querySelectorAll('span, div');
       priceEls.forEach(el => {
+        if (el.children.length > 0) return;
+        if (el.classList.contains('zine-tag-yellow') || el.classList.contains('zine-tag-pink') || el.classList.contains('zine-tag-white') || el.classList.contains('zine-tag-dark')) return;
+
         const txt = (el.textContent || '').trim();
-        if (txt.includes('IDR') || txt.includes('Rp') || txt.includes('$')) {
-          const fontSize = el.style.fontSize || '';
-          if (fontSize.includes('1.5rem') || fontSize.includes('1.4rem') || fontSize.includes('1.35rem')) {
-            el.textContent = formatRupiah(product.price);
-          }
+        if (/^(IDR|Rp|\$)\s*[\d.,]+/i.test(txt) || /^[\d.,]+\s*(IDR|Rp|\$)/i.test(txt)) {
+          el.textContent = formatRupiah(product.price);
         }
       });
     });
 
-    // 2. Update 3D Coverflow Slides in index.html
+    // 3. Update 3D Coverflow Slides in index.html (if applicable)
     document.querySelectorAll('.visor-slide').forEach(slide => {
       const addBtn = slide.querySelector('[data-add-to-cart]');
       if (!addBtn) return;
       const partId = addBtn.dataset.addToCart;
       const product = dynamicParts.find(p => p.id === partId);
-      if (!product) return;
+      if (!product || !product.price) return;
 
       const priceEl = slide.querySelector('span[style*="font-size:1.3rem"], span[style*="font-size: 1.3rem"]');
       if (priceEl) {
@@ -274,6 +303,12 @@ async function initApp() {
 
   updateHomePrices();
   window.addEventListener('mustaz:currency_changed', updateHomePrices);
+  window.addEventListener('mustaz_products_updated', updateHomePrices);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'mustaz_currency' || e.key === 'mustaz_catalog_products_v3' || e.key === 'mustaz_catalog_products') {
+      updateHomePrices();
+    }
+  });
 
   initFlashSaleTimer();
 

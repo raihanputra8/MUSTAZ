@@ -111,27 +111,49 @@ export const DEFAULT_PARTS_DATA = [
 export const FLASH_SALE_CONFIG_KEY = 'mustaz_flash_sale_config_v1';
 let _flashSaleConfigMem = null;
 
+export function isFlashSaleActive() {
+  const cfg = getFlashSaleConfig();
+  const isPromoActive = cfg.isActive !== undefined ? cfg.isActive : (cfg.active !== false);
+  if (!isPromoActive) return false;
+  const now = Date.now();
+  const start = cfg.startTime ? new Date(cfg.startTime).getTime() : 0;
+  const end = cfg.endTime ? new Date(cfg.endTime).getTime() : 0;
+  if (!end || isNaN(end)) return false;
+  return now >= start && now < end;
+}
+
 export function getFlashSaleConfig() {
-  const defaultStart = new Date();
-  const defaultEnd = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const defaults = {
-    active: true,
-    isActive: true,
+    active: false,
+    isActive: false,
     title: 'LIMITED DISPATCH',
     subtitle: 'POTONGAN HARGA S/D 30% // BERAKHIR MALAM INI',
-    startTime: defaultStart.toISOString(),
-    endTime: defaultEnd.toISOString()
+    startTime: '',
+    endTime: ''
   };
 
+  let cfg = defaults;
   try {
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem(FLASH_SALE_CONFIG_KEY);
-      if (saved) return { ...defaults, ...JSON.parse(saved) };
+      if (saved) {
+        cfg = { ...defaults, ...JSON.parse(saved) };
+      }
     } else if (_flashSaleConfigMem) {
-      return { ...defaults, ..._flashSaleConfigMem };
+      cfg = { ...defaults, ..._flashSaleConfigMem };
     }
   } catch {}
-  return defaults;
+
+  // Automatically mark expired if end time has passed
+  if (cfg.endTime) {
+    const endMs = new Date(cfg.endTime).getTime();
+    if (!isNaN(endMs) && Date.now() >= endMs) {
+      cfg.isActive = false;
+      cfg.active = false;
+    }
+  }
+
+  return cfg;
 }
 
 export function saveFlashSaleConfig(config) {
@@ -156,16 +178,9 @@ export function saveFlashSaleConfig(config) {
 }
 
 export function getActiveFlashSaleProducts() {
-  const config = getFlashSaleConfig();
-  const isPromoActive = config.isActive !== undefined ? config.isActive : (config.active !== false);
-  if (!isPromoActive) return [];
+  if (!isFlashSaleActive()) return [];
 
-  const now = new Date().getTime();
-  const start = config.startTime ? new Date(config.startTime).getTime() : 0;
-  const end = config.endTime ? new Date(config.endTime).getTime() : Infinity;
-
-  if (now < start || now > end) return [];
-
+  const now = Date.now();
   const allParts = getDynamicParts();
   return allParts.filter(p => {
     if (!p.is_flash_sale) return false;

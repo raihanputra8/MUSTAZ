@@ -196,7 +196,7 @@
             <p style="font-size:0.85rem;color:#AAA;line-height:1.4;margin-bottom:14px;">
               Have questions about your Pet Visor custom fitting or shipping tracking?
             </p>
-            <a href="https://wa.me/62895402806350?text=Halo%20MUSTAZ%20CRAFT%2C%20saya%20butuh%20bantuan%20pesanan%20saya." target="_blank" class="btn-brutal-pink btn-brutal-sm" style="width:100%;text-align:center;display:block;">
+            <a id="accountHelpWaLink" href="https://wa.me/62895402806350?text=Halo%20MUSTAZ%20CRAFT%2C%20saya%20butuh%20bantuan%20pesanan%20saya." target="_blank" class="btn-brutal-pink btn-brutal-sm" style="width:100%;text-align:center;display:block;">
               CHAT CS VIA WHATSAPP →
             </a>
           </div>
@@ -380,10 +380,16 @@
   import { showBrutalReviewModal, showBrutalAlert, showBrutalConfirm, showBrutalFormModal } from './js/components/modal.js';
   import { getOrderReview, submitVerifiedReview, getUserReviews } from './js/services/reviewsService.js';
   import { buildTrackingUrl } from './js/services/whatsappCsService.js';
+  import { CONFIG } from './js/config.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // 0. Synchronize navigation bar & logout state
     try { initNavbar(); } catch {}
+
+    const helpWaBtn = document.getElementById('accountHelpWaLink');
+    if (helpWaBtn && CONFIG.ADMIN_WHATSAPP) {
+      helpWaBtn.href = `https://wa.me/${CONFIG.ADMIN_WHATSAPP}?text=Halo%20MUSTAZ%20CRAFT%2C%20saya%20butuh%20bantuan%20pesanan%20saya.`;
+    }
 
     // 0. Robust Auth Guard: handles Google OAuth tokens from URL hash & active sessions
     const isAuthenticated = await initAccountAuth();
@@ -804,7 +810,7 @@
                 </span>
               </div>
               <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <a href="https://wa.me/62895402806350?text=Halo%20MUSTAZ%20CRAFT%2C%20saya%20ingin%20cek%20status%20order%20%23${order.id}" target="_blank" class="btn-brutal-ghost btn-brutal-sm">
+                <a href="https://wa.me/${CONFIG.ADMIN_WHATSAPP || '62895402806350'}?text=Halo%20MUSTAZ%20CRAFT%2C%20saya%20ingin%20cek%20status%20order%20%23${order.id}" target="_blank" class="btn-brutal-ghost btn-brutal-sm">
                   WHATSAPP SUPPORT
                 </a>
               </div>
