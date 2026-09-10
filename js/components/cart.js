@@ -5,11 +5,10 @@
 import {
   getCart, removeFromCart, updateCartQty, clearCart,
   getCartTotal, getCartCount, formatRupiah, generateWhatsAppUrl,
-  getActiveUserEmail, getUserAddresses, saveUserOrder,
-  deductProductStock
+  getActiveUserEmail, getUserAddresses, saveUserOrder
 } from '../services/cartService.js';
 import { sendOrderSuccessEmail, showOrderSuccessModal } from '../services/emailService.js';
-import { saveCloudOrder } from '../services/supabaseService.js';
+import { saveCloudOrder, submitOrderSecure } from '../services/supabaseService.js';
 
 // ─── Cart Drawer HTML Template ─────────────────────────────────────────────
 
@@ -355,9 +354,14 @@ export function initCart() {
     }
   });
 
+  // Idempotency Lock: Mencegah double submit order saat tombol ditekan berkali-kali
+  let isSubmittingOrder = false;
+
   // Checkout form submit
-  document.getElementById('checkoutForm')?.addEventListener('submit', (e) => {
+  document.getElementById('checkoutForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isSubmittingOrder) return;
+
     const name = (document.getElementById('custName')?.value || '').trim();
     const phone = (document.getElementById('custPhone')?.value || '').trim();
     const email = (document.getElementById('custEmail')?.value || '').trim();
@@ -409,101 +413,136 @@ export function initCart() {
     }
 
     const cartItems = getCart();
+    if (!cartItems || cartItems.length === 0) {
+      alert("⚠️ Keranjang belanja Anda kosong!");
+      return;
+    }
+
     const total = getCartTotal();
     const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
 
-    const orderRecord = {
-      id: orderId,
-      orderId: orderId,
-      customerName: name,
-      phone: cleanPhone,
-      customer_phone: cleanPhone,
-      email: email,
-      address: address,
-      courier: courier,
-      paymentMethod: payment,
-      date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-      status: 'PROCESSING',
-      tracking: `VERIFIKASI ADMIN [${courier}]`,
-      items: cartItems.map(i => ({
-        name: i.name,
-        spec: i.sub || 'Custom Visor',
-        qty: i.quantity,
-        price: i.price,
-        image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
-      })),
-      total: total
-    };
+    const submitBtn = document.getElementById('checkoutSubmitBtn');
+    const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'CONFIRM ORDER VIA WHATSAPP →';
 
-    // 1. Send Order Confirmation / Invoice Email to Buyer & Show In-App Success
     try {
-      sendOrderSuccessEmail(orderRecord).catch(() => {});
-      showOrderSuccessModal(orderRecord);
-    } catch {}
+      // 1. Kunci Idempotency: Disable tombol dan pasang status loading
+      isSubmittingOrder = true;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        submitBtn.style.cursor = 'not-allowed';
+        submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⏳ MEMPROSES ORDER AMAN...</span>';
+      }
 
-    // 2. Save order to Supabase Cloud
-    try {
-      saveCloudOrder({
-        id: orderId,
-        customer: name,
+      // 2. Submit order ke Supabase RPC (Re-kalkulasi harga server & pemotongan stok atomik)
+      const rpcResult = await submitOrderSecure({
+        customerName: name,
+        phone: cleanPhone,
         email: email,
-        phone: cleanPhone,
-        customer_phone: cleanPhone,
-        city: `${address} (Kurir: ${courier})`,
-        items: cartItems.map(i => `${i.name} (x${i.quantity})`).join(', '),
-        total: total,
-        status: 'PENDING'
-      }).catch(() => {});
-    } catch {}
-
-    // Also update localized admin orders cache
-    try {
-      const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
-      adminOrders.unshift({
-        id: orderId,
-        customer: name + (email ? ` (${email})` : ''),
-        items: cartItems.map(i => `${i.name} x${i.quantity}`).join(', '),
-        total: total,
-        date: new Date().toISOString().split('T')[0],
-        status: 'PENDING',
-        city: `${address} (${courier})`,
-        phone: cleanPhone,
-        customer_phone: cleanPhone,
+        address: address,
         courier: courier,
-        receiptImage: ''
+        notes: `Email: ${email} | Pembayaran: ${payment}`,
+        paymentMethod: payment,
+        cartItems: cartItems,
+        orderId: orderId
       });
-      localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
-    } catch {}
 
-    // 3. Save to user's localized order history
-    try {
-      saveUserOrder(email, orderRecord);
-    } catch {}
+      const finalOrderId = rpcResult?.orderId || orderId;
+      const finalTotal = (typeof rpcResult?.totalAmount === 'number') ? rpcResult.totalAmount : total;
 
-    // Deduct inventory & promo stock
-    cartItems.forEach(item => {
-      if (item.id) deductProductStock(item.id, item.quantity || 1);
-    });
+      const orderRecord = {
+        id: finalOrderId,
+        orderId: finalOrderId,
+        customerName: name,
+        phone: cleanPhone,
+        customer_phone: cleanPhone,
+        email: email,
+        address: address,
+        courier: courier,
+        paymentMethod: payment,
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+        status: 'PENDING_PAYMENT',
+        tracking: `VERIFIKASI ADMIN [${courier}]`,
+        items: cartItems.map(i => ({
+          name: i.name,
+          spec: i.sub || 'Custom Visor',
+          qty: i.quantity,
+          price: i.price,
+          image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
+        })),
+        total: finalTotal
+      };
 
-    // 4. Generate and launch WhatsApp conversation
-    const url = generateWhatsAppUrl({ 
-      name, 
-      phone, 
-      address, 
-      courier, 
-      payment, 
-      notes: `Email: ${email}`, 
-      orderId: orderId 
-    }, cartItems, total, orderId);
-    const waWin = window.open(url, '_blank');
-    if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
-      window.location.href = url;
+      // 3. Send Order Confirmation / Invoice Email to Buyer & Show In-App Success
+      try {
+        sendOrderSuccessEmail(orderRecord).catch(() => {});
+        showOrderSuccessModal(orderRecord);
+      } catch {}
+
+      // Update localized admin orders cache
+      try {
+        const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+        adminOrders.unshift({
+          id: finalOrderId,
+          customer: name + (email ? ` (${email})` : ''),
+          items: cartItems.map(i => `${i.name} x${i.quantity}`).join(', '),
+          total: finalTotal,
+          date: new Date().toISOString().split('T')[0],
+          status: 'PENDING_PAYMENT',
+          city: `${address} (${courier})`,
+          phone: cleanPhone,
+          customer_phone: cleanPhone,
+          courier: courier,
+          receiptImage: ''
+        });
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
+      } catch {}
+
+      // 4. Save to user's localized order history
+      try {
+        saveUserOrder(email, orderRecord);
+      } catch {}
+
+      // 5. Generate and launch WhatsApp conversation
+      const url = generateWhatsAppUrl({ 
+        name, 
+        phone: cleanPhone, 
+        address, 
+        courier, 
+        payment, 
+        notes: `Email: ${email}`, 
+        orderId: finalOrderId 
+      }, cartItems, finalTotal, finalOrderId);
+
+      const waWin = window.open(url, '_blank');
+      if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+        window.location.href = url;
+      }
+
+      clearCart();
+      closeCheckout();
+      renderCartItems();
+      document.getElementById('checkoutForm')?.reset();
+    } catch (err) {
+      console.error('[Checkout Error]', err);
+      const userErrMsg = err.message && err.message.includes('Stok') 
+        ? err.message 
+        : `⚠️ Gagal memproses pesanan: ${err.message || 'Silakan coba beberapa saat lagi.'}`;
+      if (errEl) {
+        errEl.textContent = userErrMsg;
+        errEl.style.display = 'block';
+      } else {
+        alert(userErrMsg);
+      }
+    } finally {
+      isSubmittingOrder = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+        submitBtn.innerHTML = originalBtnContent;
+      }
     }
-
-    clearCart();
-    closeCheckout();
-    renderCartItems();
-    document.getElementById('checkoutForm')?.reset();
   });
 
   // Listen to cart updates, auth changes, currency changes, and logout events from any page

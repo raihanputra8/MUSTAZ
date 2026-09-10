@@ -250,28 +250,57 @@ export async function updatePassword(newPassword) {
 
 /**
  * 8. Cryptographic Admin Session Verification (Zero-Trust)
- * Ensures user has an active Supabase session AND is authorized as admin in cloud database or whitelist.
+ * Ensures user has an authentic Supabase session (JWT via getUser())
+ * AND is authorized as admin via owner whitelist or verified database role.
+ * Never trusts unverified client-side localStorage values.
  * Returns { isAdmin: boolean, user: object|null, reason?: string, email?: string }
  */
 export async function verifyAdminSession() {
-  const isLoggedIn = localStorage.getItem('mustaz_auth_logged_in') === 'true';
-  if (!isLoggedIn) {
-    return { isAdmin: false, user: null, reason: 'NOT_LOGGED_IN' };
+  const sb = await getSupabase();
+  if (!sb) {
+    return { isAdmin: false, user: null, reason: 'SUPABASE_UNAVAILABLE' };
   }
-  try {
-    const saved = localStorage.getItem('mustaz_user_profile_data');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      const email = (parsed.email || '').toLowerCase().trim();
-      const isOwner = email === 'raihanputrairawan8@gmail.com' || email === 'raihanputra8@gmail.com' || email === 'admin@mustazcraft.com' || email.includes('admin');
-      if (isOwner || parsed.role === 'admin') {
-        return { isAdmin: true, user: parsed, email, role: 'admin' };
-      }
-      return { isAdmin: false, user: parsed, email, role: parsed.role || 'member', reason: 'NOT_ADMIN' };
-    }
-  } catch {}
 
-  return { isAdmin: false, user: null, reason: 'NO_PROFILE' };
+  try {
+    // 1. Verifikasi otentisitas token JWT langsung ke server Supabase Auth
+    const { data: { user }, error } = await sb.auth.getUser();
+    if (error || !user) {
+      return { isAdmin: false, user: null, reason: 'NOT_AUTHENTICATED' };
+    }
+
+    const email = (user.email || '').toLowerCase().trim();
+    const isOwnerEmail = email === 'raihanputrairawan8@gmail.com' || 
+                         email === 'raihanputra8@gmail.com' || 
+                         email === 'admin@mustazcraft.com';
+
+    // 2. Periksa role admin dari metadata JWT server
+    const metadataRole = user.app_metadata?.role || user.user_metadata?.role;
+    let isRoleAdmin = metadataRole === 'admin' || isOwnerEmail;
+
+    // 3. Fallback periksa role pada tabel accounts jika didefinisikan
+    if (!isRoleAdmin && user.id) {
+      try {
+        const { data: profile } = await sb
+          .from('accounts')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (profile?.role === 'admin') {
+          isRoleAdmin = true;
+        }
+      } catch (_) {}
+    }
+
+    if (isRoleAdmin) {
+      localStorage.setItem('mustaz_auth_logged_in', 'true');
+      return { isAdmin: true, user, email, role: 'admin' };
+    }
+
+    return { isAdmin: false, user, email, role: 'member', reason: 'NOT_ADMIN' };
+  } catch (err) {
+    console.error('[AuthService] verifyAdminSession error:', err);
+    return { isAdmin: false, user: null, reason: 'AUTH_ERROR' };
+  }
 }
 
 /**
@@ -300,30 +329,13 @@ export async function checkUserRole(email) {
     return 'admin';
   }
   try {
-    const saved = localStorage.getItem('mustaz_user_profile_data');
-    if (saved) {
-      const p = JSON.parse(saved);
-      if (p.email && p.email.toLowerCase() === normalized && p.role) return p.role;
+    const sb = await getSupabase();
+    if (sb) {
+      const { data } = await sb.from('accounts').select('role').eq('email', normalized).maybeSingle();
+      if (data?.role) return data.role;
     }
   } catch {}
   return 'member';
-}
-
-/**
- * Quick Switch Helper: Switch active session directly to Owner/Admin
- */
-export function loginAsAdminDirectly() {
-  const adminProfile = {
-    email: 'raihanputrairawan8@gmail.com',
-    fullName: 'MUSTAZ CRAFT ADMIN',
-    role: 'admin',
-    phone: '+62 895-4028-06350',
-    alias: 'OWNER / MASTER CRAFT'
-  };
-  localStorage.setItem('mustaz_auth_logged_in', 'true');
-  localStorage.setItem('mustaz_user_profile_data', JSON.stringify(adminProfile));
-  window.dispatchEvent(new CustomEvent('mustaz:auth_synced', { detail: adminProfile }));
-  return adminProfile;
 }
 
 /**

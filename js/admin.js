@@ -208,39 +208,21 @@ async function initAdminDashboard() {
   // ─── 2. ADMIN ACCESS ENGINE & LOGOUT CONTROLS ─────────────────────────────
   async function enforceAdminRole() {
     try {
-      const { verifyAdminSession, logoutUser, loginAsAdminDirectly } = await import('./services/authService.js');
+      const { verifyAdminSession, logoutUser } = await import('./services/authService.js');
       const adminCheck = await verifyAdminSession();
 
       const nonAdminPrompt = document.getElementById('adminNonAdminPrompt');
       const dashboardBody = document.getElementById('adminDashboardBody');
       const emailDisplay = document.getElementById('adminCurrentEmail');
 
-      // Defensive fallback check against localStorage session
-      let fallbackIsAdmin = false;
-      try {
-        const raw = localStorage.getItem('mustaz_user_profile_data');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed.role === 'admin' || parsed.email === 'raihanputrairawan8@gmail.com' || parsed.email === 'admin@mustazcraft.com') {
-            fallbackIsAdmin = true;
-          }
-        }
-      } catch (_) {}
-
-      if (!adminCheck.isAdmin && !fallbackIsAdmin) {
+      if (!adminCheck.isAdmin) {
         if (dashboardBody) dashboardBody.style.display = 'none';
         if (nonAdminPrompt) {
           nonAdminPrompt.style.display = 'block';
           if (emailDisplay) {
-            emailDisplay.textContent = adminCheck.email ? `${adminCheck.email} (${adminCheck.role || 'Member'})` : 'Tamu / Belum Login';
+            emailDisplay.textContent = adminCheck.email ? `${adminCheck.email} (${adminCheck.role || 'Bukan Admin'})` : 'Tamu / Belum Login';
           }
         }
-
-        // Quick Switch Button
-        document.getElementById('btnSwitchToAdminNow')?.addEventListener('click', () => {
-          loginAsAdminDirectly();
-          window.location.reload();
-        });
 
         // Prompt Logout Button
         document.getElementById('btnPromptLogout')?.addEventListener('click', async () => {
@@ -1329,37 +1311,51 @@ async function initAdminDashboard() {
       const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
 
       let dynamicActionsHtml = '';
-      if (ord.status === 'PENDING' || ord.status === 'PENDING_PAYMENT') {
+      const ordStatus = (ord.status || 'PENDING').toUpperCase();
+
+      if (ordStatus === 'PENDING' || ordStatus === 'PENDING_PAYMENT') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" data-id="${safeId}" title="Fase 1: Buka WhatsApp bawa rincian tagihan & rekening resmi" style="padding:6px 10px;font-size:0.7rem;font-weight:900;cursor:pointer;">
-            [1] 💳 KIRIM REKENING &amp; TAGIHAN
+          <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" data-id="${safeId}" title="Kirim rincian tagihan & invoice via WhatsApp" style="padding:6px 10px;font-size:0.7rem;font-weight:900;cursor:pointer;">
+            📩 KIRIM INVOICE WA
+          </button>
+          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Batalkan pesanan ini" style="padding:6px 10px;font-size:0.7rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;">
+            ❌ BATALKAN
           </button>
         `;
-      } else if (ord.status === 'PROCESSING' || ord.status === 'PAID_PROCESSING') {
+      } else if (ordStatus === 'PAYMENT_REVIEW' || ordStatus === 'WAITING_VERIFICATION') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" data-id="${safeId}" title="Fase 2: Buka WhatsApp konfirmasi pembayaran lunas & packing" style="padding:6px 10px;font-size:0.7rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
-            [2] ✅ VERIFIKASI LUNAS
+          <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" data-id="${safeId}" title="Verifikasi pembayaran lunas & mulai proses" style="padding:6px 10px;font-size:0.7rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;">
+            ✅ VERIFIKASI LUNAS
           </button>
-          <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" data-id="${safeId}" title="Fase 3: Input Resi kurir dan kirimkan ke WhatsApp" style="padding:6px 10px;font-size:0.7rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;">
-            [3] 📦 INPUT RESI &amp; SHIPPED
+          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Tolak bukti & batalkan pesanan" style="padding:6px 10px;font-size:0.7rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;">
+            ❌ BATALKAN
           </button>
         `;
-      } else if (ord.status === 'SHIPPED' || ord.status === 'DELIVERED') {
+      } else if (ordStatus === 'PAID_PROCESSING' || ordStatus === 'PROCESSING' || ordStatus === 'PAID') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Fase 4: Kirim ajakan ulasan ke pembeli via WhatsApp" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:800;">
-            [4] ⭐ MINTA ULASAN / REVIEW
+          <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" data-id="${safeId}" title="Input Resi kurir dan update status ke SHIPPED" style="padding:6px 10px;font-size:0.7rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;font-weight:900;">
+            📦 INPUT RESI &amp; SHIPPED
           </button>
-          ${ord.status === 'SHIPPED' ? `
-            <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Ubah status ke DELIVERED" style="padding:5px 8px;font-size:0.68rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;">
-              ✓ DELIVERED
-            </button>
-          ` : `
-            <span style="color:#4ade80;font-size:0.68rem;font-weight:bold;padding:4px 6px;border:1px solid #22c55e44;background:#14301c33;">✓ COMPLETED</span>
-          `}
+        `;
+      } else if (ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT') {
+        dynamicActionsHtml = `
+          <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Tandai pesanan diterima pelanggan" style="padding:6px 10px;font-size:0.7rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;">
+            ✓ MARK DELIVERED
+          </button>
+        `;
+      } else if (ordStatus === 'DELIVERED') {
+        dynamicActionsHtml = `
+          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Kirim ajakan ulasan / review ke WhatsApp pembeli" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:900;">
+            ⭐ MINTA TESTIMONI
+          </button>
+        `;
+      } else if (ordStatus === 'COMPLETED') {
+        dynamicActionsHtml = `
+          <span style="color:#4ade80;font-size:0.7rem;font-weight:900;padding:5px 8px;border:1px solid #22c55e44;background:#14301c33;">✓ SELESAI</span>
         `;
       } else {
         dynamicActionsHtml = `
-          <span style="color:#ef4444;font-size:0.7rem;font-family:var(--font-mono-sub);padding:4px 6px;border:1px solid #ef444444;">DIBATALKAN</span>
+          <span style="color:#ef4444;font-size:0.7rem;font-family:var(--font-mono-sub);padding:5px 8px;border:1px solid #ef444444;background:#30141433;font-weight:800;">❌ DIBATALKAN</span>
         `;
       }
 
@@ -1496,6 +1492,28 @@ async function initAdminDashboard() {
       });
     });
 
+    // Aksi Pembatalan Pesanan (Contextual Cancel)
+    tbody.querySelectorAll('.btn-action-cancel').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const idx = Number(btn.dataset.index);
+        const id = btn.dataset.id;
+        const all = getAdminOrders();
+        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
+        if (!ord) return;
+
+        const confirmed = confirm(`⚠️ Apakah Anda yakin ingin membatalkan pesanan #${ord.id}?`);
+        if (!confirmed) return;
+
+        ord.status = 'CANCELLED';
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+        await updateCloudOrderStatus(ord.id, 'CANCELLED').catch(() => {});
+
+        showAdminToast('warning', 'PESANAN DIBATALKAN', `Pesanan #${ord.id} telah dibatalkan.`);
+        renderOrders();
+      });
+    });
+
     // Fase 4: Minta Review & Ulasan Pelanggan (Target Buyer WA)
     tbody.querySelectorAll('.btn-action-p4').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -1509,11 +1527,11 @@ async function initAdminDashboard() {
         const sent = openAdminWhatsAppAction(ord, 4);
         if (!sent) return;
 
-        ord.status = 'DELIVERED';
+        ord.status = 'COMPLETED';
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-        updateCloudOrderStatus(ord.id, 'DELIVERED').catch(() => {});
+        updateCloudOrderStatus(ord.id, 'COMPLETED').catch(() => {});
 
-        showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Status DELIVERED aktif. Link ulasan resmi dikirim ke WhatsApp pembeli.`);
+        showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Link testimoni dikirim ke WhatsApp pembeli #${ord.id}. Status diubah ke COMPLETED.`);
         renderOrders();
       });
     });

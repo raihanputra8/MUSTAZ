@@ -197,8 +197,8 @@
 </main>
 
 <script type="module">
-  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, deductProductStock, getActiveCurrency } from './js/services/cartService.js';
-  import { saveCloudOrder } from './js/services/supabaseService.js';
+  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, getActiveCurrency } from './js/services/cartService.js';
+  import { saveCloudOrder, submitOrderSecure } from './js/services/supabaseService.js';
   import { sendOrderSuccessEmail, showOrderSuccessModal } from './js/services/emailService.js';
 
   function renderPageCheckout() {
@@ -219,14 +219,11 @@
           </div>
         `;
       }
-      return;
-    }
-
-    if (list) {
+    } else {
       list.innerHTML = items.map(item => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed #CCC;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #EEE;">
           <div style="display:flex;align-items:center;gap:12px;">
-            <img src="${item.image || ''}" style="width:44px;height:44px;object-fit:cover;border:1px solid #000;" onerror="this.style.display='none'">
+            <img src="${item.image || item.image_url || 'assets/images/Product1.png'}" style="width:48px;height:48px;object-fit:cover;border:1px solid #000;">
             <div>
               <div style="font-family:var(--font-headline);font-size:1.1rem;color:#000;">${item.name}</div>
               <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#666;">QTY: ${item.quantity}</div>
@@ -243,7 +240,6 @@
   document.addEventListener('DOMContentLoaded', () => {
     renderPageCheckout();
 
-    // Prefill active user data if logged in
     const activeEmail = getActiveUserEmail();
     let profile = {};
     try {
@@ -256,7 +252,7 @@
     const addrInput = document.getElementById('chkAddress');
 
     if (nameInput && !nameInput.value) {
-      nameInput.value = profile.fullName || profile.alias || profile.name || '';
+      nameInput.value = profile.fullName || profile.name || '';
     }
     if (phoneInput && !phoneInput.value) {
       phoneInput.value = profile.phone || '';
@@ -278,8 +274,12 @@
       }
     }
 
+    let isSubmittingCheckout = false;
+
     document.getElementById('directCheckoutForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (isSubmittingCheckout) return;
+
       const items = getCart();
       if (!items || items.length === 0) {
         const { showBrutalAlert } = await import('./js/components/modal.js');
@@ -299,7 +299,7 @@
       const courier = (document.getElementById('chkCourier')?.value || '').trim();
       const payment = document.getElementById('chkPayment')?.value || 'Transfer Bank (BCA / Mandiri)';
 
-      // JS Validation Guard: Jika salah satu field kosong atau nomor WhatsApp kurang dari 10 digit, blokir checkout
+      // JS Validation Guard
       if (!name || !phone || !courier || !address) {
         alert("⚠️ MOHON LENGKAPI NAMA, NO. WHATSAPP, KURIR, DAN ALAMAT PENGIRIMAN SEBELUM CHECKOUT!");
         return;
@@ -307,10 +307,6 @@
       const cleanDigits = phone.replace(/[^0-9]/g, '');
       if (cleanDigits.length < 10) {
         alert("⚠️ NOMOR WHATSAPP TIDAK VALID! Minimal 10 digit angka (contoh: 081234567890).");
-        return;
-      }
-      if (!email || !email.includes('@')) {
-        alert("⚠️ MASUKKAN EMAIL VALID UNTUK PENGIRIMAN INVOICE RESMI.");
         return;
       }
 
@@ -324,84 +320,107 @@
       const total = getCartTotal();
       const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
 
-      const orderRecord = {
-        id: orderId,
-        orderId: orderId,
-        customerName: name,
-        phone: cleanPhone,
-        customer_phone: cleanPhone,
-        email: email,
-        address: address,
-        courier: courier,
-        paymentMethod: payment,
-        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase(),
-        status: 'PROCESSING',
-        tracking: `MENUNGGU PICKUP [${courier}]`,
-        items: items.map(i => ({
-          name: i.name,
-          spec: i.category || i.sub || 'CUSTOM MUSTAZ PART',
-          qty: i.quantity,
-          price: i.price,
-          image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
-        })),
-        total: total,
-        currency: getActiveCurrency()
-      };
+      const submitBtn = document.querySelector('#directCheckoutForm button[type="submit"]');
+      const origBtnContent = submitBtn ? submitBtn.innerHTML : 'CONFIRM ORDER VIA WHATSAPP →';
 
-      // 1. Send Order Confirmation Email to Buyer
-      sendOrderSuccessEmail(orderRecord).catch(() => {});
-
-      // 2. Log order to Supabase Cloud Orders
-      saveCloudOrder({
-        id: orderId,
-        customer: name,
-        email: email,
-        phone: cleanPhone,
-        customer_phone: cleanPhone,
-        city: `${address} (Kurir: ${courier})`,
-        items: items.map(i => `${i.name} (x${i.quantity})`).join(', '),
-        total: total,
-        currency: getActiveCurrency(),
-        status: 'PENDING'
-      }).catch(() => {});
-
-      // Also update localized admin orders cache
       try {
-        const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
-        adminOrders.unshift({
-          id: orderId,
-          customer: name + (email ? ` (${email})` : ''),
-          items: items.map(i => `${i.name} x${i.quantity}`).join(', '),
-          total: total,
-          currency: getActiveCurrency(),
-          date: new Date().toISOString().split('T')[0],
-          status: 'PENDING',
-          city: `${address} (${courier})`,
+        isSubmittingCheckout = true;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.7';
+          submitBtn.style.cursor = 'not-allowed';
+          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⏳ MEMPROSES ORDER AMAN...</span>';
+        }
+
+        // Submit via Supabase RPC (Server-Side Price Calculation & Atomic Stock Deduction)
+        const rpcResult = await submitOrderSecure({
+          customerName: name,
+          phone: cleanPhone,
+          email: email,
+          address: address,
+          courier: courier,
+          notes: `Email: ${email} | Pembayaran: ${payment}`,
+          paymentMethod: payment,
+          cartItems: items,
+          orderId: orderId
+        });
+
+        const finalOrderId = rpcResult?.orderId || orderId;
+        const finalTotal = (typeof rpcResult?.totalAmount === 'number') ? rpcResult.totalAmount : total;
+
+        const orderRecord = {
+          id: finalOrderId,
+          orderId: finalOrderId,
+          customerName: name,
           phone: cleanPhone,
           customer_phone: cleanPhone,
+          email: email,
+          address: address,
           courier: courier,
-          receiptImage: ''
-        });
-        localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
-      } catch {}
+          paymentMethod: payment,
+          date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase(),
+          status: 'PENDING_PAYMENT',
+          tracking: `MENUNGGU PICKUP [${courier}]`,
+          items: items.map(i => ({
+            name: i.name,
+            spec: i.category || i.sub || 'CUSTOM MUSTAZ PART',
+            qty: i.quantity,
+            price: i.price,
+            image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
+          })),
+          total: finalTotal,
+          currency: getActiveCurrency()
+        };
 
-      // 3. Save to user's localized order history
-      saveUserOrder(email || activeEmail, orderRecord);
+        // 1. Send Order Confirmation Email to Buyer
+        sendOrderSuccessEmail(orderRecord).catch(() => {});
 
-      // Deduct inventory & promo stock
-      items.forEach(i => {
-        if (i.id) deductProductStock(i.id, i.quantity || 1);
-      });
+        // Also update localized admin orders cache
+        try {
+          const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+          adminOrders.unshift({
+            id: finalOrderId,
+            customer: name + (email ? ` (${email})` : ''),
+            items: items.map(i => `${i.name} x${i.quantity}`).join(', '),
+            total: finalTotal,
+            currency: getActiveCurrency(),
+            date: new Date().toISOString().split('T')[0],
+            status: 'PENDING_PAYMENT',
+            city: `${address} (${courier})`,
+            phone: cleanPhone,
+            customer_phone: cleanPhone,
+            courier: courier,
+            receiptImage: ''
+          });
+          localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
+        } catch {}
 
-      // 4. Show Instant In-App Order Success Modal with Email Delivery Confirmation
-      showOrderSuccessModal(orderRecord);
+        // 2. Save to user's localized order history
+        saveUserOrder(email || activeEmail, orderRecord);
 
-      const url = generateWhatsAppUrl({ name, phone, address, courier, payment, notes: 'Email: ' + email, orderId: orderId }, items, total, orderId);
-      const waWin = window.open(url, '_blank');
-      if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
-        window.location.href = url;
+        // 3. Show Instant In-App Order Success Modal
+        showOrderSuccessModal(orderRecord);
+
+        // 4. Redirect to WhatsApp
+        const url = generateWhatsAppUrl({ name, phone: cleanPhone, address, courier, payment, notes: 'Email: ' + email, orderId: finalOrderId }, items, finalTotal, finalOrderId);
+        const waWin = window.open(url, '_blank');
+        if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+          window.location.href = url;
+        }
+        clearCart();
+        renderPageCheckout();
+      } catch (err) {
+        console.error('[Checkout Error]', err);
+        alert(err.message && err.message.includes('Stok') ? err.message : `⚠️ Gagal memproses pesanan: ${err.message || 'Silakan coba lagi.'}`);
+      } finally {
+        isSubmittingCheckout = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.style.cursor = 'pointer';
+          submitBtn.innerHTML = origBtnContent;
+        }
       }
-      clearCart();
     });
 
     window.addEventListener('mustaz:currency_changed', () => {
