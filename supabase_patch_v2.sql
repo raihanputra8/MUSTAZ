@@ -2,11 +2,19 @@
 -- MUSTAZ CRAFT - SUPABASE SECURITY HARDENING & ATOMIC RPC PATCH (v2.0)
 -- ==============================================================================
 -- Jalankan skrip ini di: Supabase Dashboard -> SQL Editor -> New Query -> Run
--- Skrip ini memindahkan kalkulasi harga dan pemotongan stok ke database server,
--- mengunci RLS tabel orders & products, dan mencegah race conditions.
 -- ==============================================================================
 
--- 1. TAMBAHKAN CONSTRAINT STOK POSITIF PADA TABEL PRODUCTS
+-- 1. PASTIKAN KOLOM-KOLOM PENTING PADA TABEL ORDERS DAN PRODUCTS TERSEDIA
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS stock INT DEFAULT 10;
+UPDATE public.products SET stock = 0 WHERE stock IS NULL OR stock < 0;
+
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'PENDING_PAYMENT';
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS customer_email TEXT;
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS shipping_address TEXT;
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS shipping_courier TEXT;
+
+-- 2. TAMBAHKAN CONSTRAINT STOK POSITIF PADA TABEL PRODUCTS
 DO $$
 BEGIN
     IF NOT EXISTS (
@@ -17,7 +25,7 @@ BEGIN
 END $$;
 
 
--- 2. FUNGSI CEK STATUS ADMIN (SECURITY DEFINER)
+-- 3. FUNGSI CEK STATUS ADMIN (SECURITY DEFINER)
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean
 LANGUAGE plpgsql
@@ -56,10 +64,14 @@ $$;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO anon, authenticated, service_role;
 
 
--- 3. KUNCI ROW-LEVEL SECURITY (RLS) TABEL PRODUCTS
+-- 4. KUNCI ROW-LEVEL SECURITY (RLS) TABEL PRODUCTS
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Public can view products" ON public.products;
+DROP POLICY IF EXISTS "Public read products" ON public.products;
+DROP POLICY IF EXISTS "Public insert products" ON public.products;
+DROP POLICY IF EXISTS "Public update products" ON public.products;
+DROP POLICY IF EXISTS "Public delete products" ON public.products;
 DROP POLICY IF EXISTS "Admin can insert products" ON public.products;
 DROP POLICY IF EXISTS "Admin can update products" ON public.products;
 DROP POLICY IF EXISTS "Admin can delete products" ON public.products;
@@ -89,22 +101,24 @@ TO authenticated
 USING (public.is_admin());
 
 
--- 4. KUNCI ROW-LEVEL SECURITY (RLS) TABEL ORDERS
+-- 5. KUNCI ROW-LEVEL SECURITY (RLS) TABEL ORDERS
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Anyone can create orders" ON public.orders;
+DROP POLICY IF EXISTS "Public read orders" ON public.orders;
+DROP POLICY IF EXISTS "Public insert orders" ON public.orders;
+DROP POLICY IF EXISTS "Public update orders" ON public.orders;
 DROP POLICY IF EXISTS "Anyone can create pending orders" ON public.orders;
 DROP POLICY IF EXISTS "Admin can view all orders" ON public.orders;
 DROP POLICY IF EXISTS "Admin can update orders" ON public.orders;
 DROP POLICY IF EXISTS "Admin can delete orders" ON public.orders;
 DROP POLICY IF EXISTS "Users can view own orders" ON public.orders;
 
--- Publik (Guest & User) hanya boleh INSERT pesanan baru dengan status PENDING_PAYMENT / PENDING
+-- Publik (Guest & User) hanya boleh INSERT pesanan baru dengan status PENDING_PAYMENT / PENDING / PROCESSING
 CREATE POLICY "Anyone can create pending orders"
 ON public.orders FOR INSERT
 WITH CHECK (
-  COALESCE(status, 'PENDING_PAYMENT') IN ('PENDING_PAYMENT', 'PENDING')
-  OR COALESCE(order_status, 'PENDING_PAYMENT') IN ('PENDING_PAYMENT', 'PENDING')
+  COALESCE(status, 'PENDING_PAYMENT') IN ('PENDING_PAYMENT', 'PENDING', 'PROCESSING')
 );
 
 -- Admin boleh membaca seluruh pesanan
@@ -136,7 +150,7 @@ TO authenticated
 USING (public.is_admin());
 
 
--- 5. STORED PROCEDURE (RPC) ATOMIC CHECKOUT & STOCK DEDUCTION
+-- 6. STORED PROCEDURE (RPC) ATOMIC CHECKOUT & STOCK DEDUCTION
 -- Menghitung ulang total harga secara server-side dari tabel products
 -- Mengurangi stok secara atomik dengan baris terkunci (FOR UPDATE)
 -- Mencegah manipulasi harga dari client dan race condition

@@ -100,8 +100,7 @@ CREATE POLICY "Anyone can create pending orders"
 ON public.orders
 FOR INSERT
 WITH CHECK (
-  COALESCE(status, 'PENDING_PAYMENT') IN ('PENDING_PAYMENT', 'PENDING')
-  OR COALESCE(order_status, 'PENDING_PAYMENT') IN ('PENDING_PAYMENT', 'PENDING')
+  COALESCE(status, 'PENDING_PAYMENT') IN ('PENDING_PAYMENT', 'PENDING', 'PROCESSING')
 );
 
 -- Aturan 2: HANYA Admin yang boleh melihat seluruh daftar pesanan pelanggan
