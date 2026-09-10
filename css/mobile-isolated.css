@@ -277,7 +277,7 @@
   }
 
   /* --------------------------------------------------------------------------
-     4. PRODUCT CATALOG (1-COLUMN FULL WIDTH ON MOBILE)
+     4. PRODUCT CATALOG (2-COLUMN GRID — BALANCED HEIGHT ON MOBILE)
      Applies to /parts (#partsGrid) and Home drops-grid & flash-sale-grid
      -------------------------------------------------------------------------- */
   #partsGrid,
@@ -285,37 +285,44 @@
   .drops-grid,
   .flash-sale-grid,
   #flashSaleGrid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-    padding: 0 10px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    padding: 0 8px !important;
   }
 
-  /* Section Drops container on Home if unclassed → 1 col */
+  /* Section Drops container on Home if unclassed → 2 col */
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 
-  /* Product Card — full width, comfortable padding */
+  /* Product Card — flex column so button always sticks to bottom */
   .part-card,
   .drops-grid > article,
   .card-flash-sale,
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] > article {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
     transform: none !important;
+    margin: 0 !important;
   }
 
   .part-card > div,
   .drops-grid > article,
   .card-flash-sale,
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] > article {
-    padding: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    padding: 8px !important;
     border-width: 2px !important;
-    box-shadow: 4px 4px 0px var(--accent-pink) !important;
+    box-sizing: border-box !important;
+    box-shadow: 3px 3px 0px var(--accent-pink) !important;
   }
 
   .card-brutal-dark {
@@ -349,16 +356,16 @@
     padding: 1px 4px !important;
   }
 
-  /* Product Image — wider aspect ratio, full width */
+  /* Product Image — square 1:1 untuk 2-col layout */
   .part-card div[style*="aspect-ratio"],
   .part-card .quick-view-trigger,
   .card-img-box,
   article .card-img-box {
-    aspect-ratio: 4 / 3 !important;
+    aspect-ratio: 1 / 1 !important;
     width: 100% !important;
     height: auto !important;
-    margin-bottom: 10px !important;
-    border-width: 2px !important;
+    margin-bottom: 6px !important;
+    border-width: 1.5px !important;
     overflow: hidden !important;
   }
 
@@ -370,28 +377,34 @@
     object-fit: cover !important;
   }
 
-  /* Product Title — bigger, readable on single column */
+  /* Product Title — clamp 2 baris agar setiap kartu sejajar */
   .part-card h3,
   .drops-grid article h3,
   .card-flash-sale h3,
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article h3 {
-    font-size: 1rem !important;
+    font-size: 0.78rem !important;
     font-weight: 800 !important;
-    line-height: 1.2 !important;
-    margin-bottom: 6px !important;
-    overflow: visible !important;
-    height: auto !important;
+    line-height: 1.15 !important;
+    margin-bottom: 4px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    min-height: 1.8em !important;
   }
 
-  /* Restore product description text (visible in 1-col layout) */
+  /* Deskripsi produk — clamp 2 baris, cegah kartu jomplang */
   .part-card p,
   .drops-grid article p,
   .card-flash-sale p,
   div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article p {
-    display: block !important;
-    font-size: 0.8rem !important;
-    line-height: 1.45 !important;
-    margin-bottom: 10px !important;
+    display: -webkit-box !important;
+    font-size: 0.7rem !important;
+    line-height: 1.35 !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    margin-bottom: 6px !important;
   }
 
   /* Flash Sale Countdown / Stock info */
@@ -419,7 +432,7 @@
   .part-card span[style*="color:var(--accent-pink)"],
   article span[style*="color:var(--accent-pink)"],
   .card-flash-sale .flash-price-current {
-    font-size: 1.1rem !important;
+    font-size: 0.85rem !important;
     font-weight: 900 !important;
     line-height: 1.1 !important;
   }
@@ -427,8 +440,8 @@
   .stock-pulse-badge,
   .part-card span[style*="IN STOCK"],
   .part-card span[style*="SOLD OUT"] {
-    font-size: 0.65rem !important;
-    padding: 2px 6px !important;
+    font-size: 0.52rem !important;
+    padding: 1px 4px !important;
   }
 
   /* Compact Action Buttons (+ CART & DETAIL →, py-1 px-2 text-[11px]) */
@@ -445,18 +458,21 @@
   .admin-card-edit-btn,
   .drops-grid article button,
   .card-flash-sale .flash-buy-btn,
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article button {
-    padding: 10px 14px !important;
-    font-size: 0.85rem !important;
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] article button,
+  .part-card button,
+  .part-card a.btn {
+    padding: 6px 4px !important;
+    font-size: 0.7rem !important;
     font-weight: 900 !important;
-    min-height: 40px !important;
+    min-height: unset !important;
     line-height: 1.2 !important;
-    letter-spacing: 0.03em !important;
+    letter-spacing: 0 !important;
     white-space: nowrap !important;
-    box-shadow: 3px 3px 0px #000 !important;
+    box-shadow: 2px 2px 0px #000 !important;
     flex: 1 !important;
     text-align: center !important;
     justify-content: center !important;
+    margin-top: auto !important;
   }
 
   /* Catalog Filter Tabs (Scrollable on mobile) */
