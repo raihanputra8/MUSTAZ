@@ -403,7 +403,7 @@
       <div class="drops-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:32px;align-items:start;">
         
         <!-- Drop Card 1: Y-TWO ROOF VISOR -->
-        <article class="card-brutal-white" style="transform:rotate(-1deg);">
+        <article class="card-brutal-white" data-product-card data-price-idr="350000" style="transform:rotate(-1deg);">
           <div class="tape-decor tape-top-left" style="background:rgba(255,230,0,0.7);"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span style="font-family:var(--font-headline);font-size:1.1rem;color:#000;">SERIES 01 // ACID</span>
@@ -431,7 +431,7 @@
             </div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;border-top:2px dashed #000;padding-top:14px;">
-            <span data-product-price="pet-1" style="font-family:var(--font-headline);font-size:1.5rem;color:var(--accent-pink);font-weight:900;">
+            <span data-product-price="pet-1" class="product-price" style="font-family:var(--font-headline);font-size:1.5rem;color:var(--accent-pink);font-weight:900;">
               IDR 350.000
             </span>
             <button class="btn-brutal-pink btn-brutal-sm" data-add-to-cart="pet-1">
@@ -441,7 +441,7 @@
         </article>
 
         <!-- Drop Card 2: CHECKER RACER DUCKBILL -->
-        <article class="card-brutal-dark" style="transform:translateY(16px) rotate(1deg);border-color:var(--accent-yellow);">
+        <article class="card-brutal-dark" data-product-card data-price-idr="280000" style="transform:translateY(16px) rotate(1deg);border-color:var(--accent-yellow);">
           <div class="tape-decor tape-top-right"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);">RETRO RUN // MK-02</span>
@@ -469,7 +469,7 @@
             </div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;border-top:2px dashed #333;padding-top:14px;">
-            <span data-product-price="pet-3" style="font-family:var(--font-headline);font-size:1.5rem;color:var(--accent-yellow);font-weight:900;">
+            <span data-product-price="pet-3" class="product-price" style="font-family:var(--font-headline);font-size:1.5rem;color:var(--accent-yellow);font-weight:900;">
               IDR 280.000
             </span>
             <button class="btn-brutal-yellow btn-brutal-sm" data-add-to-cart="pet-3">
@@ -479,7 +479,7 @@
         </article>
 
         <!-- Drop Card 3: MUSTAZ CRAFT EVENT DROP SET -->
-        <article class="card-brutal-white" style="transform:rotate(-1.5deg);">
+        <article class="card-brutal-white" data-product-card data-price-idr="450000" style="transform:rotate(-1.5deg);">
           <div class="tape-decor tape-top-left"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span style="font-family:var(--font-headline);font-size:1.1rem;color:#000;">OFFICIAL BUNDLE</span>
@@ -507,7 +507,7 @@
             </div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;border-top:2px dashed #000;padding-top:14px;">
-            <span data-product-price="pet-4" style="font-family:var(--font-headline);font-size:1.5rem;color:var(--accent-pink);font-weight:900;">
+            <span data-product-price="pet-4" class="product-price" style="font-family:var(--font-headline);font-size:1.5rem;color:var(--accent-pink);font-weight:900;">
               IDR 450.000
             </span>
             <button class="btn-brutal-pink btn-brutal-sm" data-add-to-cart="pet-4">
@@ -521,9 +521,9 @@
   </section>
 
   <!-- SECTION 02: FEATURED HERO PET VISOR -->
-  <section style="padding:90px 0;background:transparent;border-top:2px solid var(--border-subtle);border-bottom:none;">
+  <section style="padding:90px 0;background:transparent;border:none !important;">
     <div class="wrap">
-      <div class="card-brutal-white" style="box-shadow:12px 12px 0px var(--accent-yellow);padding:36px;border:4px solid #000;">
+      <div class="card-brutal-white" data-product-card data-price-idr="350000" style="box-shadow:12px 12px 0px var(--accent-yellow);padding:36px;border:4px solid #000;">
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:48px;align-items:center;">
           
           <!-- Product Photo with Offset Frame -->
@@ -536,7 +536,7 @@
             </div>
             <!-- Torn Paper Price Tag -->
             <div class="raw-paper-edge" style="position:absolute;bottom:-16px;right:-16px;background:var(--accent-yellow);color:#000;padding:12px 24px;border:2px solid #000;box-shadow:4px 4px 0px var(--accent-pink);transform:rotate(3deg);">
-              <span data-product-price="pet-1" style="font-family:var(--font-headline);font-size:1.8rem;font-weight:900;">IDR 350.000</span>
+              <span data-product-price="pet-1" class="product-price" style="font-family:var(--font-headline);font-size:1.8rem;font-weight:900;">IDR 350.000</span>
             </div>
           </div>
 
@@ -669,7 +669,11 @@
             <span class="section-num" style="color:var(--accent-yellow);">02</span>
             <span class="section-label">OUR STORY & ARCHIVE</span>
           </div>
-          <h2 class="editorial-title" style="margin-bottom:0;">ABOUT MUSTAZ CRAFT</h2>
+          <div style="position:relative;z-index:10;margin-bottom:8px;">
+            <h2 class="editorial-title text-black font-black bg-yellow-400 inline-block border-2 border-black" style="color:#000000;background:var(--accent-yellow);display:inline-block;padding:6px 18px;border:3px solid #000000;box-shadow:5px 5px 0px var(--accent-pink);margin-bottom:0;position:relative;z-index:10;letter-spacing:-0.01em;">
+              ABOUT MUSTAZ CRAFT
+            </h2>
+          </div>
           <p class="editorial-desc" style="margin-top:8px;">
             The story behind the spikes, flames, and visor rebellion straight from the workshop.
           </p>
@@ -718,7 +722,7 @@
   </section>
 
   <!-- SECTION 04: RIDER TESTIMONIALS & COMMUNITY PROOF -->
-  <section style="padding:90px 0;background:transparent;border-top:2px solid var(--border-subtle);">
+  <section style="padding:90px 0;background:transparent;border:none !important;">
     <div class="wrap">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;flex-wrap:wrap;gap:20px;">
         <div>

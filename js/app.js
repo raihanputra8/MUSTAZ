@@ -253,11 +253,22 @@ async function initApp() {
     });
   }
 
-  // 7.5. Multi-Currency Synchronization for Home Page (Featured Drops, Hero Visor & Coverflow)
-  function updateHomePrices() {
+  // 7.5. Universal Multi-Currency Synchronization for Home Page
+  function updateAllHomePrices() {
     const dynamicParts = getDynamicParts();
 
-    // 1. Explicit data-product-price hooks (Drops Grid & Hero Visor in index.html)
+    // 1. Elements with explicit data-price-idr attribute
+    document.querySelectorAll('[data-price-idr]').forEach(card => {
+      const rawPriceIdr = Number(card.dataset.priceIdr);
+      if (rawPriceIdr && !isNaN(rawPriceIdr)) {
+        const priceEls = card.querySelectorAll('.product-price, [data-product-price], .card-price');
+        priceEls.forEach(el => {
+          el.textContent = formatRupiah(rawPriceIdr);
+        });
+      }
+    });
+
+    // 2. Explicit data-product-price hooks (Drops Grid & Hero Visor in index.html)
     document.querySelectorAll('[data-product-price]').forEach(el => {
       const partId = el.dataset.productPrice;
       const product = dynamicParts.find(p => p.id === partId);
@@ -266,13 +277,31 @@ async function initApp() {
       }
     });
 
-    // 2. Generic cards containing data-add-to-cart (Featured Drops, Hero Card, etc.)
-    document.querySelectorAll('.drops-grid article, .card-brutal-white, .card-brutal-dark').forEach(card => {
+    // 3. Elements with class .product-price
+    document.querySelectorAll('.product-price').forEach(el => {
+      if (el.dataset.productPrice) {
+        const product = dynamicParts.find(p => p.id === el.dataset.productPrice);
+        if (product && product.price) {
+          el.textContent = formatRupiah(product.price);
+          return;
+        }
+      }
+      const parentCard = el.closest('[data-price-idr], [data-product-card], article');
+      if (parentCard && parentCard.dataset.priceIdr) {
+        el.textContent = formatRupiah(Number(parentCard.dataset.priceIdr));
+      }
+    });
+
+    // 4. Generic cards containing data-add-to-cart (Featured Drops, Hero Card, etc.)
+    document.querySelectorAll('.drops-grid article, .card-brutal-white, .card-brutal-dark, [data-product-card]').forEach(card => {
       const addBtn = card.querySelector('[data-add-to-cart]');
-      if (!addBtn) return;
-      const partId = addBtn.dataset.addToCart;
-      const product = dynamicParts.find(p => p.id === partId);
-      if (!product || !product.price) return;
+      let rawPrice = card.dataset.priceIdr ? Number(card.dataset.priceIdr) : null;
+      if (!rawPrice && addBtn) {
+        const partId = addBtn.dataset.addToCart;
+        const product = dynamicParts.find(p => p.id === partId);
+        if (product && product.price) rawPrice = product.price;
+      }
+      if (!rawPrice) return;
 
       const priceEls = card.querySelectorAll('span, div');
       priceEls.forEach(el => {
@@ -281,12 +310,12 @@ async function initApp() {
 
         const txt = (el.textContent || '').trim();
         if (/^(IDR|Rp|\$)\s*[\d.,]+/i.test(txt) || /^[\d.,]+\s*(IDR|Rp|\$)/i.test(txt)) {
-          el.textContent = formatRupiah(product.price);
+          el.textContent = formatRupiah(rawPrice);
         }
       });
     });
 
-    // 3. Update 3D Coverflow Slides in index.html (if applicable)
+    // 5. Update 3D Coverflow Slides in index.html
     document.querySelectorAll('.visor-slide').forEach(slide => {
       const addBtn = slide.querySelector('[data-add-to-cart]');
       if (!addBtn) return;
@@ -294,19 +323,23 @@ async function initApp() {
       const product = dynamicParts.find(p => p.id === partId);
       if (!product || !product.price) return;
 
-      const priceEl = slide.querySelector('span[style*="font-size:1.3rem"], span[style*="font-size: 1.3rem"]');
+      const priceEl = slide.querySelector('span[style*="font-size:1.3rem"], span[style*="font-size: 1.3rem"], .product-price');
       if (priceEl) {
         priceEl.textContent = formatRupiah(product.price);
       }
     });
   }
 
-  updateHomePrices();
-  window.addEventListener('mustaz:currency_changed', updateHomePrices);
-  window.addEventListener('mustaz_products_updated', updateHomePrices);
+  // Expose globally for instant dispatch
+  window.updateAllHomePrices = updateAllHomePrices;
+  window.updateHomePrices = updateAllHomePrices;
+
+  updateAllHomePrices();
+  window.addEventListener('mustaz:currency_changed', updateAllHomePrices);
+  window.addEventListener('mustaz_products_updated', updateAllHomePrices);
   window.addEventListener('storage', (e) => {
     if (e.key === 'mustaz_currency' || e.key === 'mustaz_catalog_products_v3' || e.key === 'mustaz_catalog_products') {
-      updateHomePrices();
+      updateAllHomePrices();
     }
   });
 

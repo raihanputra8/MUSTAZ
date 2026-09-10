@@ -864,7 +864,9 @@ async function initAdminDashboard() {
   let previousPendingCount = null;
   let globalOpenResiModal = null;
 
-  function playOrderPingSound() {
+  let globalOpenResiModal = null;
+
+  function playOrderNotificationSound() {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
@@ -872,27 +874,196 @@ async function initAdminDashboard() {
       if (ctx.state === 'suspended') {
         ctx.resume().catch(() => {});
       }
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
 
-      osc.type = 'sine';
+      // Play bright, punchy 3-note chime (G5, B5, D6)
+      const notes = [
+        { freq: 783.99, start: 0, dur: 0.15 },    // G5
+        { freq: 987.77, start: 0.12, dur: 0.18 },  // B5
+        { freq: 1174.66, start: 0.25, dur: 0.40 } // D6
+      ];
+
       const now = ctx.currentTime;
-      osc.frequency.setValueAtTime(587.33, now); // D5
-      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+      notes.forEach(n => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(n.freq, now + n.start);
 
-      gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.28, now + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+        gain.gain.setValueAtTime(0.01, now + n.start);
+        gain.gain.linearRampToValueAtTime(0.35, now + n.start + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + n.start);
+        osc.stop(now + n.start + n.dur);
+      });
     } catch (err) {
-      console.warn('[Admin] Audio ping notification error:', err);
+      console.warn('[Admin] Audio notification chime error:', err);
     }
   }
+
+  // Backward compatible alias
+  const playOrderPingSound = playOrderNotificationSound;
+  window.playOrderNotificationSound = playOrderNotificationSound;
+  window.playOrderPingSound = playOrderNotificationSound;
+
+  function showNewOrderModalAlert(newOrder) {
+    if (!newOrder) return;
+
+    // Remove any existing new order modal
+    const existing = document.getElementById('mustazNewOrderAlertModal');
+    if (existing) existing.remove();
+
+    const orderId = newOrder.id || newOrder.order_id || 'MSTZ-NEW';
+    const customerName = newOrder.customer_name || newOrder.customer || 'Customer';
+    const totalAmount = Number(newOrder.total_amount || newOrder.total || 0);
+    const totalDisplay = formatRupiah(totalAmount);
+    const phone = newOrder.phone || '-';
+    const items = newOrder.items || 'Produk Pesanan';
+    const courier = newOrder.courier || newOrder.city || 'Standard Dispatch';
+
+    const modalOverlay = document.createElement('div');
+    modalOverlay.id = 'mustazNewOrderAlertModal';
+    modalOverlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeInOrderModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    `;
+
+    modalOverlay.innerHTML = `
+      <style>
+        @keyframes fadeInOrderModal {
+          from { opacity: 0; transform: scale(0.92); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulseNewOrderBadge {
+          0%, 100% { background: #FF007A; color: #FFF; box-shadow: 0 0 16px rgba(255, 0, 122, 0.6); }
+          50% { background: #FFE600; color: #000; box-shadow: 0 0 20px rgba(255, 230, 0, 0.8); }
+        }
+      </style>
+      <div style="
+        background: #0D0D0D;
+        border: 4px solid var(--accent-pink);
+        box-shadow: 12px 12px 0px #000000;
+        width: 100%;
+        max-width: 480px;
+        padding: 28px;
+        position: relative;
+        color: #FFFFFF;
+      ">
+        <!-- Floating Top Badge -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <span style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-family: var(--font-headline);
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            border: 2px solid #000;
+            animation: pulseNewOrderBadge 1.8s infinite;
+            font-weight: 900;
+          ">
+            <span class="material-symbols-outlined" style="font-size: 18px;">notifications_active</span>
+            PESANAN BARU MASUK!
+          </span>
+          <span style="font-family: var(--font-mono-sub); font-size: 0.75rem; color: #888;">
+            REAL-TIME SYNC
+          </span>
+        </div>
+
+        <!-- Order Headline -->
+        <div style="border-bottom: 2px dashed #2E2E2E; padding-bottom: 16px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <span style="font-family: var(--font-mono-sub); font-size: 0.75rem; color: var(--accent-yellow); display: block;">ORDER NUMBER</span>
+              <h2 style="font-family: var(--font-headline); font-size: 1.8rem; margin: 2px 0 0; color: #FFF; letter-spacing: -0.01em;">
+                #${orderId}
+              </h2>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-family: var(--font-mono-sub); font-size: 0.75rem; color: #888; display: block;">TOTAL TRANSAKSI</span>
+              <span style="font-family: var(--font-headline); font-size: 1.5rem; color: var(--accent-yellow); font-weight: 900;">
+                ${totalDisplay}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Details Breakdown -->
+        <div style="background: #161616; border: 2px solid #282828; padding: 16px; margin-bottom: 20px; font-family: var(--font-mono-sub); font-size: 0.85rem; line-height: 1.5;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #777;">PEMESAN:</span>
+            <span style="color: #FFF; font-weight: bold; text-align: right;">${customerName}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #777;">WHATSAPP:</span>
+            <span style="color: #4ade80; text-align: right;">${phone}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #777;">EKSPEDISI / TUJUAN:</span>
+            <span style="color: #CCC; text-align: right;">${courier}</span>
+          </div>
+          <div style="border-top: 1px dashed #333; padding-top: 8px; margin-top: 8px;">
+            <span style="color: #777; display: block; margin-bottom: 4px;">ITEM:</span>
+            <span style="color: #FFF; display: block; font-family: var(--font-body); font-size: 0.88rem; max-height: 70px; overflow-y: auto;">
+              ${items}
+            </span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 12px;">
+          <button id="btnDismissNewOrderAlert" class="btn-brutal-ghost" style="flex: 1; padding: 12px; font-size: 0.95rem; text-align: center;">
+            TUTUP
+          </button>
+          <button id="btnViewNewOrderAlert" class="btn-brutal-pink" style="flex: 1.5; padding: 12px; font-size: 0.95rem; text-align: center;">
+            LIHAT PESANAN →
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalOverlay);
+
+    const closeAlert = () => {
+      modalOverlay.remove();
+    };
+
+    document.getElementById('btnDismissNewOrderAlert')?.addEventListener('click', closeAlert);
+    document.getElementById('btnViewNewOrderAlert')?.addEventListener('click', () => {
+      closeAlert();
+      if (typeof switchTab === 'function') {
+        switchTab('orders');
+      } else if (typeof window.switchAdminTab === 'function') {
+        window.switchAdminTab('orders');
+      }
+      const ordersSection = document.getElementById('panel-orders') || document.getElementById('ordersTableContainer');
+      if (ordersSection) {
+        ordersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // Dismiss on ESC key
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        closeAlert();
+        window.removeEventListener('keydown', handleEsc);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+  }
+  window.showNewOrderModalAlert = showNewOrderModalAlert;
 
   async function syncAndRenderOrders(silent = false) {
     try {
@@ -1888,20 +2059,41 @@ async function initAdminDashboard() {
     console.error('[Admin] URL routing error:', err);
   }
 
+  // Expose fetchAdminOrders globally for realtime refresh and manual triggers
+  window.fetchAdminOrders = () => syncAndRenderOrders(true);
+
   // Supabase Realtime Subscription for Orders
   try {
     const supabase = getSupabaseClient();
     if (supabase) {
-      supabase
-        .channel('admin-orders-realtime')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
-          console.log('⚡ [Supabase Realtime] Orders table change event:', payload);
-          playOrderPingSound();
+      const ordersSubscription = supabase
+        .channel('admin_realtime_orders')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+          console.log('⚡ [Supabase Realtime INSERT] Pesanan baru masuk:', payload);
+          const newOrder = payload.new;
+
+          // 1. Play Alert Sound Effect
+          playOrderNotificationSound();
+
+          // 2. Trigger Pop-up Modal Alert
+          showNewOrderModalAlert(newOrder);
+
+          // 3. Refresh Tabel Orders secara otomatis
+          if (typeof fetchAdminOrders === 'function') {
+            fetchAdminOrders();
+          } else {
+            syncAndRenderOrders(true);
+          }
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+          console.log('⚡ [Supabase Realtime UPDATE] Pesanan diperbarui:', payload);
           syncAndRenderOrders(true);
         })
         .subscribe((status) => {
-          console.log('📡 [Supabase Realtime] Subscription status:', status);
+          console.log('📡 [Supabase Realtime] admin_realtime_orders subscription status:', status);
         });
+
+      window.adminOrdersSubscription = ordersSubscription;
     }
   } catch (err) {
     console.warn('[Admin] Realtime subscription init error:', err);
