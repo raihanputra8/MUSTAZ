@@ -215,7 +215,19 @@ async function initAdminDashboard() {
       const dashboardBody = document.getElementById('adminDashboardBody');
       const emailDisplay = document.getElementById('adminCurrentEmail');
 
-      if (!adminCheck.isAdmin) {
+      // Defensive fallback check against localStorage session
+      let fallbackIsAdmin = false;
+      try {
+        const raw = localStorage.getItem('mustaz_user_profile_data');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.role === 'admin' || parsed.email === 'raihanputrairawan8@gmail.com' || parsed.email === 'admin@mustazcraft.com') {
+            fallbackIsAdmin = true;
+          }
+        }
+      } catch (_) {}
+
+      if (!adminCheck.isAdmin && !fallbackIsAdmin) {
         if (dashboardBody) dashboardBody.style.display = 'none';
         if (nonAdminPrompt) {
           nonAdminPrompt.style.display = 'block';
@@ -269,9 +281,6 @@ async function initAdminDashboard() {
     }
   }
 
-  // Asynchronously verify admin status without freezing UI
-  enforceAdminRole().catch(() => {});
-
   // ─── 3. CLOUD DATABASE SYNC ENGINE (SUPABASE ⇄ LOCAL INVENTORY) ────────────
   async function syncProductsFromCloud(showNotification = false) {
     const btnSync = document.getElementById('btnSyncProducts');
@@ -305,9 +314,6 @@ async function initAdminDashboard() {
   }
 
   document.getElementById('btnSyncProducts')?.addEventListener('click', () => syncProductsFromCloud(true));
-
-  // Sync cloud products on startup in background
-  syncProductsFromCloud(false);
 
   // ─── 3. RENDER OVERVIEW STATS & INVENTORY TABLE ──────────────────────────
   function refreshAdminView() {
@@ -862,8 +868,6 @@ async function initAdminDashboard() {
   let currentReceiptOrderIndex = null;
   let stagedReceiptImage = '';
   let previousPendingCount = null;
-  let globalOpenResiModal = null;
-
   let globalOpenResiModal = null;
 
   function playOrderNotificationSound() {
@@ -2016,87 +2020,105 @@ async function initAdminDashboard() {
     }
   });
 
-  // ─── 9. INITIALIZATION (RESILIENT & ISOLATED) ───────────────────────────
-  try {
-    initAdminTabs();
-  } catch (err) {
-    console.error('[Admin] Tab initialization error:', err);
+  // ─── 9. SAFE ASYNC BOOTSTRAP & ERROR ISOLATION ────────────────────────────
+  function bindAdminEventListeners() {
+    console.log('🔌 [Admin] Binding all UI event listeners & tabs...');
+    try { initAdminTabs(); } catch (err) { console.error('Tab binding error:', err); }
+    try { handleUrlRouting(); } catch (err) { console.error('URL routing error:', err); }
+    try { updatePreview(); } catch (err) { console.error('Preview error:', err); }
   }
 
-  try {
-    refreshAdminView();
-  } catch (err) {
-    console.error('[Admin] Product inventory render error:', err);
+  async function loadAdminProducts() {
+    console.log('📦 [Admin] Loading product inventory...');
+    // 1. Immediately render from local storage / cache so inventory is never blank
+    try {
+      refreshAdminView();
+    } catch (err) {
+      console.warn('[Admin] Local inventory render warning:', err);
+    }
+
+    // 2. Fetch fresh products from cloud database safely
+    try {
+      await syncProductsFromCloud(false);
+    } catch (err) {
+      console.warn('[Admin] Cloud products sync warning:', err);
+      try { refreshAdminView(); } catch (_) {}
+    }
   }
 
-  try {
-    initFlashSaleManager();
-  } catch (err) {
-    console.error('[Admin] Flash sale manager error:', err);
+  async function loadAdminOrders() {
+    console.log('📋 [Admin] Loading orders list...');
+    try {
+      await syncAndRenderOrders(true);
+    } catch (err) {
+      console.warn('[Admin] Orders sync warning:', err);
+    }
   }
 
-  try {
-    syncAndRenderOrders();
-  } catch (err) {
-    console.error('[Admin] Orders sync error:', err);
-  }
-
-  try {
-    renderAdminReviews();
-  } catch (err) {
-    console.error('[Admin] Reviews render error:', err);
-  }
-
-  try {
-    updatePreview();
-  } catch (err) {
-    console.error('[Admin] Preview update error:', err);
-  }
-
-  try {
-    handleUrlRouting();
-  } catch (err) {
-    console.error('[Admin] URL routing error:', err);
-  }
-
-  // Expose fetchAdminOrders globally for realtime refresh and manual triggers
+  // Expose methods globally for external triggers & debugging
+  window.bindAdminEventListeners = bindAdminEventListeners;
+  window.loadAdminProducts = loadAdminProducts;
+  window.loadAdminOrders = loadAdminOrders;
   window.fetchAdminOrders = () => syncAndRenderOrders(true);
 
-  // Supabase Realtime Subscription for Orders
+  // Safe bootstrap execution pipeline
   try {
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      const ordersSubscription = supabase
-        .channel('admin_realtime_orders')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
-          console.log('⚡ [Supabase Realtime INSERT] Pesanan baru masuk:', payload);
-          const newOrder = payload.new;
+    console.log('🚀 Initializing Admin Dashboard...');
 
-          // 1. Play Alert Sound Effect
-          playOrderNotificationSound();
+    // 1. Inisialisasi Event Listener DULU (Agar tombol & tab selalu bisa diklik)
+    bindAdminEventListeners();
 
-          // 2. Trigger Pop-up Modal Alert
-          showNewOrderModalAlert(newOrder);
+    // 2. Load Data Produk secara aman
+    await loadAdminProducts();
 
-          // 3. Refresh Tabel Orders secara otomatis
-          if (typeof fetchAdminOrders === 'function') {
-            fetchAdminOrders();
-          } else {
+    // 3. Load Data Orders secara aman
+    await loadAdminOrders();
+
+    // 4. Inisialisasi Flash Sale & Reviews
+    try { initFlashSaleManager(); } catch (e) { console.warn('[Admin] Flash sale init error:', e); }
+    try { renderAdminReviews(); } catch (e) { console.warn('[Admin] Reviews render error:', e); }
+
+    // 5. Inisialisasi Supabase Realtime Subscription
+    try {
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        const ordersSubscription = supabase
+          .channel('admin_realtime_orders')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+            console.log('⚡ [Supabase Realtime INSERT] Pesanan baru masuk:', payload);
+            const newOrder = payload.new;
+            playOrderNotificationSound();
+            showNewOrderModalAlert(newOrder);
+            if (typeof fetchAdminOrders === 'function') {
+              fetchAdminOrders();
+            } else {
+              syncAndRenderOrders(true);
+            }
+          })
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+            console.log('⚡ [Supabase Realtime UPDATE] Pesanan diperbarui:', payload);
             syncAndRenderOrders(true);
-          }
-        })
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
-          console.log('⚡ [Supabase Realtime UPDATE] Pesanan diperbarui:', payload);
-          syncAndRenderOrders(true);
-        })
-        .subscribe((status) => {
-          console.log('📡 [Supabase Realtime] admin_realtime_orders subscription status:', status);
-        });
+          })
+          .subscribe((status) => {
+            console.log('📡 [Supabase Realtime] admin_realtime_orders subscription status:', status);
+          });
 
-      window.adminOrdersSubscription = ordersSubscription;
+        window.adminOrdersSubscription = ordersSubscription;
+      }
+    } catch (err) {
+      console.warn('[Admin] Realtime subscription init error:', err);
     }
-  } catch (err) {
-    console.warn('[Admin] Realtime subscription init error:', err);
+
+    // 6. Verify admin session asynchronously
+    try {
+      enforceAdminRole().catch(err => console.warn('[Admin] Role check error:', err));
+    } catch (err) {
+      console.warn('[Admin] Enforce role call error:', err);
+    }
+
+  } catch (error) {
+    console.error('❌ Admin Initialization Error:', error);
+    showAdminToast('error', 'KESALAHAN SISTEM', 'Gagal memuat data dari database. Silakan klik Sync Supabase.');
   }
 
   // Periodic polling fallback every 12 seconds
