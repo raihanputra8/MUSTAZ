@@ -85,6 +85,10 @@ export async function fetchCloudProducts() {
       }));
       localStorage.setItem('mustaz_catalog_products_v3', JSON.stringify(mapped));
       localStorage.setItem('mustaz_catalog_products', JSON.stringify(mapped));
+      localStorage.setItem('mustaz_dynamic_parts_v4', JSON.stringify(mapped));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('mustaz_products_updated', { detail: mapped }));
+      }
       return mapped;
     }
   } catch (err) {

@@ -483,6 +483,19 @@ export function initPartsPage() {
     renderParts(result);
   }
 
+  // Real-time Cloud Sync from Supabase products table
+  import('../services/supabaseService.js').then(({ fetchCloudProducts }) => {
+    fetchCloudProducts().then(cloudItems => {
+      if (cloudItems && cloudItems.length > 0) {
+        applyFilters();
+      }
+    });
+  }).catch(() => {});
+
+  window.addEventListener('mustaz_products_updated', () => {
+    applyFilters();
+  });
+
   // Filter tab buttons
   document.querySelectorAll('[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
