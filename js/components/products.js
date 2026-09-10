@@ -178,7 +178,7 @@ export function openProductDetail(product) {
       <div style="position:relative;">
         <div class="tape-decor tape-top-left"></div>
         <div style="background:#050505;border:3px solid #FFF;box-shadow:6px 6px 0px #000;overflow:hidden;position:relative;width:100%;aspect-ratio:4/5;max-height:480px;display:flex;align-items:center;justify-content:center;">
-          <img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:contain;background:#050505;filter:contrast(110%);">
+          <img src="${product.image}" alt="${product.name}" loading="lazy" width="400" height="500" style="width:100%;height:100%;object-fit:contain;background:#050505;filter:contrast(110%);">
           <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);padding:16px;">
             <span class="zine-tag-pink">${product.badge || (isChopper ? product.status : 'IN STOCK')}</span>
           </div>
@@ -372,8 +372,11 @@ function renderParts(data) {
           <div class="part-img-box quick-view-trigger" style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;cursor:pointer;" data-id="${part.id}">
             ${part.badge ? `<div class="zine-tag-pink" style="position:absolute;top:8px;left:8px;z-index:10;">${part.badge}</div>` : ''}
             <img src="${part.image}" alt="${part.name}"
+              loading="lazy"
+              width="400"
+              height="500"
               style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);transition:all 0.3s ease;"
-              onerror="this.onerror=null;this.src='assets/images/Product1.png';"
+              onerror="this.onerror=null;this.src='assets/images/Product1.webp';"
               onmouseover="this.style.filter='contrast(125%)';this.style.transform='scale(1.04)';"
               onmouseout="this.style.filter='contrast(110%)';this.style.transform='scale(1)';">
           </div>
@@ -584,6 +587,9 @@ function renderHelmets(data) {
           <!-- Helmet Image (4:5 proportional ratio) -->
           <div style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:16px;cursor:pointer;" class="chopper-view-trigger helmet-view-trigger" data-id="${chop.id}">
             <img src="${chop.image}" alt="${chop.name}"
+              loading="lazy"
+              width="400"
+              height="500"
               style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);transition:all 0.3s ease;"
               onerror="this.src='${chop.fallback}'"
               onmouseover="this.style.filter='contrast(125%)';this.style.transform='scale(1.04)';"

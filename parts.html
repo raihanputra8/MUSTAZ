@@ -14,6 +14,9 @@
   <!-- Master Stylesheet (Variables, Base, Layout, Components, Ecommerce) -->
   <link rel="stylesheet" href="css/main.css">
   
+  <!-- Preload Product Hero Banner -->
+  <link rel="preload" as="image" href="assets/images/banner_product_default.webp" type="image/webp" fetchpriority="high">
+  
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -23,7 +26,7 @@
   <div class="site-header-inner">
     <!-- Brand Logo: Official MUSTAZ CRAFT Identity -->
     <a href="index.html" class="brand-badge">
-      <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="brand-logo-img">
+      <img src="assets/images/mustaz_logo_official.webp" onerror="this.onerror=null;this.src='assets/images/mustaz_logo_official.png';" alt="MUSTAZ CRAFT Logo" class="brand-logo-img" width="38" height="38">
       <div class="brand-text-block">
         <span class="brand-name" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;letter-spacing:0.06em;color:#FFF;line-height:1;">
           CRAFT
@@ -114,15 +117,23 @@
       <a href="#partsGrid" class="product-interactive-banner" title="Explore MUSTAZ Craft Helmet Accessories">
         <!-- State 1: Default (Without Text) -->
         <img
-          src="assets/images/banner_product_default.jpg"
+          src="assets/images/banner_product_default.webp"
+          onerror="this.onerror=null;this.src='assets/images/banner_product_default.jpg';"
           alt="MUSTAZ CRAFT Helmet Accessories"
           class="banner-state-default"
+          fetchpriority="high"
+          width="1200"
+          height="450"
         />
         <!-- State 2: Hover (With HANDCRAFT HELMET ACCESORIES & BUY NOW!) -->
         <img
-          src="assets/images/banner_product_hover.jpg"
+          src="assets/images/banner_product_hover.webp"
+          onerror="this.onerror=null;this.src='assets/images/banner_product_hover.jpg';"
           alt="MUSTAZ CRAFT Handcraft Helmet Accessories - Buy Now"
           class="banner-state-hover"
+          loading="lazy"
+          width="1200"
+          height="450"
         />
       </a>
     </div>
@@ -185,7 +196,7 @@
       <!-- Col 1: Brand Info -->
       <div class="footer-white-brand">
         <a href="index.html">
-          <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="footer-white-brand-logo">
+          <img src="assets/images/mustaz_logo_official.webp" onerror="this.onerror=null;this.src='assets/images/mustaz_logo_official.png';" alt="MUSTAZ CRAFT Logo" class="footer-white-brand-logo" loading="lazy" width="48" height="48">
         </a>
         <p class="footer-white-brand-desc">
           KUSTOM PET HELM &amp; RETRO VISOR WORKSHOP. FORGED FOR STREET REBELS WITH NO FACTORY STERILITY.
@@ -218,7 +229,7 @@
       <div class="footer-white-col">
         <h4>PAYMENT<br>&amp; SHIPPING</h4>
         <div class="footer-white-payment-box">
-          <img src="assets/images/footer_payment_icons.png" alt="Payment &amp; Shipping Partners" class="footer-white-payment-img">
+          <img src="assets/images/footer_payment_icons.webp" onerror="this.onerror=null;this.src='assets/images/footer_payment_icons.png';" alt="Payment &amp; Shipping Partners" class="footer-white-payment-img" loading="lazy" width="220" height="34">
         </div>
       </div>
     </div>

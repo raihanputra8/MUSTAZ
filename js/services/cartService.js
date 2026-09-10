@@ -46,7 +46,7 @@ export const DEFAULT_PARTS_DATA = [
     is_flash_sale: true, flash_sale_price: 245000, flash_sale_stock: 3,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
     image: getProductImageUrl('Product1.png'),
-    fallback: 'assets/images/Product1.png'
+    fallback: 'assets/images/Product1.webp'
   },
   {
     id: 'pet-2', type: 'parts', category: 'Leather Pet',
@@ -55,7 +55,7 @@ export const DEFAULT_PARTS_DATA = [
     is_flash_sale: true, flash_sale_price: 285000, flash_sale_stock: 5,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
     image: getProductImageUrl('Product2.png'),
-    fallback: 'assets/images/Product2.png'
+    fallback: 'assets/images/Product2.webp'
   },
   {
     id: 'pet-3', type: 'parts', category: 'Retro Visor',
@@ -64,7 +64,7 @@ export const DEFAULT_PARTS_DATA = [
     is_flash_sale: true, flash_sale_price: 210000, flash_sale_stock: 4,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
     image: getProductImageUrl('Product3.png'),
-    fallback: 'assets/images/Product3.png'
+    fallback: 'assets/images/Product3.webp'
   },
   {
     id: 'pet-4', type: 'parts', category: 'Drop Sets',
@@ -72,7 +72,7 @@ export const DEFAULT_PARTS_DATA = [
     price: 450000, original_price: 520000, badge: 'BUNDLE', status: 'Active', stock: 10,
     is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('mustaz_booth_event.png'),
-    fallback: 'assets/images/mustaz_booth_event.png'
+    fallback: 'assets/images/mustaz_booth_event.webp'
   },
   {
     id: 'pet-5', type: 'parts', category: 'Acrylic Pet',
@@ -80,7 +80,7 @@ export const DEFAULT_PARTS_DATA = [
     price: 360000, original_price: null, badge: 'NEW', status: 'Active', stock: 18,
     is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('Product1.png'),
-    fallback: 'assets/images/Product1.png'
+    fallback: 'assets/images/Product1.webp'
   },
   {
     id: 'pet-6', type: 'parts', category: 'Retro Visor',
@@ -88,7 +88,7 @@ export const DEFAULT_PARTS_DATA = [
     price: 220000, original_price: 270000, badge: 'SALE', status: 'Active', stock: 24,
     is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('Product2.png'),
-    fallback: 'assets/images/Product2.png'
+    fallback: 'assets/images/Product2.webp'
   },
   {
     id: 'pet-7', type: 'parts', category: 'Leather Pet',
@@ -96,7 +96,7 @@ export const DEFAULT_PARTS_DATA = [
     price: 195000, original_price: null, badge: 'CORE', status: 'Active', stock: 14,
     is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('Product3.png'),
-    fallback: 'assets/images/Product3.png'
+    fallback: 'assets/images/Product3.webp'
   },
   {
     id: 'pet-8', type: 'parts', category: 'Drop Sets',
@@ -104,7 +104,7 @@ export const DEFAULT_PARTS_DATA = [
     price: 490000, original_price: 550000, badge: 'ARCHIVE', status: 'Active', stock: 5,
     is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('mustaz_booth_event.png'),
-    fallback: 'assets/images/mustaz_booth_event.png'
+    fallback: 'assets/images/mustaz_booth_event.webp'
   }
 ];
 

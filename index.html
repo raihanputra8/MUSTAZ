@@ -14,6 +14,9 @@
   <!-- Master Stylesheet (Variables, Base, Layout, Components, Ecommerce) -->
   <link rel="stylesheet" href="css/main.css">
   
+  <!-- High-Priority Preload for Hero LCP Image -->
+  <link rel="preload" as="image" href="assets/images/pet_visor_yellow_flame.webp" type="image/webp" fetchpriority="high">
+  
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -23,7 +26,7 @@
   <div class="site-header-inner">
     <!-- Brand Logo: Official MUSTAZ CRAFT Identity -->
     <a href="index.html" class="brand-badge">
-      <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="brand-logo-img">
+      <img src="assets/images/mustaz_logo_official.webp" onerror="this.onerror=null;this.src='assets/images/mustaz_logo_official.png';" alt="MUSTAZ CRAFT Logo" class="brand-logo-img" width="38" height="38">
       <div class="brand-text-block">
         <span class="brand-name" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;letter-spacing:0.06em;color:#FFF;line-height:1;">
           CRAFT
@@ -167,8 +170,12 @@
           <div class="hero-photo-frame" style="background:#FFFFFF;border:4px solid #000000;box-shadow:12px 12px 0px var(--accent-pink);padding:14px;max-width:460px;margin:0 auto;transform:rotate(2deg);transition:transform 0.3s ease;"
                onmouseover="this.style.transform='rotate(0deg) scale(1.02)'" onmouseout="this.style.transform='rotate(2deg) scale(1)'">
             <div style="position:relative;width:100%;aspect-ratio:4/5;background:#000;overflow:hidden;border:2px solid #000;">
-              <img src="assets/images/pet_visor_yellow_flame.png"
+              <img src="assets/images/pet_visor_yellow_flame.webp"
                    alt="MUSTAZ CRAFT Kustom Pet Helm & Visor"
+                   fetchpriority="high"
+                   width="430"
+                   height="538"
+                   onerror="this.onerror=null;this.src='assets/images/pet_visor_yellow_flame.png';"
                    style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(115%);">
               <div style="position:absolute;top:14px;right:14px;">
                 <span class="stamp-punk" style="background:rgba(0,0,0,0.75);">NO FUTURE</span>
@@ -241,7 +248,7 @@
         <article class="card-flash-sale">
           <span class="flash-discount-tag">-30%</span>
           <div class="card-img-box">
-            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png" onerror="this.onerror=null;this.src='assets/images/Product1.png';" alt="Y-Two Roof Visor Spiked">
+            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png" onerror="this.onerror=null;this.src='assets/images/Product1.webp';" alt="Y-Two Roof Visor Spiked" loading="lazy" width="280" height="280">
           </div>
           <span class="zine-tag-yellow" style="align-self:flex-start;margin-bottom:6px;">ACID EDITION</span>
           <h3 style="font-family:var(--font-headline);font-size:1.45rem;color:#000;margin-bottom:4px;line-height:0.95;">
@@ -276,7 +283,7 @@
         <article class="card-flash-sale">
           <span class="flash-discount-tag">-25%</span>
           <div class="card-img-box">
-            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png" onerror="this.onerror=null;this.src='assets/images/Product2.png';" alt="Studded Flame Visor">
+            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png" onerror="this.onerror=null;this.src='assets/images/Product2.webp';" alt="Studded Flame Visor" loading="lazy" width="280" height="280">
           </div>
           <span class="zine-tag-pink" style="align-self:flex-start;margin-bottom:6px;">HOT DROP</span>
           <h3 style="font-family:var(--font-headline);font-size:1.45rem;color:#000;margin-bottom:4px;line-height:0.95;">
@@ -311,7 +318,7 @@
         <article class="card-flash-sale">
           <span class="flash-discount-tag">-25%</span>
           <div class="card-img-box">
-            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png" onerror="this.onerror=null;this.src='assets/images/Product3.png';" alt="Checker Racer Duckbill">
+            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png" onerror="this.onerror=null;this.src='assets/images/Product3.webp';" alt="Checker Racer Duckbill" loading="lazy" width="280" height="280">
           </div>
           <span class="zine-tag-dark" style="align-self:flex-start;margin-bottom:6px;">RETRO RACER</span>
           <h3 style="font-family:var(--font-headline);font-size:1.45rem;color:#000;margin-bottom:4px;line-height:0.95;">
@@ -346,7 +353,7 @@
         <article class="card-flash-sale">
           <span class="flash-discount-tag">-25%</span>
           <div class="card-img-box">
-            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png" onerror="this.onerror=null;this.src='assets/images/Product2.png';" alt="Smoke Tint Short Peak">
+            <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png" onerror="this.onerror=null;this.src='assets/images/Product2.webp';" alt="Smoke Tint Short Peak" loading="lazy" width="280" height="280">
           </div>
           <span class="zine-tag-yellow" style="align-self:flex-start;margin-bottom:6px;">OBSIDIAN SHIELD</span>
           <h3 style="font-family:var(--font-headline);font-size:1.45rem;color:#000;margin-bottom:4px;line-height:0.95;">
@@ -411,8 +418,8 @@
           </div>
           <div class="card-img-box" style="margin-bottom:18px;">
             <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png"
-                 onerror="this.onerror=null;this.src='assets/images/Product1.png';"
-                 alt="Y-Two Roof Visor" style="object-position:center;">
+                 onerror="this.onerror=null;this.src='assets/images/Product1.webp';"
+                 alt="Y-Two Roof Visor" style="object-position:center;" loading="lazy" width="280" height="280">
           </div>
           <h3 style="font-family:var(--font-headline);font-size:1.8rem;color:#000;margin-bottom:6px;line-height:0.95;">
             Y-TWO ROOF VISOR
@@ -449,8 +456,8 @@
           </div>
           <div class="card-img-box" style="margin-bottom:18px;border-color:var(--accent-yellow);">
             <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png"
-                 onerror="this.onerror=null;this.src='assets/images/Product3.png';"
-                 alt="Checker Racer Duckbill" style="object-position:center;">
+                 onerror="this.onerror=null;this.src='assets/images/Product3.webp';"
+                 alt="Checker Racer Duckbill" style="object-position:center;" loading="lazy" width="280" height="280">
           </div>
           <h3 style="font-family:var(--font-headline);font-size:1.8rem;color:#FFF;margin-bottom:6px;line-height:0.95;">
             CHECKER RACER PET
@@ -487,8 +494,8 @@
           </div>
           <div class="card-img-box" style="margin-bottom:18px;">
             <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png"
-                 onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.png';"
-                 alt="MUSTAZ CRAFT Official Drop Set" style="object-position:center;">
+                 onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.webp';"
+                 alt="MUSTAZ CRAFT Official Drop Set" style="object-position:center;" loading="lazy" width="280" height="280">
           </div>
           <h3 style="font-family:var(--font-headline);font-size:1.8rem;color:#000;margin-bottom:6px;line-height:0.95;">
             MUSTAZ CRAFT DROP BUNDLE
@@ -530,8 +537,11 @@
           <div style="position:relative;">
             <div style="border:3px solid #000;background:#000;padding:12px;transform:rotate(-2deg);box-shadow:8px 8px 0px #000;">
               <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png"
-                   onerror="this.onerror=null;this.src='assets/images/Product1.png';"
+                   onerror="this.onerror=null;this.src='assets/images/Product1.webp';"
                    alt="Y-Two Roof Visor Detail"
+                   loading="lazy"
+                   width="320"
+                   height="340"
                    style="width:100%;height:340px;object-fit:cover;object-position:center top;filter:contrast(115%);">
             </div>
             <!-- Torn Paper Price Tag -->
@@ -591,7 +601,7 @@
           <!-- Slide 0: Orange Visor -->
           <div class="visor-slide" data-index="0" data-name="AMBER SUN DUCKBILL" data-spec="AERODYNAMIC CURVE // 3-SNAP">
             <div class="visor-card-inner">
-              <img src="assets/images/slider_visors/visor_1_orange.png" alt="Amber Sun Duckbill Visor">
+              <img src="assets/images/slider_visors/visor_1_orange.webp" onerror="this.onerror=null;this.src='assets/images/slider_visors/visor_1_orange.png';" alt="Amber Sun Duckbill Visor" loading="lazy" width="320" height="240">
             </div>
             <div class="visor-slide-caption">
               <span class="v-caption-name">AMBER SUN DUCKBILL</span>
@@ -602,7 +612,7 @@
           <!-- Slide 1: White Flame Visor -->
           <div class="visor-slide" data-index="1" data-name="FIREBIRD WHITE FLAME" data-spec="DUAL COLOR FLAME // SPIKED">
             <div class="visor-card-inner">
-              <img src="assets/images/slider_visors/visor_2_white.png" alt="Firebird White Flame Visor">
+              <img src="assets/images/slider_visors/visor_2_white.webp" onerror="this.onerror=null;this.src='assets/images/slider_visors/visor_2_white.png';" alt="Firebird White Flame Visor" loading="lazy" width="320" height="240">
             </div>
             <div class="visor-slide-caption">
               <span class="v-caption-name">FIREBIRD WHITE FLAME</span>
@@ -613,7 +623,7 @@
           <!-- Slide 2: Pink Blue-Flame Spiked Hero (Initial Center) -->
           <div class="visor-slide pos-active" data-index="2" data-name="CHROME HELLFIRE PET" data-spec="PUNK SPIKES // HEART FLAME CUT">
             <div class="visor-card-inner">
-              <img src="assets/images/slider_visors/visor_3_pink_hero.png" alt="Chrome Hellfire Spiked Visor">
+              <img src="assets/images/slider_visors/visor_3_pink_hero.webp" onerror="this.onerror=null;this.src='assets/images/slider_visors/visor_3_pink_hero.png';" alt="Chrome Hellfire Spiked Visor" loading="lazy" width="320" height="240">
             </div>
             <div class="visor-slide-caption">
               <span class="v-caption-name">CHROME HELLFIRE PET</span>
@@ -624,7 +634,7 @@
           <!-- Slide 3: Yellow Flame Visor -->
           <div class="visor-slide" data-index="3" data-name="ACID YELLOW FLAME" data-spec="HIGH-TRANSLUCENT ACRYLIC">
             <div class="visor-card-inner">
-              <img src="assets/images/slider_visors/visor_4_yellow.png" alt="Acid Yellow Flame Visor">
+              <img src="assets/images/slider_visors/visor_4_yellow.webp" onerror="this.onerror=null;this.src='assets/images/slider_visors/visor_4_yellow.png';" alt="Acid Yellow Flame Visor" loading="lazy" width="320" height="240">
             </div>
             <div class="visor-slide-caption">
               <span class="v-caption-name">ACID YELLOW FLAME</span>
@@ -635,7 +645,7 @@
           <!-- Slide 4: Black Flame Visor -->
           <div class="visor-slide" data-index="4" data-name="OBSIDIAN GOLD FLAME" data-spec="UV DARK SHIELD // RACER">
             <div class="visor-card-inner">
-              <img src="assets/images/slider_visors/visor_5_black.png" alt="Obsidian Gold Flame Visor">
+              <img src="assets/images/slider_visors/visor_5_black.webp" onerror="this.onerror=null;this.src='assets/images/slider_visors/visor_5_black.png';" alt="Obsidian Gold Flame Visor" loading="lazy" width="320" height="240">
             </div>
             <div class="visor-slide-caption">
               <span class="v-caption-name">OBSIDIAN GOLD FLAME</span>
@@ -687,8 +697,8 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;">
         <!-- Card 1: Event Booth -->
         <div style="background:#111;border:2px solid var(--border-light);position:relative;overflow:hidden;aspect-ratio:4/5;min-height:340px;" class="card-brutal-dark">
-          <img src="assets/images/mustaz_booth_event.png"
-               alt="MUSTAZ CRAFT Event Booth" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;filter:contrast(115%);">
+          <img src="assets/images/mustaz_booth_event.webp" onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.png';"
+               alt="MUSTAZ CRAFT Event Booth" loading="lazy" width="320" height="400" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;filter:contrast(115%);">
           <div style="position:relative;z-index:10;padding:24px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(to top, rgba(0,0,0,0.95) 25%, transparent);">
             <span class="zine-tag-yellow" style="margin-bottom:8px;align-self:flex-start;">01 // THE BOOTH</span>
             <h3 style="font-family:var(--font-headline);font-size:1.8rem;margin-bottom:6px;color:#FFF;">COMMUNITY & DROPS</h3>
@@ -698,8 +708,8 @@
 
         <!-- Card 2: Retro Race Helmet -->
         <div style="background:#111;border:2px solid var(--border-light);position:relative;overflow:hidden;aspect-ratio:4/5;min-height:340px;" class="card-brutal-dark">
-          <img src="assets/images/retro_checkered_helmet.png"
-               alt="Retro Checkered Helmet" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:contrast(115%);">
+          <img src="assets/images/retro_checkered_helmet.webp" onerror="this.onerror=null;this.src='assets/images/retro_checkered_helmet.png';"
+               alt="Retro Checkered Helmet" loading="lazy" width="320" height="400" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:contrast(115%);">
           <div style="position:relative;z-index:10;padding:24px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(to top, rgba(0,0,0,0.95) 25%, transparent);">
             <span class="zine-tag-pink" style="margin-bottom:8px;align-self:flex-start;">02 // RACE ATTITUDE</span>
             <h3 style="font-family:var(--font-headline);font-size:1.8rem;margin-bottom:6px;color:#FFF;">DUCKBILL REBELLION</h3>
@@ -709,8 +719,8 @@
 
         <!-- Card 3: Craftsman / Leather Flames -->
         <div style="background:#111;border:2px solid var(--border-light);position:relative;overflow:hidden;aspect-ratio:4/5;min-height:340px;" class="card-brutal-dark">
-          <img src="assets/images/pet_visor_yellow_flame.png"
-               alt="Flame Visor Craftsman" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;filter:contrast(115%);">
+          <img src="assets/images/pet_visor_yellow_flame.webp" onerror="this.onerror=null;this.src='assets/images/pet_visor_yellow_flame.png';"
+               alt="Flame Visor Craftsman" loading="lazy" width="320" height="400" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;filter:contrast(115%);">
           <div style="position:relative;z-index:10;padding:24px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(to top, rgba(0,0,0,0.95) 25%, transparent);">
             <span class="zine-tag-yellow" style="margin-bottom:8px;align-self:flex-start;">03 // HAND CRAFT</span>
             <h3 style="font-family:var(--font-headline);font-size:1.8rem;margin-bottom:6px;color:#FFF;">SPIKES & FLAMES</h3>
@@ -749,7 +759,7 @@
             <div class="testi-stars">★★★★★</div>
           </div>
           <div class="testi-photo-box">
-            <img src="assets/images/TESTI.png" alt="Testimoni Dimas MUSTAZ CRAFT">
+            <img src="assets/images/TESTI.webp" onerror="this.onerror=null;this.src='assets/images/TESTI.png';" alt="Testimoni Dimas MUSTAZ CRAFT" loading="lazy" width="160" height="160">
           </div>
           <p class="testi-quote">
             “Fitting ke helm open-face Bell 500 langsung pas presisi tanpa goyang. Finishing akrilik tebal rapi dan bonus sticker pack-nya gokil abis!”
@@ -771,7 +781,7 @@
             <div class="testi-stars">★★★★★</div>
           </div>
           <div class="testi-photo-box">
-            <img src="assets/images/TESTI1.png" alt="Testimoni Om Bram MUSTAZ CRAFT">
+            <img src="assets/images/TESTI1.webp" onerror="this.onerror=null;this.src='assets/images/TESTI1.png';" alt="Testimoni Om Bram MUSTAZ CRAFT" loading="lazy" width="160" height="160">
           </div>
           <p class="testi-quote">
             “Bahan duckbill pet-nya solid banget, bukan plastik abal-abal tipis pabrikan. Dipakai touring panas terik tetep adem dan gak gampang baret.”
@@ -793,7 +803,7 @@
             <div class="testi-stars">★★★★★</div>
           </div>
           <div class="testi-photo-box">
-            <img src="assets/images/TESTI2.png" alt="Testimoni Sarah MUSTAZ CRAFT">
+            <img src="assets/images/TESTI2.webp" onerror="this.onerror=null;this.src='assets/images/TESTI2.png';" alt="Testimoni Sarah MUSTAZ CRAFT" loading="lazy" width="160" height="160">
           </div>
           <p class="testi-quote">
             “Desain pet flame-nya eye catching parah! Packaging ziplock eksklusif kayak brand streetwear luar. Auto ganteng buat motoran santai.”
@@ -828,7 +838,7 @@
       <!-- Col 1: Brand Info -->
       <div class="footer-white-brand">
         <a href="index.html">
-          <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="footer-white-brand-logo">
+          <img src="assets/images/mustaz_logo_official.webp" onerror="this.onerror=null;this.src='assets/images/mustaz_logo_official.png';" alt="MUSTAZ CRAFT Logo" class="footer-white-brand-logo" loading="lazy" width="48" height="48">
         </a>
         <p class="footer-white-brand-desc">
           KUSTOM PET HELM &amp; RETRO VISOR WORKSHOP. FORGED FOR STREET REBELS WITH NO FACTORY STERILITY.
@@ -861,7 +871,7 @@
       <div class="footer-white-col">
         <h4>PAYMENT<br>&amp; SHIPPING</h4>
         <div class="footer-white-payment-box">
-          <img src="assets/images/footer_payment_icons.png" alt="Payment &amp; Shipping Partners" class="footer-white-payment-img">
+          <img src="assets/images/footer_payment_icons.webp" onerror="this.onerror=null;this.src='assets/images/footer_payment_icons.png';" alt="Payment &amp; Shipping Partners" class="footer-white-payment-img" loading="lazy" width="220" height="34">
         </div>
       </div>
     </div>

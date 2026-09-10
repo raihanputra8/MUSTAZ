@@ -13,7 +13,7 @@ export function showToast({ title, message, image, onAction, actionText = "VIEW 
   const toast = document.createElement("div");
   toast.className = "toast-item";
 
-  const fallbackImg = "assets/images/Product1.png";
+  const fallbackImg = "assets/images/Product1.webp";
   const imgSrc = image || fallbackImg;
 
   toast.innerHTML = `

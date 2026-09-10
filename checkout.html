@@ -223,7 +223,7 @@
       list.innerHTML = items.map(item => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #EEE;">
           <div style="display:flex;align-items:center;gap:12px;">
-            <img src="${item.image || item.image_url || 'assets/images/Product1.png'}" style="width:48px;height:48px;object-fit:cover;border:1px solid #000;">
+            <img src="${item.image || item.image_url || 'assets/images/Product1.webp'}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" loading="lazy" width="48" height="48" style="width:48px;height:48px;object-fit:cover;border:1px solid #000;">
             <div>
               <div style="font-family:var(--font-headline);font-size:1.1rem;color:#000;">${item.name}</div>
               <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#666;">QTY: ${item.quantity}</div>

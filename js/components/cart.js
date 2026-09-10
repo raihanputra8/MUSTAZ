@@ -173,7 +173,7 @@ function renderCartItems() {
       <img class="cart-item-img"
         src="${item.image || item.image_url || ''}"
         alt="${item.name}"
-        onerror="this.onerror=null;this.src='assets/images/Product1.png'">
+        onerror="this.onerror=null;this.src='assets/images/Product1.webp'">
       <div class="cart-item-info">
         <p class="cart-item-title">${item.name}</p>
         <p class="cart-item-price">${formatRupiah(item.price)}</p>
