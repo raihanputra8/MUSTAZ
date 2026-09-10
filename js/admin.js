@@ -1214,10 +1214,12 @@ async function initAdminDashboard() {
       };
       message = generatePhase3Response(data);
     } else if (actionPhase === 4 || actionPhase === 'p4') {
-      const reviewUrl = `https://mustazbuildtest.vercel.app/testimoni.html?review_order=${orderCode}`;
+      const baseOrigin = (typeof window !== 'undefined' && window.location?.origin) ? window.location.origin : 'https://mustazbuildtest.vercel.app';
+      const cleanBuyerName = custName.replace(/\s*\([^)]*\)/, '').trim() || 'Rider';
+      const reviewUrl = `${baseOrigin}/testimoni.html?review_order=${encodeURIComponent(orderCode)}&buyer=${encodeURIComponent(cleanBuyerName)}`;
       const data = {
         orderId: orderCode,
-        customerName: custName,
+        customerName: cleanBuyerName,
         phone: customerPhone
       };
       message = generatePhase4Response(data, reviewUrl);
@@ -1412,6 +1414,44 @@ async function initAdminDashboard() {
       `;
     }).join('');
 
+  function syncOrderStatusToLocalUser(orderId, newStatus) {
+    try {
+      const cleanId = cleanOrderId(orderId);
+      const recents = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
+      let rChanged = false;
+      recents.forEach(ro => {
+        if (cleanOrderId(ro.id || ro.orderId) === cleanId) {
+          ro.status = newStatus;
+          rChanged = true;
+        }
+      });
+      if (rChanged) localStorage.setItem('mustaz_recent_orders', JSON.stringify(recents));
+
+      const latest = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
+      if (latest && cleanOrderId(latest.id || latest.orderId) === cleanId) {
+        latest.status = newStatus;
+        localStorage.setItem('mustaz_latest_checkout_order', JSON.stringify(latest));
+      }
+
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('mustaz_orders_'));
+      keys.forEach(k => {
+        try {
+          const userOrds = JSON.parse(localStorage.getItem(k) || '[]');
+          let uChanged = false;
+          userOrds.forEach(uo => {
+            if (cleanOrderId(uo.id || uo.orderId) === cleanId) {
+              uo.status = newStatus;
+              uChanged = true;
+            }
+          });
+          if (uChanged) localStorage.setItem(k, JSON.stringify(userOrds));
+        } catch {}
+      });
+
+      window.dispatchEvent(new CustomEvent('mustaz:orders_updated', { detail: { orderId, status: newStatus } }));
+    } catch {}
+  }
+
     tbody.querySelectorAll('.order-status-select').forEach(sel => {
       sel.addEventListener('change', (e) => {
         const idx = Number(e.target.dataset.index);
@@ -1421,6 +1461,7 @@ async function initAdminDashboard() {
           all[idx].status = newStatus;
           localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
 
+          syncOrderStatusToLocalUser(all[idx].id, newStatus);
           updateCloudOrderStatus(all[idx].id, newStatus).catch(() => {});
 
           showAdminToast('success', 'STATUS DIPERBARUI', `Pesanan #${all[idx].id} diubah ke ${newStatus}.`);
@@ -1529,6 +1570,7 @@ async function initAdminDashboard() {
 
         ord.status = 'COMPLETED';
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+        syncOrderStatusToLocalUser(ord.id, 'COMPLETED');
         updateCloudOrderStatus(ord.id, 'COMPLETED').catch(() => {});
 
         showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Link testimoni dikirim ke WhatsApp pembeli #${ord.id}. Status diubah ke COMPLETED.`);
@@ -1547,6 +1589,7 @@ async function initAdminDashboard() {
         if (ord) {
           ord.status = 'DELIVERED';
           localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+          syncOrderStatusToLocalUser(ord.id, 'DELIVERED');
           updateCloudOrderStatus(ord.id, 'DELIVERED').catch(() => {});
           showAdminToast('success', 'STATUS DELIVERED', `Pesanan #${ord.id} telah ditandai SELESAI (DELIVERED). Pembeli kini dapat memberikan ulasan.`);
           renderOrders();

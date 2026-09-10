@@ -444,10 +444,48 @@
     function loadProfile() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
+        let prof = defaultData;
         if (saved) {
-          const parsed = JSON.parse(saved);
-          return Object.assign({}, defaultData, parsed);
+          prof = Object.assign({}, defaultData, JSON.parse(saved));
         }
+
+        // Auto-heal empty profile identity from recent checkout or order backups
+        if (!prof.email || !prof.fullName) {
+          const userEmail = localStorage.getItem('mustaz_user_email') || '';
+          let sampleOrder = null;
+          try {
+            sampleOrder = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
+            if (!sampleOrder) {
+              const recents = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
+              if (recents.length > 0) sampleOrder = recents[0];
+            }
+          } catch {}
+
+          if (sampleOrder) {
+            if (!prof.fullName && (sampleOrder.customer_name || sampleOrder.customer || sampleOrder.name)) {
+              prof.fullName = (sampleOrder.customer_name || sampleOrder.customer || sampleOrder.name).replace(/\s*\([^)]*\)/, '').trim();
+            }
+            if (!prof.email && (sampleOrder.customer_email || sampleOrder.email || userEmail)) {
+              prof.email = (sampleOrder.customer_email || sampleOrder.email || userEmail).trim();
+            }
+            if (!prof.phone && (sampleOrder.customer_phone || sampleOrder.phone)) {
+              prof.phone = sampleOrder.customer_phone || sampleOrder.phone;
+            }
+            if (!prof.address && (sampleOrder.address || sampleOrder.city)) {
+              prof.address = sampleOrder.address || sampleOrder.city;
+            }
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(prof));
+            } catch {}
+          } else if (userEmail && !prof.email) {
+            prof.email = userEmail.trim();
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(prof));
+            } catch {}
+          }
+        }
+
+        return prof;
       } catch (err) {
         console.error('Error loading profile:', err);
       }
@@ -532,15 +570,99 @@
       const metricSpent = document.getElementById('metricTotalSpent');
       const navBadge = document.getElementById('navBadgeOrders');
 
-      let orders = getUserOrders(email);
+      const profile = loadProfile();
+      const userEmailLower = (email || profile.email || '').toLowerCase().trim();
+      const userPhoneDigits = (profile.phone || '').replace(/[^0-9]/g, '');
+      const userNameLower = (profile.fullName || profile.name || '').toLowerCase().trim();
 
-      // 1. Sync User Orders with Supabase Cloud
+      let orders = getUserOrders(email || profile.email);
+
+      // 1. Multi-Layer Fallback & Real-time Sync from Local Admin Orders & Recent Browser Checkouts
+      try {
+        const localAdminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+        const recentOrders = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
+        const latestOrder = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
+
+        // If orders is empty, auto-recover from recent orders or latest checkout order
+        if (orders.length === 0) {
+          if (Array.isArray(recentOrders) && recentOrders.length > 0) {
+            orders = [...recentOrders];
+          } else if (latestOrder && (latestOrder.id || latestOrder.orderId)) {
+            orders = [latestOrder];
+          } else if (Array.isArray(localAdminOrders) && localAdminOrders.length > 0) {
+            localAdminOrders.forEach(ao => {
+              const aoEmail = (ao.email || ao.customer_email || '').toLowerCase().trim();
+              const aoCustomer = (ao.customer || ao.customer_name || '').toLowerCase().trim();
+              const aoPhone = (ao.phone || ao.customer_phone || '').replace(/[^0-9]/g, '');
+
+              const isMatch = (!userEmailLower && !userNameLower && !userPhoneDigits)
+                || (userEmailLower && aoEmail === userEmailLower)
+                || (userEmailLower && aoCustomer.includes(userEmailLower))
+                || (userPhoneDigits && userPhoneDigits.length >= 8 && aoPhone && (aoPhone.includes(userPhoneDigits) || userPhoneDigits.includes(aoPhone)))
+                || (userNameLower && userNameLower.length > 2 && aoCustomer.includes(userNameLower));
+
+              if (isMatch) {
+                orders.push({
+                  id: ao.id || ao.orderId,
+                  orderId: ao.id || ao.orderId,
+                  items: ao.items,
+                  total: ao.total || ao.total_amount || 0,
+                  date: ao.date || 'TODAY',
+                  status: ao.status || 'PENDING',
+                  courier: ao.courier || '',
+                  resi: ao.resi || ''
+                });
+              }
+            });
+          }
+        }
+
+        // Merge latest checkout order if missing from array
+        if (latestOrder && (latestOrder.id || latestOrder.orderId)) {
+          const lId = String(latestOrder.id || latestOrder.orderId).replace(/[^a-zA-Z0-9]/g, '');
+          if (!orders.some(o => String(o.id || o.orderId).replace(/[^a-zA-Z0-9]/g, '') === lId)) {
+            orders.unshift(latestOrder);
+          }
+        }
+
+        // Merge recent orders if missing
+        if (Array.isArray(recentOrders)) {
+          recentOrders.forEach(ro => {
+            const rId = String(ro.id || ro.orderId).replace(/[^a-zA-Z0-9]/g, '');
+            if (rId && !orders.some(o => String(o.id || o.orderId).replace(/[^a-zA-Z0-9]/g, '') === rId)) {
+              orders.push(ro);
+            }
+          });
+        }
+
+        // Real-time synchronization of status & courier/resi from local admin orders
+        orders.forEach(ord => {
+          const ordId = String(ord.id || ord.orderId || '').replace(/[^a-zA-Z0-9]/g, '');
+          const adminMatch = localAdminOrders.find(ao => String(ao.id || ao.orderId || '').replace(/[^a-zA-Z0-9]/g, '') === ordId);
+          if (adminMatch) {
+            if (adminMatch.status) ord.status = adminMatch.status;
+            if (adminMatch.resi) ord.resi = adminMatch.resi;
+            if (adminMatch.courier) ord.courier = adminMatch.courier;
+          }
+        });
+
+        // Save back to user order storage so history persists
+        if (userEmailLower && orders.length > 0) {
+          const key = `mustaz_orders_${userEmailLower.replace(/[^a-z0-9]/g, '_')}`;
+          localStorage.setItem(key, JSON.stringify(orders));
+        }
+      } catch (err) {
+        console.warn('Orders local sync warning:', err);
+      }
+
+      // 2. Sync User Orders with Supabase Cloud
       try {
         const cloudOrders = await fetchCloudOrders();
         if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
           let changed = false;
           orders.forEach(locOrd => {
-            const match = cloudOrders.find(c => String(c.id).replace(/[^a-zA-Z0-9]/g, '') === String(locOrd.id).replace(/[^a-zA-Z0-9]/g, ''));
+            const cleanLocId = String(locOrd.id || locOrd.orderId || '').replace(/[^a-zA-Z0-9]/g, '');
+            const match = cloudOrders.find(c => String(c.id).replace(/[^a-zA-Z0-9]/g, '') === cleanLocId);
             if (match) {
               if (match.status && locOrd.status !== match.status) {
                 locOrd.status = match.status;
@@ -555,17 +677,24 @@
           });
           // Check if any cloud order belongs to this user but missing in local storage
           cloudOrders.forEach(c => {
-            const belongsToUser = c.customer && (
-              c.customer.toLowerCase().includes(email.toLowerCase()) ||
-              (email.split('@')[0] && c.customer.toLowerCase().includes(email.split('@')[0].toLowerCase()))
-            );
-            if (belongsToUser) {
-              const exists = orders.some(o => String(o.id).replace(/[^a-zA-Z0-9]/g, '') === String(c.id).replace(/[^a-zA-Z0-9]/g, ''));
-              if (!exists) {
+            const cleanCId = String(c.id).replace(/[^a-zA-Z0-9]/g, '');
+            const exists = orders.some(o => String(o.id || o.orderId || '').replace(/[^a-zA-Z0-9]/g, '') === cleanCId);
+            if (!exists) {
+              const cEmail = (c.customer_email || c.email || '').toLowerCase().trim();
+              const cCustomer = (c.customer_name || c.customer || '').toLowerCase().trim();
+              const cPhone = (c.customer_phone || c.phone || '').replace(/[^0-9]/g, '');
+
+              const belongsToUser = (userEmailLower && cEmail === userEmailLower) ||
+                (userEmailLower && cCustomer.includes(userEmailLower)) ||
+                (userPhoneDigits && userPhoneDigits.length >= 8 && cPhone && (cPhone.includes(userPhoneDigits) || userPhoneDigits.includes(cPhone))) ||
+                (userNameLower && userNameLower.length > 2 && cCustomer.includes(userNameLower));
+
+              if (belongsToUser) {
                 orders.unshift({
                   id: c.id,
-                  items: typeof c.items === 'string' ? [{ name: c.items, qty: 1, price: c.total, image: 'assets/images/Product1.png' }] : c.items,
-                  total: c.total,
+                  orderId: c.id,
+                  items: c.items,
+                  total: c.total || c.total_amount || 0,
                   date: c.date,
                   status: c.status,
                   courier: c.courier || '',
@@ -575,8 +704,8 @@
               }
             }
           });
-          if (changed) {
-            const key = `mustaz_orders_${email.replace(/[^a-z0-9]/g, '_')}`;
+          if (changed && userEmailLower) {
+            const key = `mustaz_orders_${userEmailLower.replace(/[^a-z0-9]/g, '_')}`;
             localStorage.setItem(key, JSON.stringify(orders));
           }
         }
@@ -658,7 +787,33 @@
         const hasResi = Boolean(order.resi);
         const trackingLink = hasResi ? buildTrackingUrl(order.courier || 'J&T', order.resi) : '';
 
-        const itemsHtml = (order.items || []).map(item => {
+        // Normalize items array to prevent TypeError if stored as string
+        let normalizedItems = order.items;
+        if (typeof normalizedItems === 'string') {
+          normalizedItems = normalizedItems.split(',').map(s => {
+            const cleanStr = s.trim();
+            const qtyMatch = cleanStr.match(/x\s*(\d+)/i);
+            const cleanName = cleanStr.replace(/\s*\(?x\s*\d+\)?/i, '').trim();
+            return {
+              name: cleanName || 'MUSTAZ CUSTOM PART',
+              spec: 'OFFICIAL MUSTAZ SPEC',
+              qty: qtyMatch ? parseInt(qtyMatch[1], 10) : 1,
+              price: order.total || 0,
+              image: 'assets/images/pet_visor_yellow_flame.png'
+            };
+          });
+        }
+        if (!Array.isArray(normalizedItems) || normalizedItems.length === 0) {
+          normalizedItems = [{
+            name: 'MUSTAZ CUSTOM PET HELMET VISOR',
+            spec: 'OFFICIAL MUSTAZ SPEC',
+            qty: 1,
+            price: order.total || 0,
+            image: 'assets/images/pet_visor_yellow_flame.png'
+          }];
+        }
+
+        const itemsHtml = normalizedItems.map(item => {
           const normItemName = String(item.name || '').trim().toLowerCase();
           const existingReview = userReviews.find(r => 
             String(r.order_id || '').trim() === String(order.id || '').trim() &&
@@ -1117,6 +1272,30 @@
         localStorage.removeItem('mustaz_auth_logged_in');
         window.location.href = 'login.html';
       });
+    }
+
+    // 8. Auto-Activate Tab or Launch Review Modal if requested via URL params
+    const queryParams = new URLSearchParams(window.location.search);
+    const reqTab = queryParams.get('tab');
+    const reqReviewOrder = queryParams.get('review_order') || queryParams.get('orderId');
+
+    if (reqTab) {
+      const tabTarget = document.querySelector(`.account-nav-item[data-tab="${reqTab}"]`);
+      if (tabTarget) tabTarget.click();
+    } else if (reqReviewOrder) {
+      const ordersTab = document.querySelector('.account-nav-item[data-tab="orders"]');
+      if (ordersTab) ordersTab.click();
+    }
+
+    if (reqReviewOrder) {
+      setTimeout(() => {
+        const cleanReq = reqReviewOrder.replace(/^#+/, '').trim();
+        const reviewBtn = document.querySelector(`.btn-review-trigger[data-order-id="${cleanReq}"]`);
+        if (reviewBtn) {
+          reviewBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          reviewBtn.click();
+        }
+      }, 400);
     }
   });
 </script>

@@ -380,7 +380,11 @@
           const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
           adminOrders.unshift({
             id: finalOrderId,
+            orderId: finalOrderId,
             customer: name + (email ? ` (${email})` : ''),
+            customer_name: name,
+            customer_email: email || activeEmail || '',
+            email: email || activeEmail || '',
             items: items.map(i => `${i.name} x${i.quantity}`).join(', '),
             total: finalTotal,
             currency: getActiveCurrency(),
@@ -395,8 +399,46 @@
           localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
         } catch {}
 
-        // 2. Save to user's localized order history
-        saveUserOrder(email || activeEmail, orderRecord);
+        // 2. Save to user's localized order history across active scopes
+        const targetEmail = (email || activeEmail || '').trim();
+        if (targetEmail) {
+          saveUserOrder(targetEmail, orderRecord);
+        }
+        if (activeEmail && activeEmail.toLowerCase() !== targetEmail.toLowerCase()) {
+          saveUserOrder(activeEmail, orderRecord);
+        }
+
+        // 2b. Backup to latest checkout order & recent session orders
+        try {
+          localStorage.setItem('mustaz_latest_checkout_order', JSON.stringify(orderRecord));
+          const recentOrders = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
+          // Remove duplicate if already present
+          const filteredRecents = recentOrders.filter(o => (o.id || o.orderId) !== finalOrderId);
+          filteredRecents.unshift(orderRecord);
+          localStorage.setItem('mustaz_recent_orders', JSON.stringify(filteredRecents.slice(0, 30)));
+        } catch {}
+
+        // 2c. Auto-link buyer identity to active profile if not set or matches checkout
+        try {
+          const storedProf = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}');
+          const isProfEmpty = !storedProf.email && !storedProf.fullName;
+          if (isProfEmpty || storedProf.email === targetEmail) {
+            const updatedProf = {
+              ...storedProf,
+              fullName: storedProf.fullName || name,
+              alias: storedProf.alias || (name ? `${name.split(' ')[0]} 7G` : 'Rider 7G'),
+              email: targetEmail || storedProf.email || '',
+              phone: cleanPhone || storedProf.phone || '',
+              address: address || storedProf.address || '',
+              role: storedProf.role || 'member'
+            };
+            localStorage.setItem('mustaz_user_profile_data', JSON.stringify(updatedProf));
+          }
+          if (targetEmail) {
+            localStorage.setItem('mustaz_user_email', targetEmail.toLowerCase());
+          }
+          localStorage.setItem('mustaz_auth_logged_in', 'true');
+        } catch {}
 
         // 3. Show Instant In-App Order Success Modal
         showOrderSuccessModal(orderRecord);

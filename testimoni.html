@@ -165,24 +165,83 @@
   <section style="padding:70px 0 100px;background:transparent;">
     <div class="wrap">
       
-      <!-- Unique Order Review Banner (Phase 4 Hook) -->
-      <div id="uniqueReviewBanner" style="display:none;background:#141414;border:3px solid var(--accent-yellow);box-shadow:8px 8px 0px var(--accent-pink);padding:24px 28px;margin-bottom:40px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;">
+      <!-- Special Buyer Review Dispatch Section (Inline Review Form) -->
+      <div id="uniqueReviewBanner" style="display:none;background:#0c0c0c;border:3px solid var(--accent-yellow);box-shadow:8px 8px 0px var(--accent-pink);padding:28px 24px;margin-bottom:44px;position:relative;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+          <span class="zine-tag-yellow" style="font-size:0.75rem;padding:4px 8px;">★ VERIFIED BUYER DISPATCH // FASE 4</span>
+          <span id="reviewOrderBadge" class="zine-tag-pink" style="font-size:0.75rem;padding:4px 8px;">KODE ORDER: #MSTZ-ORDER</span>
+          <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">MUSTAZ KUSTOM GARAGE // RESMI</span>
+        </div>
+
+        <h2 style="font-family:var(--font-headline);font-size:clamp(1.6rem, 4vw, 2.4rem);color:#FFF;margin:0 0 8px;line-height:1.05;">
+          HALO KAK <span id="reviewBuyerName" style="color:var(--accent-yellow);">RIDERS</span>! BERIKAN ULASAN PRODUK ANDA
+        </h2>
+        <p style="font-family:var(--font-mono-sub);font-size:0.88rem;color:#BBB;margin:0 0 20px;line-height:1.5;max-width:740px;">
+          Pesanan pet visor helm MUSTAZ CRAFT Anda telah tiba. Pendapat &amp; ulasan autentik Anda sangat kami hargai untuk terus menjaga kualitas craftsmanship kustom garasi kami.
+        </p>
+
+        <!-- Formulir Kolom Ulasan Lengkap Langsung di Halaman -->
+        <form id="inlineReviewForm" style="background:#141414;border:2px solid #282828;padding:22px;display:flex;flex-direction:column;gap:16px;">
+          <!-- 1. Star Rating Selector -->
           <div>
-            <span class="zine-tag-yellow">SPECIAL BUYER REVIEW DISPATCH // FASE 4</span>
-            <h3 style="font-family:var(--font-headline);font-size:1.85rem;color:#FFF;margin:8px 0 4px;line-height:1.1;">
-              HALO KAK <span id="reviewBuyerName" style="color:var(--accent-yellow);">RIDERS</span>! PAKET <span id="reviewOrderCode" style="color:var(--accent-pink);">#MSTZ-ORDER</span> TELAH TIBA
-            </h3>
-            <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#CCC;margin:0;line-height:1.5;">
-              Bantu kami memberikan rating &amp; ulasan autentik mengenai kepuasan produk kustom helm &amp; pet visor MUSTAZ CRAFT!
-            </p>
+            <label style="display:block;font-family:var(--font-headline);font-size:1.05rem;color:#FFF;margin-bottom:6px;">
+              1. RATING KEPUASAN PRODUK <span style="color:var(--accent-pink);">*</span>
+            </label>
+            <div id="starRatingGroup" style="display:flex;align-items:center;gap:6px;font-size:2.2rem;cursor:pointer;user-select:none;">
+              <span class="star-btn" data-val="1" style="color:var(--accent-yellow);transition:transform 0.15s;">★</span>
+              <span class="star-btn" data-val="2" style="color:var(--accent-yellow);transition:transform 0.15s;">★</span>
+              <span class="star-btn" data-val="3" style="color:var(--accent-yellow);transition:transform 0.15s;">★</span>
+              <span class="star-btn" data-val="4" style="color:var(--accent-yellow);transition:transform 0.15s;">★</span>
+              <span class="star-btn" data-val="5" style="color:var(--accent-yellow);transition:transform 0.15s;">★</span>
+              <span id="starRatingLabel" style="font-family:var(--font-mono-sub);font-size:0.82rem;color:var(--accent-yellow);margin-left:10px;font-weight:700;">
+                5 / 5 ★ [SANGAT PUAS / GAHAR!]
+              </span>
+            </div>
+            <input type="hidden" id="inlineReviewRating" value="5">
           </div>
+
+          <!-- 2. Row: Nama Rider, Motor/Helm, Kota -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;">
+            <div>
+              <label for="inlineBuyerName" style="display:block;font-family:var(--font-headline);font-size:0.92rem;color:#FFF;margin-bottom:6px;">
+                2. NAMA RIDER <span style="color:var(--accent-pink);">*</span>
+              </label>
+              <input type="text" id="inlineBuyerName" required class="form-input-brutal" style="width:100%;padding:10px 12px;background:#000;color:#FFF;border:2px solid #444;font-family:var(--font-mono-sub);font-size:0.85rem;" placeholder="Nama Anda / Moniker Rider">
+            </div>
+
+            <div>
+              <label for="inlineBikeModel" style="display:block;font-family:var(--font-headline);font-size:0.92rem;color:#FFF;margin-bottom:6px;">
+                3. TIPE MOTOR / HELM
+              </label>
+              <input type="text" id="inlineBikeModel" class="form-input-brutal" style="width:100%;padding:10px 12px;background:#000;color:#FFF;border:2px solid #444;font-family:var(--font-mono-sub);font-size:0.85rem;" placeholder="Contoh: HONDA CB // BELL 500">
+            </div>
+
+            <div>
+              <label for="inlineCity" style="display:block;font-family:var(--font-headline);font-size:0.92rem;color:#FFF;margin-bottom:6px;">
+                4. KOTA ASAL
+              </label>
+              <input type="text" id="inlineCity" class="form-input-brutal" style="width:100%;padding:10px 12px;background:#000;color:#FFF;border:2px solid #444;font-family:var(--font-mono-sub);font-size:0.85rem;" placeholder="Contoh: BANDUNG">
+            </div>
+          </div>
+
+          <!-- 3. Kolom Ulasan / Textarea -->
           <div>
-            <button id="btnOpenUniqueReview" type="button" class="btn-brutal-yellow" style="padding:14px 24px;font-size:0.95rem;cursor:pointer;">
-              ⭐ BERIKAN ULASAN PRODUK →
+            <label for="inlineReviewComment" style="display:block;font-family:var(--font-headline);font-size:1.05rem;color:#FFF;margin-bottom:6px;">
+              5. KOLOM ULASAN RESMI <span style="color:var(--accent-pink);">*</span>
+            </label>
+            <textarea id="inlineReviewComment" rows="4" required class="form-input-brutal" style="width:100%;padding:12px 14px;background:#000;color:#FFF;border:2px solid #444;font-family:var(--font-mono-sub);font-size:0.9rem;line-height:1.5;resize:vertical;" placeholder="Tuliskan ulasan jujur Anda di sini: kerapian finishing akrilik, fitting kancing snap di helm, ketahanan terpaan angin saat riding, dan kesan Anda terhadap pelayanan MUSTAZ CRAFT..."></textarea>
+          </div>
+
+          <!-- 4. Tombol Submit & Alternatif Modal -->
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:6px;">
+            <button id="btnSubmitInlineReview" type="submit" class="btn-brutal-yellow" style="padding:14px 28px;font-size:0.95rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+              <span>⭐</span> PUBLIKASIKAN ULASAN RESMI SEKARANG ➔
+            </button>
+            <button id="btnOpenReviewModalAlt" type="button" class="btn-brutal-ghost" style="padding:14px 20px;font-size:0.85rem;cursor:pointer;">
+              BUKA FORM POPUP ↗
             </button>
           </div>
-        </div>
+        </form>
       </div>
 
       <div class="testi-grid">
@@ -397,78 +456,273 @@
 <script type="module" src="js/app.js"></script>
 <script type="module">
   import { showBrutalReviewModal, showBrutalAlert } from './js/components/modal.js';
-  import { submitVerifiedReview } from './js/services/reviewsService.js';
+  import { submitVerifiedReview, getAllReviews } from './js/services/reviewsService.js';
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get('review_order') || params.get('orderId');
-    const buyerName = params.get('buyer') || params.get('name') || 'RIDERS';
+    const buyerNameParam = params.get('buyer') || params.get('name') || '';
 
+    // 1. Star Rating Interactive Handling
+    const starBtns = document.querySelectorAll('.star-btn');
+    const ratingInput = document.getElementById('inlineReviewRating');
+    const ratingLabel = document.getElementById('starRatingLabel');
+
+    const starDescriptions = {
+      1: '1 / 5 ★ [PERLU PERBAIKAN]',
+      2: '2 / 5 ★ [KURANG PAS]',
+      3: '3 / 5 ★ [CUKUP BAGUS]',
+      4: '4 / 5 ★ [PUAS / PRESISI]',
+      5: '5 / 5 ★ [SANGAT PUAS / GAHAR!]'
+    };
+
+    function setStars(val) {
+      if (!ratingInput) return;
+      ratingInput.value = val;
+      if (ratingLabel) ratingLabel.textContent = starDescriptions[val] || `${val} / 5 ★`;
+      starBtns.forEach(btn => {
+        const starVal = Number(btn.dataset.val);
+        if (starVal <= val) {
+          btn.style.color = 'var(--accent-yellow)';
+          btn.style.transform = 'scale(1.1)';
+        } else {
+          btn.style.color = '#444';
+          btn.style.transform = 'scale(1)';
+        }
+      });
+    }
+
+    starBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = Number(btn.dataset.val) || 5;
+        setStars(val);
+      });
+      btn.addEventListener('mouseenter', () => {
+        const val = Number(btn.dataset.val) || 5;
+        starBtns.forEach(b => {
+          b.style.color = Number(b.dataset.val) <= val ? 'var(--accent-yellow)' : '#333';
+        });
+      });
+    });
+
+    const starGroup = document.getElementById('starRatingGroup');
+    if (starGroup) {
+      starGroup.addEventListener('mouseleave', () => {
+        setStars(Number(ratingInput?.value) || 5);
+      });
+    }
+
+    // 2. Active Review Order Form Handler
     if (orderId) {
       const banner = document.getElementById('uniqueReviewBanner');
-      const orderEl = document.getElementById('reviewOrderCode');
+      const badgeEl = document.getElementById('reviewOrderBadge');
       const buyerEl = document.getElementById('reviewBuyerName');
-      const btn = document.getElementById('btnOpenUniqueReview');
+      const inlineBuyerInput = document.getElementById('inlineBuyerName');
+      const inlineReviewComment = document.getElementById('inlineReviewComment');
+      const inlineBikeInput = document.getElementById('inlineBikeModel');
+      const inlineCityInput = document.getElementById('inlineCity');
+      const form = document.getElementById('inlineReviewForm');
+      const btnModalAlt = document.getElementById('btnOpenReviewModalAlt');
 
-      if (banner) banner.style.display = 'block';
-      if (orderEl) orderEl.textContent = '#' + orderId.replace(/^#+/, '');
-      if (buyerEl) buyerEl.textContent = buyerName.toUpperCase();
+      const cleanOrder = String(orderId).replace(/^#+/, '').trim().toUpperCase();
 
-      const launchReview = async () => {
-        const result = await showBrutalReviewModal({
-          orderId: orderId.replace(/^#+/, ''),
-          productName: 'MUSTAZ CUSTOM PET HELMET VISOR',
-          productImage: 'assets/images/pet_visor_yellow_flame.png',
-          productSpec: 'AUTHENTIC RIDERS DISPATCH // SERI CUSTOM',
-          riderName: buyerName !== 'RIDERS' ? buyerName : '',
-          bikeModel: 'CUSTOM MOTORCYCLE',
-          city: 'INDONESIA',
-          existingRating: 5,
-          existingComment: ''
-        });
+      // Attempt to look up order info from local caches
+      let matchedOrder = null;
+      try {
+        const recents = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
+        const latest = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
+        const adminOrds = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+        matchedOrder = [latest, ...recents, ...adminOrds].find(o => o && String(o.id || o.orderId).replace(/^#+/, '').toUpperCase() === cleanOrder);
+      } catch {}
 
-        if (result) {
+      const resolvedBuyer = buyerNameParam || (matchedOrder && (matchedOrder.customer_name || matchedOrder.customer || matchedOrder.name)) || 'RIDERS';
+      const cleanBuyer = resolvedBuyer.replace(/\s*\([^)]*\)/, '').trim();
+
+      if (banner) {
+        banner.style.display = 'block';
+        setTimeout(() => {
+          banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+      }
+
+      if (badgeEl) badgeEl.textContent = `KODE ORDER: #${cleanOrder}`;
+      if (buyerEl) buyerEl.textContent = cleanBuyer.toUpperCase();
+      if (inlineBuyerInput) inlineBuyerInput.value = cleanBuyer !== 'RIDERS' ? cleanBuyer : '';
+
+      if (matchedOrder && matchedOrder.city && inlineCityInput) {
+        inlineCityInput.value = matchedOrder.city.split('(')[0].trim();
+      }
+
+      // Inline Review Form Submission
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const rating = Number(ratingInput?.value) || 5;
+          const riderName = (inlineBuyerInput?.value || cleanBuyer || 'VERIFIED RIDER').trim().toUpperCase();
+          const bikeModel = (inlineBikeInput?.value || 'CUSTOM MOTORCYCLE').trim().toUpperCase();
+          const city = (inlineCityInput?.value || 'INDONESIA').trim().toUpperCase();
+          const comment = (inlineReviewComment?.value || '').trim();
+
+          if (comment.length < 5) {
+            alert('Mohon tuliskan ulasan Anda minimal 5 karakter.');
+            if (inlineReviewComment) inlineReviewComment.focus();
+            return;
+          }
+
+          const submitBtn = document.getElementById('btnSubmitInlineReview');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ MEMPUBLIKASIKAN ULASAN...';
+          }
+
           try {
-            await submitVerifiedReview({
-              order_id: orderId.replace(/^#+/, ''),
-              user_email: `${buyerName.toLowerCase().replace(/[^a-z0-9]/g, '')}@riders.mustaz.id`,
-              user_name: buyerName !== 'RIDERS' ? buyerName : 'VERIFIED RIDER',
-              bike_model: result.bikeModel,
-              city: result.city,
+            const newRev = await submitVerifiedReview({
+              order_id: cleanOrder,
+              user_email: `${riderName.toLowerCase().replace(/[^a-z0-9]/g, '')}@riders.mustaz.id`,
+              user_name: riderName,
+              bike_model: bikeModel,
+              city: city,
               product_name: 'MUSTAZ CUSTOM PET HELMET VISOR',
-              product_image: 'assets/images/pet_visor_yellow_flame.png',
-              rating: result.rating,
-              comment: result.comment
+              product_image: 'assets/images/TESTI.png',
+              rating: rating,
+              comment: comment
             });
 
-            showBrutalAlert({
-              title: '⭐ TERIMA KASIH ATAS ULASANNYA!',
-              message: `Terima kasih banyak Kak ${buyerName}! Ulasan dan penilaian Anda telah berhasil tersimpan dan sangat berarti bagi kemajuan workshop kustom kami.`,
-              badge: 'ULASAN TERVERIFIKASI',
-              okText: 'KEMBALI KE STORE'
-            });
+            // Replace banner with confirmation
+            banner.innerHTML = `
+              <div style="text-align:center;padding:28px 16px;">
+                <span class="zine-tag-yellow" style="font-size:0.85rem;padding:6px 14px;">ULASAN TERVERIFIKASI ✅</span>
+                <h3 style="font-family:var(--font-headline);font-size:2.2rem;color:#FFF;margin:16px 0 8px;line-height:1.1;">
+                  TERIMA KASIH BANYAK, KAK ${riderName}!
+                </h3>
+                <p style="font-family:var(--font-mono-sub);font-size:0.95rem;color:#4ade80;max-width:620px;margin:0 auto 20px;line-height:1.5;">
+                  Ulasan autentik &amp; rating ${rating}★ Anda telah berhasil dipublikasikan di Community Dispatch MUSTAZ CRAFT. Terima kasih atas dukungan Anda terhadap pergerakan kustom lokal!
+                </p>
+                <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+                  <a href="parts.html" class="btn-brutal-yellow" style="padding:12px 24px;">KEMBALI KE STORE KATALOG →</a>
+                  <a href="account.html" class="btn-brutal-ghost" style="padding:12px 24px;">CEK STATUS AKUN ↗</a>
+                </div>
+              </div>
+            `;
 
-            if (banner) {
-              banner.innerHTML = `
-                <div style="text-align:center;padding:12px;">
-                  <span class="zine-tag-yellow">ULASAN TERVERIFIKASI ✅</span>
-                  <h3 style="font-family:var(--font-headline);font-size:1.8rem;color:#FFF;margin:8px 0;">TERIMA KASIH KAK ${buyerName.toUpperCase()}!</h3>
-                  <p style="font-family:var(--font-mono-sub);font-size:0.9rem;color:#4ade80;">Ulasan autentik Anda telah berhasil dipublikasikan di halaman testimoni resmi.</p>
+            // Prepend new review card to photo grid dynamically
+            const grid = document.querySelector('.testi-grid');
+            if (grid) {
+              const starsStr = '★'.repeat(rating) + '☆'.repeat(Math.max(0, 5 - rating));
+              const newCard = document.createElement('article');
+              newCard.className = 'card-testi-brutal';
+              newCard.style.borderColor = 'var(--accent-yellow)';
+              newCard.style.boxShadow = '8px 8px 0px var(--accent-pink)';
+              newCard.innerHTML = `
+                <div class="tape-decor tape-top-left"></div>
+                <div class="testi-header-row">
+                  <span class="zine-tag-yellow">BARU // VERIFIED RIDER</span>
+                  <div class="testi-stars">${starsStr}</div>
+                </div>
+                <div class="testi-photo-box">
+                  <img src="assets/images/TESTI.png" alt="Testimoni ${riderName} MUSTAZ CRAFT">
+                </div>
+                <p class="testi-quote">“${comment}”</p>
+                <div class="testi-author-block">
+                  <div>
+                    <div class="testi-author-name">${riderName}</div>
+                    <div class="testi-author-bike">${bikeModel} // ${city}</div>
+                  </div>
+                  <span class="testi-gear-tag">ORDER #${cleanOrder}</span>
                 </div>
               `;
+              grid.insertBefore(newCard, grid.firstChild);
+              newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+
+            showBrutalAlert({
+              title: '⭐ ULASAN BERHASIL DITERBITKAN!',
+              message: `Terima kasih banyak Kak ${riderName}! Ulasan dan penilaian kepuasan Anda telah berhasil ditayangkan di galeri testimoni resmi.`,
+              badge: 'ULASAN TERVERIFIKASI',
+              okText: 'MANTAP'
+            });
+
           } catch (err) {
+            console.error('Error submitting review:', err);
             showBrutalAlert({
               title: 'GAGAL MENYIMPAN ULASAN',
               message: err.message || 'Terjadi kesalahan sistem saat menyimpan ulasan.',
               isDanger: true
             });
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<span>⭐</span> PUBLIKASIKAN ULASAN RESMI SEKARANG ➔';
+            }
           }
-        }
-      };
+        });
+      }
 
-      if (btn) btn.addEventListener('click', launchReview);
+      // Alternative: Pop-up Modal review
+      if (btnModalAlt) {
+        btnModalAlt.addEventListener('click', async () => {
+          const result = await showBrutalReviewModal({
+            orderId: cleanOrder,
+            productName: 'MUSTAZ CUSTOM PET HELMET VISOR',
+            productImage: 'assets/images/TESTI.png',
+            productSpec: 'AUTHENTIC RIDERS DISPATCH // SERI CUSTOM',
+            riderName: cleanBuyer !== 'RIDERS' ? cleanBuyer : '',
+            bikeModel: inlineBikeInput?.value || 'CUSTOM MOTORCYCLE',
+            city: inlineCityInput?.value || 'INDONESIA',
+            existingRating: Number(ratingInput?.value) || 5,
+            existingComment: inlineReviewComment?.value || ''
+          });
+
+          if (result) {
+            if (inlineReviewComment) inlineReviewComment.value = result.comment || '';
+            if (inlineBuyerInput && result.riderName) inlineBuyerInput.value = result.riderName;
+            if (inlineBikeInput && result.bikeModel) inlineBikeInput.value = result.bikeModel;
+            if (inlineCityInput && result.city) inlineCityInput.value = result.city;
+            setStars(result.rating || 5);
+            // Trigger submit form
+            form?.dispatchEvent(new Event('submit', { cancelable: true }));
+          }
+        });
+      }
     }
+
+    // 3. Render dynamically stored community reviews into the grid
+    try {
+      const allRevs = await getAllReviews();
+      const customReviews = allRevs.filter(r => !r.id.startsWith('REV-SEED-'));
+      const grid = document.querySelector('.testi-grid');
+      if (grid && customReviews.length > 0) {
+        customReviews.forEach(rev => {
+          // Check if not already in DOM
+          const existing = grid.querySelector(`[data-rev-id="${rev.id}"]`);
+          if (existing) return;
+
+          const starsStr = '★'.repeat(rev.rating || 5) + '☆'.repeat(Math.max(0, 5 - (rev.rating || 5)));
+          const art = document.createElement('article');
+          art.className = 'card-testi-brutal';
+          art.dataset.revId = rev.id;
+          art.innerHTML = `
+            <div class="tape-decor tape-top-right"></div>
+            <div class="testi-header-row">
+              <span class="zine-tag-pink">VERIFIED BUYER</span>
+              <div class="testi-stars">${starsStr}</div>
+            </div>
+            <div class="testi-photo-box">
+              <img src="${rev.product_image || 'assets/images/TESTI1.png'}" alt="Testimoni ${rev.user_name} MUSTAZ CRAFT">
+            </div>
+            <p class="testi-quote">“${rev.comment}”</p>
+            <div class="testi-author-block">
+              <div>
+                <div class="testi-author-name">${rev.user_name}</div>
+                <div class="testi-author-bike">${rev.bike_model || 'CUSTOM BUILD'} // ${rev.city || 'INDONESIA'}</div>
+              </div>
+              <span class="testi-gear-tag">${rev.order_id ? `#${rev.order_id}` : 'VERIFIED RIDER'}</span>
+            </div>
+          `;
+          grid.insertBefore(art, grid.firstChild);
+        });
+      }
+    } catch {}
   });
 </script>
 </body>

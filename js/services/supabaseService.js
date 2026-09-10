@@ -497,12 +497,17 @@ export async function fetchCloudOrders() {
         }
 
         const phone = o.customer_phone || o.phone || '';
+        const email = o.customer_email || o.email || '';
 
         return {
           id: o.id,
           customer: o.customer_name || o.customer || 'Pelanggan',
+          customer_name: o.customer_name || o.customer || 'Pelanggan',
+          customer_email: email,
+          email: email,
           items: o.items || '',
           total: Number(o.total_amount || o.total) || 0,
+          total_amount: Number(o.total_amount || o.total) || 0,
           date: o.created_at ? new Date(o.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TODAY',
           status: o.status || 'PENDING',
           city: cleanCity,
