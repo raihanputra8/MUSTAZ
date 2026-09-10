@@ -298,26 +298,60 @@
     gap: 10px !important;
   }
 
-  /* Product Card — flex column so button always sticks to bottom */
-  .part-card,
-  .drops-grid > article,
-  .card-flash-sale,
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] > article {
+  /* ── CARD FLEX CONTAINER ───────────────────────────────────────────────── */
+  /* article wrapper: fill grid cell height */
+  .part-card {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
     height: 100% !important;
     transform: none !important;
     margin: 0 !important;
   }
 
-  .part-card > div,
-  .drops-grid > article,
-  .card-flash-sale,
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(300px, 1fr))"] > article {
+  /* .part-card-inner: the visible white box, flex column full height */
+  .part-card-inner,
+  .card-brutal-white,
+  .card-brutal-dark {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    height: 100% !important;
+    padding: 8px !important;
+    border-width: 2px !important;
+    box-sizing: border-box !important;
+    box-shadow: 3px 3px 0px var(--accent-pink) !important;
+  }
+
+  /* .part-info: middle content block — grows to fill remaining space */
+  .part-info {
+    flex-grow: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* ── PUSH PRICE ROW + ACTIONS TO BOTTOM ────────────────────────────────── */
+  /* price row: margin-top:auto pushes it (and everything below) to bottom */
+  .part-price-row,
+  .part-card div[style*="border-top:1px dashed"],
+  .card-flash-sale .flash-price-row,
+  .drops-grid article div[style*="border-top"] {
+    margin-top: auto !important;
+    padding-top: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* actions row: no extra top margin needed — price-row already pushed it */
+  .part-actions {
+    margin-top: 0 !important;
+    display: flex !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  /* Flash sale / drops cards: inner div flex column full height */
+  .drops-grid > article,
+  .card-flash-sale {
+    display: flex !important;
+    flex-direction: column !important;
     height: 100% !important;
     padding: 8px !important;
     border-width: 2px !important;
