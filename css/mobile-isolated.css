@@ -771,4 +771,177 @@
     margin-bottom: 8px !important;
     text-transform: uppercase !important;
   }
+
+  /* --------------------------------------------------------------------------
+     10. ADMIN DASHBOARD: STATS & QUICK-STATS GRID → 2 COLS ON MOBILE
+     -------------------------------------------------------------------------- */
+  /* Stats grid repeat(auto-fit, minmax(110px, 1fr)) already fine, but ensure
+     big minmax(320px) or 1fr 1fr 1fr collapse to 1 col */
+  div[style*="grid-template-columns:1fr 1fr 1fr"],
+  div[style*="grid-template-columns:repeat(3, 1fr)"],
+  div[style*="grid-template-columns: 1fr 1fr 1fr"],
+  div[style*="grid-template-columns: repeat(3, 1fr)"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  /* 4-col grids → 2 cols */
+  div[style*="grid-template-columns:1fr 1fr 1fr 1fr"],
+  div[style*="grid-template-columns:repeat(4, 1fr)"],
+  div[style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  /* 2-col admin form grids inside modals → 1 col */
+  .modal-box div[style*="grid-template-columns:1fr 1fr"],
+  .modal-box div[style*="grid-template-columns: 1fr 1fr"],
+  div[style*="grid-template-columns:1fr 1fr;gap:16px"],
+  div[style*="grid-template-columns:1fr 1fr;gap:24px"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Large auto-fit grids (product form sections in admin) */
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(320px"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     11. TYPOGRAPHY — PREVENT H1/H2 OVERFLOW ON MOBILE
+     -------------------------------------------------------------------------- */
+  h1 {
+    font-size: clamp(1.6rem, 8vw, 2.4rem) !important;
+    line-height: 1.05 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  h2 {
+    font-size: clamp(1.3rem, 6.5vw, 2rem) !important;
+    line-height: 1.08 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* clamp() font sizes set via inline style on editorial-title → override */
+  .editorial-title {
+    font-size: clamp(1.65rem, 7.5vw, 2.5rem) !important;
+    line-height: 0.95 !important;
+  }
+
+  /* Flash sale heading */
+  .flash-sale-title {
+    font-size: 1.35rem !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Section headings with inline font-size: clamp(2.5rem…) */
+  [style*="font-size:clamp(2.5rem"],
+  [style*="font-size:clamp(2rem"],
+  [style*="font-size:clamp(3rem"] {
+    font-size: clamp(1.5rem, 7vw, 2.2rem) !important;
+    line-height: 1.05 !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     12. CHECKOUT MODAL — 100% WIDTH & SINGLE-COLUMN FORM
+     -------------------------------------------------------------------------- */
+  #checkoutModal .modal-box,
+  #paymentModal .modal-box,
+  #proofUploadModal .modal-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    min-height: 60vh !important;
+  }
+
+  /* Grid in payment/checkout modal → column */
+  #checkoutModal div[style*="grid-template-columns"],
+  #paymentModal div[style*="grid-template-columns"],
+  #proofUploadModal div[style*="grid-template-columns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     13. ACCOUNT PAGE — ORDER HISTORY & PROFILE SECTIONS
+     -------------------------------------------------------------------------- */
+  .account-profile-card,
+  .account-order-card {
+    padding: 14px !important;
+    border-width: 2px !important;
+  }
+
+  /* order history table scroll */
+  .order-history-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .order-history-table-wrap table {
+    min-width: 580px !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     14. FAQ / STATIC PAGES — TEXT OVERFLOW PREVENTION
+     -------------------------------------------------------------------------- */
+  .faq-section,
+  .policy-section,
+  .shipping-section {
+    padding: 20px 14px !important;
+  }
+
+  .faq-section h1,
+  .policy-section h1,
+  .shipping-section h1 {
+    font-size: 1.6rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .faq-section h2,
+  .policy-section h2,
+  .shipping-section h2 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Accordion / details element full-width on mobile */
+  details {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* --------------------------------------------------------------------------
+     15. KULTURE / BLOG PAGE — COLLAGE FIX
+     -------------------------------------------------------------------------- */
+  .kulture-collage,
+  .kulture-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .kulture-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Helmets grid */
+  .helmets-grid,
+  #helmetsGrid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
 }
+
