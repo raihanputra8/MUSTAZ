@@ -147,31 +147,32 @@
           <form id="directCheckoutForm">
             <div class="form-group-brutal">
               <label class="form-label-brutal">CONSIGNEE NAME / ALIAS *</label>
-              <input type="text" id="chkName" class="form-input-brutal" placeholder="Raihan / Road Runner" required>
+              <input type="text" id="chkName" class="form-input-brutal" placeholder="Nama Lengkap" required />
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal">WHATSAPP NUMBER *</label>
-              <input type="tel" id="chkPhone" class="form-input-brutal" placeholder="08xxxxxxxxxx" required>
+              <input type="tel" id="chkPhone" class="form-input-brutal" placeholder="Nomor WhatsApp (Contoh: 081234567890)" required pattern="^[0-9]{9,15}$" />
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal">EMAIL NOTIFIKASI & INVOICE *</label>
-              <input type="email" id="chkEmail" class="form-input-brutal" placeholder="nama@email.com" required autocomplete="email">
+              <input type="email" id="chkEmail" class="form-input-brutal" placeholder="nama@email.com" required autocomplete="email" />
               <span style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;display:block;margin-top:4px;">
                 Bukti pesanan & rincian invoice resmi akan dikirim otomatis ke email ini.
               </span>
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal">DELIVERY COORDINATES (STREET & SECTOR) *</label>
-              <textarea id="chkAddress" class="form-input-brutal" rows="3" placeholder="Full street address, city, postal code" required></textarea>
+              <textarea id="chkAddress" class="form-input-brutal" rows="3" placeholder="Alamat Lengkap Pengiriman" required></textarea>
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal">05 // LOGISTICS & COURIER *</label>
               <select id="chkCourier" class="form-input-brutal" style="cursor:pointer;" required>
-                <option value="J&T Express (Reguler / COD)">J&T Express (Reguler / COD)</option>
-                <option value="JNE Trucking / Reguler">JNE Trucking / Reguler</option>
-                <option value="SiCepat Cargo / Best">SiCepat Cargo / Best</option>
-                <option value="GoSend / Grab Instant (JABODETABEK)">GoSend / Grab Instant (JABODETABEK)</option>
-                <option value="Ambil Langsung di Workshop MUSTAZ">Ambil Langsung di Workshop MUSTAZ</option>
+                <option value="" disabled selected>-- Pilih Kurir Ekspedisi --</option>
+                <option value="J&T Express">J&T Express (Reguler / COD)</option>
+                <option value="JNE Trucking">JNE Trucking / Reguler</option>
+                <option value="SiCepat Cargo">SiCepat Cargo / Best</option>
+                <option value="GoSend / Grab Instant">GoSend / Grab Instant</option>
+                <option value="Ambil di Workshop">Ambil di Workshop MUSTAZ</option>
               </select>
             </div>
             <div class="form-group-brutal" style="margin-bottom:28px;">
@@ -291,21 +292,44 @@
         });
         return;
       }
-      const name = document.getElementById('chkName').value.trim();
-      const phone = document.getElementById('chkPhone').value.trim();
-      const email = document.getElementById('chkEmail').value.trim();
-      const address = document.getElementById('chkAddress').value.trim();
-      const courier = document.getElementById('chkCourier')?.value || 'J&T Express (Reguler / COD)';
-      const payment = document.getElementById('chkPayment').value;
-      const total = getCartTotal();
+      const name = (document.getElementById('chkName')?.value || '').trim();
+      const phone = (document.getElementById('chkPhone')?.value || '').trim();
+      const email = (document.getElementById('chkEmail')?.value || '').trim();
+      const address = (document.getElementById('chkAddress')?.value || '').trim();
+      const courier = (document.getElementById('chkCourier')?.value || '').trim();
+      const payment = document.getElementById('chkPayment')?.value || 'Transfer Bank (BCA / Mandiri)';
 
+      // JS Validation Guard: Jika salah satu field kosong atau nomor WhatsApp kurang dari 10 digit, blokir checkout
+      if (!name || !phone || !courier || !address) {
+        alert("⚠️ MOHON LENGKAPI NAMA, NO. WHATSAPP, KURIR, DAN ALAMAT PENGIRIMAN SEBELUM CHECKOUT!");
+        return;
+      }
+      const cleanDigits = phone.replace(/[^0-9]/g, '');
+      if (cleanDigits.length < 10) {
+        alert("⚠️ NOMOR WHATSAPP TIDAK VALID! Minimal 10 digit angka (contoh: 081234567890).");
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        alert("⚠️ MASUKKAN EMAIL VALID UNTUK PENGIRIMAN INVOICE RESMI.");
+        return;
+      }
+
+      let cleanPhone = cleanDigits;
+      if (cleanPhone.startsWith('0')) {
+        cleanPhone = '62' + cleanPhone.slice(1);
+      } else if (cleanPhone.startsWith('8')) {
+        cleanPhone = '62' + cleanPhone;
+      }
+
+      const total = getCartTotal();
       const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
 
       const orderRecord = {
         id: orderId,
         orderId: orderId,
         customerName: name,
-        phone: phone,
+        phone: cleanPhone,
+        customer_phone: cleanPhone,
         email: email,
         address: address,
         courier: courier,
@@ -332,7 +356,8 @@
         id: orderId,
         customer: name,
         email: email,
-        phone: phone,
+        phone: cleanPhone,
+        customer_phone: cleanPhone,
         city: `${address} (Kurir: ${courier})`,
         items: items.map(i => `${i.name} (x${i.quantity})`).join(', '),
         total: total,
@@ -352,7 +377,8 @@
           date: new Date().toISOString().split('T')[0],
           status: 'PENDING',
           city: `${address} (${courier})`,
-          phone: phone || '',
+          phone: cleanPhone,
+          customer_phone: cleanPhone,
           courier: courier,
           receiptImage: ''
         });

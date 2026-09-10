@@ -67,28 +67,29 @@ function getCheckoutModalHTML() {
           <form id="checkoutForm" novalidate>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custName">01 // FULL NAME / ALIAS *</label>
-              <input type="text" id="custName" class="form-input-brutal" placeholder="Enter your full name or road alias" required>
+              <input type="text" id="custName" class="form-input-brutal" placeholder="Nama Lengkap" required />
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custPhone">02 // WHATSAPP / COMMS LINE *</label>
-              <input type="tel" id="custPhone" class="form-input-brutal" placeholder="e.g. 0895402806350" required>
+              <input type="tel" id="custPhone" class="form-input-brutal" placeholder="Nomor WhatsApp (Contoh: 081234567890)" required pattern="^[0-9]{9,15}$" />
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custEmail">03 // EMAIL NOTIFIKASI & INVOICE *</label>
-              <input type="email" id="custEmail" class="form-input-brutal" placeholder="nama@email.com" required>
+              <input type="email" id="custEmail" class="form-input-brutal" placeholder="nama@email.com" required />
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custAddress">04 // DROP COORDINATES / ADDRESS *</label>
-              <textarea id="custAddress" class="form-input-brutal" rows="3" placeholder="Full street address, city, sector, and postal code" required style="resize:vertical;"></textarea>
+              <textarea id="custAddress" class="form-input-brutal" rows="3" placeholder="Alamat Lengkap Pengiriman" required style="resize:vertical;"></textarea>
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custCourier">05 // LOGISTICS & COURIER *</label>
               <select id="custCourier" class="form-input-brutal" style="cursor:pointer;" required>
-                <option value="J&T Express (Reguler / COD)">J&T Express (Reguler / COD)</option>
-                <option value="JNE Trucking / Reguler">JNE Trucking / Reguler</option>
-                <option value="SiCepat Cargo / Best">SiCepat Cargo / Best</option>
-                <option value="GoSend / Grab Instant (JABODETABEK)">GoSend / Grab Instant (JABODETABEK)</option>
-                <option value="Ambil Langsung di Workshop MUSTAZ">Ambil Langsung di Workshop MUSTAZ</option>
+                <option value="" disabled selected>-- Pilih Kurir Ekspedisi --</option>
+                <option value="J&T Express">J&T Express (Reguler / COD)</option>
+                <option value="JNE Trucking">JNE Trucking / Reguler</option>
+                <option value="SiCepat Cargo">SiCepat Cargo / Best</option>
+                <option value="GoSend / Grab Instant">GoSend / Grab Instant</option>
+                <option value="Ambil di Workshop">Ambil di Workshop MUSTAZ</option>
               </select>
             </div>
             <div class="form-group-brutal">
@@ -357,29 +358,55 @@ export function initCart() {
   // Checkout form submit
   document.getElementById('checkoutForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = document.getElementById('custName')?.value.trim();
-    const phone = document.getElementById('custPhone')?.value.trim();
-    const email = document.getElementById('custEmail')?.value.trim();
-    const address = document.getElementById('custAddress')?.value.trim();
-    const courier = document.getElementById('custCourier')?.value || 'J&T Express (Reguler / COD)';
-    const payment = document.getElementById('paymentMethod')?.value;
+    const name = (document.getElementById('custName')?.value || '').trim();
+    const phone = (document.getElementById('custPhone')?.value || '').trim();
+    const email = (document.getElementById('custEmail')?.value || '').trim();
+    const address = (document.getElementById('custAddress')?.value || '').trim();
+    const courier = (document.getElementById('custCourier')?.value || '').trim();
+    const payment = document.getElementById('paymentMethod')?.value || 'Transfer Bank (BCA / Mandiri)';
     const errEl = document.getElementById('checkoutError');
 
-    if (!name || !phone || !email || !address) {
+    // JS Validation Guard: Jika salah satu field kosong atau nomor WhatsApp kurang dari 10 digit, blokir checkout
+    if (!name || !phone || !courier || !address) {
+      const errMsg = "⚠️ MOHON LENGKAPI NAMA, NO. WHATSAPP, KURIR, DAN ALAMAT PENGIRIMAN SEBELUM CHECKOUT!";
       if (errEl) {
-        errEl.textContent = '⚠️ SEMUA DATA (NAMA, NO. WA, EMAIL, ALAMAT) WAJIB DIISI SEBELUM CHECKOUT.';
+        errEl.textContent = errMsg;
         errEl.style.display = 'block';
       }
+      alert(errMsg);
       return;
     }
-    if (!email.includes('@')) {
+
+    const cleanDigits = phone.replace(/[^0-9]/g, '');
+    if (cleanDigits.length < 10) {
+      const errMsg = "⚠️ NOMOR WHATSAPP TIDAK VALID! Minimal 10 digit angka (contoh: 081234567890).";
       if (errEl) {
-        errEl.textContent = '⚠️ MASUKKAN EMAIL VALID UNTUK PENGIRIMAN INVOICE RESMI.';
+        errEl.textContent = errMsg;
         errEl.style.display = 'block';
       }
+      alert(errMsg);
       return;
     }
+
+    if (!email || !email.includes('@')) {
+      const errMsg = "⚠️ MASUKKAN EMAIL VALID UNTUK PENGIRIMAN INVOICE RESMI.";
+      if (errEl) {
+        errEl.textContent = errMsg;
+        errEl.style.display = 'block';
+      }
+      alert(errMsg);
+      return;
+    }
+
     if (errEl) errEl.style.display = 'none';
+
+    // Format nomor pembeli ke format standar Indonesia 62...
+    let cleanPhone = cleanDigits;
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '62' + cleanPhone.slice(1);
+    } else if (cleanPhone.startsWith('8')) {
+      cleanPhone = '62' + cleanPhone;
+    }
 
     const cartItems = getCart();
     const total = getCartTotal();
@@ -389,7 +416,8 @@ export function initCart() {
       id: orderId,
       orderId: orderId,
       customerName: name,
-      phone: phone,
+      phone: cleanPhone,
+      customer_phone: cleanPhone,
       email: email,
       address: address,
       courier: courier,
@@ -419,7 +447,8 @@ export function initCart() {
         id: orderId,
         customer: name,
         email: email,
-        phone: phone,
+        phone: cleanPhone,
+        customer_phone: cleanPhone,
         city: `${address} (Kurir: ${courier})`,
         items: cartItems.map(i => `${i.name} (x${i.quantity})`).join(', '),
         total: total,
@@ -438,7 +467,8 @@ export function initCart() {
         date: new Date().toISOString().split('T')[0],
         status: 'PENDING',
         city: `${address} (${courier})`,
-        phone: phone || '',
+        phone: cleanPhone,
+        customer_phone: cleanPhone,
         courier: courier,
         receiptImage: ''
       });

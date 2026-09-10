@@ -1171,6 +1171,82 @@ async function initAdminDashboard() {
     stagedReceiptImage = '';
   }
 
+  // ─── HELPER WHATSAPP TARGET CS AUTOMATION (BUYER NUMBER) ───────────────────
+  function getCustomerWhatsAppNumber(order) {
+    if (!order) return '';
+    let rawPhone = order.customer_phone || order.phone || order.customerPhone || '';
+    if (!rawPhone && typeof order.customer === 'string') {
+      const match = order.customer.match(/(?:08|\+?628)[0-9]{8,13}/);
+      if (match) rawPhone = match[0];
+    }
+    let cleaned = String(rawPhone || '').replace(/[^0-9]/g, '');
+    if (cleaned.startsWith('0')) {
+      cleaned = '62' + cleaned.slice(1);
+    } else if (cleaned.startsWith('8')) {
+      cleaned = '62' + cleaned;
+    }
+    return cleaned;
+  }
+
+  function openAdminWhatsAppAction(order, actionPhase) {
+    if (!order) return false;
+
+    // Pastikan memformat nomor pembeli (ubah '0812...' menjadi '62812...')
+    let customerPhone = getCustomerWhatsAppNumber(order);
+
+    if (!customerPhone || customerPhone.length < 10) {
+      const errTxt = `Nomor WhatsApp pembeli untuk pesanan #${order.id || ''} tidak valid atau belum diisi.`;
+      showAdminToast('error', 'NOMOR WA TIDAK VALID', errTxt);
+      alert(`⚠️ NOMOR WHATSAPP PEMBELI TIDAK VALID ATAU KOSONG!\n\nPesanan #${cleanOrderId(order.id)} tidak memiliki nomor WhatsApp pembeli yang valid (${customerPhone || 'KOSONG'}).\n\nAdmin tidak dapat menghubungi nomor sendiri.`);
+      return false;
+    }
+
+    const custName = (order.customer || order.customer_name || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
+    const orderCode = cleanOrderId(order.id);
+    let message = '';
+
+    if (actionPhase === 1 || actionPhase === 'p1') {
+      const data = {
+        orderId: orderCode,
+        customerName: custName,
+        itemsList: order.items || '-',
+        totalFormatted: formatRupiahNumber(order.total || order.total_amount || 0),
+        phone: customerPhone
+      };
+      message = generatePhase1Response(data, OFFICIAL_PAYMENT_ACCOUNTS);
+    } else if (actionPhase === 2 || actionPhase === 'p2') {
+      const data = {
+        orderId: orderCode,
+        customerName: custName,
+        totalFormatted: formatRupiahNumber(order.total || order.total_amount || 0),
+        phone: customerPhone
+      };
+      message = generatePhase2Response(data);
+    } else if (actionPhase === 3 || actionPhase === 'p3') {
+      const data = {
+        orderId: orderCode,
+        customerName: custName,
+        courier: order.courier || 'J&T Express',
+        resiNumber: order.resi || '-',
+        phone: customerPhone
+      };
+      message = generatePhase3Response(data);
+    } else if (actionPhase === 4 || actionPhase === 'p4') {
+      const reviewUrl = `https://mustazbuildtest.vercel.app/testimoni.html?review_order=${orderCode}`;
+      const data = {
+        orderId: orderCode,
+        customerName: custName,
+        phone: customerPhone
+      };
+      message = generatePhase4Response(data, reviewUrl);
+    }
+
+    const waUrl = `https://wa.me/${customerPhone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    return true;
+  }
+  window.openAdminWhatsAppAction = openAdminWhatsAppAction;
+
   function renderOrders() {
     const allOrders = getAdminOrders();
     const tbody = document.getElementById('adminOrdersTbody');
@@ -1247,8 +1323,8 @@ async function initAdminDashboard() {
         ? 'background:rgba(255,230,0,0.06);border-left:4px solid var(--accent-yellow);'
         : (isDelivered ? 'border-left:4px solid #22c55e;' : 'border-left:4px solid transparent;');
 
-      // Dynamic 1-Click CS WhatsApp Actions (Bagian 1)
-      const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
+      // Dynamic 1-Click CS WhatsApp Actions (Target Buyer Phone)
+      const customerPhone = getCustomerWhatsAppNumber(ord);
       const orderCode = cleanOrderId(ord.id);
       const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
 
@@ -1299,7 +1375,7 @@ async function initAdminDashboard() {
           </td>
           <td style="padding:12px 14px;">
             <div style="font-weight:700;color:#FFF;">${safeCustomer}</div>
-            ${ord.phone ? `<div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;margin-top:2px;">📱 ${escapeHtml(ord.phone)}</div>` : ''}
+            ${customerPhone ? `<div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;margin-top:2px;">📱 +${customerPhone}</div>` : ''}
           </td>
           <td style="font-size:0.85rem;color:#AAA;padding:12px 14px;">
             ${safeItems}
@@ -1325,9 +1401,15 @@ async function initAdminDashboard() {
           <td style="text-align:right;white-space:nowrap;padding:12px 14px;">
             <div style="display:inline-flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap;">
               ${dynamicActionsHtml}
-              <a href="https://wa.me/${cleanPhone}?text=Halo%20${encodeURIComponent(custName)}%2C%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20%23${encodeURIComponent(orderCode)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;padding:6px 8px;font-size:0.7rem;" title="Chat WhatsApp">
-                WA 💬
-              </a>
+              ${customerPhone && customerPhone.length >= 10 ? `
+                <a href="https://wa.me/${customerPhone}?text=Halo%20${encodeURIComponent(custName)}%2C%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20%23${encodeURIComponent(orderCode)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;padding:6px 8px;font-size:0.7rem;" title="Chat WhatsApp Pembeli (${customerPhone})">
+                  WA 💬
+                </a>
+              ` : `
+                <a href="javascript:void(0)" onclick="alert('⚠️ Nomor WhatsApp pembeli tidak valid atau tidak tercantum pada pesanan #${safeId}.');" class="btn-brutal-dark btn-brutal-sm" style="color:#777;border-color:#444;padding:6px 8px;font-size:0.7rem;opacity:0.6;cursor:not-allowed;" title="Nomor WA pembeli tidak valid">
+                  WA ❌
+                </a>
+              `}
             </div>
           </td>
         </tr>
@@ -1351,7 +1433,7 @@ async function initAdminDashboard() {
       });
     });
 
-    // Fase 1: Kirim Rekening & Tagihan
+    // Fase 1: Kirim Rekening & Tagihan (Target Buyer WA)
     tbody.querySelectorAll('.btn-action-p1').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1361,30 +1443,19 @@ async function initAdminDashboard() {
         const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
         if (!ord) return;
 
-        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
-        const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
-        const data = {
-          orderId: cleanOrderId(ord.id),
-          customerName: custName,
-          itemsList: ord.items || '-',
-          totalFormatted: formatRupiahNumber(ord.total),
-          phone: cleanPhone
-        };
-        const msg = generatePhase1Response(data, OFFICIAL_PAYMENT_ACCOUNTS);
+        const sent = openAdminWhatsAppAction(ord, 1);
+        if (!sent) return;
 
         ord.status = 'PENDING_PAYMENT';
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
         updateCloudOrderStatus(ord.id, 'PENDING_PAYMENT').catch(() => {});
 
-        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-        window.open(url, '_blank');
-
-        showAdminToast('success', 'FASE 1: TAGIHAN DIKIRIM', `WhatsApp #${ord.id} terbuka. Status diubah ke PENDING_PAYMENT.`);
+        showAdminToast('success', 'FASE 1: TAGIHAN DIKIRIM', `WhatsApp pembeli #${ord.id} terbuka. Status diubah ke PENDING_PAYMENT.`);
         renderOrders();
       });
     });
 
-    // Fase 2: Verifikasi Pembayaran Lunas
+    // Fase 2: Verifikasi Pembayaran Lunas (Target Buyer WA)
     tbody.querySelectorAll('.btn-action-p2').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1394,24 +1465,14 @@ async function initAdminDashboard() {
         const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
         if (!ord) return;
 
-        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
-        const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
-        const data = {
-          orderId: cleanOrderId(ord.id),
-          customerName: custName,
-          totalFormatted: formatRupiahNumber(ord.total),
-          phone: cleanPhone
-        };
-        const msg = generatePhase2Response(data);
+        const sent = openAdminWhatsAppAction(ord, 2);
+        if (!sent) return;
 
         ord.status = 'PAID_PROCESSING';
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
         updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
 
-        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-        window.open(url, '_blank');
-
-        showAdminToast('success', 'FASE 2: PEMBAYARAN LUNAS', `WhatsApp #${ord.id} terbuka. Status diubah ke PAID_PROCESSING.`);
+        showAdminToast('success', 'FASE 2: PEMBAYARAN LUNAS', `WhatsApp pembeli #${ord.id} terbuka. Status diubah ke PAID_PROCESSING.`);
         renderOrders();
       });
     });
@@ -1435,7 +1496,7 @@ async function initAdminDashboard() {
       });
     });
 
-    // Fase 4: Minta Review & Ulasan Pelanggan
+    // Fase 4: Minta Review & Ulasan Pelanggan (Target Buyer WA)
     tbody.querySelectorAll('.btn-action-p4').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1445,24 +1506,14 @@ async function initAdminDashboard() {
         const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
         if (!ord) return;
 
-        const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
-        const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
-        const reviewUrl = `https://mustazbuildtest.vercel.app/testimoni.html?review_order=${cleanOrderId(ord.id)}`;
-        const data = {
-          orderId: cleanOrderId(ord.id),
-          customerName: custName,
-          phone: cleanPhone
-        };
-        const msg = generatePhase4Response(data, reviewUrl);
+        const sent = openAdminWhatsAppAction(ord, 4);
+        if (!sent) return;
 
         ord.status = 'DELIVERED';
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
         updateCloudOrderStatus(ord.id, 'DELIVERED').catch(() => {});
 
-        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-        window.open(url, '_blank');
-
-        showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Status DELIVERED aktif. Link ulasan resmi dikirim ke WhatsApp.`);
+        showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Status DELIVERED aktif. Link ulasan resmi dikirim ke WhatsApp pembeli.`);
         renderOrders();
       });
     });
@@ -1723,20 +1774,9 @@ async function initAdminDashboard() {
     localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
     updateCloudOrderStatus(ord.id, 'SHIPPED', { courier, resiNumber: resiNum }).catch(() => {});
 
-    const cleanPhone = ord.phone ? cleanPhoneNumber(ord.phone) : '62895402806350';
-    const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
-    const data = {
-      orderId: cleanOrderId(ord.id),
-      customerName: custName,
-      courier,
-      resiNumber: resiNum,
-      phone: cleanPhone
-    };
-    const msg = generatePhase3Response(data);
-    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
+    openAdminWhatsAppAction(ord, 3);
 
-    showAdminToast('success', 'FASE 3: RESI DIKIRIM', `Status #${ord.id} diubah ke SHIPPED. WhatsApp terbuka membawa link tracking.`);
+    showAdminToast('success', 'FASE 3: RESI DIKIRIM', `Status #${ord.id} diubah ke SHIPPED. WhatsApp pembeli terbuka membawa link tracking.`);
     closeResiModal();
     renderOrders();
   });

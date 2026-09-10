@@ -339,7 +339,11 @@ export async function createCloudOrder(order) {
   try {
     const orderId = order.id || order.orderId || ('MSTZ-' + Math.floor(1000 + Math.random() * 9000));
     const customer = (order.customer || order.customer_name || order.name || 'RIDER MUSTAZ').trim();
-    const phone = order.phone || '';
+    const rawPhone = order.customer_phone || order.phone || order.customerPhone || '';
+    let cleanPhone = String(rawPhone).replace(/[^0-9]/g, '');
+    if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.slice(1);
+    else if (cleanPhone.startsWith('8')) cleanPhone = '62' + cleanPhone;
+    const phone = cleanPhone || rawPhone;
     let city = order.city || order.address || 'INDONESIA';
     if (order.courier && order.resi) {
       city += ` [${order.courier}: ${order.resi}]`;
@@ -360,7 +364,8 @@ export async function createCloudOrder(order) {
       total_amount: Number(order.total || order.total_amount || 0),
       status: order.status || 'PENDING',
       city: city,
-      phone: phone
+      phone: phone,
+      customer_phone: phone
     }];
 
     await supabaseRest(CONFIG.TABLES.ORDERS, {
@@ -382,6 +387,7 @@ export async function createCloudOrder(order) {
           status: order.status || 'PENDING',
           city,
           phone,
+          customer_phone: phone,
           receiptImage: order.receiptImage || ''
         });
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(list));
@@ -415,6 +421,8 @@ export async function fetchCloudOrders() {
           cleanCity = cleanCity.replace(/\[.*?\]/, '').trim();
         }
 
+        const phone = o.customer_phone || o.phone || '';
+
         return {
           id: o.id,
           customer: o.customer_name || o.customer || 'Pelanggan',
@@ -423,7 +431,8 @@ export async function fetchCloudOrders() {
           date: o.created_at ? new Date(o.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TODAY',
           status: o.status || 'PENDING',
           city: cleanCity,
-          phone: o.phone || '',
+          phone: phone,
+          customer_phone: phone,
           courier,
           resi,
           created_at: o.created_at
