@@ -4,6 +4,7 @@
 
 import { openCart } from './cart.js';
 import { getActiveCurrency, setActiveCurrency } from '../services/cartService.js';
+import { isKnownAdminEmail } from '../services/authService.js';
 
 let _navbarEventsWired = false;
 
@@ -116,12 +117,13 @@ export function initNavbar() {
     } catch {}
 
     const email = (profile.email || '').toLowerCase().trim();
-    const isAdmin = isLoggedIn && (profile.role === 'admin' || email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com');
+    const isAdmin = isLoggedIn && (profile.role === 'admin' || isKnownAdminEmail(email));
     const onAdminPage = window.location.pathname.includes('admin.html') || window.location.pathname.endsWith('/admin');
 
     // Update 'ADMIN' link in navbar: STRICTLY visible only if admin, NEVER for ordinary users
     const adminNavLinks = document.querySelectorAll('.nav-link-admin, a[href="admin.html"], a[href="/admin.html"], a[href="admin"], a[href="/admin"]');
     adminNavLinks.forEach(link => {
+      link.setAttribute('href', '/admin');
       // Don't hide the nav link if we are actively inside admin.html dashboard
       if (onAdminPage) {
         link.style.display = 'inline-block';
@@ -140,7 +142,7 @@ export function initNavbar() {
     const personIcons = header.querySelectorAll('a[aria-label="Admin Dashboard"], a[aria-label="My Account"], a[title="Admin Dashboard"], a[title="My Account"], .nav-btn-icon[href*="admin"], .nav-btn-icon[href*="account"], .nav-btn-icon[href*="login"]');
     personIcons.forEach(icon => {
       if (isAdmin) {
-        icon.setAttribute('href', 'admin.html');
+        icon.setAttribute('href', '/admin');
         icon.setAttribute('title', 'Admin Dashboard (' + (profile.fullName || 'Admin') + ')');
         icon.setAttribute('aria-label', 'Admin Dashboard');
       } else if (isLoggedIn) {
@@ -238,7 +240,7 @@ export function initNavbar() {
             <span style="font-size:0.75rem;color:#888;">STATUS: <strong style="color:${isAdmin ? 'var(--accent-yellow)' : '#4ade80'};">${isAdmin ? 'ADMIN' : 'USER BIASA'}</strong></span>
             <span style="font-size:0.7rem;color:#AAA;">${profile.email || ''}</span>
           </div>
-          <a href="${isAdmin ? 'admin.html' : 'account.html'}" class="mobile-nav-link" style="padding:10px 0;font-size:1.05rem;color:var(--accent-yellow);display:flex;align-items:center;justify-content:space-between;text-decoration:none;border-bottom:1px solid #222;margin-bottom:12px;">
+          <a href="${isAdmin ? '/admin' : 'account.html'}" class="mobile-nav-link" style="padding:10px 0;font-size:1.05rem;color:var(--accent-yellow);display:flex;align-items:center;justify-content:space-between;text-decoration:none;border-bottom:1px solid #222;margin-bottom:12px;">
             <span>${isAdmin ? 'ADMIN DASHBOARD' : 'AKUN SAYA // PROFILE'}</span>
             <span class="material-symbols-outlined">${isAdmin ? 'shield_person' : 'person'}</span>
           </a>

@@ -39,7 +39,7 @@
       <a href="index.html" class="nav-link">HOME</a>
       <a href="parts.html" class="nav-link">PRODUCT</a>
       <a href="kulture.html" class="nav-link">ABOUT</a>
-      <a href="admin.html" class="nav-link nav-link-admin" style="display:none !important;color:var(--accent-yellow);font-weight:900;">ADMIN</a>
+      <a href="/admin" class="nav-link nav-link-admin" style="display:none !important;color:var(--accent-yellow);font-weight:900;">ADMIN</a>
     </nav>
 
     <!-- Nav Controls (Search, Account, Cart, Mobile Menu) -->
@@ -123,7 +123,7 @@
                 </h1>
                 <span id="userRoleBadge" class="zine-tag-pink" style="font-size:0.65rem;padding:2px 8px;">MEMBER</span>
                 <span class="zine-tag-yellow" style="font-size:0.65rem;padding:2px 8px;">VERIFIED CREW</span>
-                <a href="admin.html" id="adminConsoleBtn" class="btn-brutal-yellow btn-brutal-sm" style="display:none;align-items:center;gap:6px;text-decoration:none;padding:6px 14px;font-size:0.8rem;font-weight:900;">
+                <a href="/admin" id=\"adminConsoleBtn\" class=\"btn-brutal-yellow btn-brutal-sm\" style=\"display:none;align-items:center;gap:6px;text-decoration:none;padding:6px 14px;font-size:0.8rem;font-weight:900;\">
                   <span class="material-symbols-outlined" style="font-size:18px;">admin_panel_settings</span>
                   <span>ADMIN WORKSHOP ↗</span>
                 </a>
@@ -536,8 +536,14 @@
       const roleBadge = document.getElementById('userRoleBadge');
       const adminBtn = document.getElementById('adminConsoleBtn');
       const email = (data.email || '').toLowerCase().trim();
-      const isAdmin = data.role === 'admin' || email === 'raihanputrairawan8@gmail.com' || email === 'admin@mustazcraft.com';
-      const navAdminLinks = document.querySelectorAll('.nav-link-admin, a[href="admin.html"], a[href="/admin.html"], a[href="admin"]');
+      const knownAdmins = [
+        'raihanputrairawan8@gmail.com', 'raihanputra8@gmail.com',
+        'raihanputrairawan@gmail.com', 'raihanputrairawan1@gmail.com',
+        'raiihanputrairawan1@gmail.com', 'hannproject11@gmail.com',
+        'hannproject1@gmail.com', 'gugleid3767@gmail.com', 'admin@mustazcraft.com'
+      ];
+      const isAdmin = data.role === 'admin' || knownAdmins.includes(email) || email.includes('admin');
+      const navAdminLinks = document.querySelectorAll('.nav-link-admin, a[href="admin.html"], a[href="/admin.html"], a[href="admin"], a[href="/admin"]');
 
       if (isAdmin) {
         if (roleBadge) {

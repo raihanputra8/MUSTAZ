@@ -186,7 +186,7 @@
 </main>
 
 <script type="module">
-  import { loginWithPassword, loginWithGoogle, initAccountAuth } from './js/services/authService.js';
+  import { loginWithPassword, loginWithGoogle, initAccountAuth, isKnownAdminEmail } from './js/services/authService.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
     // If already logged in, route according to role
@@ -194,8 +194,8 @@
     if (isAuthed) {
       let p = {};
       try { p = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}'); } catch {}
-      const isAdm = p.role === 'admin' || (p.email || '').toLowerCase() === 'raihanputrairawan8@gmail.com';
-      window.location.replace(isAdm ? 'admin.html' : 'account.html');
+      const isAdm = p.role === 'admin' || isKnownAdminEmail(p.email);
+      window.location.replace(isAdm ? '/admin' : 'account.html');
       return;
     }
 
@@ -262,12 +262,12 @@
         if (alertBox) alertBox.style.display = 'none';
 
         await loginWithPassword(email, pass);
-        const { checkUserRole } = await import('./js/services/authService.js');
+        const { checkUserRole, isKnownAdminEmail } = await import('./js/services/authService.js');
         const role = await checkUserRole(email);
-        const isAdm = role === 'admin';
+        const isAdm = role === 'admin' || isKnownAdminEmail(email);
         showAlert('✓ Login Berhasil! Membuka...', true);
         setTimeout(() => {
-          window.location.href = isAdm ? 'admin.html' : 'account.html';
+          window.location.href = isAdm ? '/admin' : 'account.html';
         }, 600);
       } catch (err) {
         btn.textContent = 'ENTER GARAGE →';

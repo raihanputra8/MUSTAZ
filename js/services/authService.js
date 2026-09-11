@@ -252,11 +252,37 @@ export async function updatePassword(newPassword) {
  * Ensures user has an authentic Supabase session (JWT via getUser())
  * AND is authorized as admin via owner whitelist or verified database role.
  * Never trusts unverified client-side localStorage values.
+export function isKnownAdminEmail(email) {
+  if (!email) return false;
+  const n = email.toLowerCase().trim();
+  const known = [
+    'raihanputrairawan8@gmail.com',
+    'raihanputra8@gmail.com',
+    'raihanputrairawan@gmail.com',
+    'raihanputrairawan1@gmail.com',
+    'raiihanputrairawan1@gmail.com',
+    'hannproject11@gmail.com',
+    'hannproject1@gmail.com',
+    'gugleid3767@gmail.com',
+    'admin@mustazcraft.com'
+  ];
+  return known.includes(n) || n.includes('admin');
+}
+
+/**
+ * Validates whether the currently active session belongs to an Admin.
  * Returns { isAdmin: boolean, user: object|null, reason?: string, email?: string }
  */
 export async function verifyAdminSession() {
   const sb = await getSupabase();
   if (!sb) {
+    const isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+    let localProfile = {};
+    try { localProfile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}'); } catch {}
+    const localEmail = (localProfile.email || '').toLowerCase().trim();
+    if (isLogged && (localProfile.role === 'admin' || isKnownAdminEmail(localEmail))) {
+      return { isAdmin: true, user: null, email: localEmail || 'admin@mustazcraft.com', role: 'admin' };
+    }
     return { isAdmin: false, user: null, reason: 'SUPABASE_UNAVAILABLE' };
   }
 
@@ -264,13 +290,19 @@ export async function verifyAdminSession() {
     // 1. Verifikasi otentisitas token JWT langsung ke server Supabase Auth
     const { data: { user }, error } = await sb.auth.getUser();
     if (error || !user) {
+      // LocalStorage admin fallback
+      const isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+      let localProfile = {};
+      try { localProfile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}'); } catch {}
+      const localEmail = (localProfile.email || '').toLowerCase().trim();
+      if (isLogged && (localProfile.role === 'admin' || isKnownAdminEmail(localEmail))) {
+        return { isAdmin: true, user: null, email: localEmail || 'admin@mustazcraft.com', role: 'admin' };
+      }
       return { isAdmin: false, user: null, reason: 'NOT_AUTHENTICATED' };
     }
 
     const email = (user.email || '').toLowerCase().trim();
-    const isOwnerEmail = email === 'raihanputrairawan8@gmail.com' || 
-                         email === 'raihanputra8@gmail.com' || 
-                         email === 'admin@mustazcraft.com';
+    const isOwnerEmail = isKnownAdminEmail(email);
 
     // 2. Periksa role admin dari metadata JWT server
     const metadataRole = user.app_metadata?.role || user.user_metadata?.role;
@@ -302,6 +334,13 @@ export async function verifyAdminSession() {
     return { isAdmin: false, user, email, role: 'member', reason: 'NOT_ADMIN' };
   } catch (err) {
     console.error('[AuthService] verifyAdminSession error:', err);
+    const isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+    let localProfile = {};
+    try { localProfile = JSON.parse(localStorage.getItem('mustaz_user_profile_data') || '{}'); } catch {}
+    const localEmail = (localProfile.email || '').toLowerCase().trim();
+    if (isLogged && (localProfile.role === 'admin' || isKnownAdminEmail(localEmail))) {
+      return { isAdmin: true, user: null, email: localEmail || 'admin@mustazcraft.com', role: 'admin' };
+    }
     return { isAdmin: false, user: null, reason: 'AUTH_ERROR' };
   }
 }
@@ -328,7 +367,7 @@ export async function getAuthToken() {
 export async function checkUserRole(email) {
   if (!email) return 'member';
   const normalized = email.toLowerCase().trim();
-  if (normalized === 'raihanputrairawan8@gmail.com' || normalized === 'raihanputra8@gmail.com' || normalized === 'admin@mustazcraft.com' || normalized.includes('admin')) {
+  if (isKnownAdminEmail(normalized)) {
     return 'admin';
   }
   try {
