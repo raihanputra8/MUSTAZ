@@ -70,19 +70,19 @@ async function initApp() {
     try {
       const { fetchHomeContent } = await import('./services/supabaseService.js');
       const content = await fetchHomeContent();
-      if (content) {
-        if (content.hero_title && heroTitleEl) {
+      if (content && typeof content === 'object') {
+        if (content.hero_title && heroTitleEl && content.hero_title !== 'PET HELM / VISORS') {
           heroTitleEl.textContent = content.hero_title;
         }
-        if (content.hero_subtitle && heroSubtitleEl) {
+        if (content.hero_subtitle && heroSubtitleEl && !content.hero_subtitle.startsWith('High-voltage acid')) {
           heroSubtitleEl.textContent = content.hero_subtitle;
         }
-        if (content.hero_banner_image && heroBannerImgEl) {
+        if (content.hero_banner_image && heroBannerImgEl && !content.hero_banner_image.includes('hero-main.jpg')) {
           heroBannerImgEl.src = content.hero_banner_image;
         }
       }
     } catch (err) {
-      console.warn('[Home Content] Error loading dynamic content, using fallback HTML:', err);
+      // Keep pristine fallback HTML
     }
   }
 

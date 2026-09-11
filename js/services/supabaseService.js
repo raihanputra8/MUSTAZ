@@ -686,16 +686,13 @@ export async function saveStoreSetting(key, value) {
  * 11. Home Content CMS Management (In-Context & Live Editor)
  */
 export async function fetchHomeContent() {
-  const fallback = {
-    hero_title: 'PET HELM / VISORS',
-    hero_subtitle: 'High-voltage acid acrylics, spiked leather visors, and vintage race duckbill peaks.',
-    hero_banner_image: 'assets/images/pet_visor_yellow_flame.webp'
-  };
-
   try {
     const cached = localStorage.getItem('mustaz_home_content');
     if (cached) {
-      Object.assign(fallback, JSON.parse(cached));
+      const parsed = JSON.parse(cached);
+      if (parsed && (parsed.hero_title || parsed.hero_subtitle || parsed.hero_banner_image)) {
+        return parsed;
+      }
     }
   } catch {}
 
@@ -703,19 +700,21 @@ export async function fetchHomeContent() {
     const table = CONFIG.TABLES.HOME_CONTENT || 'home_content';
     const data = await supabaseRest(`${table}?select=*`);
     if (Array.isArray(data) && data.length > 0) {
-      const result = { ...fallback };
+      const result = {};
       data.forEach(row => {
         if (row.section_id && row.content_value !== undefined) {
           result[row.section_id] = row.content_value;
         }
       });
-      localStorage.setItem('mustaz_home_content', JSON.stringify(result));
-      return result;
+      if (Object.keys(result).length > 0) {
+        localStorage.setItem('mustaz_home_content', JSON.stringify(result));
+        return result;
+      }
     }
   } catch (err) {
-    console.warn('[Supabase fetchHomeContent Warning, using cached/fallback]:', err.message);
+    // Graceful silent fallback to keep native HTML intact
   }
-  return fallback;
+  return null;
 }
 
 export async function saveHomeContent(contentMap) {
