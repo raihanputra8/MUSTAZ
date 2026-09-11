@@ -172,34 +172,91 @@
     font-size: 20px !important;
   }
 
-  /* Mobile Slide-Over Drawer (Photo 2 Zine Tape Style) */
+  /* Mobile Slide-Over Drawer (Photo 2 Zine Tape Style - Compact & Pink) */
   .mobile-nav-drawer {
     top: 56px !important;
-    padding: 18px 14px 40px !important;
+    padding: 14px 12px 28px !important;
     overflow-y: auto !important;
     max-height: calc(100vh - 56px) !important;
+    background-image: 
+      radial-gradient(circle at 50% 45%, rgba(217, 0, 108, 0.2) 0%, rgba(8, 8, 8, 0.98) 75%),
+      url('../assets/images/bg_underground_chain_hd.webp') !important;
   }
 
   .mob-zine-menu {
-    gap: 7px !important;
+    gap: 4px !important;
     width: 100% !important;
-    max-width: 360px !important;
+    max-width: 300px !important;
     margin: 0 auto !important;
   }
 
   .mob-tape-link {
-    height: 50px !important;
-    min-height: 50px !important;
-    padding: 0 20px !important;
-    font-size: 1.25rem !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: 1.05rem !important;
+    color: var(--accent-pink) !important;
+  }
+
+  .mob-tape-link.active {
+    background-image: url('../assets/images/torn_tape_pink.svg') !important;
+    color: #FFFFFF !important;
+  }
+
+  .mob-tape-link.active .mob-tape-num {
+    color: #FFFFFF !important;
+  }
+
+  .mob-tape-link.active .mob-tape-icon {
+    border-color: #FFFFFF !important;
+    color: #FFFFFF !important;
   }
 
   .mob-tape-num {
-    font-size: 1.1rem !important;
+    font-size: 0.92rem !important;
+    color: var(--accent-pink) !important;
+  }
+
+  .mob-tape-icon {
+    width: 18px !important;
+    height: 18px !important;
+    border-color: var(--accent-pink) !important;
+    color: var(--accent-pink) !important;
+  }
+
+  .mob-tape-icon .material-symbols-outlined {
+    font-size: 12px !important;
   }
 
   .mob-tape-gap {
-    height: 12px !important;
+    height: 6px !important;
+  }
+
+  .mob-zine-footer {
+    margin-top: 6px !important;
+  }
+
+  .mob-zine-line {
+    margin-bottom: 6px !important;
+  }
+
+  .mob-zine-reach {
+    font-size: 1.45rem !important;
+    margin-bottom: 6px !important;
+  }
+
+  .mob-zine-socials {
+    gap: 14px !important;
+  }
+
+  .mob-social-btn {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .mob-social-btn svg {
+    width: 20px !important;
+    height: 20px !important;
   }
 
   /* --------------------------------------------------------------------------

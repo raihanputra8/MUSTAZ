@@ -276,13 +276,13 @@
   bottom: 0;
   background: #080808;
   background-image: 
-    radial-gradient(circle at 50% 30%, rgba(35, 10, 30, 0.45) 0%, rgba(0, 0, 0, 0.95) 85%),
+    radial-gradient(circle at 50% 45%, rgba(217, 0, 108, 0.22) 0%, rgba(8, 8, 8, 0.98) 78%),
     url('../assets/images/bg_underground_chain_hd.webp');
   background-repeat: repeat;
   background-size: cover;
   background-position: center top;
   border-top: 2px solid var(--accent-pink);
-  padding: 24px 18px 40px;
+  padding: 16px 14px 32px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -300,13 +300,13 @@
   visibility: visible;
 }
 
-/* ── PHOTO 2 TORN PAPER TAPE ZINE MENU ── */
+/* ── PHOTO 2 TORN PAPER TAPE ZINE MENU (COMPACT & PINK REFINED) ── */
 .mob-zine-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   width: 100%;
-  max-width: 380px;
+  max-width: 320px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -317,19 +317,19 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 52px;
-  min-height: 52px;
-  padding: 0 24px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 18px;
   text-decoration: none;
   font-family: 'Permanent Marker', cursive, sans-serif;
-  letter-spacing: 0.05em;
-  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  font-size: 1.1rem;
   background-color: transparent;
   background-image: url('../assets/images/torn_tape_white.svg');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
-  color: #720e67 !important;
+  color: var(--accent-pink) !important;
   border: none;
   box-sizing: border-box;
   transition: transform 0.12s ease, filter 0.12s ease;
@@ -346,9 +346,9 @@
   filter: brightness(0.93);
 }
 
-/* Active Tape Item (HOME 01 in Photo 2) */
+/* Active Tape Item (MUSTAZ Pink Accent) */
 .mob-tape-link.active {
-  background-image: url('../assets/images/torn_tape_purple.svg') !important;
+  background-image: url('../assets/images/torn_tape_pink.svg') !important;
   color: #FFFFFF !important;
 }
 
@@ -371,8 +371,8 @@
 
 .mob-tape-num {
   font-family: 'Permanent Marker', cursive, sans-serif;
-  font-size: 1.15rem;
-  color: #720e67;
+  font-size: 0.95rem;
+  color: var(--accent-pink);
   letter-spacing: 0.02em;
 }
 
@@ -380,51 +380,51 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: 2px solid #720e67;
+  width: 19px;
+  height: 19px;
+  border: 1.5px solid var(--accent-pink);
   border-radius: 2px;
-  color: #720e67;
+  color: var(--accent-pink);
 }
 
 .mob-tape-icon .material-symbols-outlined {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 900;
   line-height: 1;
 }
 
 .mob-tape-gap {
-  height: 14px;
+  height: 8px;
 }
 
 /* Reach Us Section */
 .mob-zine-footer {
-  margin-top: 14px;
-  padding-top: 4px;
+  margin-top: 8px;
+  padding-top: 2px;
   box-sizing: border-box;
 }
 
 .mob-zine-line {
   width: 100%;
-  height: 1.5px;
-  background: rgba(255, 255, 255, 0.4);
-  margin-bottom: 12px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  margin-bottom: 8px;
 }
 
 .mob-zine-reach {
   font-family: 'Caveat', cursive, sans-serif;
-  font-size: 2.1rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #FFFFFF;
   line-height: 1;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   letter-spacing: 0.02em;
 }
 
 .mob-zine-socials {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 18px;
 }
 
 .mob-social-btn {
@@ -434,8 +434,13 @@
   color: #FFFFFF;
   text-decoration: none;
   transition: transform 0.15s ease, opacity 0.15s ease;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
+}
+
+.mob-social-btn svg {
+  width: 22px;
+  height: 22px;
 }
 
 .mob-social-btn:active {
