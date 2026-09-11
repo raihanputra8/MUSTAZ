@@ -7,9 +7,8 @@ import { initNavbar } from './components/navbar.js';
 import { initPartsPage, initHelmetsPage, initChoppersPage, openProductDetail } from './components/products.js';
 import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts, getFlashSaleConfig, getActiveFlashSaleProducts, isFlashSaleActive, formatRupiah } from './services/cartService.js';
 import { getProductImageUrl } from './config.js';
-import { showToast } from './components/toast.js';
 import { showBrutalConfirm, showBrutalAlert, showBrutalFormModal } from './components/modal.js';
-import { initInlineCms } from './inlineCms.js';
+import { initInlineCms, loadPageContent } from './inlineCms.js';
 
 // Expose brutalist dialog engine globally and intercept native alert
 if (typeof window !== 'undefined') {
@@ -493,9 +492,13 @@ async function initApp() {
   });
 }
 
+// Auto-load latest CMS content immediately on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', loadPageContent);
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
+  loadPageContent();
   initApp();
 }
 

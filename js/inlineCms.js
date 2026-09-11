@@ -1,10 +1,11 @@
 /**
  * MUSTAZ CRAFT - Visual In-Page Inline CMS (Hover/Tap to Edit)
  * Allows active logged-in Admins to hover/tap and edit content directly on public pages.
+ * Handles Storage upload to 'site-assets' and UPSERT to Supabase 'home_content'.
  */
 
 import { isKnownAdminEmail, getSupabase } from './services/authService.js';
-import { fetchHomeContent, saveHomeContent, uploadSiteAsset } from './services/supabaseService.js';
+import { CONFIG } from './config.js';
 
 let _activeTargetEl = null;
 let _activeKey = null;
@@ -14,7 +15,7 @@ let _cmsModalInjected = false;
 /**
  * Brutalist Toast Notification for CMS Operations
  */
-function showCmsToast(message, isSuccess = true) {
+export function showCmsToast(message, isSuccess = true) {
   let toastEl = document.getElementById('inlineCmsToast');
   if (!toastEl) {
     toastEl = document.createElement('div');
@@ -57,7 +58,7 @@ function showCmsToast(message, isSuccess = true) {
   setTimeout(() => {
     toastEl.style.transform = 'translateY(-20px)';
     toastEl.style.opacity = '0';
-  }, 3200);
+  }, 3500);
 }
 
 /**
@@ -86,7 +87,6 @@ export async function verifyAdminStatusAsync() {
         const email = session.user.email.toLowerCase().trim();
         if (isKnownAdminEmail(email)) return true;
 
-        // Check RPC if available
         try {
           const { data: rpcAdmin } = await sb.rpc('is_admin');
           if (rpcAdmin === true) return true;
@@ -98,50 +98,148 @@ export async function verifyAdminStatusAsync() {
 }
 
 /**
- * 2. Load and apply stored page content for any visitor
- * Hydrates elements with data-key from Supabase home_content.
+ * 1. PERBAIKAN FUNGSI SIMPAN (UPSERT TO SUPABASE)
+ * Mengunggah gambar ke Storage Bucket 'site-assets' dan menyimpan permanen ke tabel 'home_content'
  */
-export async function loadPageContent() {
+export async function saveCmsContent(key, value) {
   try {
-    const content = await fetchHomeContent();
-    if (!content || typeof content !== 'object') return;
+    const supabase = await getSupabase();
+    if (!supabase) throw new Error("Supabase Client tidak dapat diinisialisasi.");
 
-    const editables = document.querySelectorAll('[data-key]');
-    editables.forEach(el => {
-      const key = el.dataset.key;
-      if (!key || content[key] === undefined || content[key] === null) return;
+    // 1. Upload ke Storage Bucket jika input berupa File Gambar
+    let finalValue = value;
+    if (value instanceof File) {
+      const rawExt = value.name.split('.').pop() || 'png';
+      const cleanExt = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const fileName = `home_${key}_${Date.now()}.${cleanExt}`;
 
-      const val = content[key];
-      if (typeof val !== 'string' || !val.trim()) return;
+      let { data: storageData, error: uploadErr } = await supabase.storage
+        .from('site-assets')
+        .upload(fileName, value, { upsert: true });
 
-      const isImg = el.tagName === 'IMG' || el.getAttribute('data-editable') === 'image' || key.endsWith('_image') || key.endsWith('_img');
+      if (uploadErr) {
+        console.warn('[Storage] Upload ke site-assets gagal, mencoba fallback product-images:', uploadErr.message);
+        const fallbackRes = await supabase.storage
+          .from('product-images')
+          .upload(fileName, value, { upsert: true });
 
-      if (isImg) {
-        if (el.tagName === 'IMG') {
-          if (!val.includes('hero-main.jpg')) {
-            el.src = val;
-          }
-        } else {
-          const innerImg = el.querySelector('img');
-          if (innerImg && !val.includes('hero-main.jpg')) {
-            innerImg.src = val;
-          }
+        if (fallbackRes.error) {
+          throw uploadErr;
         }
-      } else {
-        // Protect brand integrity against placeholder overwrite
-        if (key === 'hero_title' && val === 'PET HELM / VISORS') return;
-        if (key === 'hero_subtitle' && val.startsWith('High-voltage acid')) return;
 
-        // Support HTML markup (e.g. <br>, <span> styling) or plain text
-        if (val.includes('<') && val.includes('>')) {
-          el.innerHTML = val;
+        const { data: fallbackUrlData } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        finalValue = fallbackUrlData.publicUrl;
+      } else {
+        const { data: publicUrlData } = supabase.storage
+          .from('site-assets')
+          .getPublicUrl(fileName);
+
+        finalValue = publicUrlData.publicUrl;
+      }
+    }
+
+    // 2. Simpan URL/Teks Permanen ke Tabel Database Supabase
+    const { error: dbErr } = await supabase
+      .from('home_content')
+      .upsert({ 
+        section_id: key, 
+        content_value: String(finalValue).trim(),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'section_id' });
+
+    if (dbErr) {
+      console.error("[Supabase UPSERT Error]:", dbErr);
+      throw dbErr;
+    }
+
+    // Perbarui cache lokal agar instan sinkron antar halaman
+    try {
+      const cached = JSON.parse(localStorage.getItem('mustaz_home_content') || '{}');
+      cached[key] = finalValue;
+      localStorage.setItem('mustaz_home_content', JSON.stringify(cached));
+    } catch {}
+
+    // 3. Perbarui atribut DOM lokal
+    const elements = document.querySelectorAll(`[data-key="${key}"]`);
+    elements.forEach(el => {
+      if (el.tagName === 'IMG') {
+        el.src = finalValue;
+      } else if (el.querySelector('img')) {
+        const innerImg = el.querySelector('img');
+        if (innerImg) innerImg.src = finalValue;
+      } else {
+        if (typeof finalValue === 'string' && finalValue.includes('<') && finalValue.includes('>')) {
+          el.innerHTML = finalValue;
         } else {
-          el.textContent = val;
+          el.textContent = finalValue;
         }
       }
     });
+
+    showCmsToast("Perubahan Berhasil Disimpan Permanen!", true);
+    return finalValue;
   } catch (err) {
-    console.warn('[Inline CMS] loadPageContent error, using fallback HTML:', err);
+    console.error("Gagal menyimpan ke Supabase:", err);
+    showCmsToast(`Gagal Menyimpan ke Database: ${err.message || 'Error'}`, false);
+    throw err;
+  }
+}
+
+/**
+ * 2. PERBAIKAN FUNGSI BACA DATA SAAT PAGE LOAD (loadPageContent)
+ * Membaca data terbaru dari tabel home_content Supabase sebelum menampilkan konten
+ */
+export async function loadPageContent() {
+  try {
+    const supabase = await getSupabase();
+    if (!supabase) return;
+
+    const { data, error } = await supabase
+      .from('home_content')
+      .select('section_id, content_value');
+
+    if (error || !data) {
+      console.warn("Gagal membaca home_content dari Supabase:", error);
+      return;
+    }
+
+    // Simpan ke cache lokal sebagai cadangan offline
+    try {
+      const cacheObj = {};
+      data.forEach(item => {
+        if (item.section_id && item.content_value) cacheObj[item.section_id] = item.content_value;
+      });
+      localStorage.setItem('mustaz_home_content', JSON.stringify(cacheObj));
+    } catch {}
+
+    // Terapkan ke elemen DOM
+    data.forEach(item => {
+      if (!item.section_id || item.content_value === undefined || item.content_value === null) return;
+      const elements = document.querySelectorAll(`[data-key="${item.section_id}"]`);
+      elements.forEach(el => {
+        if (el.tagName === 'IMG') {
+          if (item.content_value && item.content_value.trim() !== '') {
+            el.src = item.content_value;
+          }
+        } else if (el.querySelector('img')) {
+          const innerImg = el.querySelector('img');
+          if (innerImg && item.content_value && item.content_value.trim() !== '') {
+            innerImg.src = item.content_value;
+          }
+        } else {
+          if (typeof item.content_value === 'string' && item.content_value.includes('<') && item.content_value.includes('>')) {
+            el.innerHTML = item.content_value;
+          } else {
+            el.textContent = item.content_value;
+          }
+        }
+      });
+    });
+  } catch (err) {
+    console.warn("Menggunakan konten fallback statis:", err);
   }
 }
 
@@ -325,68 +423,34 @@ async function handleCmsFormSubmit(e) {
 
   const origBtnHtml = btnSave.innerHTML;
   btnSave.disabled = true;
-  btnSave.innerHTML = `<span class="material-symbols-outlined spin-fast">progress_activity</span> MENYIMPAN PERUBAHAN...`;
+  btnSave.innerHTML = `<span class="material-symbols-outlined spin-fast">progress_activity</span> MENYIMPAN KE SUPABASE...`;
 
   try {
-    let newValue = '';
     const isImage = _activeType === 'image' || _activeKey.endsWith('_image');
+    let valueToSave = '';
 
     if (isImage) {
       const file = fileInput.files && fileInput.files[0];
       if (file) {
-        newValue = await uploadSiteAsset(file);
+        valueToSave = file;
       } else {
         const previewSrc = document.getElementById('inlineCmsImgPreview')?.getAttribute('src');
         if (!previewSrc) throw new Error('Silakan pilih file gambar baru untuk diunggah.');
-        newValue = previewSrc;
+        valueToSave = previewSrc;
       }
     } else {
-      newValue = textInput.value.trim();
-      if (!newValue) throw new Error('Konten teks tidak boleh kosong.');
+      valueToSave = textInput.value.trim();
+      if (!valueToSave) throw new Error('Konten teks tidak boleh kosong.');
     }
 
-    // 1. Persist to Supabase Database (public.home_content)
-    await saveHomeContent({ [_activeKey]: newValue });
-
-    // 2. Real-time in-place DOM update (No page reload)
-    if (isImage) {
-      if (_activeTargetEl.tagName === 'IMG') {
-        _activeTargetEl.src = newValue;
-      } else {
-        const img = _activeTargetEl.querySelector('img');
-        if (img) img.src = newValue;
-      }
-    } else {
-      if (newValue.includes('<') && newValue.includes('>')) {
-        _activeTargetEl.innerHTML = newValue;
-      } else {
-        _activeTargetEl.textContent = newValue;
-      }
-    }
-
-    // Also update any other element on the page sharing the same data-key
-    document.querySelectorAll(`[data-key="${_activeKey}"]`).forEach(el => {
-      if (el === _activeTargetEl) return;
-      if (isImage) {
-        if (el.tagName === 'IMG') el.src = newValue;
-        else el.querySelector('img')?.setAttribute('src', newValue);
-      } else {
-        if (newValue.includes('<') && newValue.includes('>')) {
-          el.innerHTML = newValue;
-        } else {
-          el.textContent = newValue;
-        }
-      }
-    });
+    // Call saveCmsContent
+    await saveCmsContent(_activeKey, valueToSave);
 
     closeCmsModal();
-
-    // Show toast confirmation
-    showCmsToast('Perubahan Berhasil Disimpan', true);
   } catch (err) {
     console.error('[Inline CMS Submit Error]:', err);
     if (errorBox) {
-      errorBox.textContent = `Gagal menyimpan: ${err.message || 'Terjadi kesalahan sistem'}`;
+      errorBox.textContent = `Gagal menyimpan ke Supabase: ${err.message || 'Terjadi kesalahan sistem'}`;
       errorBox.style.display = 'block';
     }
   } finally {
@@ -442,6 +506,15 @@ function attachGlobalClickListener() {
 if (typeof document !== 'undefined') {
   attachGlobalClickListener();
   window.openInlineEditorModal = openInlineEditorModal;
+  window.saveCmsContent = saveCmsContent;
+  window.loadPageContent = loadPageContent;
+  window.showCmsToast = showCmsToast;
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadPageContent);
+  } else {
+    loadPageContent();
+  }
 }
 
 /**
