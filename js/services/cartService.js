@@ -41,7 +41,7 @@ export const CHOPPERS_DATA = HELMETS_DATA;
 export const DEFAULT_PARTS_DATA = [
   {
     id: 'pet-1', type: 'parts', category: 'Acrylic Pet',
-    name: 'Y-TWO ROOF PET', slug: 'y-two-roof-visor', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
+    name: 'Y-TWO ROOF PET', slug: 'y-two-roof-pet', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
     price: 350000, original_price: 450000, badge: 'BESTSELLER', status: 'Active', stock: 12,
     is_flash_sale: true, flash_sale_price: 245000, flash_sale_stock: 3,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
@@ -50,7 +50,7 @@ export const DEFAULT_PARTS_DATA = [
   },
   {
     id: 'pet-2', type: 'parts', category: 'Leather Pet',
-    name: 'STUDDED LID FLAME PET', slug: 'studded-lid-flame-visor', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
+    name: 'STUDDED LID FLAME PET', slug: 'studded-lid-flame-pet', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
     price: 380000, original_price: null, badge: 'HOT DROP', status: 'Active', stock: 8,
     is_flash_sale: true, flash_sale_price: 285000, flash_sale_stock: 5,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',

@@ -70,16 +70,23 @@ export async function fetchCloudProducts() {
   try {
     const data = await supabaseRest(`${CONFIG.TABLES.PRODUCTS}?select=*&order=created_at.desc`);
     if (Array.isArray(data) && data.length > 0) {
+      const cleanVisor = (str) => {
+        if (!str || typeof str !== 'string') return str || '';
+        return str.replace(/\bVISORS\b/gi, 'PET HELM')
+                  .replace(/\bVISOR\b/gi, 'PET')
+                  .replace(/visors/gi, 'pet helm')
+                  .replace(/visor/gi, 'pet');
+      };
       const mapped = data.map(p => ({
         id: p.id,
-        name: p.name,
+        name: cleanVisor(p.name),
         slug: p.slug || generateSlug(p.name),
-        category: p.category,
+        category: cleanVisor(p.category),
         price: Number(p.price) || 0,
         originalPrice: p.original_price ? Number(p.original_price) : null,
         badge: p.badge || '',
         status: p.status || 'Active',
-        sub: p.sub || p.description || '',
+        sub: cleanVisor(p.sub || p.description || ''),
         image: getProductImageUrl(p.image || p.image_url || 'pet_visor_yellow_flame.png'),
         stock: Number(p.stock) || 0
       }));
