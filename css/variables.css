@@ -31,10 +31,10 @@
   --paper-aged: #E5E1D8;
   --ink-black: #000000;
 
-  /* Text Colors */
+  /* Text Colors (WCAG AA Compliant >= 4.5:1 on #080808) */
   --text-primary: #F2F0E8;
-  --text-secondary: #A0A0A0;
-  --text-muted: #666666;
+  --text-secondary: #B0B0B0;
+  --text-muted: #989898;
   --text-inverse: #080808;
 
   /* Borders */

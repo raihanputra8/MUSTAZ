@@ -610,6 +610,7 @@ section + section {
   max-width: 230px;
 }
 
+.footer-white-col h3,
 .footer-white-col h4 {
   font-family: var(--font-headline);
   font-size: 1.4rem;

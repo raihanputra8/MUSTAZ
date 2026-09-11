@@ -33,13 +33,18 @@ export const CONFIG = {
 };
 
 /**
- * Get public Supabase Storage CDN URL for any product asset
+ * Get public Supabase Storage CDN URL for any product asset with WebP Transformation
  */
-export function getProductImageUrl(filename) {
-  if (!filename) return `${CONFIG.STORAGE_URL}/Product1.png`;
-  if (filename.startsWith('http://') || filename.startsWith('https://')) return filename;
+export function getProductImageUrl(filename, width = 600) {
+  if (!filename) return `${CONFIG.STORAGE_URL}/Product1.png?width=${width}&format=webp&quality=80`;
+  if (filename.startsWith('http://') || filename.startsWith('https://')) {
+    if (filename.includes('supabase.co/storage/v1/object/public') && !filename.includes('?')) {
+      return `${filename}?width=${width}&format=webp&quality=80`;
+    }
+    return filename;
+  }
   const clean = filename.replace(/^assets\/images\//, '').replace(/^\//, '');
-  return `${CONFIG.STORAGE_URL}/${clean}`;
+  return `${CONFIG.STORAGE_URL}/${clean}?width=${width}&format=webp&quality=80`;
 }
 
 // Auto-sanitize legacy localStorage data containing old demo/testing phone numbers

@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mustaz Craft - High-voltage acid acrylics, spiked leather visors, and vintage race duckbill peaks. Hand-forged for two-wheeled street culture.">
   <title>Admin Console — MUSTAZ CRAFT Workshop | MUSTAZ CRAFT</title>
   
   <!-- Google Fonts: Editorial Brutalist Grotesk & Headings -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;900&family=Hanken+Grotesk:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
   
   <!-- Master Stylesheet (Variables, Base, Layout, Components, Ecommerce) -->
   <link rel="stylesheet" href="css/main.css">
   
   <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
   <!-- Early Admin Auth Gate (Synchronous: Prevents Unauthorized UI Flash) -->
   <script>
@@ -437,33 +438,33 @@
                     <label class="form-label-brutal">SELECT PRODUCT IMAGE / ASSET *</label>
                     <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;margin-bottom:12px;" id="assetPickerGrid">
                       
-                      <div class="admin-asset-choice selected" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png" onerror="this.onerror=null;this.src='assets/images/Product1.png';" alt="Product 1" loading="lazy">
+                      <div class="admin-asset-choice selected" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png?width=600&format=webp&quality=80">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png?width=600&format=webp&quality=80" onerror="this.onerror=null;this.src='assets/images/Product1.png';" alt="Product 1" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">PRODUCT 1</span>
                       </div>
 
-                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png" onerror="this.onerror=null;this.src='assets/images/Product2.png';" alt="Product 2" loading="lazy">
+                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png?width=600&format=webp&quality=80">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png?width=600&format=webp&quality=80" onerror="this.onerror=null;this.src='assets/images/Product2.png';" alt="Product 2" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">PRODUCT 2</span>
                       </div>
 
-                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png" onerror="this.onerror=null;this.src='assets/images/Product3.png';" alt="Product 3" loading="lazy">
+                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png?width=600&format=webp&quality=80">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png?width=600&format=webp&quality=80" onerror="this.onerror=null;this.src='assets/images/Product3.png';" alt="Product 3" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">PRODUCT 3</span>
                       </div>
 
-                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/pet_visor_yellow_flame.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/pet_visor_yellow_flame.png" onerror="this.onerror=null;this.src='assets/images/pet_visor_yellow_flame.png';" alt="Yellow Flame Pet Helm" loading="lazy">
+                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/pet_visor_yellow_flame.png?width=600&format=webp&quality=80">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/pet_visor_yellow_flame.png?width=600&format=webp&quality=80" onerror="this.onerror=null;this.src='assets/images/pet_visor_yellow_flame.png';" alt="Yellow Flame Pet Helm" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">YELLOW FLAME</span>
                       </div>
 
-                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/retro_checkered_helmet.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/retro_checkered_helmet.png" onerror="this.onerror=null;this.src='assets/images/retro_checkered_helmet.png';" alt="Checker Retro Pet" loading="lazy">
+                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/retro_checkered_helmet.png?width=600&format=webp&quality=80">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/retro_checkered_helmet.png?width=600&format=webp&quality=80" onerror="this.onerror=null;this.src='assets/images/retro_checkered_helmet.png';" alt="Checker Retro Pet" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">CHECKER RETRO</span>
                       </div>
 
-                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png" onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.png';" alt="Booth Event" loading="lazy">
+                      <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png?width=600&format=webp&quality=80">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png?width=600&format=webp&quality=80" onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.png';" alt="Booth Event" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">BUNDLE PACK</span>
                       </div>
 
@@ -953,7 +954,7 @@
                   </div>
                   <div class="hero-preview-text">
                     <div class="hero-preview-badge">MUSTAZ CRAFT // LIVE HERO PREVIEW</div>
-                    <h1 id="previewHeroTitle">PET HELM / VISORS</h1>
+                    <h2 id="previewHeroTitle" style="font-family:var(--font-headline);font-size:1.8rem;margin:0 0 6px;">PET HELM / VISORS</h2>
                     <p id="previewHeroSubtitle">High-voltage acid acrylics, spiked leather visors, and vintage race duckbill peaks.</p>
                   </div>
                 </div>
@@ -1243,7 +1244,7 @@
 
       <!-- Col 2: Support -->
       <div class="footer-white-col">
-        <h4>SUPPORT</h4>
+        <h3>SUPPORT</h3>
         <div class="footer-white-links">
           <a href="faq.html" class="footer-white-link">FAQ</a>
           <a href="shipping.html" class="footer-white-link">KEBIJAKAN PENGIRIMAN</a>
@@ -1254,7 +1255,7 @@
 
       <!-- Col 3: Quick Links & Garage -->
       <div class="footer-white-col">
-        <h4>GARASI</h4>
+        <h3>GARASI</h3>
         <div class="footer-white-links">
           <a href="parts.html" class="footer-white-link">KATALOG PET HELM</a>
           <a href="kulture.html#testimoni" class="footer-white-link">TESTIMONI RIDERS</a>
@@ -1265,7 +1266,7 @@
 
       <!-- Col 4: Payment & Shipping -->
       <div class="footer-white-col">
-        <h4>PAYMENT<br>&amp; SHIPPING</h4>
+        <h3>PAYMENT<br>&amp; SHIPPING</h3>
         <div class="footer-white-payment-box">
           <img src="assets/images/footer_payment_icons.png" alt="Payment &amp; Shipping Partners" class="footer-white-payment-img" loading="lazy">
         </div>
