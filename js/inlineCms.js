@@ -102,6 +102,9 @@ export async function verifyAdminStatusAsync() {
  * Mengunggah gambar ke Storage Bucket 'site-assets' dan menyimpan permanen ke tabel 'home_content'
  */
 export async function saveCmsContent(key, value) {
+  if (!checkIsAdmin() && !document.body.classList.contains('is-admin-mode')) {
+    throw new Error("Akses ditolak: Hanya sesi Admin aktif yang dapat mengubah konten.");
+  }
   try {
     const supabase = await getSupabase();
     if (!supabase) throw new Error("Supabase Client tidak dapat diinisialisasi.");
@@ -357,6 +360,10 @@ export function injectCmsModal() {
  * Open Inline Editor Modal for a clicked element
  */
 export function openInlineEditorModal(target, editType, key) {
+  if (!checkIsAdmin() && !document.body.classList.contains('is-admin-mode')) {
+    console.warn('[Inline CMS] Unauthorized attempt to open inline editor');
+    return;
+  }
   injectCmsModal();
 
   _activeTargetEl = target;

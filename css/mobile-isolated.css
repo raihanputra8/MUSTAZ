@@ -1,10 +1,10 @@
 /* ==========================================================================
    MUSTAZ CRAFT — STRICT MOBILE RESPONSIVE OPTIMIZATIONS
-   ⚠️ ISOLATED STRICTLY TO SMARTPHONE SCREENS (< 768px)
-   DESKTOP (>= 768px) IS 100% LOCKED AND UNTOUCHED.
+   ⚠️ ISOLATED STRICTLY TO SMARTPHONE SCREENS (<= 768px)
+   DESKTOP (> 768px) IS 100% LOCKED AND UNTOUCHED.
    ========================================================================== */
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
 
   /* --------------------------------------------------------------------------
      1. GLOBAL CONTAINER, BODY & MAIN (SHARP BACKGROUND & NO BLUR)
@@ -202,11 +202,13 @@
   }
 
   .mob-tape-link {
-    height: 38px !important;
-    min-height: 38px !important;
+    height: 44px !important;
+    min-height: 44px !important;
     padding: 0 16px !important;
     font-size: 1.05rem !important;
     color: var(--accent-pink) !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .mob-tape-link.active {
@@ -1345,6 +1347,46 @@
   .barcode-decor {
     display: none !important;
   }
+
+  /* --------------------------------------------------------------------------
+     19. MINIMUM TOUCH TARGET AUDIT (>= 44x44px)
+     -------------------------------------------------------------------------- */
+  button,
+  .btn-brutal,
+  .btn-brutal-pink,
+  .btn-brutal-yellow,
+  .btn-brutal-dark,
+  .btn-brutal-sm,
+  .mob-social-btn,
+  .nav-btn-icon,
+  .mobile-menu-toggle,
+  .modal-close,
+  .order-filter-tab,
+  .cart-item-remove {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Compact top bar buttons: ensure thumb hit area is >= 44x44px */
+  .nav-cart-btn,
+  #headerCartBtn {
+    position: relative !important;
+  }
+  .nav-cart-btn::after,
+  #headerCartBtn::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    pointer-events: auto !important;
+  }
 }
+
 
 

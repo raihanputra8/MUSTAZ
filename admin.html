@@ -17,6 +17,38 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- Early Admin Auth Gate (Synchronous: Prevents Unauthorized UI Flash) -->
+  <script>
+    (function() {
+      try {
+        var isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
+        var saved = localStorage.getItem('mustaz_user_profile_data');
+        var profile = saved ? JSON.parse(saved) : null;
+        var adminEmails = [
+          'raihanputrairawan8@gmail.com', 'raihanputra8@gmail.com',
+          'raihanputrairawan@gmail.com', 'raihanputrairawan1@gmail.com',
+          'raiihanputrairawan1@gmail.com', 'hannproject11@gmail.com',
+          'hannproject1@gmail.com', 'gugleid3767@gmail.com', 'admin@mustazcraft.com', 'mustazcraft@gmail.com'
+        ];
+        var isLocalAdmin = isLogged && profile && (profile.role === 'admin' || (profile.email && adminEmails.indexOf(profile.email.toLowerCase().trim()) !== -1));
+        
+        var hasSbSession = false;
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1) {
+            hasSbSession = true;
+            break;
+          }
+        }
+
+        if (!isLocalAdmin && !hasSbSession) {
+          window.location.replace('index.html');
+        }
+      } catch(e) {
+        window.location.replace('index.html');
+      }
+    })();
+  </script>
 </head>
 <body class="preload">
 
@@ -118,26 +150,6 @@
 
 <!-- Admin Root Container (Direct Admin Dashboard) -->
 <div id="adminRootContainer">
-<script>
-  (function() {
-    try {
-      var isLogged = localStorage.getItem('mustaz_auth_logged_in') === 'true';
-      var saved = localStorage.getItem('mustaz_user_profile_data');
-      var adminProfile = {
-        email: 'raihanputrairawan8@gmail.com',
-        fullName: 'MUSTAZ CRAFT ADMIN',
-        role: 'admin',
-        phone: '+62 895-4028-06350',
-        alias: 'OWNER / MASTER CRAFT'
-      };
-      // Set default Admin session if no active session exists or old number detected
-      if (!isLogged || !saved || saved.indexOf('81234567890') !== -1 || saved.indexOf('812-3456-7890') !== -1) {
-        localStorage.setItem('mustaz_auth_logged_in', 'true');
-        localStorage.setItem('mustaz_user_profile_data', JSON.stringify(adminProfile));
-      }
-    } catch(e) {}
-  })();
-</script>
 
 <main style="padding-top:70px;background:#080808;min-height:calc(100vh - 70px);">
   <section style="padding:40px 0 90px;">
@@ -152,7 +164,7 @@
         </p>
         <div style="display:flex;flex-direction:column;gap:12px;">
           <button id="btnPromptLogout" type="button" class="btn-brutal-dark" style="padding:12px;color:#ef4444;border-color:#ef4444;cursor:pointer;">
-            🚪 LOG OUT DARI AKUN INI
+            LOG OUT DARI AKUN INI
           </button>
           <a href="parts.html" style="color:var(--accent-pink);font-size:0.85rem;text-decoration:none;margin-top:6px;display:inline-block;">
             ← KEMBALI BELANJA DI KATALOG
@@ -161,7 +173,7 @@
       </div>
 
       <!-- Main Admin Dashboard Body -->
-      <div id="adminDashboardBody">
+      <div id="adminDashboardBody" style="display:none;">
 
       <!-- Top Admin Greeting & Overview Card -->
       <div class="card-brutal-dark" style="margin-bottom:32px;border:2px solid #282828;border-left:6px solid var(--accent-yellow);padding:24px 28px;background:#101010;box-shadow:6px 6px 0px #000;">
@@ -426,32 +438,32 @@
                     <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;margin-bottom:12px;" id="assetPickerGrid">
                       
                       <div class="admin-asset-choice selected" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png" onerror="this.onerror=null;this.src='assets/images/Product1.png';" alt="Product 1">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product1.png" onerror="this.onerror=null;this.src='assets/images/Product1.png';" alt="Product 1" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">PRODUCT 1</span>
                       </div>
 
                       <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png" onerror="this.onerror=null;this.src='assets/images/Product2.png';" alt="Product 2">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product2.png" onerror="this.onerror=null;this.src='assets/images/Product2.png';" alt="Product 2" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">PRODUCT 2</span>
                       </div>
 
                       <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png" onerror="this.onerror=null;this.src='assets/images/Product3.png';" alt="Product 3">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/Product3.png" onerror="this.onerror=null;this.src='assets/images/Product3.png';" alt="Product 3" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">PRODUCT 3</span>
                       </div>
 
                       <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/pet_visor_yellow_flame.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/pet_visor_yellow_flame.png" onerror="this.onerror=null;this.src='assets/images/pet_visor_yellow_flame.png';" alt="Yellow Flame Pet Helm">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/pet_visor_yellow_flame.png" onerror="this.onerror=null;this.src='assets/images/pet_visor_yellow_flame.png';" alt="Yellow Flame Pet Helm" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">YELLOW FLAME</span>
                       </div>
 
                       <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/retro_checkered_helmet.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/retro_checkered_helmet.png" onerror="this.onerror=null;this.src='assets/images/retro_checkered_helmet.png';" alt="Checker Retro Pet">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/retro_checkered_helmet.png" onerror="this.onerror=null;this.src='assets/images/retro_checkered_helmet.png';" alt="Checker Retro Pet" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">CHECKER RETRO</span>
                       </div>
 
                       <div class="admin-asset-choice" data-asset="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png">
-                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png" onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.png';" alt="Booth Event">
+                        <img src="https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images/mustaz_booth_event.png" onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.png';" alt="Booth Event" loading="lazy">
                         <span style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#FFF;text-align:center;">BUNDLE PACK</span>
                       </div>
 
@@ -502,7 +514,7 @@
 
                       <div style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;">
                         <div class="zine-tag-pink" style="position:absolute;top:8px;left:8px;z-index:10;" id="prevBadge">NEW</div>
-                        <img id="prevImage" src="assets/images/pet_visor_yellow_flame.png" alt="Preview" style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);">
+                        <img id="prevImage" src="assets/images/pet_visor_yellow_flame.png" alt="Preview" style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(110%);" loading="lazy">
                       </div>
 
                       <div>
@@ -1040,7 +1052,7 @@
     <div class="form-group-brutal" style="margin-bottom:16px;">
       <label class="form-label-brutal" style="font-size:0.72rem;">PRATINJAU BUKTI TRANSFER PELANGGAN:</label>
       <div id="receiptImageWrapper" style="width:100%;min-height:180px;max-height:260px;background:#080808;border:2px dashed #444;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;overflow:hidden;position:relative;">
-        <img id="receiptPreviewImg" src="" alt="Bukti Transfer" style="display:none;max-width:100%;max-height:230px;object-fit:contain;border:1px solid #333;">
+        <img id="receiptPreviewImg" src="" alt="Bukti Transfer" style="display:none;max-width:100%;max-height:230px;object-fit:contain;border:1px solid #333;" loading="lazy">
         <div id="receiptPlaceholder" style="text-align:center;color:#777;font-family:var(--font-mono-sub);font-size:0.75rem;">
           <span class="material-symbols-outlined" style="font-size:36px;color:#555;display:block;margin-bottom:6px;">receipt_long</span>
           BELUM ADA LAMPIRAN BUKTI TRANSFER
@@ -1145,7 +1157,7 @@
           
           <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;">
             <div style="width:80px;aspect-ratio:4/5;background:#000;border:2px solid #333;overflow:hidden;flex-shrink:0;">
-              <img id="editProdPreviewImg" src="" alt="Thumbnail" style="width:100%;height:100%;object-fit:cover;">
+              <img id="editProdPreviewImg" src="" alt="Thumbnail" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
             </div>
             <div style="flex:1;">
               <input type="text" id="editProdImage" class="form-input-brutal" style="font-size:0.8rem;margin-bottom:8px;" placeholder="https://... URL Supabase Storage" required>
@@ -1186,7 +1198,7 @@
       CONFIRM PRODUCT DELETION
     </h3>
     <div style="display:flex;gap:16px;background:#181818;border:1px solid #333;padding:12px;margin-bottom:16px;align-items:center;">
-      <img id="deleteModalThumb" src="" alt="" style="width:54px;aspect-ratio:4/5;object-fit:cover;border:1px solid #444;background:#000;">
+      <img id="deleteModalThumb" src="" alt="" style="width:54px;aspect-ratio:4/5;object-fit:cover;border:1px solid #444;background:#000;" loading="lazy">
       <div>
         <div id="deleteModalName" style="font-family:var(--font-headline);font-size:1.1rem;color:#FFF;line-height:1.1;"></div>
         <div id="deleteModalSku" style="font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);margin-top:2px;"></div>
@@ -1222,7 +1234,7 @@
       <!-- Col 1: Brand Info -->
       <div class="footer-white-brand">
         <a href="index.html">
-          <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="footer-white-brand-logo">
+          <img src="assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT Logo" class="footer-white-brand-logo" loading="lazy">
         </a>
         <p class="footer-white-brand-desc">
           KUSTOM PET HELM WORKSHOP. FORGED FOR STREET REBELS WITH NO FACTORY STERILITY.
@@ -1255,7 +1267,7 @@
       <div class="footer-white-col">
         <h4>PAYMENT<br>&amp; SHIPPING</h4>
         <div class="footer-white-payment-box">
-          <img src="assets/images/footer_payment_icons.png" alt="Payment &amp; Shipping Partners" class="footer-white-payment-img">
+          <img src="assets/images/footer_payment_icons.png" alt="Payment &amp; Shipping Partners" class="footer-white-payment-img" loading="lazy">
         </div>
       </div>
     </div>

@@ -219,19 +219,7 @@ async function initAdminDashboard() {
 
       if (!adminCheck.isAdmin) {
         if (dashboardBody) dashboardBody.style.display = 'none';
-        if (nonAdminPrompt) {
-          nonAdminPrompt.style.display = 'block';
-          if (emailDisplay) {
-            emailDisplay.textContent = adminCheck.email ? `${adminCheck.email} (${adminCheck.role || 'Bukan Admin'})` : 'Tamu / Belum Login';
-          }
-        }
-
-        // Prompt Logout Button
-        document.getElementById('btnPromptLogout')?.addEventListener('click', async () => {
-          await logoutUser();
-          window.location.href = 'login.html';
-        });
-
+        window.location.replace('index.html');
         return false;
       }
 
@@ -260,8 +248,9 @@ async function initAdminDashboard() {
 
       return true;
     } catch (err) {
-      console.warn('[Admin] Auth verification warning:', err);
-      return true;
+      console.warn('[Admin] Auth verification error:', err);
+      window.location.replace('index.html');
+      return false;
     }
   }
 
