@@ -172,17 +172,34 @@
     font-size: 20px !important;
   }
 
-  /* Mobile Slide-Over Drawer */
+  /* Mobile Slide-Over Drawer (Photo 2 Zine Tape Style) */
   .mobile-nav-drawer {
     top: 56px !important;
-    padding: 16px 14px !important;
+    padding: 18px 14px 40px !important;
     overflow-y: auto !important;
     max-height: calc(100vh - 56px) !important;
   }
 
-  .mobile-nav-link {
-    font-size: 1.15rem !important;
-    padding: 10px 0 !important;
+  .mob-zine-menu {
+    gap: 7px !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: 0 auto !important;
+  }
+
+  .mob-tape-link {
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 0 20px !important;
+    font-size: 1.25rem !important;
+  }
+
+  .mob-tape-num {
+    font-size: 1.1rem !important;
+  }
+
+  .mob-tape-gap {
+    height: 12px !important;
   }
 
   /* --------------------------------------------------------------------------

@@ -61,49 +61,6 @@ export function initNavbar() {
       }
     }
 
-    // Mobile Drawer Switcher
-    const mobileDrawer = document.getElementById('mobileNavDrawer');
-    if (mobileDrawer) {
-      let mobSlot = mobileDrawer.querySelector('#mobileCurrencySlot');
-      if (!mobSlot) {
-        mobSlot = document.createElement('div');
-        mobSlot.id = 'mobileCurrencySlot';
-        mobSlot.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px dashed #333;border-bottom:1px dashed #333;margin:14px 0;';
-        mobSlot.innerHTML = `
-          <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;font-weight:800;letter-spacing:0.08em;">CURRENCY / MATA UANG:</span>
-          <select id="mobileCurrencySelect" style="
-            background: #161616;
-            color: var(--accent-yellow);
-            border: 2px solid #333;
-            font-family: var(--font-mono-sub);
-            font-size: 0.75rem;
-            font-weight: 800;
-            padding: 5px 10px;
-            cursor: pointer;
-            box-shadow: 2px 2px 0px #000;
-            outline: none;
-          ">
-            <option value="IDR">IDR (Rp)</option>
-            <option value="USD">USD ($)</option>
-          </select>
-        `;
-        const mobLinks = mobileDrawer.querySelector('.mobile-nav-link:last-of-type');
-        if (mobLinks) {
-          mobLinks.after(mobSlot);
-        } else {
-          mobileDrawer.prepend(mobSlot);
-        }
-
-        const mobSelect = mobSlot.querySelector('#mobileCurrencySelect');
-        mobSelect?.addEventListener('change', (e) => {
-          setActiveCurrency(e.target.value);
-        });
-      }
-      const mobSelect = mobSlot.querySelector('#mobileCurrencySelect');
-      if (mobSelect && mobSelect.value !== currentCurrency) {
-        mobSelect.value = currentCurrency;
-      }
-    }
   }
 
   syncCurrencySwitchers();
@@ -206,80 +163,24 @@ export function initNavbar() {
       }
     }
 
-    // Dynamic Auth area in Mobile Navigation Drawer
+    // Clean Mobile Navigation Drawer (Photo 2 Torn Paper Tape Zine Style)
     const mobileDrawer = document.getElementById('mobileNavDrawer');
     if (mobileDrawer) {
-      const mobAdminLinks = mobileDrawer.querySelectorAll('.mobile-admin-link, a[href="admin.html"], a[href="/admin.html"], a[href="admin"]');
-      mobAdminLinks.forEach(link => {
-        if (onAdminPage) {
-          link.style.display = 'flex';
-          return;
-        }
+      // Clean out any legacy injected elements (currency slots, auth areas)
+      mobileDrawer.querySelectorAll('.mobile-auth-area, #mobileCurrencySlot').forEach(el => el.remove());
+
+      const mobAccountLink = mobileDrawer.querySelector('#mobLinkAccount');
+      if (mobAccountLink) {
         if (isAdmin) {
-          link.style.setProperty('display', 'flex', 'important');
-          link.classList.add('is-admin');
+          mobAccountLink.setAttribute('href', '/admin');
+          mobAccountLink.setAttribute('title', 'Admin Dashboard');
+        } else if (isLoggedIn) {
+          mobAccountLink.setAttribute('href', 'account.html');
+          mobAccountLink.setAttribute('title', 'Akun Saya');
         } else {
-          link.style.setProperty('display', 'none', 'important');
-          link.classList.remove('is-admin');
+          mobAccountLink.setAttribute('href', 'login.html');
+          mobAccountLink.setAttribute('title', 'Masuk / Login');
         }
-      });
-
-      // Remove any duplicate static login links in mobileDrawer
-      mobileDrawer.querySelectorAll('a[href*="login.html"], a[href*="login"]').forEach(el => {
-        const parent = el.parentElement;
-        if (parent && !parent.classList.contains('mobile-auth-area')) {
-          parent.remove();
-        }
-      });
-
-      let mobAuthArea = mobileDrawer.querySelector('.mobile-auth-area');
-      if (!mobAuthArea) {
-        mobAuthArea = document.createElement('div');
-        mobAuthArea.className = 'mobile-auth-area';
-        mobAuthArea.style.marginTop = 'auto';
-        mobAuthArea.style.paddingTop = '16px';
-        mobAuthArea.style.borderTop = '1px dashed #333';
-        mobileDrawer.appendChild(mobAuthArea);
-      }
-
-      if (isLoggedIn) {
-        mobAuthArea.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <span style="font-size:0.75rem;color:#888;">STATUS: <strong style="color:${isAdmin ? 'var(--accent-yellow)' : '#4ade80'};">${isAdmin ? 'ADMIN' : 'USER BIASA'}</strong></span>
-            <span style="font-size:0.7rem;color:#AAA;">${profile.email || ''}</span>
-          </div>
-          <a href="${isAdmin ? '/admin' : 'account.html'}" class="mobile-nav-link" style="padding:10px 0;font-size:1.05rem;color:var(--accent-yellow);display:flex;align-items:center;justify-content:space-between;text-decoration:none;border-bottom:1px solid #222;margin-bottom:12px;">
-            <span>${isAdmin ? 'ADMIN DASHBOARD' : 'AKUN SAYA // PROFILE'}</span>
-            <span class="material-symbols-outlined">${isAdmin ? 'shield_person' : 'person'}</span>
-          </a>
-          <button id="mobileNavLogoutBtn" style="width:100%;background:#b91c1c;color:#FFF;border:2px solid #ef4444;font-weight:900;padding:10px;font-family:var(--font-headline);display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">
-            <span class="material-symbols-outlined">logout</span>
-            <span>LOG OUT (GANTI AKUN)</span>
-          </button>
-        `;
-        mobAuthArea.querySelector('#mobileNavLogoutBtn')?.addEventListener('click', async () => {
-          const { showBrutalConfirm } = await import('./modal.js');
-          const confirmed = await showBrutalConfirm({
-            title: 'YAKIN INGIN LOG OUT?',
-            message: 'Anda dapat masuk kembali atau berganti ke akun user biasa.',
-            badge: 'AUTH // SIGN OUT',
-            confirmText: 'YA, LOG OUT',
-            cancelText: 'BATAL',
-            isDanger: true
-          });
-          if (confirmed) {
-            const { logoutUser } = await import('../services/authService.js');
-            await logoutUser();
-            window.location.href = 'login.html';
-          }
-        });
-      } else {
-        mobAuthArea.innerHTML = `
-          <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
-            <span>MEMBER LOGIN →</span>
-            <span class="material-symbols-outlined">login</span>
-          </a>
-        `;
       }
     }
   }
@@ -305,6 +206,26 @@ export function initNavbar() {
       link.classList.remove('active');
     }
   });
+
+  // Highlight active mobile tape link
+  const mobileDrawerEl = document.getElementById('mobileNavDrawer');
+  if (mobileDrawerEl) {
+    mobileDrawerEl.querySelectorAll('.mob-tape-link').forEach(link => {
+      const page = link.dataset.page;
+      let isMatch = false;
+      if (page === 'home' && (currentBase === 'index' || currentBase === '')) isMatch = true;
+      else if (page === 'parts' && currentBase === 'parts') isMatch = true;
+      else if (page === 'custom' && currentBase === 'helmets') isMatch = true;
+      else if (page === 'kulture' && (currentBase === 'kulture' || currentBase === 'about')) isMatch = true;
+      else if (page === 'account' && (currentBase === 'account' || currentBase === 'admin' || currentBase === 'login')) isMatch = true;
+
+      if (isMatch) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
 
   // Attach event listeners only once
   if (_navbarEventsWired) return;
@@ -335,6 +256,29 @@ export function initNavbar() {
         hamburgerIcon.textContent = isOpen ? 'close' : 'menu';
       }
       document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    // Mobile drawer tape link clicks (close drawer smoothly on navigate)
+    mobileDrawer.querySelectorAll('.mob-tape-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        if (link.id === 'mobLinkSearch') {
+          const searchInput = document.querySelector('[data-search], #catalogSearchInput');
+          if (searchInput) {
+            e.preventDefault();
+            mobileDrawer.classList.remove('open');
+            mobileToggle.setAttribute('aria-expanded', 'false');
+            if (hamburgerIcon) hamburgerIcon.textContent = 'menu';
+            document.body.style.overflow = '';
+            searchInput.focus();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        } else {
+          mobileDrawer.classList.remove('open');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          if (hamburgerIcon) hamburgerIcon.textContent = 'menu';
+          document.body.style.overflow = '';
+        }
+      });
     });
   }
 

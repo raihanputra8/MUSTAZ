@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 52" preserveAspectRatio="none">
+  <defs>
+    <filter id="purple-shadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+    <linearGradient id="purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7e136f"/>
+      <stop offset="50%" stop-color="#6b105f"/>
+      <stop offset="100%" stop-color="#550a4b"/>
+    </linearGradient>
+  </defs>
+  <path d="M 12,3 Q 60,1 110,4 T 210,2 T 310,4 L 347,2 L 350,6 L 345,10 L 352,14 L 344,19 L 353,24 L 345,29 L 352,34 L 344,39 L 351,44 L 346,49 L 344,51 Q 290,53 230,50 T 130,52 T 30,50 L 13,51 L 11,46 L 16,42 L 9,37 L 17,32 L 8,26 L 16,21 L 10,16 L 16,11 L 11,6 Z" fill="url(#purple-grad)" filter="url(#purple-shadow)"/>
+</svg>

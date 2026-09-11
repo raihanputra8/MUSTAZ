@@ -275,11 +275,18 @@
   right: 0;
   bottom: 0;
   background: #080808;
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(35, 10, 30, 0.45) 0%, rgba(0, 0, 0, 0.95) 85%),
+    url('../assets/images/bg_underground_chain_hd.webp');
+  background-repeat: repeat;
+  background-size: cover;
+  background-position: center top;
   border-top: 2px solid var(--accent-pink);
-  padding: 32px 24px;
+  padding: 24px 18px 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   z-index: 490;
   transform: translateY(-100%);
   opacity: 0;
@@ -293,22 +300,147 @@
   visibility: visible;
 }
 
-.mobile-nav-link {
-  font-family: var(--font-headline);
-  font-size: 1.8rem;
-  text-transform: uppercase;
-  color: var(--paper-white);
-  padding: 12px 0;
-  border-bottom: 1px dashed var(--border-subtle);
+/* ── PHOTO 2 TORN PAPER TAPE ZINE MENU ── */
+.mob-zine-menu {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.mobile-nav-link.active,
-.mobile-nav-link:hover {
-  color: var(--accent-pink);
-  padding-left: 8px;
+.mob-tape-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 52px;
+  min-height: 52px;
+  padding: 0 24px;
+  text-decoration: none;
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  letter-spacing: 0.05em;
+  font-size: 1.35rem;
+  background-color: transparent;
+  background-image: url('../assets/images/torn_tape_white.svg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #720e67 !important;
+  border: none;
+  box-sizing: border-box;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mob-tape-link:nth-child(even) {
+  background-image: url('../assets/images/torn_tape_white_alt.svg');
+}
+
+.mob-tape-link:active {
+  transform: scale(0.98);
+  filter: brightness(0.93);
+}
+
+/* Active Tape Item (HOME 01 in Photo 2) */
+.mob-tape-link.active {
+  background-image: url('../assets/images/torn_tape_purple.svg') !important;
+  color: #FFFFFF !important;
+}
+
+.mob-tape-link.active .mob-tape-num {
+  color: #FFFFFF !important;
+}
+
+.mob-tape-link.active .mob-tape-icon {
+  border-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+.mob-tape-text {
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  line-height: 1;
+  display: inline-block;
+  transform: translateY(1px);
+  color: inherit;
+}
+
+.mob-tape-num {
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  font-size: 1.15rem;
+  color: #720e67;
+  letter-spacing: 0.02em;
+}
+
+.mob-tape-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #720e67;
+  border-radius: 2px;
+  color: #720e67;
+}
+
+.mob-tape-icon .material-symbols-outlined {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.mob-tape-gap {
+  height: 14px;
+}
+
+/* Reach Us Section */
+.mob-zine-footer {
+  margin-top: 14px;
+  padding-top: 4px;
+  box-sizing: border-box;
+}
+
+.mob-zine-line {
+  width: 100%;
+  height: 1.5px;
+  background: rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+}
+
+.mob-zine-reach {
+  font-family: 'Caveat', cursive, sans-serif;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+
+.mob-zine-socials {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.mob-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.mob-social-btn:active {
+  transform: scale(0.9);
+  opacity: 0.8;
 }
 
 /* ── MARQUEE RUNNER ── */

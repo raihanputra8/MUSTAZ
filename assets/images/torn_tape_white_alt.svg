@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 52" preserveAspectRatio="none">
+  <defs>
+    <filter id="white-shadow-alt" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <linearGradient id="paper-grad-alt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2efe8"/>
+      <stop offset="60%" stop-color="#eae6dd"/>
+      <stop offset="100%" stop-color="#dfd9ce"/>
+    </linearGradient>
+  </defs>
+  <path d="M 11,2 Q 65,5 115,2 T 215,4 T 305,2 L 348,4 L 345,8 L 352,13 L 344,18 L 351,23 L 343,28 L 353,34 L 345,39 L 351,45 L 344,49 Q 290,49 225,52 T 125,49 T 25,52 L 12,50 L 15,46 L 9,41 L 17,36 L 9,30 L 16,24 L 10,19 L 17,14 L 11,8 Z" fill="url(#paper-grad-alt)" filter="url(#white-shadow-alt)"/>
+</svg>
