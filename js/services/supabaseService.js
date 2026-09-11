@@ -682,3 +682,142 @@ export async function saveStoreSetting(key, value) {
   }
 }
 
+/**
+ * 11. Home Content CMS Management (In-Context & Live Editor)
+ */
+export async function fetchHomeContent() {
+  const fallback = {
+    hero_title: 'PET HELM / VISORS',
+    hero_subtitle: 'High-voltage acid acrylics, spiked leather visors, and vintage race duckbill peaks.',
+    hero_banner_image: 'assets/images/pet_visor_yellow_flame.webp'
+  };
+
+  try {
+    const cached = localStorage.getItem('mustaz_home_content');
+    if (cached) {
+      Object.assign(fallback, JSON.parse(cached));
+    }
+  } catch {}
+
+  try {
+    const table = CONFIG.TABLES.HOME_CONTENT || 'home_content';
+    const data = await supabaseRest(`${table}?select=*`);
+    if (Array.isArray(data) && data.length > 0) {
+      const result = { ...fallback };
+      data.forEach(row => {
+        if (row.section_id && row.content_value !== undefined) {
+          result[row.section_id] = row.content_value;
+        }
+      });
+      localStorage.setItem('mustaz_home_content', JSON.stringify(result));
+      return result;
+    }
+  } catch (err) {
+    console.warn('[Supabase fetchHomeContent Warning, using cached/fallback]:', err.message);
+  }
+  return fallback;
+}
+
+export async function saveHomeContent(contentMap) {
+  const table = CONFIG.TABLES.HOME_CONTENT || 'home_content';
+  const entries = Object.entries(contentMap);
+  
+  try {
+    const cached = localStorage.getItem('mustaz_home_content');
+    const curr = cached ? JSON.parse(cached) : {};
+    Object.assign(curr, contentMap);
+    localStorage.setItem('mustaz_home_content', JSON.stringify(curr));
+  } catch {}
+
+  const errors = [];
+  for (const [sectionId, value] of entries) {
+    const payload = {
+      section_id: String(sectionId).trim(),
+      content_value: String(value).trim(),
+      updated_at: new Date().toISOString()
+    };
+
+    try {
+      const updated = await supabaseRest(`${table}?section_id=eq.${encodeURIComponent(sectionId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+      }).catch(() => null);
+
+      if (!updated || updated.length === 0) {
+        await supabaseRest(table, {
+          method: 'POST',
+          body: JSON.stringify([payload])
+        });
+      }
+    } catch (err) {
+      errors.push(`${sectionId}: ${err.message}`);
+    }
+  }
+
+  if (errors.length > 0) {
+    console.warn('[Supabase saveHomeContent Warnings]:', errors);
+  }
+  return true;
+}
+
+export async function uploadSiteAsset(file, onProgress) {
+  return new Promise(async (resolve, reject) => {
+    if (!file) return reject(new Error('Tidak ada file gambar yang dipilih.'));
+
+    const rawExt = file.name.split('.').pop() || 'jpg';
+    const ext = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cleanName = `hero_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+    
+    const primaryBucket = CONFIG.SITE_ASSETS_BUCKET || 'site-assets';
+    const uploadUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/${primaryBucket}/${cleanName}`;
+
+    let authToken = CONFIG.SUPABASE_ANON_KEY;
+    try {
+      const { getAuthToken } = await import('./authService.js');
+      const token = await getAuthToken();
+      if (token) authToken = token;
+    } catch {}
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', uploadUrl);
+    xhr.setRequestHeader('apikey', CONFIG.SUPABASE_ANON_KEY);
+    xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+    xhr.setRequestHeader('Content-Type', file.type || 'image/jpeg');
+
+    if (xhr.upload && typeof onProgress === 'function') {
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          onProgress(percent);
+        }
+      };
+    }
+
+    xhr.onload = async () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const publicUrl = `${CONFIG.SUPABASE_URL}/storage/v1/object/public/${primaryBucket}/${cleanName}`;
+        resolve(publicUrl);
+      } else {
+        try {
+          const fallbackUrl = await uploadAssetWithProgress(file, onProgress);
+          resolve(fallbackUrl);
+        } catch (fbErr) {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('Gagal memproses file gambar.'));
+          reader.readAsDataURL(file);
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Network error saat unggah gambar.'));
+      reader.readAsDataURL(file);
+    };
+
+    xhr.send(file);
+  });
+}
+

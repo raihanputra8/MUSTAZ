@@ -2245,10 +2245,185 @@ async function initAdminDashboard() {
       } finally {
         if (btnSave) {
           btnSave.disabled = false;
-          btnSave.textContent = '💾 SIMPAN PENGATURAN';
+          btnSave.textContent = 'SIMPAN PENGATURAN';
         }
       }
     });
+  }
+
+  // ─── 8. HOME CONTENT IN-CONTEXT EDIT & MOBILE BOTTOM SHEET CMS ─────────────
+  async function initHomeContentManager() {
+    const previewBox = document.getElementById('previewHeroCard');
+    const previewImg = document.getElementById('previewHeroImg');
+    const previewTitle = document.getElementById('previewHeroTitle');
+    const previewSubtitle = document.getElementById('previewHeroSubtitle');
+
+    const btnOpenModal = document.getElementById('btnOpenEditHeroModal');
+    const sheetBackdrop = document.getElementById('heroEditSheetBackdrop');
+    const btnCloseSheet = document.getElementById('btnCloseEditHeroSheet');
+    const form = document.getElementById('heroContentForm');
+    const inputTitle = document.getElementById('inputHeroTitle');
+    const inputSubtitle = document.getElementById('inputHeroSubtitle');
+    const inputImage = document.getElementById('inputHeroImage');
+    const btnPublish = document.getElementById('btnPublishHomeContent');
+    const errorBox = document.getElementById('heroContentError');
+
+    if (!previewTitle || !btnOpenModal) return;
+
+    let currentBannerUrl = previewImg ? previewImg.getAttribute('src') : 'assets/images/pet_visor_yellow_flame.webp';
+    let tempObjectUrl = null;
+
+    // 1. Fetch freshest home content on load
+    try {
+      const { fetchHomeContent } = await import('./services/supabaseService.js');
+      const content = await fetchHomeContent();
+      if (content) {
+        if (content.hero_title && previewTitle) previewTitle.textContent = content.hero_title;
+        if (content.hero_subtitle && previewSubtitle) previewSubtitle.textContent = content.hero_subtitle;
+        if (content.hero_banner_image && previewImg) {
+          previewImg.src = content.hero_banner_image;
+          currentBannerUrl = content.hero_banner_image;
+        }
+      }
+    } catch (err) {
+      console.warn('[Admin] fetchHomeContent error:', err);
+    }
+
+    // 2. Open / Close Bottom Sheet Modal
+    function openSheet() {
+      if (errorBox) errorBox.style.display = 'none';
+      if (inputTitle) inputTitle.value = previewTitle ? previewTitle.textContent.trim() : '';
+      if (inputSubtitle) inputSubtitle.value = previewSubtitle ? previewSubtitle.textContent.trim() : '';
+      if (inputImage) inputImage.value = '';
+
+      if (sheetBackdrop) {
+        sheetBackdrop.style.display = 'flex';
+        requestAnimationFrame(() => {
+          sheetBackdrop.classList.add('open');
+        });
+      }
+    }
+
+    function closeSheet() {
+      if (sheetBackdrop) {
+        sheetBackdrop.classList.remove('open');
+        setTimeout(() => {
+          sheetBackdrop.style.display = 'none';
+        }, 280);
+      }
+    }
+
+    btnOpenModal.addEventListener('click', (e) => {
+      e.preventDefault();
+      openSheet();
+    });
+
+    if (btnCloseSheet) {
+      btnCloseSheet.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeSheet();
+      });
+    }
+
+    if (sheetBackdrop) {
+      sheetBackdrop.addEventListener('click', (e) => {
+        if (e.target === sheetBackdrop) closeSheet();
+      });
+    }
+
+    // 3. Real-time Live Update
+    if (inputTitle) {
+      inputTitle.addEventListener('input', () => {
+        if (previewTitle) {
+          previewTitle.textContent = inputTitle.value.trim() || 'PET HELM / VISORS';
+        }
+      });
+    }
+
+    if (inputSubtitle) {
+      inputSubtitle.addEventListener('input', () => {
+        if (previewSubtitle) {
+          previewSubtitle.textContent = inputSubtitle.value.trim() || 'High-voltage acid acrylics, spiked leather visors...';
+        }
+      });
+    }
+
+    if (inputImage) {
+      inputImage.addEventListener('change', () => {
+        const file = inputImage.files && inputImage.files[0];
+        if (file && previewImg) {
+          if (tempObjectUrl) URL.revokeObjectURL(tempObjectUrl);
+          tempObjectUrl = URL.createObjectURL(file);
+          previewImg.src = tempObjectUrl;
+        }
+      });
+    }
+
+    // 4. Form Submit / Publish to Supabase
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (errorBox) errorBox.style.display = 'none';
+
+        const titleVal = inputTitle ? inputTitle.value.trim() : '';
+        const subtitleVal = inputSubtitle ? inputSubtitle.value.trim() : '';
+
+        if (!titleVal) {
+          if (errorBox) {
+            errorBox.textContent = 'Judul utama hero tidak boleh kosong.';
+            errorBox.style.display = 'block';
+          }
+          return;
+        }
+
+        const originalBtnHtml = btnPublish ? btnPublish.innerHTML : '[ TERBITKAN KE WEBSITE ]';
+        try {
+          if (btnPublish) {
+            btnPublish.disabled = true;
+            btnPublish.innerHTML = `
+              <span class="material-symbols-outlined" style="animation:spin 1s linear infinite;">sync</span>
+              MENERBITKAN KONTEN...
+            `;
+          }
+
+          const { uploadSiteAsset, saveHomeContent } = await import('./services/supabaseService.js');
+
+          let uploadedImageUrl = currentBannerUrl;
+          const file = inputImage && inputImage.files && inputImage.files[0];
+          if (file) {
+            uploadedImageUrl = await uploadSiteAsset(file);
+            currentBannerUrl = uploadedImageUrl;
+            if (previewImg) previewImg.src = uploadedImageUrl;
+          }
+
+          const contentMap = {
+            hero_title: titleVal,
+            hero_subtitle: subtitleVal,
+            hero_banner_image: uploadedImageUrl
+          };
+
+          await saveHomeContent(contentMap);
+
+          if (previewTitle) previewTitle.textContent = titleVal;
+          if (previewSubtitle) previewSubtitle.textContent = subtitleVal;
+
+          closeSheet();
+          showAdminToast('success', 'BERHASIL', 'Konten Berhasil Diterbitkan');
+        } catch (err) {
+          console.error('[Admin] Gagal menerbitkan home content:', err);
+          if (errorBox) {
+            errorBox.textContent = 'Gagal menerbitkan: ' + err.message;
+            errorBox.style.display = 'block';
+          }
+          showAdminToast('error', 'GAGAL MENERBITKAN', err.message);
+        } finally {
+          if (btnPublish) {
+            btnPublish.disabled = false;
+            btnPublish.innerHTML = originalBtnHtml;
+          }
+        }
+      });
+    }
   }
 
   // Expose methods globally for external triggers & debugging
@@ -2257,6 +2432,7 @@ async function initAdminDashboard() {
   window.loadAdminOrders = loadAdminOrders;
   window.fetchAdminOrders = () => syncAndRenderOrders(true);
   window.initStoreSettingsManager = initStoreSettingsManager;
+  window.initHomeContentManager = initHomeContentManager;
 
   // Safe bootstrap execution pipeline
   try {
@@ -2277,6 +2453,9 @@ async function initAdminDashboard() {
 
     // 5. Inisialisasi Pengaturan Toko (Dynamic Store Settings)
     try { initStoreSettingsManager(); } catch (e) { console.warn('[Admin] Store settings init error:', e); }
+
+    // 6. Inisialisasi Kelola Konten Home (In-Context Edit & CMS)
+    try { initHomeContentManager(); } catch (e) { console.warn('[Admin] Home content CMS init error:', e); }
 
     // 5. Inisialisasi Supabase Realtime Subscription
     try {

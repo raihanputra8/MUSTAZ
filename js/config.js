@@ -19,6 +19,7 @@ export const CONFIG = {
 
   STORAGE_BUCKET: "product-images",
   STORAGE_URL: "https://hskggocaakmidbysrpnd.supabase.co/storage/v1/object/public/product-images",
+  SITE_ASSETS_BUCKET: "site-assets",
 
   TABLES: {
     PRODUCTS: "products",
@@ -27,6 +28,7 @@ export const CONFIG = {
     CATEGORIES: "categories",
     REVIEWS: "reviews",
     STORE_SETTINGS: "store_settings",
+    HOME_CONTENT: "home_content",
   },
 };
 

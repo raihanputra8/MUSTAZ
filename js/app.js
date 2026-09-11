@@ -59,6 +59,35 @@ async function initApp() {
   initPartsPage();
   initHelmetsPage();
 
+  // 3b. Load Dynamic Home Content (Hero Section In-Context CMS)
+  async function loadDynamicHomeContent() {
+    const heroTitleEl = document.getElementById('heroTitle');
+    const heroSubtitleEl = document.getElementById('heroSubtitle');
+    const heroBannerImgEl = document.getElementById('heroBannerImg');
+
+    if (!heroTitleEl && !heroSubtitleEl && !heroBannerImgEl) return;
+
+    try {
+      const { fetchHomeContent } = await import('./services/supabaseService.js');
+      const content = await fetchHomeContent();
+      if (content) {
+        if (content.hero_title && heroTitleEl) {
+          heroTitleEl.textContent = content.hero_title;
+        }
+        if (content.hero_subtitle && heroSubtitleEl) {
+          heroSubtitleEl.textContent = content.hero_subtitle;
+        }
+        if (content.hero_banner_image && heroBannerImgEl) {
+          heroBannerImgEl.src = content.hero_banner_image;
+        }
+      }
+    } catch (err) {
+      console.warn('[Home Content] Error loading dynamic content, using fallback HTML:', err);
+    }
+  }
+
+  loadDynamicHomeContent();
+
   // 4. Wire Global "data-add-to-cart" buttons (e.g. on Home page or featured sections)
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
     btn.addEventListener('click', () => {

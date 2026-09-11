@@ -48,10 +48,6 @@
       <button class="nav-btn-icon" id="headerSearchBtn" aria-label="Search Pet Helm" title="Search Pet Helm">
         <span class="material-symbols-outlined">search</span>
       </button>
-      
-      <a href="account.html" class="nav-btn-icon" aria-label="My Account" title="My Account">
-        <span class="material-symbols-outlined">person</span>
-      </a>
 
       <button class="nav-cart-btn" id="headerCartBtn" data-open-cart aria-label="Open Cart" title="Lihat Keranjang">
         <svg class="cart-bag-svg" viewBox="0 0 100 100" fill="none" width="22" height="22" aria-hidden="true">
@@ -245,7 +241,11 @@
             </button>
             <button class="account-nav-item" data-tab="settings">
               <span class="material-symbols-outlined" style="color:var(--accent-yellow);">settings</span>
-              <span>⚙️ PENGATURAN TOKO</span>
+              <span>PENGATURAN TOKO</span>
+            </button>
+            <button class="account-nav-item" data-tab="home-content">
+              <span class="material-symbols-outlined" style="color:var(--accent-pink);">dashboard_customize</span>
+              <span>KELOLA KONTEN HOME</span>
             </button>
             <hr style="border:none;border-top:1px dashed #2a2a2a;margin:10px 0;">
             <a href="parts.html" target="_blank" class="account-nav-item" style="color:var(--accent-yellow);">
@@ -839,6 +839,39 @@
             </div>
           </div><!-- /#panel-settings -->
 
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- PANEL 7: KELOLA KONTEN HOME (IN-CONTEXT EDIT & LIVE PREVIEW) -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <div class="account-tab-panel" id="panel-home-content">
+            <div style="background:#111;border:2px solid var(--accent-pink);padding:24px;box-shadow:6px 6px 0px #000;margin-bottom:24px;">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                <span class="material-symbols-outlined" style="color:var(--accent-pink);font-size:2rem;">dashboard_customize</span>
+                <h2 class="editorial-title" style="font-size:1.85rem;margin:0;color:#FFF;">KELOLA KONTEN HOME // CMS</h2>
+              </div>
+              <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#888;margin:0 0 24px;">
+                Pratinjau visual live dan kelola teks serta banner Hero Section secara instan dengan teknik In-Context Edit.
+              </p>
+
+              <div class="section-edit-wrapper">
+                <div id="previewHeroCard" class="hero-preview-box">
+                  <div class="hero-preview-media">
+                    <img id="previewHeroImg" src="assets/images/pet_visor_yellow_flame.webp" alt="Hero Banner" onerror="this.onerror=null;this.src='assets/banner/hero-main.jpg';" />
+                  </div>
+                  <div class="hero-preview-text">
+                    <div class="hero-preview-badge">MUSTAZ CRAFT // LIVE HERO PREVIEW</div>
+                    <h1 id="previewHeroTitle">PET HELM / VISORS</h1>
+                    <p id="previewHeroSubtitle">High-voltage acid acrylics, spiked leather visors, and vintage race duckbill peaks.</p>
+                  </div>
+                </div>
+
+                <button id="btnOpenEditHeroModal" class="btn-brutal-action full-width margin-top-md" type="button" style="width:100%;">
+                  <span class="material-symbols-outlined">edit_note</span>
+                  EDIT KONTEN HERO BANNER
+                </button>
+              </div>
+            </div>
+          </div><!-- /#panel-home-content -->
+
         </div>
 
       </div>
@@ -1157,6 +1190,50 @@
     </div>
   </div>
 </footer>
+
+<!-- MOBILE BOTTOM SHEET DRAWER (HOME CONTENT EDITOR) -->
+<div class="bottom-sheet-backdrop" id="heroEditSheetBackdrop" style="display:none;">
+  <div class="bottom-sheet-drawer" id="heroEditSheet" role="dialog" aria-labelledby="heroSheetTitle">
+    <div class="bottom-sheet-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="zine-tag-yellow">CMS EDITOR</span>
+        <h3 id="heroSheetTitle" class="bottom-sheet-title">UBAH KONTEN HERO BANNER</h3>
+      </div>
+      <button class="bottom-sheet-close-btn" id="btnCloseEditHeroSheet" aria-label="Tutup" type="button">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    
+    <div class="bottom-sheet-body">
+      <form id="heroContentForm" novalidate>
+        <div class="form-group-brutal" style="margin-bottom:18px;">
+          <label class="form-label-brutal" for="inputHeroTitle">JUDUL UTAMA HERO</label>
+          <input type="text" id="inputHeroTitle" class="form-input-brutal" placeholder="Masukkan judul utama (contoh: PET HELM / VISORS)" required />
+        </div>
+
+        <div class="form-group-brutal" style="margin-bottom:18px;">
+          <label class="form-label-brutal" for="inputHeroSubtitle">SUB-JUDUL / DESKRIPSI</label>
+          <textarea id="inputHeroSubtitle" class="form-input-brutal" rows="4" placeholder="Masukkan deskripsi hero..." required style="resize:vertical;"></textarea>
+        </div>
+
+        <div class="form-group-brutal" style="margin-bottom:24px;">
+          <label class="form-label-brutal" for="inputHeroImage">UNGGAH FOTO BANNER BARU</label>
+          <input type="file" id="inputHeroImage" class="form-input-brutal" accept="image/*" style="padding:10px;" />
+          <p style="font-size:0.75rem;color:#888;margin-top:6px;font-family:var(--font-mono-sub);">
+            Format gambar: JPG, PNG, WEBP.
+          </p>
+        </div>
+
+        <div id="heroContentError" style="display:none;color:var(--accent-pink);font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:10px;background:rgba(217,0,108,0.1);border:1px solid var(--accent-pink);"></div>
+
+        <button type="submit" id="btnPublishHomeContent" class="btn-brutal-pink full-width" style="width:100%;padding:16px;font-size:1.05rem;font-weight:900;letter-spacing:0.06em;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:4px 4px 0px #000;cursor:pointer;">
+          <span class="material-symbols-outlined">publish</span>
+          [ TERBITKAN KE WEBSITE ]
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script type="module" src="js/app.js"></script>
 </body>
