@@ -3,3 +3,4 @@
 /admin                    /admin.html                        200
 /choppers.html  /helmets.html  301
 /choppers       /helmets.html  301
+/about          /about.html    200

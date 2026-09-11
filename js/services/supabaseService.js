@@ -687,16 +687,6 @@ export async function saveStoreSetting(key, value) {
  */
 export async function fetchHomeContent() {
   try {
-    const cached = localStorage.getItem('mustaz_home_content');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (parsed && (parsed.hero_title || parsed.hero_subtitle || parsed.hero_banner_image)) {
-        return parsed;
-      }
-    }
-  } catch {}
-
-  try {
     const table = CONFIG.TABLES.HOME_CONTENT || 'home_content';
     const data = await supabaseRest(`${table}?select=*`);
     if (Array.isArray(data) && data.length > 0) {
@@ -707,13 +697,27 @@ export async function fetchHomeContent() {
         }
       });
       if (Object.keys(result).length > 0) {
-        localStorage.setItem('mustaz_home_content', JSON.stringify(result));
+        try {
+          localStorage.setItem('mustaz_home_content', JSON.stringify(result));
+        } catch {}
         return result;
       }
     }
   } catch (err) {
-    // Graceful silent fallback to keep native HTML intact
+    console.warn('[Supabase fetchHomeContent] Network error, checking fallback cache:', err.message);
   }
+
+  // Graceful fallback to cached home content if offline or network error
+  try {
+    const cached = localStorage.getItem('mustaz_home_content');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed && typeof parsed === 'object') {
+        return parsed;
+      }
+    }
+  } catch {}
+
   return null;
 }
 
@@ -737,17 +741,27 @@ export async function saveHomeContent(contentMap) {
     };
 
     try {
-      const updated = await supabaseRest(`${table}?section_id=eq.${encodeURIComponent(sectionId)}`, {
-        method: 'PATCH',
-        body: JSON.stringify(payload)
-      }).catch(() => null);
+      // 1. Try Upsert via on_conflict resolution
+      await supabaseRest(`${table}?on_conflict=section_id`, {
+        method: 'POST',
+        headers: {
+          'Prefer': 'resolution=merge-duplicates,return=representation'
+        },
+        body: JSON.stringify([payload])
+      }).catch(async () => {
+        // 2. Fallback to PATCH if exists, else POST
+        const updated = await supabaseRest(`${table}?section_id=eq.${encodeURIComponent(sectionId)}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        }).catch(() => null);
 
-      if (!updated || updated.length === 0) {
-        await supabaseRest(table, {
-          method: 'POST',
-          body: JSON.stringify([payload])
-        });
-      }
+        if (!updated || updated.length === 0) {
+          await supabaseRest(table, {
+            method: 'POST',
+            body: JSON.stringify([payload])
+          });
+        }
+      });
     } catch (err) {
       errors.push(`${sectionId}: ${err.message}`);
     }

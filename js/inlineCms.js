@@ -3,7 +3,7 @@
  * Allows active logged-in Admins to hover/tap and edit content directly on public pages.
  */
 
-import { isKnownAdminEmail } from './services/authService.js';
+import { isKnownAdminEmail, getSupabase } from './services/authService.js';
 import { fetchHomeContent, saveHomeContent, uploadSiteAsset } from './services/supabaseService.js';
 
 let _activeTargetEl = null;
@@ -12,7 +12,7 @@ let _activeType = null;
 let _cmsModalInjected = false;
 
 /**
- * Toast Notification for CMS Operations
+ * Brutalist Toast Notification for CMS Operations
  */
 function showCmsToast(message, isSuccess = true) {
   let toastEl = document.getElementById('inlineCmsToast');
@@ -61,7 +61,7 @@ function showCmsToast(message, isSuccess = true) {
 }
 
 /**
- * 1. Check if the current user is an authenticated Admin
+ * 1. Synchronous Fast-Check: Is current user an authenticated Admin?
  */
 export function checkIsAdmin() {
   const isLoggedIn = localStorage.getItem('mustaz_auth_logged_in') === 'true';
@@ -75,8 +75,31 @@ export function checkIsAdmin() {
 }
 
 /**
+ * Async Verification: Checks Supabase Session / RPC / JWT for Admin status
+ */
+export async function verifyAdminStatusAsync() {
+  try {
+    const sb = await getSupabase();
+    if (sb) {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session?.user?.email) {
+        const email = session.user.email.toLowerCase().trim();
+        if (isKnownAdminEmail(email)) return true;
+
+        // Check RPC if available
+        try {
+          const { data: rpcAdmin } = await sb.rpc('is_admin');
+          if (rpcAdmin === true) return true;
+        } catch {}
+      }
+    }
+  } catch {}
+  return checkIsAdmin();
+}
+
+/**
  * 2. Load and apply stored page content for any visitor
- * Only updates elements if actual custom data exists in Supabase.
+ * Hydrates elements with data-key from Supabase home_content.
  */
 export async function loadPageContent() {
   try {
@@ -91,11 +114,21 @@ export async function loadPageContent() {
       const val = content[key];
       if (typeof val !== 'string' || !val.trim()) return;
 
-      if (el.tagName === 'IMG') {
-        if (!val.includes('hero-main.jpg')) {
-          el.src = val;
+      const isImg = el.tagName === 'IMG' || el.getAttribute('data-editable') === 'image' || key.endsWith('_image') || key.endsWith('_img');
+
+      if (isImg) {
+        if (el.tagName === 'IMG') {
+          if (!val.includes('hero-main.jpg')) {
+            el.src = val;
+          }
+        } else {
+          const innerImg = el.querySelector('img');
+          if (innerImg && !val.includes('hero-main.jpg')) {
+            innerImg.src = val;
+          }
         }
       } else {
+        // Protect brand integrity against placeholder overwrite
         if (key === 'hero_title' && val === 'PET HELM / VISORS') return;
         if (key === 'hero_subtitle' && val.startsWith('High-voltage acid')) return;
 
@@ -139,7 +172,7 @@ export function injectCmsModal() {
               <label class="form-label-brutal" for="inlineCmsTextInput">ISI TEKS / HTML</label>
               <textarea id="inlineCmsTextInput" class="form-input-brutal" rows="6" style="resize:vertical;font-family:inherit;line-height:1.5;"></textarea>
               <p style="font-size:0.75rem;color:#888;margin-top:6px;font-family:var(--font-mono-sub);">
-                Dapat menggunakan tag HTML seperti &lt;br&gt; atau &lt;span style="..."&gt; untuk styling ganda.
+                Dapat menggunakan tag HTML seperti &lt;br&gt; atau &lt;span style="..."&gt; untuk penyesuaian gaya.
               </p>
             </div>
 
@@ -153,7 +186,7 @@ export function injectCmsModal() {
               <label class="form-label-brutal" for="inlineCmsFileInput">UNGGAH FOTO BARU</label>
               <input type="file" id="inlineCmsFileInput" class="form-input-brutal" accept="image/*" style="padding:10px;" />
               <p style="font-size:0.75rem;color:#888;margin-top:6px;font-family:var(--font-mono-sub);">
-                Format file didukung: JPG, PNG, WEBP.
+                Format file didukung: JPG, PNG, WEBP. Otomatis diunggah ke Storage Bucket 'site-assets'.
               </p>
             </div>
 
@@ -242,7 +275,6 @@ export function openInlineEditorModal(target, editType, key) {
     textWrapper.style.display = 'block';
 
     if (textInput) {
-      // If innerHTML contains tags, load innerHTML to preserve formatting; otherwise text
       textInput.value = target.innerHTML.includes('<')
         ? target.innerHTML.trim()
         : target.textContent.trim();
@@ -297,8 +329,9 @@ async function handleCmsFormSubmit(e) {
 
   try {
     let newValue = '';
+    const isImage = _activeType === 'image' || _activeKey.endsWith('_image');
 
-    if (_activeType === 'image') {
+    if (isImage) {
       const file = fileInput.files && fileInput.files[0];
       if (file) {
         newValue = await uploadSiteAsset(file);
@@ -316,7 +349,7 @@ async function handleCmsFormSubmit(e) {
     await saveHomeContent({ [_activeKey]: newValue });
 
     // 2. Real-time in-place DOM update (No page reload)
-    if (_activeType === 'image') {
+    if (isImage) {
       if (_activeTargetEl.tagName === 'IMG') {
         _activeTargetEl.src = newValue;
       } else {
@@ -334,7 +367,7 @@ async function handleCmsFormSubmit(e) {
     // Also update any other element on the page sharing the same data-key
     document.querySelectorAll(`[data-key="${_activeKey}"]`).forEach(el => {
       if (el === _activeTargetEl) return;
-      if (_activeType === 'image') {
+      if (isImage) {
         if (el.tagName === 'IMG') el.src = newValue;
         else el.querySelector('img')?.setAttribute('src', newValue);
       } else {
@@ -380,7 +413,7 @@ function injectAdminPill() {
 }
 
 /**
- * Global Click Event Delegation
+ * Global Click & Tap Event Delegation
  */
 function attachGlobalClickListener() {
   const clickHandler = (e) => {
@@ -397,7 +430,7 @@ function attachGlobalClickListener() {
       const editType = target.getAttribute('data-editable') || 'text';
       const key = target.getAttribute('data-key');
 
-      // Buka Modal/Drawer Editor untuk key yang diklik
+      // Open Modal Editor for clicked element
       openInlineEditorModal(target, editType, key);
     }
   };
@@ -418,14 +451,36 @@ export function initInlineCms() {
   // Load dynamic content for all visitors
   loadPageContent();
 
-  const isAdmin = checkIsAdmin();
-  if (isAdmin) {
-    document.body.classList.add('is-admin-mode');
-    injectAdminPill();
-    injectCmsModal();
-  } else {
-    document.body.classList.remove('is-admin-mode');
-  }
+  const syncAdminUI = (isAdmin) => {
+    if (isAdmin) {
+      document.body.classList.add('is-admin-mode');
+      injectAdminPill();
+      injectCmsModal();
+    } else {
+      document.body.classList.remove('is-admin-mode');
+      document.getElementById('adminCmsFloatingPill')?.remove();
+    }
+  };
+
+  // Immediate synchronous check from stored state
+  syncAdminUI(checkIsAdmin());
+
+  // Background async verification with Supabase
+  verifyAdminStatusAsync().then(isAdmin => {
+    syncAdminUI(isAdmin);
+  }).catch(() => {});
+
+  // Listen for auth changes
+  window.addEventListener('mustaz:auth_synced', (e) => {
+    const profile = e.detail || {};
+    const email = (profile.email || '').toLowerCase().trim();
+    const isAdmin = profile.role === 'admin' || isKnownAdminEmail(email);
+    syncAdminUI(isAdmin);
+  });
+
+  window.addEventListener('mustaz:logout', () => {
+    syncAdminUI(false);
+  });
 }
 
 export const initInlineCMS = initInlineCms;
