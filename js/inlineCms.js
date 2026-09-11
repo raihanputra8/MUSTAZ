@@ -483,20 +483,60 @@ async function handleCmsFormSubmit(e) {
 }
 
 /**
- * Floating Admin Status Pill
+ * Compact Floating Admin Status Badge
  */
 function injectAdminPill() {
-  if (document.getElementById('adminCmsFloatingPill')) return;
+  if (document.getElementById('adminCmsBadge') || document.getElementById('adminCmsFloatingPill')) return;
 
-  const pill = document.createElement('div');
-  pill.id = 'adminCmsFloatingPill';
-  pill.className = 'admin-cms-floating-pill';
-  pill.innerHTML = `
-    <span class="pulse-dot"></span>
-    <span>ADMIN CMS ACTIVE // TAP TO EDIT</span>
-    <a href="admin.html" style="color:var(--accent-pink);margin-left:6px;text-decoration:underline;">DASHBOARD ↗</a>
+  const badge = document.createElement('div');
+  badge.id = 'adminCmsBadge';
+  badge.className = 'admin-cms-badge';
+  badge.setAttribute('role', 'status');
+  badge.setAttribute('aria-label', 'Admin CMS Mode');
+
+  // Check saved collapse state in sessionStorage
+  try {
+    if (sessionStorage.getItem('cms_bar_hidden') === 'true') {
+      badge.classList.add('is-hidden');
+    }
+  } catch (e) {}
+
+  badge.innerHTML = `
+    <span class="pulse-dot" title="CMS Live"></span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ff007a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+    <span style="font-weight:800;letter-spacing:0.04em;">CMS EDIT</span>
+    <a href="admin.html" title="Dashboard Admin" style="color:#ff007a;text-decoration:none;font-size:10px;font-weight:800;padding-left:2px;display:flex;align-items:center;">↗</a>
+    <button id="btnToggleCmsBadge" type="button" aria-label="Sembunyikan Badge" title="Sembunyikan Indikator" style="background:none;border:none;color:#777;cursor:pointer;padding:0 0 0 4px;font-size:11px;font-weight:700;line-height:1;display:flex;align-items:center;transition:color 0.2s;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#777'">✕</button>
   `;
-  document.body.appendChild(pill);
+
+  // Toggle Collapse on Close Button
+  const btnToggle = badge.querySelector('#btnToggleCmsBadge');
+  if (btnToggle) {
+    btnToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      badge.classList.toggle('is-hidden');
+      try {
+        const isHidden = badge.classList.contains('is-hidden');
+        sessionStorage.setItem('cms_bar_hidden', isHidden ? 'true' : 'false');
+      } catch (err) {}
+    });
+  }
+
+  // Restore on tap/click if currently collapsed
+  badge.addEventListener('click', (e) => {
+    if (badge.classList.contains('is-hidden') && !e.target.closest('#btnToggleCmsBadge')) {
+      badge.classList.remove('is-hidden');
+      try {
+        sessionStorage.setItem('cms_bar_hidden', 'false');
+      } catch (err) {}
+    }
+  });
+
+  document.body.appendChild(badge);
 }
 
 /**
@@ -506,8 +546,8 @@ function attachGlobalClickListener() {
   const clickHandler = (e) => {
     if (!document.body.classList.contains('is-admin-mode')) return;
 
-    // Don't intercept clicks inside the editor modal or the floating pill
-    if (e.target.closest('#inlineCmsModal') || e.target.closest('#adminCmsFloatingPill')) return;
+    // Don't intercept clicks inside the editor modal or the floating pill/badge
+    if (e.target.closest('#inlineCmsModal') || e.target.closest('#adminCmsBadge') || e.target.closest('#adminCmsFloatingPill') || e.target.closest('.admin-cms-badge')) return;
 
     const target = e.target.closest('[data-editable]');
     if (target) {
@@ -555,6 +595,7 @@ export function initInlineCms() {
     } else {
       document.body.classList.remove('is-admin-mode');
       document.getElementById('adminCmsFloatingPill')?.remove();
+      document.getElementById('adminCmsBadge')?.remove();
     }
   };
 
