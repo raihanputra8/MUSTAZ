@@ -11,6 +11,9 @@ let _activeKey = null;
 let _activeType = null;
 let _cmsModalInjected = false;
 
+/**
+ * Toast Notification for CMS Operations
+ */
 function showCmsToast(message, isSuccess = true) {
   let toastEl = document.getElementById('inlineCmsToast');
   if (!toastEl) {
@@ -20,7 +23,7 @@ function showCmsToast(message, isSuccess = true) {
       position: fixed;
       top: 24px;
       right: 24px;
-      z-index: 10006;
+      z-index: 1000002;
       background: #0d0d0d;
       border: 2px solid ${isSuccess ? 'var(--accent-pink)' : '#ef4444'};
       box-shadow: 6px 6px 0px #000;
@@ -89,12 +92,10 @@ export async function loadPageContent() {
       if (typeof val !== 'string' || !val.trim()) return;
 
       if (el.tagName === 'IMG') {
-        // Prevent broken default paths
         if (!val.includes('hero-main.jpg')) {
           el.src = val;
         }
       } else {
-        // Only update if not identical to dummy fallback
         if (key === 'hero_title' && val === 'PET HELM / VISORS') return;
         if (key === 'hero_subtitle' && val.startsWith('High-voltage acid')) return;
 
@@ -112,58 +113,15 @@ export async function loadPageContent() {
 }
 
 /**
- * 3. Initialize Visual In-Page CMS
- */
-export function initInlineCms() {
-  // Load dynamic content for all visitors
-  loadPageContent();
-
-  const isAdmin = checkIsAdmin();
-  if (!isAdmin) {
-    document.body.classList.remove('is-admin-mode');
-    return;
-  }
-
-  // Activate Admin Mode on Body
-  document.body.classList.add('is-admin-mode');
-
-  // Inject Floating Admin Status Pill
-  injectAdminPill();
-
-  // Inject Inline CMS Editor Modal
-  injectCmsModal();
-
-  // Wire Click / Tap event listeners for all [data-editable] elements
-  wireEditableElements();
-}
-
-/**
- * Floating Admin Status Pill
- */
-function injectAdminPill() {
-  if (document.getElementById('adminCmsFloatingPill')) return;
-
-  const pill = document.createElement('div');
-  pill.id = 'adminCmsFloatingPill';
-  pill.className = 'admin-cms-floating-pill';
-  pill.innerHTML = `
-    <span class="pulse-dot"></span>
-    <span>ADMIN CMS ACTIVE // TAP TO EDIT</span>
-    <a href="admin.html" style="color:var(--accent-pink);margin-left:6px;text-decoration:underline;">DASHBOARD ↗</a>
-  `;
-  document.body.appendChild(pill);
-}
-
-/**
  * Inject the Inline Editor Modal Dialog
  */
-function injectCmsModal() {
-  if (_cmsModalInjected || document.getElementById('inlineCmsBackdrop')) return;
+export function injectCmsModal() {
+  if (document.getElementById('inlineCmsBackdrop')) return;
   _cmsModalInjected = true;
 
   const modalHtml = `
-    <div class="inline-cms-backdrop" id="inlineCmsBackdrop" role="dialog" aria-modal="true" style="display:none;">
-      <div class="inline-cms-modal" id="inlineCmsModal">
+    <div class="inline-cms-backdrop" id="inlineCmsBackdrop" role="dialog" aria-modal="true" style="display:none;z-index:1000001;">
+      <div class="inline-cms-modal" id="inlineCmsModal" style="z-index:1000002;">
         <div class="inline-cms-header">
           <div class="inline-cms-title">
             <span class="material-symbols-outlined" style="color:var(--accent-pink);font-size:20px;">edit_note</span>
@@ -242,12 +200,14 @@ function injectCmsModal() {
 }
 
 /**
- * Open CMS Editor Modal for a given element
+ * Open Inline Editor Modal for a clicked element
  */
-function openCmsModal(targetEl) {
-  _activeTargetEl = targetEl;
-  _activeKey = targetEl.dataset.key || 'content_item';
-  _activeType = (targetEl.dataset.editable || 'text').toLowerCase();
+export function openInlineEditorModal(target, editType, key) {
+  injectCmsModal();
+
+  _activeTargetEl = target;
+  _activeKey = key || target.getAttribute('data-key') || 'content_item';
+  _activeType = (editType || target.getAttribute('data-editable') || 'text').toLowerCase();
 
   const backdrop = document.getElementById('inlineCmsBackdrop');
   const headerKey = document.getElementById('inlineCmsHeaderKey');
@@ -267,9 +227,13 @@ function openCmsModal(targetEl) {
     textWrapper.style.display = 'none';
     imageWrapper.style.display = 'block';
 
-    const currentSrc = targetEl.tagName === 'IMG'
-      ? targetEl.getAttribute('src')
-      : (targetEl.querySelector('img')?.getAttribute('src') || '');
+    let currentSrc = '';
+    if (target.tagName === 'IMG') {
+      currentSrc = target.getAttribute('src') || '';
+    } else {
+      const innerImg = target.querySelector('img');
+      currentSrc = innerImg ? innerImg.getAttribute('src') : '';
+    }
 
     if (imgPreview) imgPreview.src = currentSrc;
     if (fileInput) fileInput.value = '';
@@ -278,26 +242,29 @@ function openCmsModal(targetEl) {
     textWrapper.style.display = 'block';
 
     if (textInput) {
-      // If innerHTML contains tags, load innerHTML to preserve format; otherwise trimmed text
-      textInput.value = targetEl.innerHTML.includes('<')
-        ? targetEl.innerHTML.trim()
-        : targetEl.textContent.trim();
+      // If innerHTML contains tags, load innerHTML to preserve formatting; otherwise text
+      textInput.value = target.innerHTML.includes('<')
+        ? target.innerHTML.trim()
+        : target.textContent.trim();
     }
   }
 
-  backdrop.style.display = 'flex';
+  backdrop.style.setProperty('display', 'flex', 'important');
   requestAnimationFrame(() => {
     backdrop.classList.add('open');
     if (_activeType === 'text' && textInput) {
-      textInput.focus();
+      setTimeout(() => textInput.focus(), 50);
     }
   });
 }
 
+// Alias for backwards compatibility
+export const openCmsModal = openInlineEditorModal;
+
 /**
  * Close CMS Editor Modal
  */
-function closeCmsModal() {
+export function closeCmsModal() {
   const backdrop = document.getElementById('inlineCmsBackdrop');
   if (backdrop) {
     backdrop.classList.remove('open');
@@ -396,22 +363,69 @@ async function handleCmsFormSubmit(e) {
 }
 
 /**
- * Event Delegation for all [data-editable] elements
+ * Floating Admin Status Pill
  */
-function wireEditableElements() {
-  document.addEventListener('click', (e) => {
-    // Only active in Admin Mode
+function injectAdminPill() {
+  if (document.getElementById('adminCmsFloatingPill')) return;
+
+  const pill = document.createElement('div');
+  pill.id = 'adminCmsFloatingPill';
+  pill.className = 'admin-cms-floating-pill';
+  pill.innerHTML = `
+    <span class="pulse-dot"></span>
+    <span>ADMIN CMS ACTIVE // TAP TO EDIT</span>
+    <a href="admin.html" style="color:var(--accent-pink);margin-left:6px;text-decoration:underline;">DASHBOARD ↗</a>
+  `;
+  document.body.appendChild(pill);
+}
+
+/**
+ * Global Click Event Delegation
+ */
+function attachGlobalClickListener() {
+  const clickHandler = (e) => {
     if (!document.body.classList.contains('is-admin-mode')) return;
 
-    // Find closest [data-editable] element
-    const editable = e.target.closest('[data-editable]');
-    if (!editable) return;
+    // Don't intercept clicks inside the editor modal or the floating pill
+    if (e.target.closest('#inlineCmsModal') || e.target.closest('#adminCmsFloatingPill')) return;
 
-    // Don't intercept clicks inside the editor modal itself
-    if (e.target.closest('#inlineCmsModal')) return;
+    const target = e.target.closest('[data-editable]');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
 
-    e.preventDefault();
-    e.stopPropagation();
-    openCmsModal(editable);
-  }, true);
+      const editType = target.getAttribute('data-editable') || 'text';
+      const key = target.getAttribute('data-key');
+
+      // Buka Modal/Drawer Editor untuk key yang diklik
+      openInlineEditorModal(target, editType, key);
+    }
+  };
+
+  document.addEventListener('click', clickHandler, true);
 }
+
+// Attach listener immediately on script load
+if (typeof document !== 'undefined') {
+  attachGlobalClickListener();
+  window.openInlineEditorModal = openInlineEditorModal;
+}
+
+/**
+ * 3. Initialize Visual In-Page CMS
+ */
+export function initInlineCms() {
+  // Load dynamic content for all visitors
+  loadPageContent();
+
+  const isAdmin = checkIsAdmin();
+  if (isAdmin) {
+    document.body.classList.add('is-admin-mode');
+    injectAdminPill();
+    injectCmsModal();
+  } else {
+    document.body.classList.remove('is-admin-mode');
+  }
+}
+
+export const initInlineCMS = initInlineCms;

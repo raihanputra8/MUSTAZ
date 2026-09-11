@@ -2016,13 +2016,20 @@
 /* ── VISUAL ON-PAGE INLINE CMS (HOVER/TAP TO EDIT) ── */
 body.is-admin-mode [data-editable] {
   position: relative;
-  cursor: pointer;
-  transition: outline 0.2s ease;
+  cursor: pointer !important;
+  transition: outline 0.15s ease, filter 0.15s ease;
+  user-select: none;
 }
 
 body.is-admin-mode [data-editable]:hover {
   outline: 2px dashed #ff007a !important;
   outline-offset: 4px;
+}
+
+body.is-admin-mode img[data-editable]:hover {
+  outline: 3px solid #ff007a !important;
+  outline-offset: 2px;
+  filter: brightness(1.08);
 }
 
 body.is-admin-mode [data-editable]::after {
@@ -2032,15 +2039,16 @@ body.is-admin-mode [data-editable]::after {
   right: 6px;
   background: #ff007a;
   color: #ffffff;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 3px 6px;
+  font-family: var(--font-headline);
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 8px;
   text-transform: uppercase;
   letter-spacing: 1px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 100;
+  transition: opacity 0.15s ease;
+  z-index: 1000;
   box-shadow: 2px 2px 0px #000;
 }
 
