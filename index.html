@@ -19,6 +19,53 @@
   
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Instant 0ms CMS Hydration (Anti-Flicker) from localStorage -->
+  <script>
+    (function() {
+      try {
+        var fallbacks = {
+          hero_banner_image: 'assets/images/pet_visor_yellow_flame.webp',
+          about_banner_image: 'assets/images/mustaz_booth_event.webp'
+        };
+        var raw = localStorage.getItem('mustaz_home_content_cache') || localStorage.getItem('mustaz_home_content');
+        var cache = raw ? JSON.parse(raw) : {};
+        var map = Object.assign({}, fallbacks, cache);
+        var apply = function() {
+          Object.keys(map).forEach(function(key) {
+            var val = map[key];
+            if (!val) return;
+            var els = document.querySelectorAll('[data-key="' + key + '"]');
+            els.forEach(function(el) {
+              if (el.tagName === 'IMG') {
+                if (el.src !== val) {
+                  el.src = val;
+                  el.classList.remove('cms-image-loading');
+                }
+              } else if (el.querySelector('img')) {
+                var innerImg = el.querySelector('img');
+                if (innerImg && innerImg.src !== val) {
+                  innerImg.src = val;
+                  innerImg.classList.remove('cms-image-loading');
+                }
+              } else {
+                if (typeof val === 'string' && val.includes('<') && val.includes('>')) {
+                  el.innerHTML = val;
+                } else {
+                  el.textContent = val;
+                }
+              }
+            });
+          });
+        };
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', apply);
+        } else {
+          apply();
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body class="preload">
 
@@ -178,12 +225,11 @@
           <div class="hero-photo-frame" data-editable="image" data-key="hero_banner_image" style="background:#FFFFFF;border:4px solid #000000;box-shadow:12px 12px 0px var(--accent-pink);padding:14px;max-width:460px;margin:0 auto;transform:rotate(2deg);transition:transform 0.3s ease;"
                onmouseover="this.style.transform='rotate(0deg) scale(1.02)'" onmouseout="this.style.transform='rotate(2deg) scale(1)'">
             <div style="position:relative;width:100%;aspect-ratio:4/5;background:#000;overflow:hidden;border:2px solid #000;">
-              <img id="heroBannerImg" data-editable="image" data-key="hero_banner_image" src="assets/images/pet_visor_yellow_flame.webp"
+              <img id="heroBannerImg" data-editable="image" data-key="hero_banner_image" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==" class="cms-image-loading"
                    alt="MUSTAZ CRAFT Kustom Pet Helm"
                    fetchpriority="high"
                    width="430"
                    height="538"
-                   onerror="this.onerror=null;this.src='assets/images/pet_visor_yellow_flame.png';"
                    style="width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(115%);">
               <div style="position:absolute;top:14px;right:14px;">
                 <span class="stamp-punk" style="background:rgba(0,0,0,0.75);">NO FUTURE</span>
@@ -705,7 +751,7 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;">
         <!-- Card 1: Event Booth -->
         <div style="background:#111;border:2px solid var(--border-light);position:relative;overflow:hidden;aspect-ratio:4/5;min-height:340px;" class="card-brutal-dark" data-editable="image" data-key="about_banner_image">
-          <img data-editable="image" data-key="about_banner_image" src="assets/images/mustaz_booth_event.webp" onerror="this.onerror=null;this.src='assets/images/mustaz_booth_event.png';"
+          <img data-editable="image" data-key="about_banner_image" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==" class="cms-image-loading"
                alt="MUSTAZ CRAFT Event Booth" loading="lazy" width="320" height="400" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;filter:contrast(115%);">
           <div style="position:relative;z-index:10;padding:24px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(to top, rgba(0,0,0,0.95) 25%, transparent);">
             <span class="zine-tag-yellow" style="margin-bottom:8px;align-self:flex-start;">01 // THE BOOTH</span>

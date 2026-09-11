@@ -8,7 +8,10 @@ import { initPartsPage, initHelmetsPage, initChoppersPage, openProductDetail } f
 import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDynamicParts, getFlashSaleConfig, getActiveFlashSaleProducts, isFlashSaleActive, formatRupiah } from './services/cartService.js';
 import { getProductImageUrl } from './config.js';
 import { showBrutalConfirm, showBrutalAlert, showBrutalFormModal } from './components/modal.js';
-import { initInlineCms, loadPageContent } from './inlineCms.js';
+import { initInlineCms, loadPageContent, applyContentToDOM } from './inlineCms.js';
+
+// Jalankan SECEPAT MUNGKIN sebelum DOM selesai dirender
+loadPageContent();
 
 // Expose brutalist dialog engine globally and intercept native alert
 if (typeof window !== 'undefined') {
@@ -505,3 +508,5 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => {
   document.body.classList.remove('preload');
 });
+
+export { loadPageContent, applyContentToDOM };

@@ -188,11 +188,58 @@ export async function saveCmsContent(key, value) {
   }
 }
 
+const CMS_IMAGE_FALLBACKS = {
+  hero_banner_image: 'assets/images/pet_visor_yellow_flame.webp',
+  about_banner_image: 'assets/images/mustaz_booth_event.webp'
+};
+
+export function applyContentToDOM(contentMap) {
+  const mergedMap = { ...CMS_IMAGE_FALLBACKS, ...(contentMap || {}) };
+  Object.keys(mergedMap).forEach(key => {
+    const val = mergedMap[key];
+    if (val === undefined || val === null) return;
+    const elements = document.querySelectorAll(`[data-key="${key}"]`);
+    elements.forEach(el => {
+      if (el.tagName === 'IMG') {
+        if (val && el.src !== val) {
+          el.src = val;
+          el.classList.remove('cms-image-loading');
+        }
+      } else if (el.querySelector('img')) {
+        const innerImg = el.querySelector('img');
+        if (innerImg && val && innerImg.src !== val) {
+          innerImg.src = val;
+          innerImg.classList.remove('cms-image-loading');
+        }
+      } else {
+        if (val) {
+          if (typeof val === 'string' && val.includes('<') && val.includes('>')) {
+            el.innerHTML = val;
+          } else {
+            el.textContent = val;
+          }
+        }
+      }
+    });
+  });
+}
+
 /**
- * 2. PERBAIKAN FUNGSI BACA DATA SAAT PAGE LOAD (loadPageContent)
- * Membaca data terbaru dari tabel home_content Supabase sebelum menampilkan konten
+ * 2. OPTIMASI LOAD WITH LOCALSTORAGE CACHE (INSTANT DISPLAY - 0ms NO FLICKER)
+ * Membaca cache lokal seketika tanpa menunggu API Supabase, lalu sync background
  */
 export async function loadPageContent() {
+  // 1. Render dari Local Storage Cache terlebih dahulu (Instant - No Flicker)
+  try {
+    const cachedContent = localStorage.getItem('mustaz_home_content_cache') || localStorage.getItem('mustaz_home_content');
+    if (cachedContent) {
+      applyContentToDOM(JSON.parse(cachedContent));
+    }
+  } catch (err) {
+    console.warn("[Inline CMS] Gagal render dari cache lokal:", err);
+  }
+
+  // 2. Fetch data terbaru dari Supabase (Background Sync)
   try {
     const supabase = await getSupabase();
     if (!supabase) return;
@@ -201,45 +248,21 @@ export async function loadPageContent() {
       .from('home_content')
       .select('section_id, content_value');
 
-    if (error || !data) {
-      console.warn("Gagal membaca home_content dari Supabase:", error);
-      return;
-    }
-
-    // Simpan ke cache lokal sebagai cadangan offline
-    try {
-      const cacheObj = {};
+    if (!error && data && Array.isArray(data)) {
+      const contentMap = {};
       data.forEach(item => {
-        if (item.section_id && item.content_value) cacheObj[item.section_id] = item.content_value;
-      });
-      localStorage.setItem('mustaz_home_content', JSON.stringify(cacheObj));
-    } catch {}
-
-    // Terapkan ke elemen DOM
-    data.forEach(item => {
-      if (!item.section_id || item.content_value === undefined || item.content_value === null) return;
-      const elements = document.querySelectorAll(`[data-key="${item.section_id}"]`);
-      elements.forEach(el => {
-        if (el.tagName === 'IMG') {
-          if (item.content_value && item.content_value.trim() !== '') {
-            el.src = item.content_value;
-          }
-        } else if (el.querySelector('img')) {
-          const innerImg = el.querySelector('img');
-          if (innerImg && item.content_value && item.content_value.trim() !== '') {
-            innerImg.src = item.content_value;
-          }
-        } else {
-          if (typeof item.content_value === 'string' && item.content_value.includes('<') && item.content_value.includes('>')) {
-            el.innerHTML = item.content_value;
-          } else {
-            el.textContent = item.content_value;
-          }
+        if (item.section_id && item.content_value) {
+          contentMap[item.section_id] = item.content_value;
         }
       });
-    });
+
+      // Update DOM & Perbarui Cache
+      applyContentToDOM(contentMap);
+      localStorage.setItem('mustaz_home_content_cache', JSON.stringify(contentMap));
+      localStorage.setItem('mustaz_home_content', JSON.stringify(contentMap));
+    }
   } catch (err) {
-    console.warn("Menggunakan konten fallback statis:", err);
+    console.warn("Gagal sinkronisasi data CMS dari server:", err);
   }
 }
 

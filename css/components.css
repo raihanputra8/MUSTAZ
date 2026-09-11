@@ -2013,6 +2013,13 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* CMS Image Skeleton / Anti-Flicker Placeholder */
+img.cms-image-loading {
+  background: #111111;
+  opacity: 0.2;
+  transition: opacity 0.2s ease-in-out;
+}
+
 /* ── VISUAL ON-PAGE INLINE CMS (HOVER/TAP TO EDIT) ── */
 body.is-admin-mode [data-editable] {
   position: relative;
