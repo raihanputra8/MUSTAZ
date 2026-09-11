@@ -160,27 +160,34 @@
 
 .nav-cart-btn {
   background: var(--accent-pink);
-  border: 2px solid #000000;
+  border: 1.5px solid #000000;
+  border-radius: 8px;
   color: #FFFFFF;
+  width: 40px;
   height: 40px;
-  padding: 0 14px;
-  display: flex;
+  padding: 0;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   cursor: pointer;
-  box-shadow: 3px 3px 0px #FFFFFF;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-  font-family: var(--font-headline);
-  font-weight: 900;
-  font-size: 1rem;
-  letter-spacing: 0.05em;
+  box-shadow: 2px 2px 0px #FFFFFF;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   position: relative;
+  flex-shrink: 0;
 }
 
 .nav-cart-btn:hover {
   background: var(--accent-yellow);
   color: #000000;
-  box-shadow: 3px 3px 0px var(--accent-pink);
+  box-shadow: 2px 2px 0px var(--accent-pink);
+  transform: translate(-1px, -1px);
+}
+
+.nav-cart-btn .cart-bag-svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  display: block;
 }
 
 .nav-cart-btn .material-symbols-outlined {
@@ -193,26 +200,32 @@
 }
 
 .nav-cart-btn .cart-label {
-  display: inline;
-}
-
-@media (max-width: 900px) {
-  .nav-cart-btn .cart-label {
-    display: none;
-  }
+  display: none;
 }
 
 .cart-count-badge {
+  position: absolute;
+  top: -5px;
+  right: -6px;
   background: #000000;
   color: #FFFFFF;
+  border: 1.5px solid var(--accent-pink);
+  border-radius: 10px;
   font-family: var(--font-headline);
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 900;
-  padding: 2px 6px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
   line-height: 1;
-  min-width: 18px;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
+}
+
+.nav-cart-btn:hover .cart-count-badge {
+  border-color: var(--accent-yellow);
 }
 
 /* Pink Sign In Nav Button */

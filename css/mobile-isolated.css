@@ -128,16 +128,24 @@
     box-shadow: 2px 2px 0px #000 !important;
   }
 
-  /* Cart Button on Mobile Top Bar */
+  /* Cart Button on Mobile Top Bar (Compact Pink Squircle with Bag Icon) */
   .nav-cart-btn,
   #headerCartBtn {
+    width: 32px !important;
     height: 32px !important;
-    padding: 0 8px !important;
-    gap: 4px !important;
-    font-size: 0.72rem !important;
-    font-weight: 900 !important;
+    padding: 0 !important;
+    border-radius: 6px !important;
     box-shadow: 2px 2px 0px #FFFFFF !important;
     border-width: 1.5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+  }
+
+  #headerCartBtn .cart-bag-svg {
+    width: 18px !important;
+    height: 18px !important;
   }
 
   #headerCartBtn .material-symbols-outlined {
@@ -145,14 +153,17 @@
   }
 
   .cart-label {
-    display: inline !important;
-    font-size: 0.72rem !important;
+    display: none !important;
   }
 
   .cart-count-badge {
-    font-size: 0.62rem !important;
-    padding: 1px 5px !important;
-    margin-left: 2px !important;
+    font-size: 0.60rem !important;
+    min-width: 15px !important;
+    height: 15px !important;
+    padding: 0 3px !important;
+    top: -4px !important;
+    right: -5px !important;
+    border-width: 1px !important;
   }
 
   /* Hamburger Menu Button */
@@ -779,15 +790,24 @@
     height: 100% !important;
     top: 0 !important;
     bottom: 0 !important;
+    background-color: #080808 !important;
+    background-image: 
+      radial-gradient(circle at 50% 35%, rgba(217, 0, 108, 0.22) 0%, rgba(8, 8, 8, 0.98) 75%),
+      url('../assets/images/bg_underground_chain_hd.webp') !important;
+    background-size: cover !important;
+    background-position: center top !important;
   }
 
   .cart-header {
     padding: 12px 14px !important;
+    background: rgba(10, 10, 10, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
     border-bottom: 2px solid var(--accent-pink) !important;
   }
 
-  .cart-header h3 {
-    font-size: 1.1rem !important;
+  .cart-header h3,
+  .cart-title {
+    font-size: 1.05rem !important;
   }
 
   .cart-body {

@@ -17,11 +17,14 @@ function getCartDrawerHTML() {
     <div class="cart-drawer-overlay" id="cartOverlay">
       <div class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Shopping Cart">
         <div class="cart-header">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="background:var(--accent-pink);color:#FFF;font-family:var(--font-headline);font-weight:900;padding:2px 8px;font-size:0.85rem;border:1px solid #000;">MUSTAZ</div>
-            <h3>KERANJANG BELANJA</h3>
+          <div class="cart-header-brand">
+            <span class="cart-brand-tag">MUSTAZ</span>
+            <div class="cart-header-title-wrap">
+              <h3 class="cart-title">KERANJANG BELANJA</h3>
+              <span class="cart-subtitle">ISSUE 04 // MANIFEST</span>
+            </div>
           </div>
-          <button class="cart-close-btn" id="cartCloseBtn" aria-label="Close cart">
+          <button class="cart-close-btn" id="cartCloseBtn" aria-label="Close cart" title="Tutup Keranjang">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -31,8 +34,8 @@ function getCartDrawerHTML() {
             <span class="cart-subtotal-label">SUBTOTAL MANIFEST</span>
             <span class="cart-subtotal-value" id="cartSubtotalValue">Rp 0</span>
           </div>
-          <button id="startCheckoutBtn" class="btn-brutal-pink" style="width:100%;font-size:1.1rem;padding:16px;">
-            <span class="material-symbols-outlined">bolt</span>
+          <button id="startCheckoutBtn" class="btn-brutal-pink" style="width:100%;font-size:1.05rem;padding:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;letter-spacing:0.05em;">
+            <span class="material-symbols-outlined" style="font-size:20px;">bolt</span>
             CHECKOUT VIA WHATSAPP →
           </button>
           <div style="margin-top:12px;text-align:center;">
@@ -130,10 +133,12 @@ function renderCartItems() {
     if (footer) footer.style.display = 'none';
     list.innerHTML = `
       <div class="cart-empty-state">
-        <div class="cart-empty-icon">🔒</div>
+        <div class="cart-empty-bag-wrap" style="background:#111111;border:2px solid var(--accent-yellow);border-radius:24px;width:76px;height:76px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.6);">
+          <span class="material-symbols-outlined" style="font-size:38px;color:var(--accent-yellow);">lock</span>
+        </div>
         <p class="cart-empty-title">KERANJANG TERKUNCI</p>
         <p class="cart-empty-sub">Silakan masuk atau buat akun terlebih dahulu untuk mengaktifkan keranjang belanja Anda.</p>
-        <a href="login.html" class="btn-brutal-yellow btn-brutal-sm" style="margin-top:20px;display:inline-flex;">
+        <a href="login.html" class="btn-brutal-yellow cart-empty-cta">
           MASUK KE AKUN →
         </a>
       </div>
@@ -157,10 +162,15 @@ function renderCartItems() {
   if (items.length === 0) {
     list.innerHTML = `
       <div class="cart-empty-state">
-        <div class="cart-empty-icon">🏍️</div>
+        <div class="cart-empty-bag-wrap">
+          <svg class="cart-empty-bag-svg" viewBox="0 0 100 100" fill="none" width="76" height="76" aria-hidden="true">
+            <rect width="100" height="100" rx="24" fill="#D9006C"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M 36 28 C 36 17.5 42.5 9 50 9 C 57.5 9 64 17.5 64 28 H 70 C 80 28 86 34 86 44 V 72 C 86 82 80 88 70 88 H 30 C 20 88 14 82 14 72 V 44 C 14 34 20 28 30 28 H 36 Z M 43 28 C 43 21 46 16 50 16 C 54 16 57 21 57 28 H 43 Z M 33 33 C 35.2 33 37 34.8 37 37 V 42 C 37 44.2 35.2 46 33 46 C 30.8 46 29 44.2 29 42 V 37 C 29 34.8 30.8 33 33 33 Z M 67 33 C 69.2 33 71 34.8 71 37 V 42 C 71 44.2 69.2 46 67 46 C 64.8 46 63 44.2 63 42 V 37 C 63 34.8 64.8 33 67 33 Z" fill="#FFFFFF"/>
+          </svg>
+        </div>
         <p class="cart-empty-title">KERANJANG BELANJA KOSONG</p>
-        <p class="cart-empty-sub">Belum ada pet helm atau part yang dipilih. Masuk ke katalog untuk melengkapi helm Anda.</p>
-        <a href="parts.html" class="btn-brutal-pink btn-brutal-sm" style="margin-top:20px;display:inline-flex;">
+        <p class="cart-empty-sub">Belum ada pet helm atau part kustom yang dipilih. Masuk ke katalog untuk melengkapi helm Anda.</p>
+        <a href="parts.html" class="btn-brutal-pink cart-empty-cta">
           LIHAT KATALOG PRODUK →
         </a>
       </div>
