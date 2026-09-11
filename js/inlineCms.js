@@ -5,12 +5,57 @@
 
 import { isKnownAdminEmail } from './services/authService.js';
 import { fetchHomeContent, saveHomeContent, uploadSiteAsset } from './services/supabaseService.js';
-import { showNotificationToast } from './components/modal.js';
 
 let _activeTargetEl = null;
 let _activeKey = null;
 let _activeType = null;
 let _cmsModalInjected = false;
+
+function showCmsToast(message, isSuccess = true) {
+  let toastEl = document.getElementById('inlineCmsToast');
+  if (!toastEl) {
+    toastEl = document.createElement('div');
+    toastEl.id = 'inlineCmsToast';
+    toastEl.style.cssText = `
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 10006;
+      background: #0d0d0d;
+      border: 2px solid ${isSuccess ? 'var(--accent-pink)' : '#ef4444'};
+      box-shadow: 6px 6px 0px #000;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-family: var(--font-headline);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: all 0.25s ease;
+      pointer-events: none;
+    `;
+    document.body.appendChild(toastEl);
+  }
+  toastEl.style.borderColor = isSuccess ? 'var(--accent-pink)' : '#ef4444';
+  toastEl.innerHTML = `
+    <span class="material-symbols-outlined" style="color:${isSuccess ? 'var(--accent-pink)' : '#ef4444'};font-size:22px;">
+      ${isSuccess ? 'check_circle' : 'error'}
+    </span>
+    <span>${message}</span>
+  `;
+  requestAnimationFrame(() => {
+    toastEl.style.transform = 'translateY(0)';
+    toastEl.style.opacity = '1';
+  });
+  setTimeout(() => {
+    toastEl.style.transform = 'translateY(-20px)';
+    toastEl.style.opacity = '0';
+  }, 3200);
+}
 
 /**
  * 1. Check if the current user is an authenticated Admin
@@ -337,7 +382,7 @@ async function handleCmsFormSubmit(e) {
     closeCmsModal();
 
     // Show toast confirmation
-    showNotificationToast('Perubahan Berhasil Disimpan', 'success');
+    showCmsToast('Perubahan Berhasil Disimpan', true);
   } catch (err) {
     console.error('[Inline CMS Submit Error]:', err);
     if (errorBox) {
