@@ -215,7 +215,6 @@ export function initNavbar() {
       let isMatch = false;
       if (page === 'home' && (currentBase === 'index' || currentBase === '')) isMatch = true;
       else if (page === 'parts' && currentBase === 'parts') isMatch = true;
-      else if (page === 'custom' && currentBase === 'helmets') isMatch = true;
       else if (page === 'kulture' && (currentBase === 'kulture' || currentBase === 'about')) isMatch = true;
       else if (page === 'account' && (currentBase === 'account' || currentBase === 'admin' || currentBase === 'login')) isMatch = true;
 
