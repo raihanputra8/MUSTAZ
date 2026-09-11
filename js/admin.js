@@ -1497,6 +1497,24 @@ async function initAdminDashboard() {
       });
     });
 
+    function dispatchPaidReceipt(order) {
+      if (!order) return;
+      const buyerEmail = order.email || order.custEmail || order.customerEmail;
+      if (!buyerEmail || !buyerEmail.includes('@')) return;
+      import('./services/emailService.js').then(({ sendOrderSuccessEmail }) => {
+        sendOrderSuccessEmail({
+          ...order,
+          email: buyerEmail
+        }).then(res => {
+          if (res && res.success) {
+            console.log(`[Admin] Resi otomatis terkirim ke email pembeli ${buyerEmail} untuk #${order.id}`);
+          }
+        }).catch(err => {
+          console.warn('[Admin] Gagal dispatch resi otomatis:', err);
+        });
+      }).catch(() => {});
+    }
+
     // Fase 2: Verifikasi Pembayaran Lunas (Target Buyer WA)
     tbody.querySelectorAll('.btn-action-p2').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -1513,8 +1531,9 @@ async function initAdminDashboard() {
         ord.status = 'PAID_PROCESSING';
         localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
         updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
+        dispatchPaidReceipt(ord);
 
-        showAdminToast('success', 'FASE 2: PEMBAYARAN LUNAS', `WhatsApp pembeli #${ord.id} terbuka. Status diubah ke PAID_PROCESSING.`);
+        showAdminToast('success', 'FASE 2: PEMBAYARAN LUNAS', `WhatsApp pembeli #${ord.id} terbuka. Resi otomatis dikirim ke email & status diubah ke PAID.`);
         renderOrders();
       });
     });
@@ -1665,6 +1684,7 @@ async function initAdminDashboard() {
     localStorage.setItem('mustaz_admin_orders', JSON.stringify(orders));
 
     updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
+    dispatchPaidReceipt(ord);
 
     showAdminToast('success', 'PEMBAYARAN DIVERIFIKASI', `Pesanan #${ord.id} telah diverifikasi LUNAS & bukti transfer tersimpan.`);
     closeReceiptModal();
@@ -2163,21 +2183,45 @@ async function initAdminDashboard() {
 
   // ─── STORE SETTINGS MANAGER (DYNAMIC ADMIN WHATSAPP & SHOP CONFIG) ─────────
   async function initStoreSettingsManager() {
-    const form = document.getElementById('storeSettingsForm');
+    const waForm = document.getElementById('storeSettingsForm');
     const inputWa = document.getElementById('settingAdminWhatsapp');
-    const statusEl = document.getElementById('storeSettingsStatus');
-    const btnSave = document.getElementById('btnSaveStoreSettings');
-    if (!form || !inputWa) return;
+    const waStatusEl = document.getElementById('storeSettingsStatus');
+    const btnSaveWa = document.getElementById('btnSaveStoreSettings');
 
-    // 1. Pre-populate initial value from database / local cache
-    const cachedWa = localStorage.getItem('mustaz_store_settings_admin_whatsapp') || CONFIG.DEFAULT_ADMIN_WHATSAPP || CONFIG.ADMIN_WHATSAPP || '62895325604340';
-    inputWa.value = cachedWa;
+    const emailForm = document.getElementById('emailSettingsForm');
+    const inputAdminEmail = document.getElementById('settingAdminEmail');
+    const inputSmtpUser = document.getElementById('settingSmtpUser');
+    const inputSmtpHost = document.getElementById('settingSmtpHost');
+    const inputSmtpPort = document.getElementById('settingSmtpPort');
+    const emailStatusEl = document.getElementById('emailSettingsStatus');
+    const btnSaveEmail = document.getElementById('btnSaveEmailSettings');
 
-    // Fetch freshest from Supabase store_settings
+    // 1. Pre-populate WhatsApp initial value
+    if (inputWa) {
+      const cachedWa = localStorage.getItem('mustaz_store_settings_admin_whatsapp') || CONFIG.DEFAULT_ADMIN_WHATSAPP || CONFIG.ADMIN_WHATSAPP || '62895325604340';
+      inputWa.value = cachedWa;
+    }
+
+    // Pre-populate Email initial values
+    if (inputAdminEmail) {
+      inputAdminEmail.value = localStorage.getItem('mustaz_store_settings_admin_email') || 'mustazcraft@gmail.com';
+    }
+    if (inputSmtpUser) {
+      inputSmtpUser.value = localStorage.getItem('mustaz_store_settings_smtp_user') || 'mustazcraft@gmail.com';
+    }
+    if (inputSmtpHost) {
+      inputSmtpHost.value = localStorage.getItem('mustaz_store_settings_smtp_host') || 'smtp.gmail.com';
+    }
+    if (inputSmtpPort) {
+      inputSmtpPort.value = localStorage.getItem('mustaz_store_settings_smtp_port') || '587';
+    }
+
+    // Fetch freshest settings from Supabase store_settings
     try {
       const { fetchStoreSetting } = await import('./services/supabaseService.js');
+      
       const cloudWa = await fetchStoreSetting('admin_whatsapp');
-      if (cloudWa) {
+      if (cloudWa && inputWa) {
         let clean = cloudWa.replace(/[^0-9]/g, '');
         if (clean.startsWith('0')) clean = '62' + clean.slice(1);
         if (!clean.startsWith('62')) clean = '62' + clean;
@@ -2185,70 +2229,146 @@ async function initAdminDashboard() {
         localStorage.setItem('mustaz_store_settings_admin_whatsapp', clean);
         CONFIG.ADMIN_WHATSAPP = clean;
       }
+
+      const cloudAdminEmail = await fetchStoreSetting('admin_email');
+      if (cloudAdminEmail && inputAdminEmail) {
+        inputAdminEmail.value = cloudAdminEmail;
+        localStorage.setItem('mustaz_store_settings_admin_email', cloudAdminEmail);
+      }
+
+      const cloudSmtpUser = await fetchStoreSetting('smtp_user');
+      if (cloudSmtpUser && inputSmtpUser) {
+        inputSmtpUser.value = cloudSmtpUser;
+        localStorage.setItem('mustaz_store_settings_smtp_user', cloudSmtpUser);
+      }
+
+      const cloudSmtpHost = await fetchStoreSetting('smtp_host');
+      if (cloudSmtpHost && inputSmtpHost) {
+        inputSmtpHost.value = cloudSmtpHost;
+        localStorage.setItem('mustaz_store_settings_smtp_host', cloudSmtpHost);
+      }
+
+      const cloudSmtpPort = await fetchStoreSetting('smtp_port');
+      if (cloudSmtpPort && inputSmtpPort) {
+        inputSmtpPort.value = cloudSmtpPort;
+        localStorage.setItem('mustaz_store_settings_smtp_port', cloudSmtpPort);
+      }
     } catch (err) {
       console.warn('[Admin] fetchStoreSetting error:', err);
     }
 
-    // 2. Handle Form Submit
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      let rawVal = inputWa.value.trim();
-      if (!rawVal) {
-        showAdminToast('error', 'INPUT KOSONG', 'Silakan masukkan nomor WhatsApp resmi toko.');
-        return;
-      }
-
-      // Format otomatis ke standar internasional
-      let cleanPhone = rawVal.replace(/[^0-9]/g, '');
-      if (cleanPhone.startsWith('0')) {
-        cleanPhone = '62' + cleanPhone.slice(1);
-      } else if (cleanPhone.startsWith('8')) {
-        cleanPhone = '62' + cleanPhone;
-      } else if (!cleanPhone.startsWith('62')) {
-        cleanPhone = '62' + cleanPhone;
-      }
-
-      if (cleanPhone.length < 10 || cleanPhone.length > 16) {
-        showAdminToast('error', 'NOMOR TIDAK VALID', 'Nomor WhatsApp harus memiliki minimal 10 digit.');
-        return;
-      }
-
-      inputWa.value = cleanPhone;
-
-      try {
-        if (btnSave) {
-          btnSave.disabled = true;
-          btnSave.textContent = '⏳ MENYIMPAN...';
+    // 2. Handle WhatsApp Form Submit
+    if (waForm && inputWa) {
+      waForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        let rawVal = inputWa.value.trim();
+        if (!rawVal) {
+          showAdminToast('error', 'INPUT KOSONG', 'Silakan masukkan nomor WhatsApp resmi toko.');
+          return;
         }
 
-        // 1. Save to Supabase Cloud
-        const { saveStoreSetting } = await import('./services/supabaseService.js');
-        await saveStoreSetting('admin_whatsapp', cleanPhone);
-
-        // 2. Cache locally
-        localStorage.setItem('mustaz_store_settings_admin_whatsapp', cleanPhone);
-        CONFIG.ADMIN_WHATSAPP = cleanPhone;
-
-        // 3. UI Feedback
-        showAdminToast('success', 'BERHASIL DISIMPAN', 'Nomor WhatsApp CS Berhasil Diperbarui!');
-        if (statusEl) {
-          statusEl.textContent = '✓ Pengaturan toko aktif tersimpan ke cloud.';
-          statusEl.style.display = 'inline';
-          setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+        let cleanPhone = rawVal.replace(/[^0-9]/g, '');
+        if (cleanPhone.startsWith('0')) {
+          cleanPhone = '62' + cleanPhone.slice(1);
+        } else if (cleanPhone.startsWith('8')) {
+          cleanPhone = '62' + cleanPhone;
+        } else if (!cleanPhone.startsWith('62')) {
+          cleanPhone = '62' + cleanPhone;
         }
-      } catch (saveErr) {
-        console.error('[Admin] Gagal menyimpan store settings:', saveErr);
-        // Fallback local save
-        localStorage.setItem('mustaz_store_settings_admin_whatsapp', cleanPhone);
-        CONFIG.ADMIN_WHATSAPP = cleanPhone;
-        showAdminToast('success', 'DISIMPAN LOKAL', 'Nomor WhatsApp CS disimpan (koneksi cloud pending).');
-      } finally {
-        if (btnSave) {
-          btnSave.disabled = false;
-          btnSave.textContent = 'SIMPAN PENGATURAN';
+
+        if (cleanPhone.length < 10 || cleanPhone.length > 16) {
+          showAdminToast('error', 'NOMOR TIDAK VALID', 'Nomor WhatsApp harus memiliki minimal 10 digit.');
+          return;
         }
-      }
-    });
+
+        inputWa.value = cleanPhone;
+
+        try {
+          if (btnSaveWa) {
+            btnSaveWa.disabled = true;
+            btnSaveWa.textContent = 'MENYIMPAN...';
+          }
+
+          const { saveStoreSetting } = await import('./services/supabaseService.js');
+          await saveStoreSetting('admin_whatsapp', cleanPhone);
+
+          localStorage.setItem('mustaz_store_settings_admin_whatsapp', cleanPhone);
+          CONFIG.ADMIN_WHATSAPP = cleanPhone;
+
+          showAdminToast('success', 'BERHASIL DISIMPAN', 'Nomor WhatsApp CS Berhasil Diperbarui!');
+          if (waStatusEl) {
+            waStatusEl.textContent = 'Pengaturan WhatsApp aktif tersimpan ke database.';
+            waStatusEl.style.display = 'inline';
+            setTimeout(() => { waStatusEl.style.display = 'none'; }, 4000);
+          }
+        } catch (saveErr) {
+          console.error('[Admin] Gagal menyimpan WhatsApp settings:', saveErr);
+          localStorage.setItem('mustaz_store_settings_admin_whatsapp', cleanPhone);
+          CONFIG.ADMIN_WHATSAPP = cleanPhone;
+          showAdminToast('success', 'DISIMPAN LOKAL', 'Nomor WhatsApp CS disimpan secara lokal.');
+        } finally {
+          if (btnSaveWa) {
+            btnSaveWa.disabled = false;
+            btnSaveWa.textContent = 'SIMPAN PENGATURAN WHATSAPP';
+          }
+        }
+      });
+    }
+
+    // 3. Handle Email Settings Form Submit
+    if (emailForm && inputAdminEmail && inputSmtpUser) {
+      emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const adminEmail = inputAdminEmail.value.trim();
+        const smtpUser = inputSmtpUser.value.trim();
+        const smtpHost = inputSmtpHost ? inputSmtpHost.value.trim() : 'smtp.gmail.com';
+        const smtpPort = inputSmtpPort ? inputSmtpPort.value.trim() : '587';
+
+        if (!adminEmail || !adminEmail.includes('@')) {
+          showAdminToast('error', 'EMAIL TIDAK VALID', 'Silakan masukkan format email resmi CS yang benar.');
+          return;
+        }
+        if (!smtpUser || !smtpUser.includes('@')) {
+          showAdminToast('error', 'SMTP USER TIDAK VALID', 'Silakan masukkan format alamat email pengirim yang benar.');
+          return;
+        }
+
+        try {
+          if (btnSaveEmail) {
+            btnSaveEmail.disabled = true;
+            btnSaveEmail.textContent = 'MENYIMPAN...';
+          }
+
+          const { saveStoreSetting } = await import('./services/supabaseService.js');
+          await saveStoreSetting('admin_email', adminEmail);
+          await saveStoreSetting('smtp_user', smtpUser);
+          if (smtpHost) await saveStoreSetting('smtp_host', smtpHost);
+          if (smtpPort) await saveStoreSetting('smtp_port', smtpPort);
+
+          localStorage.setItem('mustaz_store_settings_admin_email', adminEmail);
+          localStorage.setItem('mustaz_store_settings_smtp_user', smtpUser);
+          localStorage.setItem('mustaz_store_settings_smtp_host', smtpHost);
+          localStorage.setItem('mustaz_store_settings_smtp_port', smtpPort);
+
+          showAdminToast('success', 'EMAIL DISIMPAN', 'Konfigurasi Email Resmi & SMTP tersimpan ke database!');
+          if (emailStatusEl) {
+            emailStatusEl.textContent = 'Pengaturan email aktif tersimpan ke cloud.';
+            emailStatusEl.style.display = 'inline';
+            setTimeout(() => { emailStatusEl.style.display = 'none'; }, 4000);
+          }
+        } catch (saveErr) {
+          console.error('[Admin] Gagal menyimpan email settings:', saveErr);
+          localStorage.setItem('mustaz_store_settings_admin_email', adminEmail);
+          localStorage.setItem('mustaz_store_settings_smtp_user', smtpUser);
+          showAdminToast('success', 'DISIMPAN LOKAL', 'Pengaturan email tersimpan lokal (cloud pending).');
+        } finally {
+          if (btnSaveEmail) {
+            btnSaveEmail.disabled = false;
+            btnSaveEmail.textContent = 'SIMPAN PENGATURAN EMAIL';
+          }
+        }
+      });
+    }
   }
 
   // ─── 8. HOME CONTENT IN-CONTEXT EDIT & MOBILE BOTTOM SHEET CMS ─────────────

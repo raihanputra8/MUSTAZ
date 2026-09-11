@@ -55,22 +55,31 @@ export function buildOrderInvoiceHTML(order) {
         <!-- Main Card -->
         <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #111111; border: 3px solid #000000; box-shadow: 8px 8px 0px #D9006C;">
           
-          <!-- Header Bar -->
+          <!-- Header Bar with Logo -->
           <tr>
-            <td style="background-color: #D9006C; padding: 18px 24px; border-bottom: 2px solid #000000;">
+            <td style="background-color: #FF007A; padding: 18px 24px; border-bottom: 2px solid #000000;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td>
-                    <span style="font-size: 11px; font-family: monospace; color: #000000; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase;">
-                      OFFICIAL DISPATCH PROTOCOL
-                    </span>
-                    <h1 style="margin: 4px 0 0; font-size: 24px; color: #000000; font-weight: 900; letter-spacing: 0.05em;">
-                      MUSTAZ CRAFT // ORDER CONFIRMED
-                    </h1>
+                  <td style="vertical-align: middle;">
+                    <table role="presentation" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding-right: 12px; vertical-align: middle;">
+                          <img src="https://mustazbuildtest.vercel.app/assets/images/mustaz_logo_official.png" alt="MUSTAZ CRAFT" width="40" height="40" style="display: block; border: 2px solid #000000; background: #000000;" />
+                        </td>
+                        <td style="vertical-align: middle;">
+                          <span style="font-size: 10px; font-family: monospace; color: #000000; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; display: block;">
+                            OFFICIAL DISPATCH PROTOCOL
+                          </span>
+                          <h1 style="margin: 2px 0 0; font-size: 20px; color: #000000; font-weight: 900; letter-spacing: 0.05em; line-height: 1.1;">
+                            MUSTAZ CRAFT // ORDER CONFIRMED
+                          </h1>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
-                  <td align="right">
-                    <span style="background-color: #000000; color: #FFFF00; padding: 4px 10px; font-family: monospace; font-size: 12px; font-weight: 900; border: 1px solid #000000;">
-                      IN TRANSIT
+                  <td align="right" style="vertical-align: middle;">
+                    <span style="background-color: #000000; color: #FFFF00; padding: 6px 12px; font-family: monospace; font-size: 13px; font-weight: 900; border: 1px solid #000000; display: inline-block;">
+                      #${order.orderId || 'MSTZ-ORDER'}
                     </span>
                   </td>
                 </tr>
@@ -199,38 +208,53 @@ export async function sendOrderSuccessEmail(orderData) {
     existing.unshift({
       orderId: orderId,
       sentAt: new Date().toISOString(),
-      subject: `⚡ BUKTI PESANAN #${orderId} - MUSTAZ CRAFT`,
+      subject: `BUKTI PESANAN #${orderId} - MUSTAZ CRAFT`,
       total: orderData.total,
       recipient: buyerEmail
     });
     localStorage.setItem(key, JSON.stringify(existing));
   } catch {}
 
-  // 2. Dispatch to Netlify Serverless Function endpoint
+  // 2. Dispatch to Vercel Serverless Function endpoint (/api/send-receipt)
+  const dispatchPayload = {
+    to: buyerEmail,
+    custEmail: buyerEmail,
+    customerName: orderData.customerName || orderData.name || 'Rider',
+    orderId: orderId,
+    subject: `BUKTI PESANAN #${orderId} - MUSTAZ CRAFT // ORDER CONFIRMED`,
+    html: htmlContent,
+    total: orderData.total,
+    items: orderData.items,
+    address: orderData.address
+  };
+
   try {
-    const res = await fetch('/.netlify/functions/send-order-email', {
+    let res = await fetch('/api/send-receipt', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        to: buyerEmail,
-        customerName: orderData.customerName || 'Rider',
-        orderId: orderId,
-        subject: `⚡ BUKTI PESANAN #${orderId} - MUSTAZ CRAFT // ORDER CONFIRMED`,
-        html: htmlContent,
-        total: orderData.total,
-        items: orderData.items,
-        address: orderData.address
-      })
+      body: JSON.stringify(dispatchPayload)
     });
 
+    if (!res.ok) {
+      // Fallback endpoint
+      res = await fetch('/api/send-order-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dispatchPayload)
+      });
+    }
+
     if (res.ok) {
-      console.log(`[MUSTAZ Email] Order confirmation successfully transmitted to: ${buyerEmail}`);
-      return { success: true, method: 'netlify_function' };
+      const data = await res.json().catch(() => ({}));
+      console.log(`[MUSTAZ Email] Order confirmation successfully transmitted to: ${buyerEmail}`, data);
+      return { success: true, method: 'serverless_receipt_api', data };
     }
   } catch (err) {
-    console.warn('[MUSTAZ Email] Netlify function dispatch warning:', err.message);
+    console.warn('[MUSTAZ Email] Serverless function dispatch warning:', err.message);
   }
 
   // 3. Fallback: Logged and confirmed in client storage

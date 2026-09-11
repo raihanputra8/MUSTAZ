@@ -199,21 +199,23 @@ export async function registerWithEmail(email, password, metadata = {}) {
       });
     } catch {}
 
-    const sessionActive = !!(data.session && data.user);
-    if (sessionActive) {
-      await syncUserSession(data.user, email);
+    // Hentikan pemuatan session secara langsung sebelum OTP diverifikasi
+    if (sb.auth && typeof sb.auth.signOut === 'function') {
+      try { await sb.auth.signOut({ scope: 'local' }); } catch {}
     }
+    localStorage.removeItem('mustaz_auth_logged_in');
+    localStorage.removeItem('mustaz_auth_session');
+
     return {
       ...data,
-      requiresOtp: !sessionActive
+      requiresOtp: true,
+      email: email.trim(),
+      user: data.user
     };
   }
 
-  // Local fallback
-  localStorage.setItem('mustaz_auth_logged_in', 'true');
-  const profile = { fullName, email, phone, alias: 'Rider 7G', role: 'member' };
-  localStorage.setItem('mustaz_user_profile_data', JSON.stringify(profile));
-  return { user: { email }, requiresOtp: false };
+  // Local fallback: tetap minta verifikasi OTP
+  return { user: { email }, requiresOtp: true, email: email.trim() };
 }
 
 /**

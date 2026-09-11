@@ -799,7 +799,7 @@
           </div><!-- /#panel-flash-sale -->
 
           <!-- ══════════════════════════════════════════════════════════════ -->
-          <!-- PANEL 6: STORE SETTINGS (WHATSAPP & CS CONFIG) -->
+          <!-- PANEL 6: STORE SETTINGS (WHATSAPP, CS & EMAIL CONFIG) -->
           <!-- ══════════════════════════════════════════════════════════════ -->
           <div class="account-tab-panel" id="panel-settings">
             <div style="background:#111;border:2px solid var(--accent-yellow);padding:24px;box-shadow:6px 6px 0px #000;margin-bottom:24px;">
@@ -808,34 +808,116 @@
                 <h2 class="editorial-title" style="font-size:1.85rem;margin:0;color:#FFF;">PENGATURAN TOKO // STORE SETTINGS</h2>
               </div>
               <p style="font-family:var(--font-mono-sub);font-size:0.85rem;color:#888;margin:0 0 24px;">
-                Konfigurasi operasional toko dinamis. Nomor WhatsApp ini akan menjadi tujuan otomatis saat pembeli menekan tombol Checkout WhatsApp di keranjang belanja tanpa perlu mengubah kode sumber.
+                Konfigurasi operasional toko dinamis. Perubahan pengaturan ini disimpan ke cloud database Supabase dan langsung aktif tanpa perlu mengubah kode sumber.
               </p>
 
-              <form id="storeSettingsForm" style="display:flex;flex-direction:column;gap:18px;max-width:580px;">
-                <div class="form-group-brutal">
-                  <label for="settingAdminWhatsapp" style="display:block;font-family:var(--font-headline);font-size:0.95rem;color:var(--accent-yellow);margin-bottom:8px;text-transform:uppercase;">
-                    📱 Nomor WhatsApp Resmi CS / Toko *
-                  </label>
-                  <input 
-                    type="text" 
-                    id="settingAdminWhatsapp" 
-                    class="form-input-brutal" 
-                    placeholder="Contoh: 62895325604340 atau 0895325604340"
-                    required
-                    style="width:100%;padding:14px 16px;font-size:1.05rem;background:#181818;color:#FFF;border:2px solid #333;"
-                  />
-                  <span style="display:block;font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;margin-top:6px;">
-                    ℹ️ Nomor otomatis diformat ke standar internasional (mengubah awalan <code style="color:var(--accent-yellow);">08...</code> menjadi <code style="color:var(--accent-yellow);">628...</code>).
-                  </span>
-                </div>
+              <!-- Sub-section 1: WhatsApp Configuration -->
+              <div style="border-bottom:1px dashed #333;padding-bottom:24px;margin-bottom:24px;">
+                <h3 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 14px;letter-spacing:0.04em;">
+                  KONFIGURASI WHATSAPP CS
+                </h3>
+                <form id="storeSettingsForm" style="display:flex;flex-direction:column;gap:16px;max-width:580px;">
+                  <div class="form-group-brutal">
+                    <label for="settingAdminWhatsapp" style="display:block;font-family:var(--font-headline);font-size:0.9rem;color:var(--accent-yellow);margin-bottom:8px;text-transform:uppercase;">
+                      Nomor WhatsApp Resmi CS / Toko *
+                    </label>
+                    <input 
+                      type="text" 
+                      id="settingAdminWhatsapp" 
+                      class="form-input-brutal" 
+                      placeholder="Contoh: 62895325604340 atau 0895325604340"
+                      required
+                      style="width:100%;padding:14px 16px;font-size:1.05rem;background:#181818;color:#FFF;border:2px solid #333;"
+                    />
+                    <span style="display:block;font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;margin-top:6px;">
+                      Nomor otomatis diformat ke standar internasional (mengubah awalan <code style="color:var(--accent-yellow);">08...</code> menjadi <code style="color:var(--accent-yellow);">628...</code>).
+                    </span>
+                  </div>
 
-                <div style="display:flex;align-items:center;gap:14px;margin-top:10px;">
-                  <button type="submit" id="btnSaveStoreSettings" class="btn-brutal-yellow" style="padding:14px 28px;font-size:1rem;font-weight:900;cursor:pointer;">
-                    💾 SIMPAN PENGATURAN
-                  </button>
-                  <span id="storeSettingsStatus" style="display:none;font-family:var(--font-mono-sub);font-size:0.85rem;color:#4ade80;"></span>
-                </div>
-              </form>
+                  <div style="display:flex;align-items:center;gap:14px;margin-top:4px;">
+                    <button type="submit" id="btnSaveStoreSettings" class="btn-brutal-yellow" style="padding:12px 24px;font-size:0.95rem;font-weight:900;cursor:pointer;">
+                      SIMPAN PENGATURAN WHATSAPP
+                    </button>
+                    <span id="storeSettingsStatus" style="display:none;font-family:var(--font-mono-sub);font-size:0.85rem;color:#4ade80;"></span>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Sub-section 2: Email Configuration -->
+              <div>
+                <h3 style="font-family:var(--font-headline);font-size:1.15rem;color:#FFF;margin:0 0 14px;letter-spacing:0.04em;">
+                  KONFIGURASI EMAIL &amp; NOTIFIKASI RESI
+                </h3>
+                <form id="emailSettingsForm" style="display:flex;flex-direction:column;gap:16px;max-width:580px;">
+                  <div class="form-group-brutal">
+                    <label for="settingAdminEmail" style="display:block;font-family:var(--font-headline);font-size:0.9rem;color:var(--accent-pink);margin-bottom:8px;text-transform:uppercase;">
+                      Email Resmi CS / Toko (admin_email) *
+                    </label>
+                    <input 
+                      type="email" 
+                      id="settingAdminEmail" 
+                      class="form-input-brutal" 
+                      placeholder="mustazcraft@gmail.com"
+                      required
+                      style="width:100%;padding:14px 16px;font-size:1.05rem;background:#181818;color:#FFF;border:2px solid #333;"
+                    />
+                    <span style="display:block;font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;margin-top:6px;">
+                      Email tujuan laporan pesanan baru dan kontak resmi bantuan pembeli pada footer invoice.
+                    </span>
+                  </div>
+
+                  <div class="form-group-brutal">
+                    <label for="settingSmtpUser" style="display:block;font-family:var(--font-headline);font-size:0.9rem;color:var(--accent-pink);margin-bottom:8px;text-transform:uppercase;">
+                      Pengirim Email / SMTP User (smtp_user) *
+                    </label>
+                    <input 
+                      type="email" 
+                      id="settingSmtpUser" 
+                      class="form-input-brutal" 
+                      placeholder="orders@mustazcraft.com atau mustazcraft@gmail.com"
+                      required
+                      style="width:100%;padding:14px 16px;font-size:1.05rem;background:#181818;color:#FFF;border:2px solid #333;"
+                    />
+                    <span style="display:block;font-family:var(--font-mono-sub);font-size:0.75rem;color:#AAA;margin-top:6px;">
+                      Alamat email yang tertera sebagai pengirim resmi pada inbox surat pembeli.
+                    </span>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;">
+                    <div class="form-group-brutal">
+                      <label for="settingSmtpHost" style="display:block;font-family:var(--font-headline);font-size:0.85rem;color:#DDD;margin-bottom:6px;text-transform:uppercase;">
+                        SMTP Host Server (smtp_host)
+                      </label>
+                      <input 
+                        type="text" 
+                        id="settingSmtpHost" 
+                        class="form-input-brutal" 
+                        placeholder="smtp.gmail.com"
+                        style="width:100%;padding:12px 14px;font-size:0.95rem;background:#181818;color:#FFF;border:2px solid #333;"
+                      />
+                    </div>
+                    <div class="form-group-brutal">
+                      <label for="settingSmtpPort" style="display:block;font-family:var(--font-headline);font-size:0.85rem;color:#DDD;margin-bottom:6px;text-transform:uppercase;">
+                        Port (smtp_port)
+                      </label>
+                      <input 
+                        type="text" 
+                        id="settingSmtpPort" 
+                        class="form-input-brutal" 
+                        placeholder="587"
+                        style="width:100%;padding:12px 14px;font-size:0.95rem;background:#181818;color:#FFF;border:2px solid #333;"
+                      />
+                    </div>
+                  </div>
+
+                  <div style="display:flex;align-items:center;gap:14px;margin-top:4px;">
+                    <button type="submit" id="btnSaveEmailSettings" class="btn-brutal-pink" style="padding:12px 24px;font-size:0.95rem;font-weight:900;cursor:pointer;">
+                      SIMPAN PENGATURAN EMAIL
+                    </button>
+                    <span id="emailSettingsStatus" style="display:none;font-family:var(--font-mono-sub);font-size:0.85rem;color:#4ade80;"></span>
+                  </div>
+                </form>
+              </div>
             </div>
           </div><!-- /#panel-settings -->
 

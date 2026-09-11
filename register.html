@@ -478,7 +478,7 @@
                     gap: 12px;
                   "
                 >
-                  <span style="font-size: 1.4rem">✉️</span>
+                  <span class="material-symbols-outlined" style="font-size: 1.8rem; color: var(--accent-yellow);">mark_email_unread</span>
                   <div style="flex: 1">
                     <div
                       style="
@@ -503,8 +503,8 @@
                 </div>
 
                 <div class="form-group-brutal">
-                  <label class="form-label-brutal" for="regOtpCode"
-                    >MASUKKAN 6-DIGIT KODE OTP DARI EMAIL</label
+                  <label class="form-label-brutal" for="regOtpCode" style="color: var(--accent-yellow); letter-spacing: 0.04em;"
+                    >MASUKKAN KODE OTP 6-DIGIT SEMENTARA *</label
                   >
                   <input
                     type="text"
@@ -530,8 +530,7 @@
                       margin-top: 6px;
                     "
                   >
-                    Cek kotak masuk atau folder spam email Anda untuk kode
-                    aktivasi akun baru.
+                    Periksa kotak masuk (inbox) atau folder spam email Anda untuk kode OTP 6-digit aktivasi akun.
                   </span>
                 </div>
 
@@ -638,13 +637,13 @@
             alertBox.style.borderColor = "#2D6A2D";
             alertBox.style.color = "#77E688";
             alertBox.style.boxShadow = "none";
-            alertBox.innerHTML = `<span style="font-size:1.1rem;font-weight:900;">✓</span> <span>${msg}</span>`;
+            alertBox.innerHTML = `<span style="font-size:0.85rem;font-weight:900;font-family:var(--font-mono-sub);color:var(--accent-yellow);">[ SUKSES ]</span> <span>${msg}</span>`;
           } else {
             alertBox.style.background = "#1A1416";
             alertBox.style.borderColor = "#5C2434";
             alertBox.style.color = "#FFB3C2";
             alertBox.style.boxShadow = "none";
-            alertBox.innerHTML = `<span style="font-size:1.1rem;">ℹ️</span> <span>${msg}</span>`;
+            alertBox.innerHTML = `<span style="font-size:0.85rem;font-weight:900;font-family:var(--font-mono-sub);color:var(--accent-pink);">[ PERHATIAN ]</span> <span>${msg}</span>`;
           }
         }
 
@@ -712,10 +711,10 @@
             });
             registeredEmail = email;
 
-            // If email was already registered and credentials matched, it automatically logged in!
+            // If email was already registered and credentials matched, handle session
             if (res.autoLoggedIn) {
               showAlert(
-                "✓ Email sudah terdaftar. Berhasil masuk ke akun Anda...",
+                "Email sudah terdaftar. Berhasil masuk ke akun Anda...",
                 true,
               );
               setTimeout(() => {
@@ -724,30 +723,20 @@
               return;
             }
 
-            // If Supabase requires OTP verification (default)
-            if (res.requiresOtp) {
-              if (regTargetEmailDisplay)
-                regTargetEmailDisplay.textContent = email;
-              showAlert(
-                "✓ Pendaftaran berhasil dicatat! Kode OTP 6-digit telah dikirim ke " +
-                  email +
-                  ". Silakan masukkan kode untuk mengaktifkan akun.",
-                true,
-              );
-              regForm.style.display = "none";
-              regOtpForm.style.display = "block";
-              regOtpCodeInput.value = "";
-              regOtpCodeInput.focus();
-            } else {
-              // Auto-confirmed or immediate session
-              showAlert(
-                "✓ Pendaftaran berhasil! Mengalihkan ke garasi...",
-                true,
-              );
-              setTimeout(() => {
-                window.location.href = "account.html";
-              }, 800);
+            // Always enforce 6-digit OTP verification modal / form step
+            if (regTargetEmailDisplay) {
+              regTargetEmailDisplay.textContent = email;
             }
+            showAlert(
+              "Pendaftaran berhasil dicatat! Kode OTP 6-digit telah dikirim ke " +
+                email +
+                ". Silakan masukkan kode untuk mengaktifkan akun.",
+              true,
+            );
+            regForm.style.display = "none";
+            regOtpForm.style.display = "block";
+            regOtpCodeInput.value = "";
+            regOtpCodeInput.focus();
           } catch (err) {
             btnSubmitRegister.textContent = "DAFTAR & BUAT AKUN SEKARANG →";
             btnSubmitRegister.disabled = false;
@@ -774,7 +763,7 @@
 
             await verifyEmailOtp(registeredEmail, token, "signup");
             showAlert(
-              "✓ Akun Berhasil Diaktifkan! Selamat datang di Garasi MUSTAZ...",
+              "Akun Berhasil Diaktifkan! Selamat datang di Garasi MUSTAZ...",
               true,
             );
             setTimeout(() => {
