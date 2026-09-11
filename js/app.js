@@ -9,6 +9,7 @@ import { addToCart, getCartCount, PARTS_DATA, HELMETS_DATA, CHOPPERS_DATA, getDy
 import { getProductImageUrl } from './config.js';
 import { showToast } from './components/toast.js';
 import { showBrutalConfirm, showBrutalAlert, showBrutalFormModal } from './components/modal.js';
+import { initInlineCms } from './inlineCms.js';
 
 // Expose brutalist dialog engine globally and intercept native alert
 if (typeof window !== 'undefined') {
@@ -59,34 +60,8 @@ async function initApp() {
   initPartsPage();
   initHelmetsPage();
 
-  // 3b. Load Dynamic Home Content (Hero Section In-Context CMS)
-  async function loadDynamicHomeContent() {
-    const heroTitleEl = document.getElementById('heroTitle');
-    const heroSubtitleEl = document.getElementById('heroSubtitle');
-    const heroBannerImgEl = document.getElementById('heroBannerImg');
-
-    if (!heroTitleEl && !heroSubtitleEl && !heroBannerImgEl) return;
-
-    try {
-      const { fetchHomeContent } = await import('./services/supabaseService.js');
-      const content = await fetchHomeContent();
-      if (content && typeof content === 'object') {
-        if (content.hero_title && heroTitleEl && content.hero_title !== 'PET HELM / VISORS') {
-          heroTitleEl.textContent = content.hero_title;
-        }
-        if (content.hero_subtitle && heroSubtitleEl && !content.hero_subtitle.startsWith('High-voltage acid')) {
-          heroSubtitleEl.textContent = content.hero_subtitle;
-        }
-        if (content.hero_banner_image && heroBannerImgEl && !content.hero_banner_image.includes('hero-main.jpg')) {
-          heroBannerImgEl.src = content.hero_banner_image;
-        }
-      }
-    } catch (err) {
-      // Keep pristine fallback HTML
-    }
-  }
-
-  loadDynamicHomeContent();
+  // 3b. Initialize Visual In-Page Inline CMS (Hover/Tap to Edit for Admin & Dynamic Content for Visitors)
+  initInlineCms();
 
   // 4. Wire Global "data-add-to-cart" buttons (e.g. on Home page or featured sections)
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
