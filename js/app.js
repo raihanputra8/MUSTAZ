@@ -268,7 +268,7 @@ async function initApp() {
       }
     });
 
-    // 2. Explicit data-product-price hooks (Drops Grid & Hero Visor in index.html)
+    // 2. Explicit data-product-price hooks (Drops Grid & Hero Pet in index.html)
     document.querySelectorAll('[data-product-price]').forEach(el => {
       const partId = el.dataset.productPrice;
       const product = dynamicParts.find(p => p.id === partId);
@@ -345,7 +345,7 @@ async function initApp() {
 
   initFlashSaleTimer();
 
-  // 8. 3D Visor Coverflow Carousel with Auto-Slide (FOR RIDING WITH PRIDE)
+  // 8. 3D Pet Coverflow Carousel with Auto-Slide (FOR RIDING WITH PRIDE)
   function initVisorCoverflowSlider() {
     const stage = document.getElementById('visorSliderStage');
     if (!stage) return;

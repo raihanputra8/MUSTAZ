@@ -9,8 +9,9 @@ export const CONFIG = {
   EXCHANGE_RATE_USD: 15500, // 1 USD = Rp 15.500
   VERSION: "2.0.0",
 
-  // Admin WhatsApp Number for Direct Checkout
-  ADMIN_WHATSAPP: "62895402806350",
+  // Admin WhatsApp Number for Direct Checkout (Default fallback)
+  DEFAULT_ADMIN_WHATSAPP: "62895325604340",
+  ADMIN_WHATSAPP: "62895325604340",
 
   // Supabase Project Credentials (Active)
   SUPABASE_URL: "https://hskggocaakmidbysrpnd.supabase.co",
@@ -25,6 +26,7 @@ export const CONFIG = {
     ACCOUNTS: "accounts",
     CATEGORIES: "categories",
     REVIEWS: "reviews",
+    STORE_SETTINGS: "store_settings",
   },
 };
 

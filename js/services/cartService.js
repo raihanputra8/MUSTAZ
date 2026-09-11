@@ -29,7 +29,7 @@ export const HELMETS_DATA = [
     id: 'custom-3', type: 'drop-sets', category: 'Drop Sets',
     name: 'MUSTAZ EVENT EDITION KIT', sub: 'Complete Rider Kit + Ziplock Packaging + Zine',
     price: 1200000, status: 'Limited Drop',
-    specs: { Visor: 'Acid Spiked Acrylic Pet', Package: 'Heavy Duty Zip Pack', Gloves: 'Yellow Leather Gloves', Extra: 'Issue 04 Zine + Stickers', Batch: 'Series 01 Run' },
+    specs: { Pet Helm: 'Acid Spiked Acrylic Pet', Package: 'Heavy Duty Zip Pack', Gloves: 'Yellow Leather Gloves', Extra: 'Issue 04 Zine + Stickers', Batch: 'Series 01 Run' },
     image: getProductImageUrl('mustaz_booth_event.png'),
     fallback: 'assets/images/mustaz_booth_event.png'
   }
@@ -41,7 +41,7 @@ export const CHOPPERS_DATA = HELMETS_DATA;
 export const DEFAULT_PARTS_DATA = [
   {
     id: 'pet-1', type: 'parts', category: 'Acrylic Pet',
-    name: 'Y-TWO ROOF VISOR', slug: 'y-two-roof-visor', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
+    name: 'Y-TWO ROOF PET', slug: 'y-two-roof-visor', sub: 'Neon Lime Translucent // Spiked Studs // 3-Snap Universal',
     price: 350000, original_price: 450000, badge: 'BESTSELLER', status: 'Active', stock: 12,
     is_flash_sale: true, flash_sale_price: 245000, flash_sale_stock: 3,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
@@ -50,7 +50,7 @@ export const DEFAULT_PARTS_DATA = [
   },
   {
     id: 'pet-2', type: 'parts', category: 'Leather Pet',
-    name: 'STUDDED LID FLAME VISOR', slug: 'studded-lid-flame-visor', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
+    name: 'STUDDED LID FLAME PET', slug: 'studded-lid-flame-visor', sub: 'Black Heavy Leather // Hand-Painted Red & Yellow Flames',
     price: 380000, original_price: null, badge: 'HOT DROP', status: 'Active', stock: 8,
     is_flash_sale: true, flash_sale_price: 285000, flash_sale_stock: 5,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
@@ -58,8 +58,8 @@ export const DEFAULT_PARTS_DATA = [
     fallback: 'assets/images/Product2.webp'
   },
   {
-    id: 'pet-3', type: 'parts', category: 'Retro Visor',
-    name: 'CHECKER RACER DUCKBILL', slug: 'checker-racer-duckbill', sub: 'Monochrome Checkered Motocross Visor // Chrome Snaps',
+    id: 'pet-3', type: 'parts', category: 'Retro Pet',
+    name: 'CHECKER RACER DUCKBILL', slug: 'checker-racer-duckbill', sub: 'Monochrome Checkered Motocross Peak // Chrome Snaps',
     price: 280000, original_price: 320000, badge: 'LIMITED', status: 'Active', stock: 15,
     is_flash_sale: true, flash_sale_price: 210000, flash_sale_stock: 4,
     flash_sale_start: '2026-09-01T00:00:00.000Z', flash_sale_end: '2026-09-30T23:59:59.000Z',
@@ -68,7 +68,7 @@ export const DEFAULT_PARTS_DATA = [
   },
   {
     id: 'pet-4', type: 'parts', category: 'Drop Sets',
-    name: 'MUSTAZ OFFICIAL BUNDLE SET', slug: 'mustaz-official-bundle-set', sub: 'Pet Visor + Custom Packaging Bag + Zine + Sticker Pack',
+    name: 'MUSTAZ OFFICIAL BUNDLE SET', slug: 'mustaz-official-bundle-set', sub: 'Pet Helm + Custom Packaging Bag + Zine + Sticker Pack',
     price: 450000, original_price: 520000, badge: 'BUNDLE', status: 'Active', stock: 10,
     is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
     image: getProductImageUrl('mustaz_booth_event.png'),
@@ -83,7 +83,7 @@ export const DEFAULT_PARTS_DATA = [
     fallback: 'assets/images/Product1.webp'
   },
   {
-    id: 'pet-6', type: 'parts', category: 'Retro Visor',
+    id: 'pet-6', type: 'parts', category: 'Retro Pet',
     name: 'SMOKE TINT SHORT PEAK', slug: 'smoke-tint-short-peak', sub: 'Dark Smoke Polycarbonate // Universal 3-Snap Fit',
     price: 220000, original_price: 270000, badge: 'SALE', status: 'Active', stock: 24,
     is_flash_sale: false, flash_sale_price: null, flash_sale_stock: 0,
@@ -288,8 +288,8 @@ export function addProduct(product) {
     id: product.id || `pet-${Date.now().toString().slice(-4)}`,
     type: 'parts',
     category: product.category || 'Acrylic Pet',
-    name: product.name || 'UNTITLED PET VISOR',
-    slug: product.slug || toSlug(product.name || 'untitled-pet-visor'),
+    name: product.name || 'UNTITLED PET HELM',
+    slug: product.slug || toSlug(product.name || 'untitled-pet-helm'),
     sub: product.sub || product.description || 'Custom Hand-Crafted Helmet Accessory',
     price: Number(product.price) || 250000,
     original_price: product.original_price ? Number(product.original_price) : (product.originalPrice ? Number(product.originalPrice) : null),
@@ -497,7 +497,7 @@ export function getUserOrders(userEmail) {
         status: 'IN TRANSIT',
         tracking: 'J&T EXPRESS [JT-992144]',
         items: [
-          { name: 'Y-TWO ROOF VISOR // SPIKED', spec: 'COLOR: ACID YELLOW ACRYLIC • 3-SNAP MOUNT', qty: 1, price: 350000, image: 'assets/images/pet_visor_yellow_flame.png' },
+          { name: 'Y-TWO ROOF PET // SPIKED', spec: 'COLOR: ACID YELLOW ACRYLIC • 3-SNAP MOUNT', qty: 1, price: 350000, image: 'assets/images/pet_visor_yellow_flame.png' },
           { name: 'CHECKER RACER PET // DUCKBILL', spec: 'COLOR: MONOCHROME CHECKERED • RETRO 70S', qty: 1, price: 280000, image: 'assets/images/retro_checkered_helmet.png' }
         ],
         total: 630000
@@ -525,7 +525,7 @@ export function saveUserOrder(userEmail, newOrder) {
   }
 }
 
-// ─── User-Scoped Wishlist (Saved Visors) ────────────────────────────────────
+// ─── User-Scoped Wishlist (Saved Pet Helm) ────────────────────────────────────
 
 export function getUserWishlist(userEmail) {
   const email = (userEmail || getActiveUserEmail() || '').toLowerCase().trim();
@@ -640,6 +640,52 @@ export function formatRupiah(amount, forceCurrency = null) {
   return formatPrice(amount, forceCurrency);
 }
 
+/**
+ * Dynamic Admin WhatsApp Resolver
+ */
+export function getCachedAdminWhatsApp() {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const cached = localStorage.getItem('mustaz_store_settings_admin_whatsapp');
+    if (cached) return cached;
+  }
+  return CONFIG.DEFAULT_ADMIN_WHATSAPP || CONFIG.ADMIN_WHATSAPP || '62895325604340';
+}
+
+export async function getDynamicAdminWhatsApp() {
+  try {
+    const { getSupabase } = await import('./authService.js');
+    const sb = await getSupabase();
+    if (sb) {
+      const { data, error } = await sb
+        .from('store_settings')
+        .select('value')
+        .eq('key', 'admin_whatsapp')
+        .maybeSingle();
+
+      if (data && data.value) {
+        let phone = data.value.replace(/[^0-9]/g, '');
+        if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+        if (!phone.startsWith('62')) phone = '62' + phone;
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('mustaz_store_settings_admin_whatsapp', phone);
+        }
+        CONFIG.ADMIN_WHATSAPP = phone;
+        return phone;
+      }
+    }
+  } catch (err) {
+    console.warn('⚠️ Gagal mengambil nomor WA dari database, menggunakan nomor fallback.');
+  }
+  return getCachedAdminWhatsApp();
+}
+
+// Background warm cache
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    getDynamicAdminWhatsApp().catch(() => {});
+  }, 800);
+}
+
 export function generateWhatsAppUrl(customerData, cartItems, total, orderIdParam) {
   const currency = getActiveCurrency();
   const orderId = orderIdParam || customerData.orderId || customerData.id || ('MSTZ-' + Math.floor(1000 + Math.random() * 9000));
@@ -672,6 +718,7 @@ export function generateWhatsAppUrl(customerData, cartItems, total, orderIdParam
     `_Mohon instruksi pembayaran dan nomor rekening resmi toko ya Kak CS._`
   ];
   const text = encodeURIComponent(lines.join('\n'));
-  return `https://wa.me/${CONFIG.ADMIN_WHATSAPP}?text=${text}`;
+  const targetPhone = customerData.adminPhone || getCachedAdminWhatsApp();
+  return `https://wa.me/${targetPhone}?text=${text}`;
 }
 

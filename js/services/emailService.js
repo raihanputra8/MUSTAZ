@@ -83,7 +83,7 @@ export function buildOrderInvoiceHTML(order) {
             <td style="padding: 28px 24px;">
               <p style="font-size: 15px; line-height: 1.6; color: #CCCCCC; margin: 0 0 20px;">
                 Halo <strong style="color: #FFFFFF;">${order.customerName || 'Rider'}</strong>,<br>
-                Pesanan custom pet visor / part helm Anda telah berhasil dicatat ke dalam sistem <strong>MUSTAZ Garage</strong>. Tim kustom kami sedang menyiapkan paket untuk pengiriman.
+                Pesanan custom pet helm / part helm Anda telah berhasil dicatat ke dalam sistem <strong>MUSTAZ Garage</strong>. Tim kustom kami sedang menyiapkan paket untuk pengiriman.
               </p>
 
               <!-- Order Metadata Grid -->
@@ -157,7 +157,7 @@ export function buildOrderInvoiceHTML(order) {
           <tr>
             <td style="background-color: #0A0A0A; border-top: 1px solid #222222; padding: 20px 24px; text-align: center;">
               <p style="font-size: 11px; font-family: monospace; color: #666666; margin: 0 0 6px; letter-spacing: 0.08em;">
-                MUSTAZ CRAFT // KUSTOM HELMET & PET VISORS GARAGE
+                MUSTAZ CRAFT // KUSTOM HELMET & PET HELM GARAGE
               </p>
               <p style="font-size: 11px; font-family: monospace; color: #444444; margin: 0;">
                 Jl. Senopati Raya No. 42B, Kebayoran Baru, Jakarta Selatan • Hotline: +62 895-4028-06350

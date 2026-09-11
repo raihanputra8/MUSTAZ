@@ -5,7 +5,7 @@
 import {
   getCart, removeFromCart, updateCartQty, clearCart,
   getCartTotal, getCartCount, formatRupiah, generateWhatsAppUrl,
-  getActiveUserEmail, getUserAddresses, saveUserOrder
+  getActiveUserEmail, getUserAddresses, saveUserOrder, getDynamicAdminWhatsApp
 } from '../services/cartService.js';
 import { sendOrderSuccessEmail, showOrderSuccessModal } from '../services/emailService.js';
 import { saveCloudOrder, submitOrderSecure } from '../services/supabaseService.js';
@@ -159,7 +159,7 @@ function renderCartItems() {
       <div class="cart-empty-state">
         <div class="cart-empty-icon">🏍️</div>
         <p class="cart-empty-title">KERANJANG BELANJA KOSONG</p>
-        <p class="cart-empty-sub">Belum ada visor atau part yang dipilih. Masuk ke katalog untuk melengkapi helm Anda.</p>
+        <p class="cart-empty-sub">Belum ada pet helm atau part yang dipilih. Masuk ke katalog untuk melengkapi helm Anda.</p>
         <a href="parts.html" class="btn-brutal-pink btn-brutal-sm" style="margin-top:20px;display:inline-flex;">
           LIHAT KATALOG PRODUK →
         </a>
@@ -254,7 +254,7 @@ export function openCheckout() {
     import('./modal.js').then(({ showBrutalAlert }) => {
       showBrutalAlert({
         title: 'KERANJANG KOSONG',
-        message: 'Silakan pilih produk pet helm atau custom visor terlebih dahulu sebelum checkout.',
+        message: 'Silakan pilih produk pet helm atau custom pet helm terlebih dahulu sebelum checkout.',
         badge: 'CART // EMPTY',
         okText: 'PILIH PRODUK',
         onOk: () => { window.location.href = 'parts.html'; }
@@ -465,7 +465,7 @@ export function initCart() {
         tracking: `VERIFIKASI ADMIN [${courier}]`,
         items: cartItems.map(i => ({
           name: i.name,
-          spec: i.sub || 'Custom Visor',
+          spec: i.sub || 'Custom Pet Helm',
           qty: i.quantity,
           price: i.price,
           image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
@@ -503,7 +503,12 @@ export function initCart() {
         saveUserOrder(email, orderRecord);
       } catch {}
 
-      // 5. Generate and launch WhatsApp conversation
+      // 5. Fetch latest dynamic WhatsApp number and generate conversation URL
+      let targetWa = null;
+      try {
+        targetWa = await getDynamicAdminWhatsApp();
+      } catch {}
+
       const url = generateWhatsAppUrl({ 
         name, 
         phone: cleanPhone, 
@@ -511,7 +516,8 @@ export function initCart() {
         courier, 
         payment, 
         notes: `Email: ${email}`, 
-        orderId: finalOrderId 
+        orderId: finalOrderId,
+        adminPhone: targetWa
       }, cartItems, finalTotal, finalOrderId);
 
       const waWin = window.open(url, '_blank');

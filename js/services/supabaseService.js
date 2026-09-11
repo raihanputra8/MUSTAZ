@@ -552,26 +552,54 @@ export async function saveCloudAccount(profile) {
       alias: profile.alias || 'Rider 7G',
       phone: profile.phone || '',
       role: role,
-      avatar_url: profile.avatarUrl || '',
       updated_at: new Date().toISOString()
     };
 
-    // Try update first
-    const updated = await supabaseRest(`${CONFIG.TABLES.ACCOUNTS}?email=eq.${encodeURIComponent(email)}`, {
-      method: 'PATCH',
-      body: JSON.stringify(payload)
-    }).catch(() => null);
-
-    // If not found or empty, insert
-    if (!updated || updated.length === 0) {
-      await supabaseRest(CONFIG.TABLES.ACCOUNTS, {
-        method: 'POST',
-        body: JSON.stringify([payload])
-      });
+    if (profile.avatarUrl) {
+      payload.avatar_url = profile.avatarUrl;
     }
+
+    async function sendAccountPayload(dataPayload) {
+      // Try update first
+      const updated = await supabaseRest(`${CONFIG.TABLES.ACCOUNTS}?email=eq.${encodeURIComponent(email)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(dataPayload)
+      }).catch(err => {
+        if (err.message && err.message.includes('avatar_url') && dataPayload.avatar_url) {
+          const { avatar_url, ...stripped } = dataPayload;
+          return supabaseRest(`${CONFIG.TABLES.ACCOUNTS}?email=eq.${encodeURIComponent(email)}`, {
+            method: 'PATCH',
+            body: JSON.stringify(stripped)
+          });
+        }
+        return null;
+      });
+
+      // If not found or empty, insert
+      if (!updated || updated.length === 0) {
+        try {
+          await supabaseRest(CONFIG.TABLES.ACCOUNTS, {
+            method: 'POST',
+            body: JSON.stringify([dataPayload])
+          });
+        } catch (postErr) {
+          if (postErr.message && postErr.message.includes('avatar_url') && dataPayload.avatar_url) {
+            const { avatar_url, ...stripped } = dataPayload;
+            await supabaseRest(CONFIG.TABLES.ACCOUNTS, {
+              method: 'POST',
+              body: JSON.stringify([stripped])
+            });
+          } else {
+            throw postErr;
+          }
+        }
+      }
+    }
+
+    await sendAccountPayload(payload);
     return true;
   } catch (err) {
-    console.warn('Account saved locally (cloud pending):', err.message);
+    console.warn('[Supabase saveCloudAccount Error]:', err.message);
     return false;
   }
 }
@@ -600,5 +628,50 @@ export async function fetchCloudAccount(email) {
     console.warn('Account cloud fetch fallback:', err.message);
   }
   return null;
+}
+
+/**
+ * 10. Store Settings Management (Dynamic WhatsApp CS, Global Toggles)
+ */
+export async function fetchStoreSetting(key) {
+  try {
+    const table = CONFIG.TABLES.STORE_SETTINGS || 'store_settings';
+    const data = await supabaseRest(`${table}?key=eq.${encodeURIComponent(key)}&limit=1`);
+    if (Array.isArray(data) && data.length > 0) {
+      return data[0].value;
+    }
+  } catch (err) {
+    console.warn(`[Supabase fetchStoreSetting ${key} Error]:`, err.message);
+  }
+  return null;
+}
+
+export async function saveStoreSetting(key, value) {
+  const table = CONFIG.TABLES.STORE_SETTINGS || 'store_settings';
+  const payload = {
+    key: String(key).trim(),
+    value: String(value).trim(),
+    updated_at: new Date().toISOString()
+  };
+
+  try {
+    // Try update first
+    const updated = await supabaseRest(`${table}?key=eq.${encodeURIComponent(key)}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload)
+    }).catch(() => null);
+
+    // If not found or empty, insert
+    if (!updated || updated.length === 0) {
+      await supabaseRest(table, {
+        method: 'POST',
+        body: JSON.stringify([payload])
+      });
+    }
+    return true;
+  } catch (err) {
+    console.warn(`[Supabase saveStoreSetting ${key} Error]:`, err.message);
+    throw err;
+  }
 }
 

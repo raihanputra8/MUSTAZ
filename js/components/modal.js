@@ -496,7 +496,7 @@ export function showBrutalFormModal({
  */
 export function showBrutalReviewModal({
   orderId = '',
-  productName = 'MUSTAZ PET VISOR',
+  productName = 'MUSTAZ PET HELM',
   productImage = 'assets/images/pet_visor_yellow_flame.png',
   productSpec = 'OFFICIAL MUSTAZ SPEC',
   riderName = '',

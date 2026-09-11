@@ -138,7 +138,6 @@ export async function loginWithGoogle() {
       options: {
         redirectTo: redirectUrl,
         queryParams: {
-          access_type: 'offline',
           prompt: 'select_account'
         }
       }
@@ -278,13 +277,17 @@ export async function verifyAdminSession() {
     let isRoleAdmin = metadataRole === 'admin' || isOwnerEmail;
 
     // 3. Fallback periksa role pada tabel accounts jika didefinisikan
-    if (!isRoleAdmin && user.id) {
+    if (!isRoleAdmin) {
       try {
-        const { data: profile } = await sb
-          .from('accounts')
-          .select('role')
-          .eq('id', user.id)
-          .maybeSingle();
+        let profile = null;
+        if (user.id) {
+          const res = await sb.from('accounts').select('role').eq('id', user.id).maybeSingle();
+          profile = res.data;
+        }
+        if (!profile && email) {
+          const res = await sb.from('accounts').select('role').eq('email', email).maybeSingle();
+          profile = res.data;
+        }
         if (profile?.role === 'admin') {
           isRoleAdmin = true;
         }

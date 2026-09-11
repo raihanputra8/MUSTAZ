@@ -401,7 +401,7 @@ export function handleCustomerMessage(incomingText, sessionContext = {}) {
     response: [
       `Halo Kak! Selamat datang di layanan WhatsApp *MUSTAZ CRAFT*! 👋`,
       ``,
-      `Ada yang bisa kami bantu seputar produk visor pet helm kustom, pesanan web, atau tracking pengiriman hari ini?`,
+      `Ada yang bisa kami bantu seputar produk pet helm kustom, pesanan web, atau tracking pengiriman hari ini?`,
       ``,
       `_Jika ingin mengonfirmasi pesanan, silakan kirimkan format pesan order terstruktur dari website kami yang memuat Kode Order ya Kak._`
     ].join('\n'),

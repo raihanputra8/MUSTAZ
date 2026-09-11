@@ -194,6 +194,8 @@ async function initAdminDashboard() {
       switchTab('reviews');
     } else if (tabParam === 'flash-sale' || tabParam === 'promo') {
       switchTab('flash-sale');
+    } else if (tabParam === 'settings' || tabParam === 'toko') {
+      switchTab('settings');
     } else {
       switchTab('inventory');
     }
@@ -393,7 +395,7 @@ async function initAdminDashboard() {
         const safeId = escapeHtml(part.id || '');
         const safeName = escapeHtml(part.name || 'CUSTOM PART');
         const safeSlug = escapeHtml(part.slug || generateSlug(part.name || 'part'));
-        const safeCategory = escapeHtml(part.category || 'Retro Visor');
+        const safeCategory = escapeHtml(part.category || 'Retro Pet');
         const safeSub = escapeHtml(part.sub || part.description || '');
         const safeStatus = (part.status || 'Active').toLowerCase() === 'draft' ? 'Draft' : 'Active';
         const rawImg = part.image || part.image_url || 'Product1.png';
@@ -600,7 +602,7 @@ async function initAdminDashboard() {
   });
 
   function updatePreview() {
-    const name = document.getElementById('newProdName')?.value.trim() || 'UNTITLED PET VISOR';
+    const name = document.getElementById('newProdName')?.value.trim() || 'UNTITLED PET HELM';
     const cat = document.getElementById('newProdCategory')?.value || 'ACRYLIC PET';
     const sub = document.getElementById('newProdSub')?.value.trim() || 'Custom Hand-Crafted Helmet Accessory';
     const priceVal = Number(document.getElementById('newProdPrice')?.value) || 350000;
@@ -831,8 +833,8 @@ async function initAdminDashboard() {
 
   // ─── 8. CUSTOMER ORDERS TAB ──────────────────────────────────────────────
   const DEFAULT_ADMIN_ORDERS = [
-    { id: 'MSTZ-9942', customer: 'Raihan // Depok', items: 'Y-Two Roof Visor (Acid Lime) x1', total: 350000, date: '2026-09-02', status: 'IN TRANSIT' },
-    { id: 'MSTZ-8812', customer: 'Bima // Jakarta Selatan', items: 'Studded Lid Flame Visor x1, Ear Guards x1', total: 575000, date: '2026-08-28', status: 'DELIVERED' },
+    { id: 'MSTZ-9942', customer: 'Raihan // Depok', items: 'Y-Two Roof Pet (Acid Lime) x1', total: 350000, date: '2026-09-02', status: 'IN TRANSIT' },
+    { id: 'MSTZ-8812', customer: 'Bima // Jakarta Selatan', items: 'Studded Lid Flame Pet x1, Ear Guards x1', total: 575000, date: '2026-08-28', status: 'DELIVERED' },
     { id: 'MSTZ-7731', customer: 'Deri // Bandung Barat', items: 'Mustaz Official Bundle Set x1', total: 450000, date: '2026-08-24', status: 'PROCESSING' }
   ];
 
@@ -2156,11 +2158,102 @@ async function initAdminDashboard() {
     }
   }
 
+  // ─── STORE SETTINGS MANAGER (DYNAMIC ADMIN WHATSAPP & SHOP CONFIG) ─────────
+  async function initStoreSettingsManager() {
+    const form = document.getElementById('storeSettingsForm');
+    const inputWa = document.getElementById('settingAdminWhatsapp');
+    const statusEl = document.getElementById('storeSettingsStatus');
+    const btnSave = document.getElementById('btnSaveStoreSettings');
+    if (!form || !inputWa) return;
+
+    // 1. Pre-populate initial value from database / local cache
+    const cachedWa = localStorage.getItem('mustaz_store_settings_admin_whatsapp') || CONFIG.DEFAULT_ADMIN_WHATSAPP || CONFIG.ADMIN_WHATSAPP || '62895325604340';
+    inputWa.value = cachedWa;
+
+    // Fetch freshest from Supabase store_settings
+    try {
+      const { fetchStoreSetting } = await import('./services/supabaseService.js');
+      const cloudWa = await fetchStoreSetting('admin_whatsapp');
+      if (cloudWa) {
+        let clean = cloudWa.replace(/[^0-9]/g, '');
+        if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+        if (!clean.startsWith('62')) clean = '62' + clean;
+        inputWa.value = clean;
+        localStorage.setItem('mustaz_store_settings_admin_whatsapp', clean);
+        CONFIG.ADMIN_WHATSAPP = clean;
+      }
+    } catch (err) {
+      console.warn('[Admin] fetchStoreSetting error:', err);
+    }
+
+    // 2. Handle Form Submit
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let rawVal = inputWa.value.trim();
+      if (!rawVal) {
+        showAdminToast('error', 'INPUT KOSONG', 'Silakan masukkan nomor WhatsApp resmi toko.');
+        return;
+      }
+
+      // Format otomatis ke standar internasional
+      let cleanPhone = rawVal.replace(/[^0-9]/g, '');
+      if (cleanPhone.startsWith('0')) {
+        cleanPhone = '62' + cleanPhone.slice(1);
+      } else if (cleanPhone.startsWith('8')) {
+        cleanPhone = '62' + cleanPhone;
+      } else if (!cleanPhone.startsWith('62')) {
+        cleanPhone = '62' + cleanPhone;
+      }
+
+      if (cleanPhone.length < 10 || cleanPhone.length > 16) {
+        showAdminToast('error', 'NOMOR TIDAK VALID', 'Nomor WhatsApp harus memiliki minimal 10 digit.');
+        return;
+      }
+
+      inputWa.value = cleanPhone;
+
+      try {
+        if (btnSave) {
+          btnSave.disabled = true;
+          btnSave.textContent = '⏳ MENYIMPAN...';
+        }
+
+        // 1. Save to Supabase Cloud
+        const { saveStoreSetting } = await import('./services/supabaseService.js');
+        await saveStoreSetting('admin_whatsapp', cleanPhone);
+
+        // 2. Cache locally
+        localStorage.setItem('mustaz_store_settings_admin_whatsapp', cleanPhone);
+        CONFIG.ADMIN_WHATSAPP = cleanPhone;
+
+        // 3. UI Feedback
+        showAdminToast('success', 'BERHASIL DISIMPAN', 'Nomor WhatsApp CS Berhasil Diperbarui!');
+        if (statusEl) {
+          statusEl.textContent = '✓ Pengaturan toko aktif tersimpan ke cloud.';
+          statusEl.style.display = 'inline';
+          setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+        }
+      } catch (saveErr) {
+        console.error('[Admin] Gagal menyimpan store settings:', saveErr);
+        // Fallback local save
+        localStorage.setItem('mustaz_store_settings_admin_whatsapp', cleanPhone);
+        CONFIG.ADMIN_WHATSAPP = cleanPhone;
+        showAdminToast('success', 'DISIMPAN LOKAL', 'Nomor WhatsApp CS disimpan (koneksi cloud pending).');
+      } finally {
+        if (btnSave) {
+          btnSave.disabled = false;
+          btnSave.textContent = '💾 SIMPAN PENGATURAN';
+        }
+      }
+    });
+  }
+
   // Expose methods globally for external triggers & debugging
   window.bindAdminEventListeners = bindAdminEventListeners;
   window.loadAdminProducts = loadAdminProducts;
   window.loadAdminOrders = loadAdminOrders;
   window.fetchAdminOrders = () => syncAndRenderOrders(true);
+  window.initStoreSettingsManager = initStoreSettingsManager;
 
   // Safe bootstrap execution pipeline
   try {
@@ -2178,6 +2271,9 @@ async function initAdminDashboard() {
     // 4. Inisialisasi Flash Sale & Reviews
     try { initFlashSaleManager(); } catch (e) { console.warn('[Admin] Flash sale init error:', e); }
     try { renderAdminReviews(); } catch (e) { console.warn('[Admin] Reviews render error:', e); }
+
+    // 5. Inisialisasi Pengaturan Toko (Dynamic Store Settings)
+    try { initStoreSettingsManager(); } catch (e) { console.warn('[Admin] Store settings init error:', e); }
 
     // 5. Inisialisasi Supabase Realtime Subscription
     try {
