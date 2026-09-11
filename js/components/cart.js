@@ -66,7 +66,7 @@ function getCheckoutModalHTML() {
           <form id="checkoutForm" novalidate>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custName">01 // FULL NAME / ALIAS *</label>
-              <input type="text" id="custName" class="form-input-brutal" placeholder="Nama Lengkap" required />
+              <input type="text" id="custName" class="form-input-brutal" placeholder="Masukan nama anda di sini" required />
             </div>
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="custPhone">02 // WHATSAPP / COMMS LINE *</label>

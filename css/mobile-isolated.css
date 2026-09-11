@@ -811,6 +811,27 @@
     font-size: 0.85rem !important;
   }
 
+  /* Search Input Padding Fix: avoid overlapping magnifying glass icon */
+  input[data-search],
+  .search-input,
+  #adminSearchInput,
+  #adminOrderSearchInput,
+  #catalogSearchInput,
+  #partsSearchInput,
+  .admin-search-box-wrap input,
+  .search-box-container input {
+    padding-left: 38px !important;
+  }
+
+  /* Admin Mobile Search Bar: new row without collision */
+  .admin-search-toolbar,
+  .admin-search-box-wrap {
+    margin-top: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
   #directCheckoutForm button[type="submit"],
   #checkoutSubmitBtn {
     padding: 14px 16px !important;

@@ -1218,11 +1218,14 @@ async function initAdminDashboard() {
     } else if (actionPhase === 4 || actionPhase === 'p4') {
       const baseOrigin = (typeof window !== 'undefined' && window.location?.origin) ? window.location.origin : 'https://mustazbuildtest.vercel.app';
       const cleanBuyerName = custName.replace(/\s*\([^)]*\)/, '').trim() || 'Rider';
-      const reviewUrl = `${baseOrigin}/testimoni.html?review_order=${encodeURIComponent(orderCode)}&buyer=${encodeURIComponent(cleanBuyerName)}`;
+      const itemDesc = order.items || order.item || order.product_name || '';
+      const itemParam = itemDesc ? `&item=${encodeURIComponent(itemDesc)}` : '';
+      const reviewUrl = `${baseOrigin}/testimoni.html?review_order=${encodeURIComponent(orderCode)}${itemParam}&buyer=${encodeURIComponent(cleanBuyerName)}`;
       const data = {
         orderId: orderCode,
         customerName: cleanBuyerName,
-        phone: customerPhone
+        phone: customerPhone,
+        items: itemDesc
       };
       message = generatePhase4Response(data, reviewUrl);
     }

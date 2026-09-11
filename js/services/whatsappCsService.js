@@ -68,13 +68,14 @@ export function buildTrackingUrl(courier, resiNumber) {
   return `https://cekresi.com/?noresi=${cleanResi}`;
 }
 
-export function buildReviewUrl(orderId, customerName) {
+export function buildReviewUrl(orderId, customerName, item) {
   const cleanId = cleanOrderId(orderId);
   const base = typeof window !== 'undefined' && window.location && window.location.origin
     ? window.location.origin
-    : 'https://mustaz-craft.com';
+    : 'https://mustazbuildtest.vercel.app';
+  const itemParam = item ? `&item=${encodeURIComponent(item)}` : '';
   const nameParam = customerName ? `&buyer=${encodeURIComponent(customerName)}` : '';
-  return `${base}/testimoni.html?review_order=${encodeURIComponent(cleanId)}${nameParam}`;
+  return `${base}/testimoni.html?review_order=${encodeURIComponent(cleanId)}${itemParam}${nameParam}`;
 }
 
 // ─── 3. Phase 1: Incoming Order Parser & Guardrails ─────────────────────────
@@ -226,7 +227,8 @@ export function generatePhase3Response(shippingData) {
 export function generatePhase4Response(reviewData, customReviewUrl = null) {
   const name = reviewData.customerName || 'Pembeli';
   const orderId = cleanOrderId(reviewData.orderId);
-  const reviewLink = reviewData.reviewUrl || customReviewUrl || buildReviewUrl(orderId, name);
+  const item = reviewData.items || reviewData.item || '';
+  const reviewLink = reviewData.reviewUrl || customReviewUrl || buildReviewUrl(orderId, name, item);
 
   return [
     `Halo Kak ${name}! 👋`,

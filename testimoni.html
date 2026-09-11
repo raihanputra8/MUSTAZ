@@ -93,12 +93,7 @@
     <span class="material-symbols-outlined">arrow_forward</span>
   </a>
 
-  <div style="margin-top:auto;padding-top:16px;border-top:1px solid #282828;">
-    <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1rem;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
-      <span>MEMBER LOGIN</span>
-      <span class="material-symbols-outlined" style="font-size:20px;">login</span>
-    </a>
-  </div>
+  <div class="mobile-auth-area" style="margin-top:auto;padding-top:16px;border-top:1px dashed #333;"></div>
 </div>
 
 <div class="marquee-bar">
@@ -462,6 +457,7 @@
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get('review_order') || params.get('orderId');
     const buyerNameParam = params.get('buyer') || params.get('name') || '';
+    const itemParam = params.get('item') || params.get('product') || '';
 
     // 1. Star Rating Interactive Handling
     const starBtns = document.querySelectorAll('.star-btn');
@@ -512,6 +508,54 @@
       });
     }
 
+    // Modal Review Opener
+    async function openReviewModal(targetOrderId) {
+      const cleanOrder = String(targetOrderId || orderId || '').replace(/^#+/, '').trim().toUpperCase();
+      if (!cleanOrder) return;
+
+      // Attempt to look up order info from local caches
+      let matchedOrder = null;
+      try {
+        const recents = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
+        const latest = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
+        const adminOrds = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+        matchedOrder = [latest, ...recents, ...adminOrds].find(o => o && String(o.id || o.orderId).replace(/^#+/, '').toUpperCase() === cleanOrder);
+      } catch {}
+
+      const resolvedBuyer = buyerNameParam || (matchedOrder && (matchedOrder.customer_name || matchedOrder.customer || matchedOrder.name)) || '';
+      const cleanBuyer = resolvedBuyer.replace(/\s*\([^)]*\)/, '').trim();
+      const resolvedItem = itemParam || (matchedOrder && (matchedOrder.items || matchedOrder.product_name)) || 'MUSTAZ CUSTOM PET HELM';
+      const inlineBikeInput = document.getElementById('inlineBikeModel');
+      const inlineCityInput = document.getElementById('inlineCity');
+      const inlineBuyerInput = document.getElementById('inlineBuyerName');
+      const inlineReviewComment = document.getElementById('inlineReviewComment');
+      const form = document.getElementById('inlineReviewForm');
+
+      const result = await showBrutalReviewModal({
+        orderId: cleanOrder,
+        productName: resolvedItem,
+        productImage: 'assets/images/TESTI.png',
+        productSpec: 'AUTHENTIC RIDERS DISPATCH // SERI CUSTOM',
+        riderName: cleanBuyer !== 'RIDERS' ? cleanBuyer : '',
+        bikeModel: inlineBikeInput?.value || (matchedOrder && matchedOrder.bike) || '',
+        city: inlineCityInput?.value || (matchedOrder && matchedOrder.city ? matchedOrder.city.split('(')[0].trim() : ''),
+        existingRating: Number(ratingInput?.value) || 5,
+        existingComment: inlineReviewComment?.value || ''
+      });
+
+      if (result) {
+        if (inlineReviewComment) inlineReviewComment.value = result.comment || '';
+        if (inlineBuyerInput && result.riderName) inlineBuyerInput.value = result.riderName;
+        if (inlineBikeInput && result.bikeModel) inlineBikeInput.value = result.bikeModel;
+        if (inlineCityInput && result.city) inlineCityInput.value = result.city;
+        setStars(result.rating || 5);
+        if (form) {
+          form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+      }
+    }
+    window.openReviewModal = openReviewModal;
+
     // 2. Active Review Order Form Handler
     if (orderId) {
       const banner = document.getElementById('uniqueReviewBanner');
@@ -553,6 +597,11 @@
         inlineCityInput.value = matchedOrder.city.split('(')[0].trim();
       }
 
+      // Automatically pop up review modal for active review link
+      setTimeout(() => {
+        openReviewModal(cleanOrder);
+      }, 350);
+
       // Inline Review Form Submission
       if (form) {
         form.addEventListener('submit', async (e) => {
@@ -583,7 +632,7 @@
               user_name: riderName,
               bike_model: bikeModel,
               city: city,
-              product_name: 'MUSTAZ CUSTOM PET HELM',
+              product_name: itemParam || 'MUSTAZ CUSTOM PET HELM',
               product_image: 'assets/images/TESTI.png',
               rating: rating,
               comment: comment
@@ -660,28 +709,8 @@
 
       // Alternative: Pop-up Modal review
       if (btnModalAlt) {
-        btnModalAlt.addEventListener('click', async () => {
-          const result = await showBrutalReviewModal({
-            orderId: cleanOrder,
-            productName: 'MUSTAZ CUSTOM PET HELM',
-            productImage: 'assets/images/TESTI.png',
-            productSpec: 'AUTHENTIC RIDERS DISPATCH // SERI CUSTOM',
-            riderName: cleanBuyer !== 'RIDERS' ? cleanBuyer : '',
-            bikeModel: inlineBikeInput?.value || 'CUSTOM MOTORCYCLE',
-            city: inlineCityInput?.value || 'INDONESIA',
-            existingRating: Number(ratingInput?.value) || 5,
-            existingComment: inlineReviewComment?.value || ''
-          });
-
-          if (result) {
-            if (inlineReviewComment) inlineReviewComment.value = result.comment || '';
-            if (inlineBuyerInput && result.riderName) inlineBuyerInput.value = result.riderName;
-            if (inlineBikeInput && result.bikeModel) inlineBikeInput.value = result.bikeModel;
-            if (inlineCityInput && result.city) inlineCityInput.value = result.city;
-            setStars(result.rating || 5);
-            // Trigger submit form
-            form?.dispatchEvent(new Event('submit', { cancelable: true }));
-          }
+        btnModalAlt.addEventListener('click', () => {
+          openReviewModal(cleanOrder);
         });
       }
     }

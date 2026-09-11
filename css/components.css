@@ -542,12 +542,53 @@
   }
 }
 
+/* Outer Border Cleanup for Filter Containers */
+.filter-tabs-container,
+.category-filter-container,
+.filter-wrapper,
+.category-filter-bar {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ── ADMIN STAT CARDS ── */
+.admin-stat-card {
+  padding: 12px 16px !important;
+  min-width: 0 !important;
+}
+
+.admin-stat-card .stat-value {
+  font-size: clamp(1rem, 1.2vw, 1.5rem) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
 /* ── ACCOUNT DASHBOARD SYSTEM ── */
 .account-grid {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: 36px;
   align-items: start;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.account-grid > div,
+.admin-main-content,
+.admin-container {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-table-container {
+  max-width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
 }
 
 @media (max-width: 880px) {

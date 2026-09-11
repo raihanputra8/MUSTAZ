@@ -224,6 +224,14 @@ export function initNavbar() {
         }
       });
 
+      // Remove any duplicate static login links in mobileDrawer
+      mobileDrawer.querySelectorAll('a[href*="login.html"], a[href*="login"]').forEach(el => {
+        const parent = el.parentElement;
+        if (parent && !parent.classList.contains('mobile-auth-area')) {
+          parent.remove();
+        }
+      });
+
       let mobAuthArea = mobileDrawer.querySelector('.mobile-auth-area');
       if (!mobAuthArea) {
         mobAuthArea = document.createElement('div');
@@ -267,7 +275,7 @@ export function initNavbar() {
         });
       } else {
         mobAuthArea.innerHTML = `
-          <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:space-between;">
+          <a href="login.html" style="color:var(--accent-pink);font-family:var(--font-headline);font-size:1.1rem;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
             <span>MEMBER LOGIN →</span>
             <span class="material-symbols-outlined">login</span>
           </a>
