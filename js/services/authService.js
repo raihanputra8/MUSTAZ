@@ -252,6 +252,7 @@ export async function updatePassword(newPassword) {
  * Ensures user has an authentic Supabase session (JWT via getUser())
  * AND is authorized as admin via owner whitelist or verified database role.
  * Never trusts unverified client-side localStorage values.
+ */
 export function isKnownAdminEmail(email) {
   if (!email) return false;
   const n = email.toLowerCase().trim();

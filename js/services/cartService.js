@@ -29,7 +29,7 @@ export const HELMETS_DATA = [
     id: 'custom-3', type: 'drop-sets', category: 'Drop Sets',
     name: 'MUSTAZ EVENT EDITION KIT', sub: 'Complete Rider Kit + Ziplock Packaging + Zine',
     price: 1200000, status: 'Limited Drop',
-    specs: { Pet Helm: 'Acid Spiked Acrylic Pet', Package: 'Heavy Duty Zip Pack', Gloves: 'Yellow Leather Gloves', Extra: 'Issue 04 Zine + Stickers', Batch: 'Series 01 Run' },
+    specs: { 'Pet Helm': 'Acid Spiked Acrylic Pet', Package: 'Heavy Duty Zip Pack', Gloves: 'Yellow Leather Gloves', Extra: 'Issue 04 Zine + Stickers', Batch: 'Series 01 Run' },
     image: getProductImageUrl('mustaz_booth_event.png'),
     fallback: 'assets/images/mustaz_booth_event.png'
   }
