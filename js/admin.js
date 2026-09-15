@@ -1364,81 +1364,81 @@ async function initAdminDashboard() {
 
       if (ordStatus === 'PENDING' || ordStatus === 'PENDING_PAYMENT') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" data-id="${safeId}" title="Kirim rincian tagihan & invoice via WhatsApp" style="padding:6px 10px;font-size:0.7rem;font-weight:900;cursor:pointer;">
-            KIRIM INVOICE WA
+          <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" data-id="${safeId}" title="Kirim rincian tagihan & invoice via WhatsApp" style="padding:5px 8px;font-size:0.68rem;font-weight:900;cursor:pointer;white-space:nowrap;">
+            INVOICE WA
           </button>
-          <button type="button" class="btn-brutal-dark btn-brutal-sm btn-action-check-midtrans" data-index="${originalIdx}" data-id="${safeId}" title="Cek apakah pesanan ini sudah dibayar di Midtrans" style="padding:6px 10px;font-size:0.7rem;border:1px solid var(--accent-yellow);color:var(--accent-yellow);cursor:pointer;font-weight:900;">
-            CEK MIDTRANS ⟳
+          <button type="button" class="btn-brutal-dark btn-brutal-sm btn-action-check-midtrans" data-index="${originalIdx}" data-id="${safeId}" title="Cek apakah pesanan ini sudah dibayar di Midtrans" style="padding:5px 8px;font-size:0.68rem;border:1px solid var(--accent-yellow);color:var(--accent-yellow);cursor:pointer;font-weight:900;white-space:nowrap;">
+            MIDTRANS ⟳
           </button>
-          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Batalkan pesanan ini" style="padding:6px 10px;font-size:0.7rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;">
+          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Batalkan pesanan ini" style="padding:5px 8px;font-size:0.68rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;white-space:nowrap;">
             BATALKAN
           </button>
         `;
       } else if (ordStatus === 'PAYMENT_REVIEW' || ordStatus === 'WAITING_VERIFICATION') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" data-id="${safeId}" title="Verifikasi pembayaran lunas & mulai proses" style="padding:6px 10px;font-size:0.7rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;">
+          <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" data-id="${safeId}" title="Verifikasi pembayaran lunas & mulai proses" style="padding:5px 8px;font-size:0.68rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;white-space:nowrap;">
             VERIFIKASI LUNAS
           </button>
-          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Tolak bukti & batalkan pesanan" style="padding:6px 10px;font-size:0.7rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;">
+          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Tolak bukti & batalkan pesanan" style="padding:5px 8px;font-size:0.68rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;white-space:nowrap;">
             BATALKAN
           </button>
         `;
       } else if (isPaid) {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" data-id="${safeId}" title="Input Resi kurir dan update status ke SHIPPED" style="padding:6px 10px;font-size:0.7rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;font-weight:900;">
-            INPUT RESI &amp; SHIPPED
+          <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" data-id="${safeId}" title="Input Resi kurir dan update status ke SHIPPED" style="padding:5px 8px;font-size:0.68rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;font-weight:900;white-space:nowrap;">
+            RESI &amp; SHIPPED
           </button>
         `;
       } else if (ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Tandai pesanan diterima pelanggan" style="padding:6px 10px;font-size:0.7rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;">
-            MARK DELIVERED
+          <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Tandai pesanan diterima pelanggan" style="padding:5px 8px;font-size:0.68rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;white-space:nowrap;">
+            DELIVERED
           </button>
         `;
       } else if (ordStatus === 'DELIVERED') {
         dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Kirim ajakan ulasan / review ke WhatsApp pembeli" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:900;">
-            MINTA TESTIMONI
+          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Kirim ajakan ulasan / review ke WhatsApp pembeli" style="padding:5px 8px;font-size:0.68rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:900;white-space:nowrap;">
+            MINTA REVIEW
           </button>
         `;
       } else if (ordStatus === 'COMPLETED') {
         dynamicActionsHtml = `
-          <span style="color:#4ade80;font-size:0.7rem;font-weight:900;padding:5px 8px;border:1px solid #22c55e44;background:#14301c33;">SELESAI</span>
+          <span style="color:#4ade80;font-size:0.68rem;font-weight:900;padding:4px 6px;border:1px solid #22c55e44;background:#14301c33;white-space:nowrap;">SELESAI</span>
         `;
       } else {
         dynamicActionsHtml = `
-          <span style="color:#ef4444;font-size:0.7rem;font-family:var(--font-mono-sub);padding:5px 8px;border:1px solid #ef444444;background:#30141433;font-weight:800;">DIBATALKAN</span>
+          <span style="color:#ef4444;font-size:0.68rem;font-family:var(--font-mono-sub);padding:4px 6px;border:1px solid #ef444444;background:#30141433;font-weight:800;white-space:nowrap;">DIBATALKAN</span>
         `;
       }
 
       return `
         <tr style="${rowStyle}">
-          <td style="padding:12px 14px;">
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
-              ${isNewOrder ? `<span class="zine-tag-yellow" style="font-size:0.62rem;padding:2px 6px;">BARU</span>` : ''}
-              ${isPaid ? `<span style="font-size:0.62rem;padding:2px 6px;background:#14301c;color:#4ade80;border:1px solid #22c55e;font-weight:900;">LUNAS</span>` : ''}
+          <td style="padding:10px 8px;vertical-align:middle;">
+            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+              <span style="font-family:var(--font-headline);font-size:0.98rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
+              ${isNewOrder ? `<span class="zine-tag-yellow" style="font-size:0.58rem;padding:2px 5px;">BARU</span>` : ''}
+              ${isPaid ? `<span style="font-size:0.58rem;padding:2px 5px;background:#14301c;color:#4ade80;border:1px solid #22c55e;font-weight:900;">LUNAS</span>` : ''}
             </div>
-            <div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#777;margin-top:2px;">${safeDate}</div>
-            ${hasTracking ? `<div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#c084fc;margin-top:4px;">${escapeHtml(ord.courier || 'Ekspedisi')}: <b>${escapeHtml(ord.resi || '-')}</b></div>` : ''}
+            <div style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#777;margin-top:2px;">${safeDate}</div>
+            ${hasTracking ? `<div style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#c084fc;margin-top:2px;">${escapeHtml(ord.courier || 'Ekspedisi')}: <b>${escapeHtml(ord.resi || '-')}</b></div>` : ''}
           </td>
-          <td style="padding:12px 14px;">
-            <div style="font-weight:700;color:#FFF;">${safeCustomer}</div>
-            ${customerPhone ? `<div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;margin-top:2px;">+${customerPhone}</div>` : ''}
+          <td style="padding:10px 8px;vertical-align:middle;word-break:break-word;">
+            <div style="font-weight:700;color:#FFF;font-size:0.8rem;line-height:1.2;">${safeCustomer}</div>
+            ${customerPhone ? `<div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;margin-top:2px;">+${customerPhone}</div>` : ''}
           </td>
-          <td style="font-size:0.85rem;color:#AAA;padding:12px 14px;">
+          <td style="font-size:0.78rem;color:#BBB;padding:10px 8px;vertical-align:middle;line-height:1.3;word-break:break-word;">
             ${safeItems}
           </td>
-          <td style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;padding:12px 14px;">
+          <td style="font-family:var(--font-headline);font-size:1.05rem;color:var(--accent-yellow);font-weight:900;padding:10px 8px;vertical-align:middle;white-space:nowrap;">
             ${formatRupiah(ord.total)}
           </td>
-          <td style="padding:12px 14px;">
-            <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}">
+          <td style="padding:10px 8px;vertical-align:middle;text-align:center;">
+            <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}" style="padding:4px 6px;font-size:0.65rem;white-space:nowrap;">
               ${hasReceipt ? 'LIHAT BUKTI' : '+ LAMPIRKAN'}
             </button>
           </td>
-          <td style="padding:12px 14px;">
-            <select class="form-input-brutal order-status-select" data-index="${originalIdx}" style="padding:6px 10px;font-size:0.75rem;background:#111;color:#FFF;border-color:#444;width:auto;">
+          <td style="padding:10px 8px;vertical-align:middle;">
+            <select class="form-input-brutal order-status-select" data-index="${originalIdx}" style="padding:5px 6px;font-size:0.7rem;background:#111;color:#FFF;border-color:#444;width:100%;max-width:130px;box-sizing:border-box;">
               <option value="PENDING" ${ordStatus === 'PENDING' ? 'selected' : ''}>PENDING</option>
               <option value="PENDING_PAYMENT" ${ordStatus === 'PENDING_PAYMENT' ? 'selected' : ''}>PENDING_PAYMENT</option>
               <option value="PAID_PROCESSING" ${isPaid ? 'selected' : ''}>PAID_PROCESSING</option>
@@ -1447,15 +1447,15 @@ async function initAdminDashboard() {
               <option value="CANCELLED" ${ordStatus === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
             </select>
           </td>
-          <td style="text-align:right;white-space:nowrap;padding:12px 14px;">
-            <div style="display:inline-flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap;">
+          <td style="text-align:right;padding:10px 8px;vertical-align:middle;">
+            <div style="display:flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap;">
               ${dynamicActionsHtml}
               ${customerPhone && customerPhone.length >= 10 ? `
-                <a href="https://wa.me/${customerPhone}?text=Halo%20${encodeURIComponent(custName)}%2C%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20%23${encodeURIComponent(orderCode)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;padding:6px 8px;font-size:0.7rem;" title="Chat WhatsApp Pembeli (${customerPhone})">
+                <a href="https://wa.me/${customerPhone}?text=Halo%20${encodeURIComponent(custName)}%2C%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20%23${encodeURIComponent(orderCode)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;padding:5px 7px;font-size:0.68rem;" title="Chat WhatsApp Pembeli (${customerPhone})">
                   WA
                 </a>
               ` : `
-                <a href="javascript:void(0)" onclick="alert('Nomor WhatsApp pembeli tidak valid atau tidak tercantum pada pesanan #${safeId}.');" class="btn-brutal-dark btn-brutal-sm" style="color:#777;border-color:#444;padding:6px 8px;font-size:0.7rem;opacity:0.6;cursor:not-allowed;" title="Nomor WA pembeli tidak valid">
+                <a href="javascript:void(0)" onclick="alert('Nomor WhatsApp pembeli tidak valid atau tidak tercantum pada pesanan #${safeId}.');" class="btn-brutal-dark btn-brutal-sm" style="color:#777;border-color:#444;padding:5px 7px;font-size:0.68rem;opacity:0.6;cursor:not-allowed;" title="Nomor WA pembeli tidak valid">
                   WA
                 </a>
               `}

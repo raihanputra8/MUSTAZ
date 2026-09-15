@@ -158,7 +158,7 @@
 
 <main style="padding-top:70px;background:#080808;min-height:calc(100vh - 70px);">
   <section style="padding:40px 0 90px;">
-    <div class="wrap">
+    <div class="wrap admin-wrap">
       
       <!-- Non-Admin Notice (Shown only if current user is logged in as regular member) -->
       <div id="adminNonAdminPrompt" style="display:none;background:#111111;border:3px solid var(--accent-yellow);box-shadow:8px 8px 0px #000, 8px 8px 0px 3px var(--accent-pink);padding:36px 28px;margin:20px auto 40px;max-width:560px;text-align:center;">
@@ -602,17 +602,17 @@
               <span class="material-symbols-outlined" style="font-size:16px;">swipe</span>
               <span>GESER TABEL KE KANAN UNTUK TOTAL &amp; WHATSAPP →</span>
             </div>
-            <div class="admin-table-container w-full overflow-x-auto" style="background:#0c0c0c;border:2px solid var(--accent-pink);overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;box-sizing:border-box;">
-              <table class="admin-table" style="width:100%;min-width:650px;border-collapse:collapse;text-align:left;">
+            <div class="admin-table-container w-full" style="background:#0c0c0c;border:2px solid var(--accent-pink);overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;box-sizing:border-box;">
+              <table class="admin-table admin-orders-table" style="width:100%;border-collapse:collapse;text-align:left;table-layout:auto;">
                 <thead>
-                  <tr style="border-bottom:2px solid #333;background:#181818;font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);text-transform:uppercase;">
-                    <th style="padding:12px 14px;">ORDER ID</th>
-                    <th style="padding:12px 14px;">CUSTOMER &amp; ALAMAT</th>
-                    <th style="padding:12px 14px;">ITEMS &amp; SPECS</th>
-                    <th style="padding:12px 14px;">TOTAL TAGIHAN</th>
-                    <th style="padding:12px 14px;">BUKTI BAYAR</th>
-                    <th style="padding:12px 14px;">STATUS</th>
-                    <th style="padding:12px 14px;text-align:right;">AKSI CEPAT CS WHATSAPP</th>
+                  <tr style="border-bottom:2px solid #333;background:#181818;font-family:var(--font-mono-sub);font-size:0.68rem;color:var(--accent-yellow);text-transform:uppercase;">
+                    <th style="padding:10px 8px;width:11%;">ORDER ID</th>
+                    <th style="padding:10px 8px;width:16%;">CUSTOMER &amp; ALAMAT</th>
+                    <th style="padding:10px 8px;width:21%;">ITEMS &amp; SPECS</th>
+                    <th style="padding:10px 8px;width:11%;white-space:nowrap;">TOTAL TAGIHAN</th>
+                    <th style="padding:10px 8px;width:8%;text-align:center;">BUKTI BAYAR</th>
+                    <th style="padding:10px 8px;width:13%;">STATUS</th>
+                    <th style="padding:10px 8px;text-align:right;width:20%;">AKSI CEPAT CS WHATSAPP</th>
                   </tr>
                 </thead>
                 <tbody id="adminOrdersTbody">

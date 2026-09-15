@@ -593,10 +593,18 @@
 }
 
 /* ── ACCOUNT DASHBOARD SYSTEM ── */
+.admin-wrap {
+  width: 100% !important;
+  max-width: 98% !important;
+  padding: 0 20px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
 .account-grid {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 36px;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 20px;
   align-items: start;
   max-width: 100%;
   box-sizing: border-box;
@@ -615,6 +623,22 @@
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
+}
+
+.admin-orders-table {
+  width: 100% !important;
+  table-layout: auto;
+  border-collapse: collapse;
+}
+
+.admin-orders-table th {
+  padding: 10px 8px !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.06em !important;
+}
+
+.admin-orders-table td {
+  padding: 10px 8px !important;
 }
 
 @media (max-width: 880px) {
