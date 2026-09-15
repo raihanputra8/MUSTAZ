@@ -329,12 +329,17 @@
   );
 }
 
-/* ── HEADINGS & SECTION LABELS ── */
+/* ── HEADINGS & SECTION LABELS (HIGH CONTRAST ANTI-FAINT) ── */
 .section-meta-header {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 12px;
+  background: #000000;
+  padding: 4px 12px;
+  border: 1px solid var(--accent-yellow);
+  box-shadow: 3px 3px 0px var(--accent-pink);
+  max-width: fit-content;
 }
 
 .section-num {
@@ -342,15 +347,17 @@
   font-size: 1.2rem;
   color: var(--accent-pink);
   font-weight: 900;
+  line-height: 1;
 }
 
 .section-label {
   font-family: var(--font-mono-sub);
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-weight: 800;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--accent-yellow) !important;
+  line-height: 1;
 }
 
 .editorial-title {
@@ -358,16 +365,35 @@
   font-weight: 900;
   font-size: clamp(2.4rem, 5vw, 4.4rem);
   text-transform: uppercase;
-  line-height: 0.88;
+  line-height: 0.92;
   margin-bottom: 16px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  -webkit-text-stroke: 2px #000000;
+  paint-order: stroke fill;
+  text-shadow: 
+    3px 3px 0px #000000,
+    -2px -2px 0px #000000,
+    2px -2px 0px #000000,
+    -2px 2px 0px #000000,
+    0px 3px 0px #000000,
+    3px 0px 0px #000000,
+    -3px 0px 0px #000000,
+    0px -3px 0px #000000,
+    4px 4px 0px var(--accent-pink);
 }
 
 .editorial-desc {
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--text-secondary);
+  color: #FFFFFF;
   max-width: 580px;
+  background: rgba(10, 10, 10, 0.88);
+  padding: 8px 14px;
+  border-left: 3px solid var(--accent-yellow);
+  box-shadow: 4px 4px 0px #000000;
+  backdrop-filter: blur(8px);
+  display: inline-block;
 }
 
 /* ── EDITORIAL BRUTALIST CARDS ── */
