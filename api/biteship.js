@@ -66,12 +66,101 @@ export default async function handler(req, res) {
         destination_postal_code,
         destination_area_id,
         destination_name = '',
+        destination_country = 'ID',
+        is_international = false,
         items = [],
         couriers = 'jne,sicepat,jnt,anteraja'
       } = body;
 
       const totalWeight = Math.max(300, items.reduce((acc, it) => acc + (Number(it.weight || 350) * Number(it.quantity || 1)), 0));
       const totalValue = Math.max(10000, items.reduce((acc, it) => acc + (Number(it.price || 50000) * Number(it.quantity || 1)), 0));
+      const kgMultiplier = Math.max(1, Math.ceil(totalWeight / 1000));
+
+      // ── INTERNATIONAL SHIPPING LOGIC ──
+      const isIntl = is_international || (destination_country && destination_country.toUpperCase() !== 'ID' && destination_country.toLowerCase() !== 'indonesia');
+      if (isIntl) {
+        const country = (destination_country || '').toLowerCase();
+
+        let emsRate = 380000;
+        let dhlRate = 520000;
+        let fedexRate = 560000;
+        let etdRange = '4 - 7 hari kerja';
+
+        if (country.includes('malaysia') || country.includes('singapore') || country === 'my' || country === 'sg' || country.includes('brunei') || country.includes('thailand')) {
+          emsRate = 175000;
+          dhlRate = 265000;
+          fedexRate = 285000;
+          etdRange = '3 - 5 hari kerja';
+        } else if (country.includes('australia') || country.includes('japan') || country.includes('jepang') || country.includes('korea') || country.includes('taiwan') || country.includes('hong kong') || country === 'au' || country === 'jp') {
+          emsRate = 290000;
+          dhlRate = 420000;
+          fedexRate = 450000;
+          etdRange = '4 - 6 hari kerja';
+        } else if (country.includes('united states') || country.includes('usa') || country === 'us' || country.includes('united kingdom') || country.includes('inggris') || country === 'uk' || country === 'gb' || country.includes('germany') || country.includes('jerman') || country.includes('netherlands') || country.includes('belanda') || country.includes('canada')) {
+          emsRate = 395000;
+          dhlRate = 550000;
+          fedexRate = 590000;
+          etdRange = '5 - 8 hari kerja';
+        }
+
+        const intlPricing = [
+          {
+            available_collection_method: ['pickup'],
+            available_for_cash_on_delivery: false,
+            available_for_proof_of_delivery: true,
+            available_for_instant_waybill_id: true,
+            company: 'pos_indonesia',
+            courier_name: 'EMS POS INDONESIA',
+            courier_service_name: 'International Express',
+            courier_service_code: 'ems',
+            description: 'Layanan Pengiriman Internasional Resmi Pos Indonesia',
+            duration: etdRange,
+            price: emsRate * kgMultiplier,
+            service_type: 'international',
+            shipping_type: 'parcel',
+            type: 'ems'
+          },
+          {
+            available_collection_method: ['pickup'],
+            available_for_cash_on_delivery: false,
+            available_for_proof_of_delivery: true,
+            available_for_instant_waybill_id: true,
+            company: 'dhl',
+            courier_name: 'DHL EXPRESS',
+            courier_service_name: 'Worldwide Express Air Cargo',
+            courier_service_code: 'worldwide',
+            description: 'Global Priority Express Delivery Door-to-Door',
+            duration: '3 - 5 hari kerja',
+            price: dhlRate * kgMultiplier,
+            service_type: 'express',
+            shipping_type: 'parcel',
+            type: 'worldwide'
+          },
+          {
+            available_collection_method: ['pickup'],
+            available_for_cash_on_delivery: false,
+            available_for_proof_of_delivery: true,
+            available_for_instant_waybill_id: true,
+            company: 'fedex',
+            courier_name: 'FEDEX',
+            courier_service_name: 'International Priority',
+            courier_service_code: 'priority',
+            description: 'Fast International Air Courier',
+            duration: '3 - 5 hari kerja',
+            price: fedexRate * kgMultiplier,
+            service_type: 'express',
+            shipping_type: 'parcel',
+            type: 'priority'
+          }
+        ];
+
+        return res.status(200).json({
+          success: true,
+          source: 'international_rates_matrix',
+          destination: destination_country,
+          pricing: intlPricing
+        });
+      }
 
       const ratesPayload = {
         origin_postal_code: ORIGIN.postal_code,
@@ -153,7 +242,6 @@ export default async function handler(req, res) {
       }
 
       // Scale slightly by weight (> 1kg)
-      const kgMultiplier = Math.max(1, Math.ceil(totalWeight / 1000));
       const mockPricing = [
         {
           available_collection_method: ['pickup'],
