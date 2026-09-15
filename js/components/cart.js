@@ -35,8 +35,7 @@ function getCartDrawerHTML() {
             <span class="cart-subtotal-value" id="cartSubtotalValue">Rp 0</span>
           </div>
           <a href="checkout.html" id="startCheckoutBtn" class="btn-brutal-pink" style="width:100%;font-size:1.05rem;padding:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;letter-spacing:0.05em;text-decoration:none;box-shadow:4px 4px 0px #000;background:var(--accent-yellow);color:#000;border:2px solid #000;">
-            <span class="material-symbols-outlined" style="font-size:20px;">bolt</span>
-            ⚡ CHECKOUT & BAYAR ONLINE →
+            PROSES CHECKOUT →
           </a>
           <div style="margin-top:12px;text-align:center;">
             <a href="checkout.html" style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.12em;text-decoration:underline;">
@@ -98,16 +97,15 @@ function getCheckoutModalHTML() {
               <label class="form-label-brutal" for="paymentMethod">06 // PAYMENT PROTOCOL *</label>
               <select id="paymentMethod" class="form-input-brutal" style="cursor:pointer;">
                 <option value="Midtrans Payment Gateway (QRIS, VA Bank, CC, GoPay)" selected>
-                  ⚡ Midtrans Gateway (QRIS, BCA/Mandiri/BRI, Kartu Kredit, GoPay) [DEMO SANDBOX]
+                  Midtrans Payment Gateway (QRIS, Virtual Account, Kartu Kredit, GoPay)
                 </option>
                 <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank Manual (BCA / Mandiri)</option>
                 <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
-                <option value="Direct WhatsApp Negotiation">Direct WhatsApp Negotiation</option>
               </select>
             </div>
             <div id="checkoutError" style="display:none;color:var(--accent-pink);font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:12px;background:rgba(217,0,108,0.1);border:1px solid var(--accent-pink);"></div>
             <button type="submit" id="checkoutSubmitBtn" class="btn-brutal-pink" style="width:100%;font-size:1.15rem;padding:16px;">
-              ⚡ BAYAR SEKARANG VIA MIDTRANS →
+              BAYAR DENGAN MIDTRANS →
             </button>
           </form>
         </div>
@@ -364,8 +362,8 @@ export function initCart() {
     if (!modalSubmitBtn) return;
     const isMidtrans = (paymentMethodSelect?.value || '').includes('Midtrans');
     modalSubmitBtn.innerHTML = isMidtrans 
-      ? '⚡ BAYAR SEKARANG VIA MIDTRANS →' 
-      : 'CONFIRM ORDER VIA WHATSAPP →';
+      ? 'BAYAR DENGAN MIDTRANS →' 
+      : 'KONFIRMASI PESANAN →';
   }
   paymentMethodSelect?.addEventListener('change', updateModalSubmitBtnLabel);
   updateModalSubmitBtnLabel();
@@ -409,7 +407,7 @@ export function initCart() {
 
     // JS Validation Guard: Jika salah satu field kosong atau nomor WhatsApp kurang dari 10 digit, blokir checkout
     if (!name || !phone || !courier || !address) {
-      const errMsg = "⚠️ MOHON LENGKAPI NAMA, NO. WHATSAPP, KURIR, DAN ALAMAT PENGIRIMAN SEBELUM CHECKOUT!";
+      const errMsg = "Mohon lengkapi Nama, No. WhatsApp, Kurir, dan Alamat pengiriman sebelum checkout.";
       if (errEl) {
         errEl.textContent = errMsg;
         errEl.style.display = 'block';
@@ -420,7 +418,7 @@ export function initCart() {
 
     const cleanDigits = phone.replace(/[^0-9]/g, '');
     if (cleanDigits.length < 10) {
-      const errMsg = "⚠️ NOMOR WHATSAPP TIDAK VALID! Minimal 10 digit angka (contoh: 081234567890).";
+      const errMsg = "Nomor WhatsApp tidak valid. Minimal 10 digit angka (contoh: 081234567890).";
       if (errEl) {
         errEl.textContent = errMsg;
         errEl.style.display = 'block';
@@ -430,7 +428,7 @@ export function initCart() {
     }
 
     if (!email || !email.includes('@')) {
-      const errMsg = "⚠️ MASUKKAN EMAIL VALID UNTUK PENGIRIMAN INVOICE RESMI.";
+      const errMsg = "Masukkan email valid untuk pengiriman invoice resmi.";
       if (errEl) {
         errEl.textContent = errMsg;
         errEl.style.display = 'block';
@@ -451,12 +449,12 @@ export function initCart() {
 
     const cartItems = getCart();
     if (!cartItems || cartItems.length === 0) {
-      alert("⚠️ Keranjang belanja Anda kosong!");
+      alert("Keranjang belanja Anda kosong.");
       return;
     }
 
     const submitBtn = document.getElementById('checkoutSubmitBtn');
-    const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'BAYAR →';
+    const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'BAYAR DENGAN MIDTRANS →';
 
     try {
       isSubmittingOrder = true;
@@ -464,7 +462,7 @@ export function initCart() {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
-        submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⏳ MEMPROSES ORDER...</span>';
+        submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMPROSES PESANAN...</span>';
       }
 
       // 1. Submit Order Securely via Supabase RPC
@@ -538,7 +536,7 @@ export function initCart() {
         await ensureSnapLoaded();
 
         if (submitBtn) {
-          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⚡ MEMBUKA GATEWAY MIDTRANS...</span>';
+          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMBUKA GATEWAY PEMBAYARAN...</span>';
         }
 
         const snapRes = await fetch('/api/midtrans-snap', {
@@ -601,11 +599,11 @@ export function initCart() {
           },
           onError: function(result) {
             console.error('[Midtrans Error]:', result);
-            alert('⚠️ Pembayaran melalui Midtrans gagal atau dibatalkan.');
+            alert('Pembayaran melalui Midtrans gagal atau dibatalkan. Anda dapat mengulanginya atau memilih metode pembayaran lain.');
           },
           onClose: function() {
             console.log('[Midtrans Popup Closed]');
-            alert('ℹ️ Popup pembayaran ditutup. Pesanan Anda tersimpan sebagai draft menunggu pembayaran.');
+            alert('Popup pembayaran ditutup. Pesanan Anda tersimpan sebagai draft menunggu pembayaran.');
           }
         });
 
@@ -644,7 +642,7 @@ export function initCart() {
       console.error('[Checkout Error]', err);
       const userErrMsg = err.message && err.message.includes('Stok') 
         ? err.message 
-        : `⚠️ Gagal memproses pesanan: ${err.message || 'Silakan coba beberapa saat lagi.'}`;
+        : `Gagal memproses pesanan: ${err.message || 'Silakan coba beberapa saat lagi.'}`;
       if (errEl) {
         errEl.textContent = userErrMsg;
         errEl.style.display = 'block';

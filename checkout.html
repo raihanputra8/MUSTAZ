@@ -195,16 +195,15 @@
             <div class="form-group-brutal" style="margin-bottom:28px;">
               <label class="form-label-brutal">06 // PAYMENT PROTOCOL *</label>
               <select id="chkPayment" class="form-input-brutal" style="cursor:pointer;">
-                <option value="Midtrans Payment Gateway (QRIS, VA Bank, CC, GoPay)" selected>
-                  ⚡ Midtrans Gateway (QRIS, BCA/Mandiri/BRI, Kartu Kredit, GoPay) [DEMO SANDBOX]
+                <option value="Midtrans Payment Gateway (QRIS, Virtual Account, Kartu Kredit, GoPay)" selected>
+                  Midtrans Payment Gateway (QRIS, Virtual Account, Kartu Kredit, GoPay)
                 </option>
                 <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank Manual (BCA / Mandiri)</option>
                 <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
-                <option value="Direct WhatsApp Negotiation">Direct WhatsApp Negotiation</option>
               </select>
             </div>
             <button type="submit" id="btnSubmitCheckout" class="btn-brutal-pink" style="width:100%;padding:18px;font-size:1.15rem;">
-              ⚡ BAYAR SEKARANG VIA MIDTRANS →
+              BAYAR DENGAN MIDTRANS →
             </button>
           </form>
         </div>
@@ -326,12 +325,12 @@
 
       // JS Validation Guard
       if (!name || !phone || !courier || !address) {
-        alert("⚠️ MOHON LENGKAPI NAMA, NO. WHATSAPP, KURIR, DAN ALAMAT PENGIRIMAN SEBELUM CHECKOUT!");
+        alert("Mohon lengkapi Nama, No. WhatsApp, Kurir, dan Alamat pengiriman sebelum checkout.");
         return;
       }
       const cleanDigits = phone.replace(/[^0-9]/g, '');
       if (cleanDigits.length < 10) {
-        alert("⚠️ NOMOR WHATSAPP TIDAK VALID! Minimal 10 digit angka (contoh: 081234567890).");
+        alert("Nomor WhatsApp tidak valid. Minimal 10 digit angka (contoh: 081234567890).");
         return;
       }
 
@@ -346,7 +345,7 @@
       const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
 
       const submitBtn = document.querySelector('#directCheckoutForm button[type="submit"]');
-      const origBtnContent = submitBtn ? submitBtn.innerHTML : 'CONFIRM ORDER VIA WHATSAPP →';
+      const origBtnContent = submitBtn ? submitBtn.innerHTML : 'KONFIRMASI PESANAN →';
 
       try {
         isSubmittingCheckout = true;
@@ -354,7 +353,7 @@
           submitBtn.disabled = true;
           submitBtn.style.opacity = '0.7';
           submitBtn.style.cursor = 'not-allowed';
-          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⏳ MEMPROSES ORDER AMAN...</span>';
+          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMPROSES PESANAN...</span>';
         }
 
         // Submit via Supabase RPC (Server-Side Price Calculation & Atomic Stock Deduction)
@@ -472,7 +471,7 @@
           }
 
           if (submitBtn) {
-            submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⚡ MEMBUKA GATEWAY MIDTRANS...</span>';
+            submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMBUKA GATEWAY PEMBAYARAN...</span>';
           }
 
           const snapRes = await fetch('/api/midtrans-snap', {
@@ -538,11 +537,11 @@
             },
             onError: function(result) {
               console.error('[Midtrans Payment Error]:', result);
-              alert('⚠️ Pembayaran melalui Midtrans gagal atau dibatalkan. Anda dapat mengulanginya atau memilih metode pembayaran lain.');
+              alert('Pembayaran melalui Midtrans gagal atau dibatalkan. Anda dapat mengulanginya atau memilih metode pembayaran lain.');
             },
             onClose: function() {
               console.log('[Midtrans Popup Closed]');
-              alert('ℹ️ Popup pembayaran ditutup. Pesanan Anda tersimpan sebagai draft menunggu pembayaran.');
+              alert('Popup pembayaran ditutup. Pesanan Anda tersimpan sebagai draft menunggu pembayaran.');
             }
           });
 
@@ -563,7 +562,7 @@
 
       } catch (err) {
         console.error('[Checkout Error]', err);
-        alert(err.message && err.message.includes('Stok') ? err.message : `⚠️ Gagal memproses pesanan: ${err.message || 'Silakan coba lagi.'}`);
+        alert(err.message && err.message.includes('Stok') ? err.message : `Gagal memproses pesanan: ${err.message || 'Silakan coba lagi.'}`);
       } finally {
         isSubmittingCheckout = false;
         if (submitBtn) {
@@ -582,9 +581,9 @@
       if (!submitBtnEl) return;
       const isMidtrans = (chkPaymentEl?.value || '').includes('Midtrans');
       if (isMidtrans) {
-        submitBtnEl.innerHTML = '⚡ BAYAR SEKARANG VIA MIDTRANS →';
+        submitBtnEl.innerHTML = 'BAYAR DENGAN MIDTRANS →';
       } else {
-        submitBtnEl.innerHTML = 'CONFIRM ORDER VIA WHATSAPP →';
+        submitBtnEl.innerHTML = 'KONFIRMASI PESANAN →';
       }
     }
     chkPaymentEl?.addEventListener('change', updateCheckoutBtnLabel);

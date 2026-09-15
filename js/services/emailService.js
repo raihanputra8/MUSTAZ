@@ -107,7 +107,7 @@ export function buildOrderInvoiceHTML(order) {
                   <td style="padding: 14px 18px; border-bottom: 1px solid #282828; width: 50%;">
                     <span style="font-size: 10px; font-family: monospace; color: #888888; text-transform: uppercase;">METODE PEMBAYARAN</span>
                     <div style="font-size: 13px; color: #FFFFFF; font-weight: bold; margin-top: 2px;">
-                      ${order.paymentMethod || 'Direct WhatsApp Negotiation'}
+                      ${order.paymentMethod || 'Transfer Bank / Online Gateway'}
                     </div>
                   </td>
                 </tr>
