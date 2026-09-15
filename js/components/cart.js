@@ -34,13 +34,13 @@ function getCartDrawerHTML() {
             <span class="cart-subtotal-label">SUBTOTAL MANIFEST</span>
             <span class="cart-subtotal-value" id="cartSubtotalValue">Rp 0</span>
           </div>
-          <button id="startCheckoutBtn" class="btn-brutal-pink" style="width:100%;font-size:1.05rem;padding:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;letter-spacing:0.05em;">
+          <a href="checkout.html" id="startCheckoutBtn" class="btn-brutal-pink" style="width:100%;font-size:1.05rem;padding:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;letter-spacing:0.05em;text-decoration:none;box-shadow:4px 4px 0px #000;background:var(--accent-yellow);color:#000;border:2px solid #000;">
             <span class="material-symbols-outlined" style="font-size:20px;">bolt</span>
-            CHECKOUT VIA WHATSAPP →
-          </button>
+            ⚡ CHECKOUT & BAYAR ONLINE →
+          </a>
           <div style="margin-top:12px;text-align:center;">
             <a href="checkout.html" style="font-family:var(--font-mono-sub);font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.12em;text-decoration:underline;">
-              OPEN FULL MANIFEST PROTOCOL
+              BUKA HALAMAN CHECKOUT LENGKAP
             </a>
           </div>
         </div>
@@ -97,15 +97,17 @@ function getCheckoutModalHTML() {
             <div class="form-group-brutal">
               <label class="form-label-brutal" for="paymentMethod">06 // PAYMENT PROTOCOL *</label>
               <select id="paymentMethod" class="form-input-brutal" style="cursor:pointer;">
-                <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank (BCA / Mandiri)</option>
-                <option value="QRIS Instant Pay">QRIS Instant Pay</option>
+                <option value="Midtrans Payment Gateway (QRIS, VA Bank, CC, GoPay)" selected>
+                  ⚡ Midtrans Gateway (QRIS, BCA/Mandiri/BRI, Kartu Kredit, GoPay) [DEMO SANDBOX]
+                </option>
+                <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank Manual (BCA / Mandiri)</option>
                 <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
                 <option value="Direct WhatsApp Negotiation">Direct WhatsApp Negotiation</option>
               </select>
             </div>
             <div id="checkoutError" style="display:none;color:var(--accent-pink);font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:12px;background:rgba(217,0,108,0.1);border:1px solid var(--accent-pink);"></div>
             <button type="submit" id="checkoutSubmitBtn" class="btn-brutal-pink" style="width:100%;font-size:1.15rem;padding:16px;">
-              CONFIRM ORDER VIA WHATSAPP →
+              ⚡ BAYAR SEKARANG VIA MIDTRANS →
             </button>
           </form>
         </div>
@@ -346,15 +348,40 @@ export function initCart() {
   });
   document.getElementById('cartCloseBtn')?.addEventListener('click', closeCart);
 
-  // Checkout open
+  // Checkout open: Navigate directly to dedicated checkout page with full Midtrans flow
   document.getElementById('startCheckoutBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    openCheckout();
+    window.location.href = 'checkout.html';
   });
   document.getElementById('checkoutCloseBtn')?.addEventListener('click', closeCheckout);
   document.getElementById('checkoutModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'checkoutModal') closeCheckout();
   });
+
+  // Dynamic Submit Button Label based on Selected Payment Method in Modal
+  const paymentMethodSelect = document.getElementById('paymentMethod');
+  const modalSubmitBtn = document.getElementById('checkoutSubmitBtn');
+  function updateModalSubmitBtnLabel() {
+    if (!modalSubmitBtn) return;
+    const isMidtrans = (paymentMethodSelect?.value || '').includes('Midtrans');
+    modalSubmitBtn.innerHTML = isMidtrans 
+      ? '⚡ BAYAR SEKARANG VIA MIDTRANS →' 
+      : 'CONFIRM ORDER VIA WHATSAPP →';
+  }
+  paymentMethodSelect?.addEventListener('change', updateModalSubmitBtnLabel);
+  updateModalSubmitBtnLabel();
+
+  // Helper to dynamically load Midtrans Snap JS SDK
+  function ensureSnapLoaded() {
+    if (typeof window.snap !== 'undefined') return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+      script.setAttribute('data-client-key', 'Mid-client-f2QU56sMP76GLn_0');
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Gagal memuat Midtrans Snap SDK'));
+      document.head.appendChild(script);
+    });
+  }
 
   // Keyboard Escape to dismiss modal & drawer
   window.addEventListener('keydown', (e) => {
@@ -428,23 +455,19 @@ export function initCart() {
       return;
     }
 
-    const total = getCartTotal();
-    const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
-
     const submitBtn = document.getElementById('checkoutSubmitBtn');
-    const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'CONFIRM ORDER VIA WHATSAPP →';
+    const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'BAYAR →';
 
     try {
-      // 1. Kunci Idempotency: Disable tombol dan pasang status loading
       isSubmittingOrder = true;
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
-        submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⏳ MEMPROSES ORDER AMAN...</span>';
+        submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⏳ MEMPROSES ORDER...</span>';
       }
 
-      // 2. Submit order ke Supabase RPC (Re-kalkulasi harga server & pemotongan stok atomik)
+      // 1. Submit Order Securely via Supabase RPC
       const rpcResult = await submitOrderSecure({
         customerName: name,
         phone: cleanPhone,
@@ -453,13 +476,13 @@ export function initCart() {
         courier: courier,
         notes: `Email: ${email} | Pembayaran: ${payment}`,
         paymentMethod: payment,
-        cartItems: cartItems,
-        orderId: orderId
+        cartItems: cartItems
       });
 
-      const finalOrderId = rpcResult?.orderId || orderId;
-      const finalTotal = (typeof rpcResult?.totalAmount === 'number') ? rpcResult.totalAmount : total;
+      const finalOrderId = rpcResult?.orderId || ('MSTZ-' + Math.floor(1000 + Math.random() * 9000));
+      const finalTotal = (typeof rpcResult?.totalAmount === 'number') ? rpcResult.totalAmount : getCartTotal();
 
+      // 2. Prepare order record
       const orderRecord = {
         id: finalOrderId,
         orderId: finalOrderId,
@@ -483,11 +506,8 @@ export function initCart() {
         total: finalTotal
       };
 
-      // 3. Send Order Confirmation / Invoice Email to Buyer & Show In-App Success
-      try {
-        sendOrderSuccessEmail(orderRecord).catch(() => {});
-        showOrderSuccessModal(orderRecord);
-      } catch {}
+      // 3. Send Order Confirmation / Invoice Email to Buyer
+      sendOrderSuccessEmail(orderRecord).catch(() => {});
 
       // Update localized admin orders cache
       try {
@@ -513,32 +533,113 @@ export function initCart() {
         saveUserOrder(email, orderRecord);
       } catch {}
 
-      // 5. Fetch latest dynamic WhatsApp number and generate conversation URL
-      let targetWa = null;
-      try {
-        targetWa = await getDynamicAdminWhatsApp();
-      } catch {}
+      // Handle Midtrans Online Gateway Payment
+      if (payment.includes('Midtrans')) {
+        await ensureSnapLoaded();
 
-      const url = generateWhatsAppUrl({ 
-        name, 
-        phone: cleanPhone, 
-        address, 
-        courier, 
-        payment, 
-        notes: `Email: ${email}`, 
-        orderId: finalOrderId,
-        adminPhone: targetWa
-      }, cartItems, finalTotal, finalOrderId);
+        if (submitBtn) {
+          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⚡ MEMBUKA GATEWAY MIDTRANS...</span>';
+        }
 
-      const waWin = window.open(url, '_blank');
-      if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
-        window.location.href = url;
+        const snapRes = await fetch('/api/midtrans-snap', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: finalOrderId,
+            grossAmount: finalTotal,
+            items: cartItems.map(i => ({
+              id: i.id || 'ITEM',
+              name: i.name,
+              price: i.price,
+              quantity: i.quantity || 1
+            })),
+            customerDetails: {
+              name,
+              email,
+              phone: cleanPhone,
+              address
+            }
+          })
+        });
+
+        const snapData = await snapRes.json();
+        if (!snapData.success || !snapData.token) {
+          throw new Error(snapData.error || 'Gagal menginisialisasi pembayaran Midtrans');
+        }
+
+        closeCheckout();
+
+        window.snap.pay(snapData.token, {
+          onSuccess: async function(result) {
+            console.log('[Midtrans Success]:', result);
+            orderRecord.status = 'LUNAS (PAID)';
+            orderRecord.paymentType = result.payment_type || 'midtrans';
+
+            try {
+              const { getSupabase } = await import('../services/authService.js');
+              const sb = await getSupabase();
+              if (sb) {
+                await sb.from('orders').update({
+                  status: 'LUNAS (PAID)',
+                  payment_status: 'settlement',
+                  payment_type: result.payment_type || 'midtrans'
+                }).eq('id', finalOrderId);
+              }
+            } catch (dbErr) {
+              console.warn('Database status update warning:', dbErr.message);
+            }
+
+            clearCart();
+            renderCartItems();
+            showOrderSuccessModal(orderRecord);
+          },
+          onPending: function(result) {
+            console.log('[Midtrans Pending]:', result);
+            clearCart();
+            renderCartItems();
+            showOrderSuccessModal(orderRecord);
+          },
+          onError: function(result) {
+            console.error('[Midtrans Error]:', result);
+            alert('⚠️ Pembayaran melalui Midtrans gagal atau dibatalkan.');
+          },
+          onClose: function() {
+            console.log('[Midtrans Popup Closed]');
+            alert('ℹ️ Popup pembayaran ditutup. Pesanan Anda tersimpan sebagai draft menunggu pembayaran.');
+          }
+        });
+
+      } else {
+        // Standard Offline / WhatsApp Flow
+        showOrderSuccessModal(orderRecord);
+
+        let targetWa = null;
+        try {
+          targetWa = await getDynamicAdminWhatsApp();
+        } catch {}
+
+        const url = generateWhatsAppUrl({ 
+          name, 
+          phone: cleanPhone, 
+          address, 
+          courier, 
+          payment, 
+          notes: `Email: ${email}`, 
+          orderId: finalOrderId,
+          adminPhone: targetWa
+        }, cartItems, finalTotal, finalOrderId);
+
+        const waWin = window.open(url, '_blank');
+        if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+          window.location.href = url;
+        }
+
+        clearCart();
+        closeCheckout();
+        renderCartItems();
+        document.getElementById('checkoutForm')?.reset();
       }
 
-      clearCart();
-      closeCheckout();
-      renderCartItems();
-      document.getElementById('checkoutForm')?.reset();
     } catch (err) {
       console.error('[Checkout Error]', err);
       const userErrMsg = err.message && err.message.includes('Stok') 
