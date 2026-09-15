@@ -1225,7 +1225,7 @@ async function initAdminDashboard() {
   }
   window.openAdminWhatsAppAction = openAdminWhatsAppAction;
 
-  function syncOrderStatusToLocalUser(orderId, newStatus) {
+  function syncOrderStatusToLocalUser(orderId, newStatus, resi = null, trackingUrl = null) {
     try {
       const cleanId = cleanOrderId(orderId);
       const recents = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
@@ -1233,6 +1233,9 @@ async function initAdminDashboard() {
       recents.forEach(ro => {
         if (cleanOrderId(ro.id || ro.orderId) === cleanId) {
           ro.status = newStatus;
+          if (resi) ro.resi = resi;
+          if (resi) ro.tracking = resi;
+          if (trackingUrl) ro.tracking_url = trackingUrl;
           rChanged = true;
         }
       });
@@ -1241,6 +1244,9 @@ async function initAdminDashboard() {
       const latest = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
       if (latest && cleanOrderId(latest.id || latest.orderId) === cleanId) {
         latest.status = newStatus;
+        if (resi) latest.resi = resi;
+        if (resi) latest.tracking = resi;
+        if (trackingUrl) latest.tracking_url = trackingUrl;
         localStorage.setItem('mustaz_latest_checkout_order', JSON.stringify(latest));
       }
 
@@ -1252,6 +1258,9 @@ async function initAdminDashboard() {
           userOrds.forEach(uo => {
             if (cleanOrderId(uo.id || uo.orderId) === cleanId) {
               uo.status = newStatus;
+              if (resi) uo.resi = resi;
+              if (resi) uo.tracking = resi;
+              if (trackingUrl) uo.tracking_url = trackingUrl;
               uChanged = true;
             }
           });
@@ -1259,7 +1268,7 @@ async function initAdminDashboard() {
         } catch {}
       });
 
-      window.dispatchEvent(new CustomEvent('mustaz:orders_updated', { detail: { orderId, status: newStatus } }));
+      window.dispatchEvent(new CustomEvent('mustaz:orders_updated', { detail: { orderId, status: newStatus, resi, trackingUrl } }));
     } catch {}
   }
   window.syncOrderStatusToLocalUser = syncOrderStatusToLocalUser;
@@ -1565,8 +1574,11 @@ async function initAdminDashboard() {
         ${hasReceipt ? 'Lihat Bukti Bayar' : 'Lampirkan Bukti Bayar'}
       </button>
       ${!isShipped && ordStatus !== 'DELIVERED' ? `
+        <button type="button" class="popover-item btn-pop-biteship" style="color:var(--accent-yellow);font-weight:700;">
+          Pickup / Resi Biteship
+        </button>
         <button type="button" class="popover-item btn-pop-resi">
-          Input Resi &amp; Shipped
+          Input Resi Manual
         </button>
       ` : ''}
       ${isShipped ? `
@@ -1662,7 +1674,67 @@ async function initAdminDashboard() {
       openReceiptModal(originalIdx, safeId);
     });
 
-    // 4. Input Resi & Shipped
+    // 3b. Buat Resi & Request Pickup Biteship
+    popover.querySelector('.btn-pop-biteship')?.addEventListener('click', async () => {
+      closeOrderPopover();
+      const all = getAdminOrders();
+      const current = all.find(o => cleanOrderId(o.id) === cleanId) || ord;
+      showAdminToast('info', 'MEMPROSES BITESHIP', `Menjadwalkan pickup kurir Biteship untuk order #${cleanId}...`);
+
+      try {
+        const recipientName = (current.customer_name || current.customer || 'Customer Mustaz').replace(/\(.*?\)/g, '').trim();
+        const phone = current.phone || current.customer_phone || '081234567890';
+        const rawAddr = current.address || current.city || 'Bandung';
+        const courierStr = (current.courier || '').toLowerCase();
+
+        let courierCompany = 'jne';
+        let courierType = 'reg';
+        if (courierStr.includes('sicepat')) courierCompany = 'sicepat';
+        else if (courierStr.includes('j&t') || courierStr.includes('jnt')) courierCompany = 'jnt';
+        else if (courierStr.includes('anteraja')) courierCompany = 'anteraja';
+        if (courierStr.includes('yes')) courierType = 'yes';
+
+        const res = await fetch('/api/biteship', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'create-order',
+            orderId: cleanId,
+            recipientName: recipientName,
+            phone: phone,
+            address: rawAddr,
+            postalCode: current.postal_code || 40111,
+            courierCompany: courierCompany,
+            courierType: courierType
+          })
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          const waybill = result.order?.courier?.waybill_id || result.waybill_id || ('WYB-' + Date.now().toString().slice(-8));
+          const trackingUrl = result.order?.courier?.link || result.tracking_url || `https://track.biteship.com/${waybill}`;
+
+          current.status = 'SHIPPED';
+          current.courier = `${courierCompany.toUpperCase()} ${courierType.toUpperCase()}`.trim();
+          current.resi = waybill;
+          current.tracking = waybill;
+          current.tracking_url = trackingUrl;
+
+          localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+          updateCloudOrderStatus(current.id, 'SHIPPED', { courier: current.courier, resiNumber: waybill }).catch(() => {});
+          syncOrderStatusToLocalUser(current.id, 'SHIPPED', waybill, trackingUrl);
+          renderOrders();
+
+          showAdminToast('success', 'RESI BITESHIP TERBIT', `Resi: ${waybill}. Status #${cleanId} diubah ke SHIPPED.`);
+        } else {
+          showAdminToast('error', 'BITESHIP GAGAL', result.error || 'Gagal membuat pickup Biteship.');
+        }
+      } catch (err) {
+        showAdminToast('error', 'BITESHIP ERROR', err.message || 'Gagal koneksi ke Biteship.');
+      }
+    });
+
+    // 4. Input Resi Manual & Shipped
     popover.querySelector('.btn-pop-resi')?.addEventListener('click', () => {
       closeOrderPopover();
       const all = getAdminOrders();

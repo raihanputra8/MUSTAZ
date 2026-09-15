@@ -428,7 +428,8 @@ export async function submitOrderSecure({
   notes = '',
   paymentMethod = 'Transfer Bank (BCA / Mandiri)',
   cartItems = [],
-  orderId = null
+  orderId = null,
+  shippingCost = 0
 }) {
   try {
     const payload = {
@@ -456,7 +457,7 @@ export async function submitOrderSecure({
     return {
       success: true,
       orderId: rpcResult?.order_id || orderId,
-      totalAmount: rpcResult?.total_amount,
+      totalAmount: (typeof rpcResult?.total_amount === 'number') ? (rpcResult.total_amount + Number(shippingCost || 0)) : undefined,
       status: rpcResult?.status || 'PENDING_PAYMENT',
       items: rpcResult?.items
     };
@@ -474,7 +475,7 @@ export async function submitOrderSecure({
       phone,
       city: `${address} (Kurir: ${courier})`,
       items: cartItems.map(i => `${i.name} (x${i.quantity || 1})`).join(', '),
-      total: cartItems.reduce((acc, i) => acc + (Number(i.price || 0) * Number(i.quantity || 1)), 0),
+      total: cartItems.reduce((acc, i) => acc + (Number(i.price || 0) * Number(i.quantity || 1)), 0) + Number(shippingCost || 0),
       status: 'PENDING_PAYMENT'
     });
     return {
