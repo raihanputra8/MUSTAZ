@@ -199,7 +199,19 @@ const CMS_IMAGE_FALLBACKS = {
   hero_banner_fig: 'FIG. 01 // KUSTOM PET HELM',
   hero_banner_author: 'MUSTAZ CRAFT WORKSHOP',
   hero_badge_title: 'PET HELM // 100% REBELLION',
-  hero_badge_subtitle: 'VERIFIED UNDERGROUND DISPATCH'
+  hero_badge_subtitle: 'VERIFIED UNDERGROUND DISPATCH',
+  home_drops_tag: 'SIGNATURE HARDWARE',
+  home_drops_title: 'PET HELM DROPS',
+  home_drops_desc: 'Hand-built pet peaks, acrylic roofs, and studded leather lids. Compatible with universal 3-snap helmet shells.',
+  home_drops_btn: 'VIEW ALL PRODUCTS →',
+  home_about_tag: 'OUR STORY & ARCHIVE',
+  home_about_title: 'ABOUT MUSTAZ CRAFT',
+  home_about_desc: 'The story behind the spikes, flames, and pet helm rebellion straight from the workshop.',
+  home_about_btn: 'READ THE STORY →',
+  home_testi_tag: 'COMMUNITY DISPATCH',
+  home_testi_title: 'WHAT THEY SAY ABOUT US',
+  home_testi_desc: 'Real riders from Bandung, Jakarta, and beyond proving our hand-formed pet helms on the asphalt.',
+  home_testi_btn: 'SEMUA TESTIMONI →'
 };
 
 export function applyContentToDOM(contentMap) {
