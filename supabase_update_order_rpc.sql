@@ -41,3 +41,41 @@ $$;
 
 -- Berikan izin akses eksekusi RPC ke anon, authenticated, dan service_role
 GRANT EXECUTE ON FUNCTION public.update_order_status_secure TO anon, authenticated, service_role;
+
+-- ==============================================================================
+-- 2. TABEL REVIEWS (TESTIMONI & ULASAN) - Mengatasi error 404 tabel belum ada
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.reviews (
+    id TEXT PRIMARY KEY,
+    order_id TEXT,
+    user_email TEXT,
+    user_name TEXT,
+    bike_model TEXT,
+    city TEXT,
+    product_id TEXT,
+    product_name TEXT,
+    product_image TEXT,
+    rating INT DEFAULT 5,
+    comment TEXT,
+    is_verified BOOLEAN DEFAULT true,
+    tag TEXT DEFAULT 'VERIFIED BUYER',
+    status TEXT DEFAULT 'approved',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read approved reviews" ON public.reviews;
+CREATE POLICY "Public can read approved reviews"
+ON public.reviews FOR SELECT
+USING (true);
+
+DROP POLICY IF EXISTS "Anyone can submit reviews" ON public.reviews;
+CREATE POLICY "Anyone can submit reviews"
+ON public.reviews FOR INSERT
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admin can update reviews" ON public.reviews;
+CREATE POLICY "Admin can update reviews"
+ON public.reviews FOR ALL
+USING (public.is_admin());

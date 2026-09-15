@@ -1225,6 +1225,45 @@ async function initAdminDashboard() {
   }
   window.openAdminWhatsAppAction = openAdminWhatsAppAction;
 
+  function syncOrderStatusToLocalUser(orderId, newStatus) {
+    try {
+      const cleanId = cleanOrderId(orderId);
+      const recents = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
+      let rChanged = false;
+      recents.forEach(ro => {
+        if (cleanOrderId(ro.id || ro.orderId) === cleanId) {
+          ro.status = newStatus;
+          rChanged = true;
+        }
+      });
+      if (rChanged) localStorage.setItem('mustaz_recent_orders', JSON.stringify(recents));
+
+      const latest = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
+      if (latest && cleanOrderId(latest.id || latest.orderId) === cleanId) {
+        latest.status = newStatus;
+        localStorage.setItem('mustaz_latest_checkout_order', JSON.stringify(latest));
+      }
+
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('mustaz_orders_'));
+      keys.forEach(k => {
+        try {
+          const userOrds = JSON.parse(localStorage.getItem(k) || '[]');
+          let uChanged = false;
+          userOrds.forEach(uo => {
+            if (cleanOrderId(uo.id || uo.orderId) === cleanId) {
+              uo.status = newStatus;
+              uChanged = true;
+            }
+          });
+          if (uChanged) localStorage.setItem(k, JSON.stringify(userOrds));
+        } catch {}
+      });
+
+      window.dispatchEvent(new CustomEvent('mustaz:orders_updated', { detail: { orderId, status: newStatus } }));
+    } catch {}
+  }
+  window.syncOrderStatusToLocalUser = syncOrderStatusToLocalUser;
+
   function renderOrders() {
     const allOrders = getAdminOrders();
     const tbody = document.getElementById('adminOrdersTbody');
@@ -1425,44 +1464,6 @@ async function initAdminDashboard() {
         </tr>
       `;
     }).join('');
-
-  function syncOrderStatusToLocalUser(orderId, newStatus) {
-    try {
-      const cleanId = cleanOrderId(orderId);
-      const recents = JSON.parse(localStorage.getItem('mustaz_recent_orders') || '[]');
-      let rChanged = false;
-      recents.forEach(ro => {
-        if (cleanOrderId(ro.id || ro.orderId) === cleanId) {
-          ro.status = newStatus;
-          rChanged = true;
-        }
-      });
-      if (rChanged) localStorage.setItem('mustaz_recent_orders', JSON.stringify(recents));
-
-      const latest = JSON.parse(localStorage.getItem('mustaz_latest_checkout_order') || 'null');
-      if (latest && cleanOrderId(latest.id || latest.orderId) === cleanId) {
-        latest.status = newStatus;
-        localStorage.setItem('mustaz_latest_checkout_order', JSON.stringify(latest));
-      }
-
-      const keys = Object.keys(localStorage).filter(k => k.startsWith('mustaz_orders_'));
-      keys.forEach(k => {
-        try {
-          const userOrds = JSON.parse(localStorage.getItem(k) || '[]');
-          let uChanged = false;
-          userOrds.forEach(uo => {
-            if (cleanOrderId(uo.id || uo.orderId) === cleanId) {
-              uo.status = newStatus;
-              uChanged = true;
-            }
-          });
-          if (uChanged) localStorage.setItem(k, JSON.stringify(userOrds));
-        } catch {}
-      });
-
-      window.dispatchEvent(new CustomEvent('mustaz:orders_updated', { detail: { orderId, status: newStatus } }));
-    } catch {}
-  }
 
     tbody.querySelectorAll('.order-status-select').forEach(sel => {
       sel.addEventListener('change', (e) => {
