@@ -25,7 +25,12 @@ TO authenticated USING (public.is_admin());
 INSERT INTO public.home_content (section_id, content_value) VALUES
 ('hero_title', 'PET HELM / VISORS'),
 ('hero_subtitle', 'High-voltage acid acrylics, spiked leather visors, and vintage race duckbill peaks.'),
-('hero_banner_image', '/assets/banner/hero-main.jpg')
+('hero_banner_image', '/assets/banner/hero-main.jpg'),
+('hero_banner_tag', 'Y-TWO ROOF PET // SPIKED'),
+('hero_banner_fig', 'FIG. 01 // KUSTOM PET HELM'),
+('hero_banner_author', 'MUSTAZ CRAFT WORKSHOP'),
+('hero_badge_title', 'PET HELM // 100% REBELLION'),
+('hero_badge_subtitle', 'VERIFIED UNDERGROUND DISPATCH')
 ON CONFLICT (section_id) DO NOTHING;
 
 -- 2. Buat Storage Bucket untuk Upload Gambar

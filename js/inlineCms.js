@@ -160,9 +160,10 @@ export async function saveCmsContent(key, value) {
 
     // Perbarui cache lokal agar instan sinkron antar halaman
     try {
-      const cached = JSON.parse(localStorage.getItem('mustaz_home_content') || '{}');
+      const cached = JSON.parse(localStorage.getItem('mustaz_home_content') || localStorage.getItem('mustaz_home_content_cache') || '{}');
       cached[key] = finalValue;
       localStorage.setItem('mustaz_home_content', JSON.stringify(cached));
+      localStorage.setItem('mustaz_home_content_cache', JSON.stringify(cached));
     } catch {}
 
     // 3. Perbarui atribut DOM lokal
@@ -193,7 +194,12 @@ export async function saveCmsContent(key, value) {
 
 const CMS_IMAGE_FALLBACKS = {
   hero_banner_image: 'assets/images/pet_visor_yellow_flame.webp',
-  about_banner_image: 'assets/images/mustaz_booth_event.webp'
+  about_banner_image: 'assets/images/mustaz_booth_event.webp',
+  hero_banner_tag: 'Y-TWO ROOF PET // SPIKED',
+  hero_banner_fig: 'FIG. 01 // KUSTOM PET HELM',
+  hero_banner_author: 'MUSTAZ CRAFT WORKSHOP',
+  hero_badge_title: 'PET HELM // 100% REBELLION',
+  hero_badge_subtitle: 'VERIFIED UNDERGROUND DISPATCH'
 };
 
 export function applyContentToDOM(contentMap) {

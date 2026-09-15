@@ -324,35 +324,81 @@
     min-height: unset !important;
   }
 
-  /* Hero Visor Asset Frame */
+  /* Hero Visor Asset Frame & Responsive Clean Box */
   .hero-photo-frame {
-    max-width: 250px !important;
-    padding: 8px !important;
-    border-width: 2px !important;
+    max-width: min(350px, 92vw) !important;
+    padding: 10px !important;
+    border-width: 3px !important;
     box-shadow: 6px 6px 0px var(--accent-pink) !important;
     margin: 20px auto 0 !important;
     transform: none !important;
+    box-sizing: border-box !important;
   }
 
+  .hero-photo-frame .hero-photo-box,
   .hero-photo-frame div[style*="aspect-ratio:4/5"] {
     aspect-ratio: 1/1 !important;
+    max-width: 100% !important;
+    border-width: 2px !important;
   }
 
+  /* Tag on Photo - Stays neatly inside the photo box without overflowing */
+  .hero-photo-tag-wrapper {
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    pointer-events: none !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    z-index: 5 !important;
+  }
+
+  .hero-photo-tag-wrapper .zine-tag-yellow {
+    font-size: clamp(0.65rem, 2.5vw, 0.72rem) !important;
+    padding: 3px 8px !important;
+    letter-spacing: 0.08em !important;
+    line-height: 1.3 !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    box-sizing: border-box !important;
+    pointer-events: auto !important;
+  }
+
+  /* Bottom Caption inside Polaroid Frame */
+  .hero-photo-caption {
+    font-size: clamp(0.65rem, 2.3vw, 0.72rem) !important;
+    padding: 8px 2px 2px !important;
+    gap: 6px !important;
+  }
+
+  /* Secondary Badge - Centered, matching width, responsive text with zero overflow */
   .hero-sub-badge {
-    padding: 6px 10px !important;
-    border-width: 2px !important;
-    box-shadow: 3px 3px 0px var(--accent-pink) !important;
-    bottom: -12px !important;
-    left: 4px !important;
+    position: static !important;
     transform: none !important;
+    margin: 14px auto 0 !important;
+    width: 100% !important;
+    max-width: min(350px, 92vw) !important;
+    padding: 10px 14px !important;
+    border-width: 2px !important;
+    box-shadow: 4px 4px 0px var(--accent-pink) !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
   }
 
   .hero-sub-badge div:first-child {
-    font-size: 0.85rem !important;
+    font-size: clamp(0.95rem, 4vw, 1.15rem) !important;
+    line-height: 1.25 !important;
+    word-break: break-word !important;
+    margin-bottom: 4px !important;
   }
 
   .hero-sub-badge div:last-child {
-    font-size: 0.58rem !important;
+    font-size: clamp(0.62rem, 2.6vw, 0.72rem) !important;
+    letter-spacing: 0.08em !important;
+    line-height: 1.3 !important;
+    word-break: break-word !important;
   }
 
   /* Large Watermark text (no overflow) */
@@ -454,22 +500,22 @@
     color: var(--accent-yellow) !important;
   }
 
-  /* Badges & Tags (BESTSELLER, IN STOCK, EVENT PACK, CATEGORY) */
+  /* Badges & Tags (BESTSELLER, IN STOCK, EVENT PACK, CATEGORY) - Scoped to Products */
   .part-cat-badge,
   .part-card span[style*="padding:3px 8px"],
   .drops-grid > article .zine-tag-yellow,
   .drops-grid > article .zine-tag-white,
   .drops-grid > article .zine-tag-pink,
-  .zine-tag-yellow,
-  .zine-tag-white,
-  .zine-tag-pink {
+  .part-card .zine-tag-yellow,
+  .part-card .zine-tag-white,
+  .part-card .zine-tag-pink {
     font-size: 0.5rem !important;
     padding: 2px 4px !important;
     letter-spacing: 0.02em !important;
     white-space: nowrap !important;
     word-break: normal !important;
     line-height: 1.2 !important;
-    max-width: 40% !important;
+    max-width: 80% !important;
     text-align: center !important;
     flex-shrink: 0 !important;
     display: inline-block !important;

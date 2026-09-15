@@ -2374,6 +2374,11 @@ async function initAdminDashboard() {
     const inputTitle = document.getElementById('inputHeroTitle');
     const inputSubtitle = document.getElementById('inputHeroSubtitle');
     const inputImage = document.getElementById('inputHeroImage');
+    const inputTag = document.getElementById('inputHeroTag');
+    const inputFig = document.getElementById('inputHeroFig');
+    const inputAuthor = document.getElementById('inputHeroAuthor');
+    const inputBadgeTitle = document.getElementById('inputHeroBadgeTitle');
+    const inputBadgeSubtitle = document.getElementById('inputHeroBadgeSubtitle');
     const btnPublish = document.getElementById('btnPublishHomeContent');
     const errorBox = document.getElementById('heroContentError');
 
@@ -2393,6 +2398,11 @@ async function initAdminDashboard() {
           previewImg.src = content.hero_banner_image;
           currentBannerUrl = content.hero_banner_image;
         }
+        if (inputTag && content.hero_banner_tag) inputTag.value = content.hero_banner_tag;
+        if (inputFig && content.hero_banner_fig) inputFig.value = content.hero_banner_fig;
+        if (inputAuthor && content.hero_banner_author) inputAuthor.value = content.hero_banner_author;
+        if (inputBadgeTitle && content.hero_badge_title) inputBadgeTitle.value = content.hero_badge_title;
+        if (inputBadgeSubtitle && content.hero_badge_subtitle) inputBadgeSubtitle.value = content.hero_badge_subtitle;
       }
     } catch (err) {
       console.warn('[Admin] fetchHomeContent error:', err);
@@ -2508,7 +2518,12 @@ async function initAdminDashboard() {
           const contentMap = {
             hero_title: titleVal,
             hero_subtitle: subtitleVal,
-            hero_banner_image: uploadedImageUrl
+            hero_banner_image: uploadedImageUrl,
+            hero_banner_tag: inputTag ? inputTag.value.trim() : 'Y-TWO ROOF PET // SPIKED',
+            hero_banner_fig: inputFig ? inputFig.value.trim() : 'FIG. 01 // KUSTOM PET HELM',
+            hero_banner_author: inputAuthor ? inputAuthor.value.trim() : 'MUSTAZ CRAFT WORKSHOP',
+            hero_badge_title: inputBadgeTitle ? inputBadgeTitle.value.trim() : 'PET HELM // 100% REBELLION',
+            hero_badge_subtitle: inputBadgeSubtitle ? inputBadgeSubtitle.value.trim() : 'VERIFIED UNDERGROUND DISPATCH'
           };
 
           await saveHomeContent(contentMap);

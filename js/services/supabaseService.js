@@ -726,10 +726,11 @@ export async function saveHomeContent(contentMap) {
   const entries = Object.entries(contentMap);
   
   try {
-    const cached = localStorage.getItem('mustaz_home_content');
+    const cached = localStorage.getItem('mustaz_home_content') || localStorage.getItem('mustaz_home_content_cache');
     const curr = cached ? JSON.parse(cached) : {};
     Object.assign(curr, contentMap);
     localStorage.setItem('mustaz_home_content', JSON.stringify(curr));
+    localStorage.setItem('mustaz_home_content_cache', JSON.stringify(curr));
   } catch {}
 
   const errors = [];
