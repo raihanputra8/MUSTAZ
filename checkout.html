@@ -19,8 +19,8 @@
   <link rel=apple-touch-icon sizes=180x180 href="assets/icons/apple-touch-icon.png?v=3">
   <link rel="stylesheet" href="css/main.css">
   
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <!-- Midtrans Snap JS SDK (Sandbox Mode) -->
+  <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-f2QU56sMP76GLn_0"></script>
 </head>
 <body class="preload">
 
@@ -195,14 +195,16 @@
             <div class="form-group-brutal" style="margin-bottom:28px;">
               <label class="form-label-brutal">06 // PAYMENT PROTOCOL *</label>
               <select id="chkPayment" class="form-input-brutal" style="cursor:pointer;">
-                <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank (BCA / Mandiri)</option>
-                <option value="QRIS Instant Pay">QRIS Instant Pay</option>
+                <option value="Midtrans Payment Gateway (QRIS, VA Bank, CC, GoPay)" selected>
+                  ⚡ Midtrans Gateway (QRIS, BCA/Mandiri/BRI, Kartu Kredit, GoPay) [DEMO SANDBOX]
+                </option>
+                <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank Manual (BCA / Mandiri)</option>
                 <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
                 <option value="Direct WhatsApp Negotiation">Direct WhatsApp Negotiation</option>
               </select>
             </div>
-            <button type="submit" class="btn-brutal-pink" style="width:100%;padding:18px;font-size:1.15rem;">
-              CONFIRM ORDER VIA WHATSAPP →
+            <button type="submit" id="btnSubmitCheckout" class="btn-brutal-pink" style="width:100%;padding:18px;font-size:1.15rem;">
+              ⚡ BAYAR SEKARANG VIA MIDTRANS →
             </button>
           </form>
         </div>
@@ -463,19 +465,102 @@
           localStorage.setItem('mustaz_auth_logged_in', 'true');
         } catch {}
 
-        // 3. Show Instant In-App Order Success Modal
-        showOrderSuccessModal(orderRecord);
+        // Handle Midtrans Snap Payment
+        if (payment.includes('Midtrans')) {
+          if (typeof window.snap === 'undefined' || typeof window.snap.pay !== 'function') {
+            throw new Error('Sistem Midtrans Snap belum selesai dimuat. Silakan muat ulang halaman.');
+          }
 
-        // 4. Redirect to WhatsApp with dynamic store setting
-        let targetWa = null;
-        try { targetWa = await getDynamicAdminWhatsApp(); } catch {}
-        const url = generateWhatsAppUrl({ name, phone: cleanPhone, address, courier, payment, notes: 'Email: ' + email, orderId: finalOrderId, adminPhone: targetWa }, items, finalTotal, finalOrderId);
-        const waWin = window.open(url, '_blank');
-        if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
-          window.location.href = url;
+          if (submitBtn) {
+            submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">⚡ MEMBUKA GATEWAY MIDTRANS...</span>';
+          }
+
+          const snapRes = await fetch('/api/midtrans-snap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: finalOrderId,
+              grossAmount: finalTotal,
+              items: items.map(i => ({
+                id: i.id || i.sku || 'ITEM',
+                name: i.name,
+                price: i.price,
+                quantity: i.quantity || 1
+              })),
+              customerDetails: {
+                name: name,
+                email: email,
+                phone: cleanPhone,
+                address: address
+              }
+            })
+          });
+
+          const snapData = await snapRes.json();
+          if (!snapData.success || !snapData.token) {
+            throw new Error(snapData.error || 'Gagal menginisialisasi sesi pembayaran Midtrans');
+          }
+
+          // Launch Midtrans Snap In-App Popup
+          window.snap.pay(snapData.token, {
+            onSuccess: async function(result) {
+              console.log('[Midtrans Payment Success]:', result);
+              orderRecord.status = 'LUNAS (PAID)';
+              orderRecord.paymentType = result.payment_type || 'midtrans';
+
+              try {
+                const { getSupabase } = await import('./js/services/authService.js');
+                const sb = await getSupabase();
+                if (sb) {
+                  await sb.from('orders').update({ 
+                    status: 'LUNAS (PAID)',
+                    payment_status: 'settlement',
+                    payment_type: result.payment_type || 'midtrans'
+                  }).eq('id', finalOrderId);
+                }
+              } catch (dbErr) {
+                console.warn('Could not update order status in cloud:', dbErr.message);
+              }
+
+              sendOrderSuccessEmail(orderRecord).catch(() => {});
+              clearCart();
+              renderPageCheckout();
+              showOrderSuccessModal(orderRecord);
+            },
+            onPending: async function(result) {
+              console.log('[Midtrans Payment Pending]:', result);
+              orderRecord.status = 'PENDING_PAYMENT';
+              orderRecord.paymentType = result.payment_type || 'midtrans';
+              sendOrderSuccessEmail(orderRecord).catch(() => {});
+              clearCart();
+              renderPageCheckout();
+              showOrderSuccessModal(orderRecord);
+            },
+            onError: function(result) {
+              console.error('[Midtrans Payment Error]:', result);
+              alert('⚠️ Pembayaran melalui Midtrans gagal atau dibatalkan. Anda dapat mengulanginya atau memilih metode pembayaran lain.');
+            },
+            onClose: function() {
+              console.log('[Midtrans Popup Closed]');
+              alert('ℹ️ Popup pembayaran ditutup. Pesanan Anda tersimpan sebagai draft menunggu pembayaran.');
+            }
+          });
+
+        } else {
+          // Standard Offline / WhatsApp Flow
+          showOrderSuccessModal(orderRecord);
+
+          let targetWa = null;
+          try { targetWa = await getDynamicAdminWhatsApp(); } catch {}
+          const url = generateWhatsAppUrl({ name, phone: cleanPhone, address, courier, payment, notes: 'Email: ' + email, orderId: finalOrderId, adminPhone: targetWa }, items, finalTotal, finalOrderId);
+          const waWin = window.open(url, '_blank');
+          if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+            window.location.href = url;
+          }
+          clearCart();
+          renderPageCheckout();
         }
-        clearCart();
-        renderPageCheckout();
+
       } catch (err) {
         console.error('[Checkout Error]', err);
         alert(err.message && err.message.includes('Stok') ? err.message : `⚠️ Gagal memproses pesanan: ${err.message || 'Silakan coba lagi.'}`);
@@ -489,6 +574,21 @@
         }
       }
     });
+
+    // Dynamic Submit Button Label based on Selected Payment Method
+    const chkPaymentEl = document.getElementById('chkPayment');
+    const submitBtnEl = document.getElementById('btnSubmitCheckout');
+    function updateCheckoutBtnLabel() {
+      if (!submitBtnEl) return;
+      const isMidtrans = (chkPaymentEl?.value || '').includes('Midtrans');
+      if (isMidtrans) {
+        submitBtnEl.innerHTML = '⚡ BAYAR SEKARANG VIA MIDTRANS →';
+      } else {
+        submitBtnEl.innerHTML = 'CONFIRM ORDER VIA WHATSAPP →';
+      }
+    }
+    chkPaymentEl?.addEventListener('change', updateCheckoutBtnLabel);
+    updateCheckoutBtnLabel();
 
     window.addEventListener('mustaz:currency_changed', () => {
       renderPageCheckout();
