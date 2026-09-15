@@ -1232,11 +1232,20 @@ async function initAdminDashboard() {
 
     // 1. Update filter tab counts (Usulan 2)
     const countAll = allOrders.length;
-    const countPending = allOrders.filter(o => o.status === 'PENDING').length;
-    const countPaid = allOrders.filter(o => o.status === 'PAID_PROCESSING' || o.status === 'PROCESSING').length;
-    const countShipped = allOrders.filter(o => o.status === 'SHIPPED' || o.status === 'IN TRANSIT').length;
-    const countDelivered = allOrders.filter(o => o.status === 'DELIVERED').length;
-    const countCancelled = allOrders.filter(o => o.status === 'CANCELLED').length;
+    const countPending = allOrders.filter(o => {
+      const s = (o.status || '').toUpperCase();
+      return s === 'PENDING' || s === 'PENDING_PAYMENT';
+    }).length;
+    const countPaid = allOrders.filter(o => {
+      const s = (o.status || '').toUpperCase();
+      return s === 'PAID_PROCESSING' || s === 'PROCESSING' || s === 'LUNAS (PAID)' || s === 'PAID' || s === 'SETTLEMENT';
+    }).length;
+    const countShipped = allOrders.filter(o => {
+      const s = (o.status || '').toUpperCase();
+      return s === 'SHIPPED' || s === 'IN TRANSIT';
+    }).length;
+    const countDelivered = allOrders.filter(o => (o.status || '').toUpperCase() === 'DELIVERED').length;
+    const countCancelled = allOrders.filter(o => (o.status || '').toUpperCase() === 'CANCELLED').length;
 
     const cntAllEl = document.getElementById('cntStatusAll');
     if (cntAllEl) cntAllEl.textContent = countAll;
@@ -1256,13 +1265,17 @@ async function initAdminDashboard() {
 
     if (activeOrderStatusFilter !== 'ALL') {
       filteredOrders = filteredOrders.filter(({ ord }) => {
+        const s = (ord.status || '').toUpperCase();
+        if (activeOrderStatusFilter === 'PENDING') {
+          return s === 'PENDING' || s === 'PENDING_PAYMENT';
+        }
         if (activeOrderStatusFilter === 'PAID_PROCESSING') {
-          return ord.status === 'PAID_PROCESSING' || ord.status === 'PROCESSING';
+          return s === 'PAID_PROCESSING' || s === 'PROCESSING' || s === 'LUNAS (PAID)' || s === 'PAID' || s === 'SETTLEMENT';
         }
         if (activeOrderStatusFilter === 'SHIPPED') {
-          return ord.status === 'SHIPPED' || ord.status === 'IN TRANSIT';
+          return s === 'SHIPPED' || s === 'IN TRANSIT';
         }
-        return ord.status === activeOrderStatusFilter;
+        return s === activeOrderStatusFilter;
       });
     }
 
@@ -1280,7 +1293,7 @@ async function initAdminDashboard() {
       tbody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align:center;padding:36px;color:#888;font-family:var(--font-mono-sub);font-size:0.82rem;">
-            ⚡ TIDAK ADA PESANAN YANG SESUAI FILTER ATAU PENCARIAN.
+            TIDAK ADA PESANAN YANG SESUAI FILTER ATAU PENCARIAN.
           </td>
         </tr>
       `;
@@ -1293,13 +1306,15 @@ async function initAdminDashboard() {
       const safeItems = escapeHtml(ord.items);
       const safeDate = escapeHtml(ord.date);
       const hasReceipt = Boolean(ord.receiptImage);
-      const isNewOrder = ord.status === 'PENDING' || ord.status === 'PROCESSING';
-      const isDelivered = ord.status === 'DELIVERED';
+      const ordStatus = (ord.status || 'PENDING').toUpperCase();
+      const isNewOrder = ordStatus === 'PENDING' || ordStatus === 'PENDING_PAYMENT';
+      const isDelivered = ordStatus === 'DELIVERED';
+      const isPaid = ordStatus === 'PAID_PROCESSING' || ordStatus === 'PROCESSING' || ordStatus === 'LUNAS (PAID)' || ordStatus === 'PAID' || ordStatus === 'SETTLEMENT';
       const hasTracking = Boolean(ord.courier || ord.resi);
 
       const rowStyle = isNewOrder 
         ? 'background:rgba(255,230,0,0.06);border-left:4px solid var(--accent-yellow);'
-        : (isDelivered ? 'border-left:4px solid #22c55e;' : 'border-left:4px solid transparent;');
+        : (isPaid ? 'background:rgba(34,197,94,0.05);border-left:4px solid #22c55e;' : (isDelivered ? 'border-left:4px solid #22c55e;' : 'border-left:4px solid transparent;'));
 
       // Dynamic 1-Click CS WhatsApp Actions (Target Buyer Phone)
       const customerPhone = getCustomerWhatsAppNumber(ord);
@@ -1307,51 +1322,53 @@ async function initAdminDashboard() {
       const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
 
       let dynamicActionsHtml = '';
-      const ordStatus = (ord.status || 'PENDING').toUpperCase();
 
       if (ordStatus === 'PENDING' || ordStatus === 'PENDING_PAYMENT') {
         dynamicActionsHtml = `
           <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" data-id="${safeId}" title="Kirim rincian tagihan & invoice via WhatsApp" style="padding:6px 10px;font-size:0.7rem;font-weight:900;cursor:pointer;">
-            📩 KIRIM INVOICE WA
+            KIRIM INVOICE WA
+          </button>
+          <button type="button" class="btn-brutal-dark btn-brutal-sm btn-action-check-midtrans" data-index="${originalIdx}" data-id="${safeId}" title="Cek apakah pesanan ini sudah dibayar di Midtrans" style="padding:6px 10px;font-size:0.7rem;border:1px solid var(--accent-yellow);color:var(--accent-yellow);cursor:pointer;font-weight:900;">
+            CEK MIDTRANS ⟳
           </button>
           <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Batalkan pesanan ini" style="padding:6px 10px;font-size:0.7rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;">
-            ❌ BATALKAN
+            BATALKAN
           </button>
         `;
       } else if (ordStatus === 'PAYMENT_REVIEW' || ordStatus === 'WAITING_VERIFICATION') {
         dynamicActionsHtml = `
           <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" data-id="${safeId}" title="Verifikasi pembayaran lunas & mulai proses" style="padding:6px 10px;font-size:0.7rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;">
-            ✅ VERIFIKASI LUNAS
+            VERIFIKASI LUNAS
           </button>
           <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Tolak bukti & batalkan pesanan" style="padding:6px 10px;font-size:0.7rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;">
-            ❌ BATALKAN
+            BATALKAN
           </button>
         `;
-      } else if (ordStatus === 'PAID_PROCESSING' || ordStatus === 'PROCESSING' || ordStatus === 'PAID') {
+      } else if (isPaid) {
         dynamicActionsHtml = `
           <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" data-id="${safeId}" title="Input Resi kurir dan update status ke SHIPPED" style="padding:6px 10px;font-size:0.7rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;font-weight:900;">
-            📦 INPUT RESI &amp; SHIPPED
+            INPUT RESI &amp; SHIPPED
           </button>
         `;
       } else if (ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT') {
         dynamicActionsHtml = `
           <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Tandai pesanan diterima pelanggan" style="padding:6px 10px;font-size:0.7rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;">
-            ✓ MARK DELIVERED
+            MARK DELIVERED
           </button>
         `;
       } else if (ordStatus === 'DELIVERED') {
         dynamicActionsHtml = `
           <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Kirim ajakan ulasan / review ke WhatsApp pembeli" style="padding:6px 10px;font-size:0.7rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:900;">
-            ⭐ MINTA TESTIMONI
+            MINTA TESTIMONI
           </button>
         `;
       } else if (ordStatus === 'COMPLETED') {
         dynamicActionsHtml = `
-          <span style="color:#4ade80;font-size:0.7rem;font-weight:900;padding:5px 8px;border:1px solid #22c55e44;background:#14301c33;">✓ SELESAI</span>
+          <span style="color:#4ade80;font-size:0.7rem;font-weight:900;padding:5px 8px;border:1px solid #22c55e44;background:#14301c33;">SELESAI</span>
         `;
       } else {
         dynamicActionsHtml = `
-          <span style="color:#ef4444;font-size:0.7rem;font-family:var(--font-mono-sub);padding:5px 8px;border:1px solid #ef444444;background:#30141433;font-weight:800;">❌ DIBATALKAN</span>
+          <span style="color:#ef4444;font-size:0.7rem;font-family:var(--font-mono-sub);padding:5px 8px;border:1px solid #ef444444;background:#30141433;font-weight:800;">DIBATALKAN</span>
         `;
       }
 
@@ -1360,14 +1377,15 @@ async function initAdminDashboard() {
           <td style="padding:12px 14px;">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <span style="font-family:var(--font-headline);font-size:1.1rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
-              ${isNewOrder ? `<span class="zine-tag-yellow" style="font-size:0.62rem;padding:2px 6px;animation:pulseUrgency 1.5s infinite;">⚡ BARU</span>` : ''}
+              ${isNewOrder ? `<span class="zine-tag-yellow" style="font-size:0.62rem;padding:2px 6px;">BARU</span>` : ''}
+              ${isPaid ? `<span style="font-size:0.62rem;padding:2px 6px;background:#14301c;color:#4ade80;border:1px solid #22c55e;font-weight:900;">LUNAS</span>` : ''}
             </div>
             <div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#777;margin-top:2px;">${safeDate}</div>
-            ${hasTracking ? `<div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#c084fc;margin-top:4px;">🚚 ${escapeHtml(ord.courier || 'Ekspedisi')}: <b>${escapeHtml(ord.resi || '-')}</b></div>` : ''}
+            ${hasTracking ? `<div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#c084fc;margin-top:4px;">${escapeHtml(ord.courier || 'Ekspedisi')}: <b>${escapeHtml(ord.resi || '-')}</b></div>` : ''}
           </td>
           <td style="padding:12px 14px;">
             <div style="font-weight:700;color:#FFF;">${safeCustomer}</div>
-            ${customerPhone ? `<div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;margin-top:2px;">📱 +${customerPhone}</div>` : ''}
+            ${customerPhone ? `<div style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#888;margin-top:2px;">+${customerPhone}</div>` : ''}
           </td>
           <td style="font-size:0.85rem;color:#AAA;padding:12px 14px;">
             ${safeItems}
@@ -1377,17 +1395,17 @@ async function initAdminDashboard() {
           </td>
           <td style="padding:12px 14px;">
             <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}">
-              ${hasReceipt ? '📸 LIHAT BUKTI' : '+ LAMPIRKAN'}
+              ${hasReceipt ? 'LIHAT BUKTI' : '+ LAMPIRKAN'}
             </button>
           </td>
           <td style="padding:12px 14px;">
             <select class="form-input-brutal order-status-select" data-index="${originalIdx}" style="padding:6px 10px;font-size:0.75rem;background:#111;color:#FFF;border-color:#444;width:auto;">
-              <option value="PENDING" ${ord.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
-              <option value="PENDING_PAYMENT" ${ord.status === 'PENDING_PAYMENT' ? 'selected' : ''}>PENDING_PAYMENT</option>
-              <option value="PAID_PROCESSING" ${(ord.status === 'PAID_PROCESSING' || ord.status === 'PROCESSING') ? 'selected' : ''}>PAID_PROCESSING</option>
-              <option value="SHIPPED" ${(ord.status === 'SHIPPED' || ord.status === 'IN TRANSIT') ? 'selected' : ''}>SHIPPED</option>
-              <option value="DELIVERED" ${ord.status === 'DELIVERED' ? 'selected' : ''}>DELIVERED</option>
-              <option value="CANCELLED" ${ord.status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
+              <option value="PENDING" ${ordStatus === 'PENDING' ? 'selected' : ''}>PENDING</option>
+              <option value="PENDING_PAYMENT" ${ordStatus === 'PENDING_PAYMENT' ? 'selected' : ''}>PENDING_PAYMENT</option>
+              <option value="PAID_PROCESSING" ${isPaid ? 'selected' : ''}>PAID_PROCESSING</option>
+              <option value="SHIPPED" ${(ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT') ? 'selected' : ''}>SHIPPED</option>
+              <option value="DELIVERED" ${ordStatus === 'DELIVERED' ? 'selected' : ''}>DELIVERED</option>
+              <option value="CANCELLED" ${ordStatus === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
             </select>
           </td>
           <td style="text-align:right;white-space:nowrap;padding:12px 14px;">
@@ -1395,11 +1413,11 @@ async function initAdminDashboard() {
               ${dynamicActionsHtml}
               ${customerPhone && customerPhone.length >= 10 ? `
                 <a href="https://wa.me/${customerPhone}?text=Halo%20${encodeURIComponent(custName)}%2C%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20%23${encodeURIComponent(orderCode)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;padding:6px 8px;font-size:0.7rem;" title="Chat WhatsApp Pembeli (${customerPhone})">
-                  WA 💬
+                  WA
                 </a>
               ` : `
-                <a href="javascript:void(0)" onclick="alert('⚠️ Nomor WhatsApp pembeli tidak valid atau tidak tercantum pada pesanan #${safeId}.');" class="btn-brutal-dark btn-brutal-sm" style="color:#777;border-color:#444;padding:6px 8px;font-size:0.7rem;opacity:0.6;cursor:not-allowed;" title="Nomor WA pembeli tidak valid">
-                  WA ❌
+                <a href="javascript:void(0)" onclick="alert('Nomor WhatsApp pembeli tidak valid atau tidak tercantum pada pesanan #${safeId}.');" class="btn-brutal-dark btn-brutal-sm" style="color:#777;border-color:#444;padding:6px 8px;font-size:0.7rem;opacity:0.6;cursor:not-allowed;" title="Nomor WA pembeli tidak valid">
+                  WA
                 </a>
               `}
             </div>
@@ -1483,6 +1501,48 @@ async function initAdminDashboard() {
 
         showAdminToast('success', 'FASE 1: TAGIHAN DIKIRIM', `WhatsApp pembeli #${ord.id} terbuka. Status diubah ke PENDING_PAYMENT.`);
         renderOrders();
+      });
+    });
+
+    // Cek Status Pembayaran Midtrans per Baris Pesanan
+    tbody.querySelectorAll('.btn-action-check-midtrans').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const id = btn.dataset.id;
+        const cleanId = cleanOrderId(id);
+        const origText = btn.innerHTML;
+        btn.innerHTML = 'CEK...';
+        btn.disabled = true;
+
+        try {
+          const res = await fetch(`/api/midtrans-sync?orderId=${encodeURIComponent(cleanId)}`);
+          const data = await res.json();
+          const r = data?.results?.[0];
+
+          if (r && r.isPaid) {
+            const all = getAdminOrders();
+            const ord = all.find(o => cleanOrderId(o.id) === cleanId);
+            if (ord) {
+              ord.status = 'PAID_PROCESSING';
+              ord.payment_status = r.transactionStatus || 'settlement';
+              ord.payment_type = r.paymentType || 'midtrans';
+              localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+              updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
+              syncOrderStatusToLocalUser(ord.id, 'PAID_PROCESSING');
+              renderOrders();
+              showAdminToast('success', 'PEMBAYARAN LUNAS', `Pesanan #${cleanId} terverifikasi LUNAS di Midtrans.`);
+            }
+          } else if (r && r.transactionStatus === 'pending') {
+            showAdminToast('info', 'MENUNGGU PEMBAYARAN', `Pesanan #${cleanId} di Midtrans masih berstatus PENDING (belum dibayar pembeli).`);
+          } else {
+            showAdminToast('warning', 'BELUM ADA TRANSAKSI', `Transaksi #${cleanId} belum ditemukan di Midtrans Sandbox.`);
+          }
+        } catch (err) {
+          showAdminToast('error', 'GAGAL CEK', err.message || 'Gagal menghubungi Midtrans.');
+        } finally {
+          btn.innerHTML = origText;
+          btn.disabled = false;
+        }
       });
     });
 
@@ -1684,6 +1744,75 @@ async function initAdminDashboard() {
     showAdminToast('info', 'SINKRONISASI...', 'Mengambil pesanan terbaru dari Supabase...');
     await syncAndRenderOrders(false);
     showAdminToast('success', 'TERHUBUNG', 'Daftar pesanan cloud telah diperbarui.');
+  });
+
+  document.getElementById('btnSyncMidtrans')?.addEventListener('click', async () => {
+    const syncBtn = document.getElementById('btnSyncMidtrans');
+    const origText = syncBtn ? syncBtn.innerHTML : 'SINKRONISASI MIDTRANS ⟳';
+    if (syncBtn) {
+      syncBtn.disabled = true;
+      syncBtn.style.opacity = '0.7';
+      syncBtn.innerHTML = 'MEMERIKSA MIDTRANS...';
+    }
+    showAdminToast('info', 'SINKRONISASI MIDTRANS', 'Memeriksa status transaksi ke server Midtrans API...');
+
+    try {
+      const all = getAdminOrders();
+      const pendingOrders = all.filter(o => {
+        const s = (o.status || '').toUpperCase();
+        return s === 'PENDING' || s === 'PENDING_PAYMENT';
+      });
+
+      if (pendingOrders.length === 0) {
+        showAdminToast('info', 'MIDTRANS SYNC', 'Semua pesanan saat ini sudah terkonfirmasi.');
+        return;
+      }
+
+      const orderIds = pendingOrders.map(o => cleanOrderId(o.id));
+      const res = await fetch('/api/midtrans-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderIds })
+      });
+
+      const data = await res.json();
+      let updatedCount = 0;
+
+      if (data && Array.isArray(data.results)) {
+        data.results.forEach(r => {
+          if (r.isPaid) {
+            const ord = all.find(o => cleanOrderId(o.id) === cleanOrderId(r.orderId));
+            if (ord) {
+              ord.status = 'PAID_PROCESSING';
+              ord.payment_status = r.transactionStatus || 'settlement';
+              ord.payment_type = r.paymentType || 'midtrans';
+              updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
+              syncOrderStatusToLocalUser(ord.id, 'PAID_PROCESSING');
+              updatedCount++;
+            }
+          }
+        });
+      }
+
+      localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+      renderOrders();
+
+      if (updatedCount > 0) {
+        showAdminToast('success', 'SINKRONISASI BERHASIL', `${updatedCount} pesanan terverifikasi LUNAS dari Midtrans.`);
+      } else {
+        showAdminToast('info', 'STATUS MIDTRANS', 'Pemeriksaan selesai. Belum ada pembayaran baru yang terselesaikan di Midtrans.');
+      }
+
+    } catch (err) {
+      console.error('[Sync Midtrans Error]:', err);
+      showAdminToast('error', 'GAGAL SINKRON', err.message || 'Koneksi ke Midtrans API gagal.');
+    } finally {
+      if (syncBtn) {
+        syncBtn.disabled = false;
+        syncBtn.style.opacity = '1';
+        syncBtn.innerHTML = origText;
+      }
+    }
   });
 
   // ─── 8B. TESTIMONI & ULASAN MODERATION (SCHEME 1) ────────────────────────

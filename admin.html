@@ -557,9 +557,14 @@
                   MONITOR INCOMING DISPATCH ORDERS AND UPDATE DELIVERY STATUS.
                 </p>
               </div>
-              <button id="btnRefreshOrders" class="btn-brutal-dark btn-brutal-sm" style="cursor:pointer;">
-                REFRESH ORDERS ↻
-              </button>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <button id="btnSyncMidtrans" class="btn-brutal-yellow btn-brutal-sm" style="cursor:pointer;font-weight:900;" title="Cek dan sinkronkan status pembayaran online via Midtrans API">
+                  SINKRONISASI MIDTRANS ⟳
+                </button>
+                <button id="btnRefreshOrders" class="btn-brutal-dark btn-brutal-sm" style="cursor:pointer;">
+                  REFRESH ORDERS ↻
+                </button>
+              </div>
             </div>
 
             <!-- Usulan 2: Order Filter Tabs & Search Bar -->

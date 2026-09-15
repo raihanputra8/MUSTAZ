@@ -48,24 +48,24 @@ export default async function handler(req, res) {
       if (fraud_status === 'challenge') {
         orderStatus = 'CHALLENGE';
       } else if (fraud_status === 'accept') {
-        orderStatus = 'LUNAS (PAID)';
+        orderStatus = 'PAID_PROCESSING';
       }
     } else if (transaction_status === 'settlement') {
-      orderStatus = 'LUNAS (PAID)';
+      orderStatus = 'PAID_PROCESSING';
     } else if (['cancel', 'deny', 'expire'].includes(transaction_status)) {
       orderStatus = 'CANCELLED';
     } else if (transaction_status === 'pending') {
       orderStatus = 'PENDING_PAYMENT';
     }
 
-    // Update Supabase Database if Supabase URL and Key are available
+    // Update Supabase Database
     const supabaseUrl = process.env.SUPABASE_URL || 'https://hskggocaakmidbysrpnd.supabase.co';
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || '';
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_GiDVOZNX_cZFe79wO0fw5w_wsfgRyAi';
 
     if (supabaseUrl && supabaseKey) {
       try {
         const updateUrl = `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(order_id)}`;
-        await fetch(updateUrl, {
+        const patchRes = await fetch(updateUrl, {
           method: 'PATCH',
           headers: {
             'apikey': supabaseKey,
@@ -80,6 +80,24 @@ export default async function handler(req, res) {
             updated_at: new Date().toISOString()
           })
         });
+
+        if (!patchRes.ok) {
+          // Fallback to secure RPC
+          await fetch(`${supabaseUrl}/rest/v1/rpc/update_order_status_secure`, {
+            method: 'POST',
+            headers: {
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${supabaseKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              p_order_id: order_id,
+              p_status: orderStatus,
+              p_payment_status: transaction_status,
+              p_payment_type: payment_type || 'midtrans'
+            })
+          }).catch(() => {});
+        }
         console.log(`[Midtrans Webhook] Supabase updated #${order_id} -> ${orderStatus}`);
       } catch (dbErr) {
         console.warn('[Midtrans Webhook] Supabase update warning:', dbErr.message);

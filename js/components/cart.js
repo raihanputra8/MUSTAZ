@@ -570,22 +570,41 @@ export function initCart() {
         window.snap.pay(snapData.token, {
           onSuccess: async function(result) {
             console.log('[Midtrans Success]:', result);
-            orderRecord.status = 'LUNAS (PAID)';
+            orderRecord.status = 'PAID_PROCESSING';
             orderRecord.paymentType = result.payment_type || 'midtrans';
 
+            // 1. Trigger backend verification and update Supabase
+            fetch(`/api/midtrans-sync?orderId=${encodeURIComponent(finalOrderId)}`).catch(() => {});
+
+            // 2. Update local admin storage for instant synchronization
             try {
-              const { getSupabase } = await import('../services/authService.js');
-              const sb = await getSupabase();
-              if (sb) {
-                await sb.from('orders').update({
-                  status: 'LUNAS (PAID)',
+              const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
+              const m = adminOrders.find(o => (o.id || '').replace(/^#/, '') === finalOrderId.replace(/^#/, ''));
+              if (m) {
+                m.status = 'PAID_PROCESSING';
+                m.payment_status = 'settlement';
+                m.payment_type = result.payment_type || 'midtrans';
+              } else {
+                adminOrders.unshift({
+                  id: finalOrderId,
+                  customer: name + (email ? ` (${email})` : ''),
+                  customer_name: name,
+                  customer_phone: cleanPhone,
+                  email: email,
+                  items: cartItems.map(i => `${i.name} (x${i.quantity || 1})`).join(', '),
+                  total: finalTotal,
+                  total_amount: finalTotal,
+                  date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                  status: 'PAID_PROCESSING',
                   payment_status: 'settlement',
-                  payment_type: result.payment_type || 'midtrans'
-                }).eq('id', finalOrderId);
+                  payment_type: result.payment_type || 'midtrans',
+                  city: address + ` (${courier})`,
+                  phone: cleanPhone,
+                  courier: courier
+                });
               }
-            } catch (dbErr) {
-              console.warn('Database status update warning:', dbErr.message);
-            }
+              localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
+            } catch {}
 
             clearCart();
             renderCartItems();
