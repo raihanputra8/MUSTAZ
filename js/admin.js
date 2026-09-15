@@ -1738,7 +1738,6 @@ async function initAdminDashboard() {
       renderOrders();
     });
   }
-  }
 
   // Wire up filter tabs and search events (Usulan 2)
   document.querySelectorAll('#orderStatusFilterTabs .order-filter-tab').forEach(tab => {
