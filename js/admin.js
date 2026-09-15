@@ -1341,131 +1341,122 @@ async function initAdminDashboard() {
 
     tbody.innerHTML = filteredOrders.map(({ ord, originalIdx }) => {
       const safeId = escapeHtml(ord.id);
-      const safeCustomer = escapeHtml(ord.customer);
-      const safeItems = escapeHtml(ord.items);
+      const cleanId = cleanOrderId(ord.id);
       const safeDate = escapeHtml(ord.date);
       const hasReceipt = Boolean(ord.receiptImage);
       const ordStatus = (ord.status || 'PENDING').toUpperCase();
       const isNewOrder = ordStatus === 'PENDING' || ordStatus === 'PENDING_PAYMENT';
       const isDelivered = ordStatus === 'DELIVERED';
       const isPaid = ordStatus === 'PAID_PROCESSING' || ordStatus === 'PROCESSING' || ordStatus === 'LUNAS (PAID)' || ordStatus === 'PAID' || ordStatus === 'SETTLEMENT';
+      const isShipped = ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT';
       const hasTracking = Boolean(ord.courier || ord.resi);
 
       const rowStyle = isNewOrder 
         ? 'background:rgba(255,230,0,0.06);border-left:4px solid var(--accent-yellow);'
         : (isPaid ? 'background:rgba(34,197,94,0.05);border-left:4px solid #22c55e;' : (isDelivered ? 'border-left:4px solid #22c55e;' : 'border-left:4px solid transparent;'));
 
-      // Dynamic 1-Click CS WhatsApp Actions (Target Buyer Phone)
+      // Customer info cleanup (hide email in hover title)
+      const rawCust = ord.customer || '';
+      const custNameClean = rawCust.replace(/\(.*?\)/g, '').split('//')[0].trim() || 'Pelanggan';
       const customerPhone = getCustomerWhatsAppNumber(ord);
-      const orderCode = cleanOrderId(ord.id);
-      const custName = (ord.customer || '').split('//')[0].replace(/\(.*?\)/g, '').trim() || 'Rider';
+      const customerEmail = (ord.email || ord.custEmail || ord.customerEmail || (rawCust.match(/\((.*?@.*?)\)/)?.[1]) || '').trim();
+      const hoverCustomerText = customerEmail ? `${custNameClean} (${customerEmail})` : rawCust;
 
-      let dynamicActionsHtml = '';
-
-      if (ordStatus === 'PENDING' || ordStatus === 'PENDING_PAYMENT') {
-        dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-yellow btn-brutal-sm btn-action-p1" data-index="${originalIdx}" data-id="${safeId}" title="Kirim rincian tagihan & invoice via WhatsApp" style="padding:5px 8px;font-size:0.68rem;font-weight:900;cursor:pointer;white-space:nowrap;">
-            INVOICE WA
-          </button>
-          <button type="button" class="btn-brutal-dark btn-brutal-sm btn-action-check-midtrans" data-index="${originalIdx}" data-id="${safeId}" title="Cek apakah pesanan ini sudah dibayar di Midtrans" style="padding:5px 8px;font-size:0.68rem;border:1px solid var(--accent-yellow);color:var(--accent-yellow);cursor:pointer;font-weight:900;white-space:nowrap;">
-            MIDTRANS ⟳
-          </button>
-          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Batalkan pesanan ini" style="padding:5px 8px;font-size:0.68rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;white-space:nowrap;">
-            BATALKAN
-          </button>
-        `;
-      } else if (ordStatus === 'PAYMENT_REVIEW' || ordStatus === 'WAITING_VERIFICATION') {
-        dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p2" data-index="${originalIdx}" data-id="${safeId}" title="Verifikasi pembayaran lunas & mulai proses" style="padding:5px 8px;font-size:0.68rem;background:#14301c;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;white-space:nowrap;">
-            VERIFIKASI LUNAS
-          </button>
-          <button type="button" class="btn-brutal-sm btn-action-cancel" data-index="${originalIdx}" data-id="${safeId}" title="Tolak bukti & batalkan pesanan" style="padding:5px 8px;font-size:0.68rem;background:#2a0f12;color:#f87171;border:1px solid #ef4444;cursor:pointer;font-weight:800;white-space:nowrap;">
-            BATALKAN
-          </button>
-        `;
-      } else if (isPaid) {
-        dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p3" data-index="${originalIdx}" data-id="${safeId}" title="Input Resi kurir dan update status ke SHIPPED" style="padding:5px 8px;font-size:0.68rem;background:#2a1b3d;color:#c084fc;border:1px solid #a855f7;cursor:pointer;font-weight:900;white-space:nowrap;">
-            RESI &amp; SHIPPED
-          </button>
-        `;
-      } else if (ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT') {
-        dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-order-quick-delivered" data-index="${originalIdx}" data-id="${safeId}" title="Tandai pesanan diterima pelanggan" style="padding:5px 8px;font-size:0.68rem;background:#111;color:#4ade80;border:1px solid #22c55e;cursor:pointer;font-weight:900;white-space:nowrap;">
-            DELIVERED
-          </button>
-        `;
-      } else if (ordStatus === 'DELIVERED') {
-        dynamicActionsHtml = `
-          <button type="button" class="btn-brutal-sm btn-action-p4" data-index="${originalIdx}" data-id="${safeId}" title="Kirim ajakan ulasan / review ke WhatsApp pembeli" style="padding:5px 8px;font-size:0.68rem;background:#3b1024;color:var(--accent-pink);border:1px solid var(--accent-pink);cursor:pointer;font-weight:900;white-space:nowrap;">
-            MINTA REVIEW
-          </button>
-        `;
-      } else if (ordStatus === 'COMPLETED') {
-        dynamicActionsHtml = `
-          <span style="color:#4ade80;font-size:0.68rem;font-weight:900;padding:4px 6px;border:1px solid #22c55e44;background:#14301c33;white-space:nowrap;">SELESAI</span>
-        `;
+      // Items display: truncate if > 2 items with pill badge
+      const rawItems = ord.items || '';
+      const itemParts = rawItems.split(/,(?![^(]*\))/).map(s => s.trim()).filter(Boolean);
+      let formattedItems = '-';
+      if (itemParts.length <= 2) {
+        formattedItems = escapeHtml(rawItems || '-');
       } else {
-        dynamicActionsHtml = `
-          <span style="color:#ef4444;font-size:0.68rem;font-family:var(--font-mono-sub);padding:4px 6px;border:1px solid #ef444444;background:#30141433;font-weight:800;white-space:nowrap;">DIBATALKAN</span>
-        `;
+        const firstTwo = itemParts.slice(0, 2).map(escapeHtml).join(', ');
+        const remaining = itemParts.length - 2;
+        formattedItems = `<span>${firstTwo}</span> <span class="zine-tag-yellow" style="font-size:0.62rem;padding:2px 5px;margin-left:4px;display:inline-block;white-space:nowrap;">+${remaining} varian</span>`;
+      }
+
+      // Status pill select style
+      let statusPillStyle = 'background:rgba(234,179,8,0.15);color:#eab308;border-color:#eab308;';
+      if (isPaid) {
+        statusPillStyle = 'background:rgba(34,197,94,0.15);color:#4ade80;border-color:#22c55e;';
+      } else if (isShipped) {
+        statusPillStyle = 'background:rgba(168,85,247,0.15);color:#c084fc;border-color:#a855f7;';
+      } else if (isDelivered || ordStatus === 'COMPLETED') {
+        statusPillStyle = 'background:rgba(34,197,94,0.2);color:#22c55e;border-color:#22c55e;';
+      } else if (ordStatus === 'CANCELLED') {
+        statusPillStyle = 'background:rgba(239,68,68,0.15);color:#f87171;border-color:#ef4444;';
       }
 
       return `
         <tr style="${rowStyle}">
-          <td style="padding:10px 8px;vertical-align:middle;">
-            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-              <span style="font-family:var(--font-headline);font-size:0.98rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
+          <!-- 1. ORDER ID (Header Left on mobile) -->
+          <td class="order-col-id" style="padding:12px 14px;vertical-align:middle;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span style="font-family:var(--font-headline);font-size:1.05rem;color:var(--accent-yellow);letter-spacing:0.04em;">#${safeId}</span>
               ${isNewOrder ? `<span class="zine-tag-yellow" style="font-size:0.58rem;padding:2px 5px;">BARU</span>` : ''}
               ${isPaid ? `<span style="font-size:0.58rem;padding:2px 5px;background:#14301c;color:#4ade80;border:1px solid #22c55e;font-weight:900;">LUNAS</span>` : ''}
             </div>
-            <div style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#777;margin-top:2px;">${safeDate}</div>
+            <div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#777;margin-top:2px;">${safeDate}</div>
             ${hasTracking ? `<div style="font-family:var(--font-mono-sub);font-size:0.65rem;color:#c084fc;margin-top:2px;">${escapeHtml(ord.courier || 'Ekspedisi')}: <b>${escapeHtml(ord.resi || '-')}</b></div>` : ''}
           </td>
-          <td style="padding:10px 8px;vertical-align:middle;word-break:break-word;">
-            <div style="font-weight:700;color:#FFF;font-size:0.8rem;line-height:1.2;">${safeCustomer}</div>
-            ${customerPhone ? `<div style="font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;margin-top:2px;">+${customerPhone}</div>` : ''}
+
+          <!-- 2. CUSTOMER & ALAMAT (Body on mobile) -->
+          <td class="order-col-customer" style="padding:12px 14px;vertical-align:middle;word-break:break-word;" title="${escapeHtml(hoverCustomerText)}">
+            <div style="font-weight:700;color:#FFF;font-size:0.85rem;line-height:1.2;">${escapeHtml(custNameClean)}</div>
+            ${customerPhone ? `<div style="font-family:var(--font-mono-sub);font-size:0.72rem;color:#888;margin-top:2px;">+${customerPhone}</div>` : ''}
           </td>
-          <td style="font-size:0.78rem;color:#BBB;padding:10px 8px;vertical-align:middle;line-height:1.3;word-break:break-word;">
-            ${safeItems}
+
+          <!-- 3. ITEMS & SPECS (Body on mobile) -->
+          <td class="order-col-items item-specs-col" style="padding:12px 14px;vertical-align:middle;" title="${escapeHtml(rawItems)}">
+            ${formattedItems}
           </td>
-          <td style="font-family:var(--font-headline);font-size:1.05rem;color:var(--accent-yellow);font-weight:900;padding:10px 8px;vertical-align:middle;white-space:nowrap;">
+
+          <!-- 4. TOTAL TAGIHAN (Footer Left on mobile) -->
+          <td class="order-col-total" style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-yellow);font-weight:900;padding:12px 14px;vertical-align:middle;white-space:nowrap;">
             ${formatRupiah(ord.total)}
           </td>
-          <td style="padding:10px 8px;vertical-align:middle;text-align:center;">
-            <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}" style="padding:4px 6px;font-size:0.65rem;white-space:nowrap;">
-              ${hasReceipt ? 'LIHAT BUKTI' : '+ LAMPIRKAN'}
+
+          <!-- 5. BUKTI BAYAR -->
+          <td class="order-col-proof" style="padding:12px 14px;vertical-align:middle;text-align:center;">
+            <button type="button" class="receipt-preview-btn btn-view-receipt" data-index="${originalIdx}" data-id="${safeId}" style="padding:4px 8px;font-size:0.68rem;white-space:nowrap;">
+              ${hasReceipt ? 'LIHAT BUKTI' : '+ BUKTI'}
             </button>
           </td>
-          <td style="padding:10px 8px;vertical-align:middle;">
-            <select class="form-input-brutal order-status-select" data-index="${originalIdx}" style="padding:5px 6px;font-size:0.7rem;background:#111;color:#FFF;border-color:#444;width:100%;max-width:130px;box-sizing:border-box;">
+
+          <!-- 6. STATUS (Header Right on mobile) -->
+          <td class="order-col-status" style="padding:12px 14px;vertical-align:middle;text-align:center;">
+            <select class="form-input-brutal order-status-select-pill" data-index="${originalIdx}" style="${statusPillStyle}">
               <option value="PENDING" ${ordStatus === 'PENDING' ? 'selected' : ''}>PENDING</option>
-              <option value="PENDING_PAYMENT" ${ordStatus === 'PENDING_PAYMENT' ? 'selected' : ''}>PENDING_PAYMENT</option>
-              <option value="PAID_PROCESSING" ${isPaid ? 'selected' : ''}>PAID_PROCESSING</option>
+              <option value="PENDING_PAYMENT" ${ordStatus === 'PENDING_PAYMENT' ? 'selected' : ''}>PENDING</option>
+              <option value="PAID_PROCESSING" ${isPaid ? 'selected' : ''}>PAID</option>
               <option value="SHIPPED" ${(ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT') ? 'selected' : ''}>SHIPPED</option>
               <option value="DELIVERED" ${ordStatus === 'DELIVERED' ? 'selected' : ''}>DELIVERED</option>
               <option value="CANCELLED" ${ordStatus === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
             </select>
           </td>
-          <td style="text-align:right;padding:10px 8px;vertical-align:middle;">
-            <div style="display:flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap;">
-              ${dynamicActionsHtml}
+
+          <!-- 7. AKSI CEPAT (Footer Right on mobile) -->
+          <td class="order-col-actions" style="text-align:right;padding:12px 14px;vertical-align:middle;white-space:nowrap;">
+            <div style="display:inline-flex;gap:6px;align-items:center;justify-content:flex-end;">
               ${customerPhone && customerPhone.length >= 10 ? `
-                <a href="https://wa.me/${customerPhone}?text=Halo%20${encodeURIComponent(custName)}%2C%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20%23${encodeURIComponent(orderCode)}" target="_blank" class="btn-brutal-dark btn-brutal-sm" style="color:#4ade80;border-color:#22c55e;padding:5px 7px;font-size:0.68rem;" title="Chat WhatsApp Pembeli (${customerPhone})">
-                  WA
+                <a href="https://wa.me/${customerPhone}?text=Halo%20${encodeURIComponent(custNameClean)}%2C%20kami%20dari%20Mustaz%20Craft%20terkait%20pesanan%20%23${encodeURIComponent(cleanId)}" target="_blank" class="btn-brutal-sm btn-order-wa-cs" style="padding:6px 10px;font-size:0.72rem;font-weight:900;background:#14301c;color:#4ade80;border:1px solid #22c55e;text-decoration:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="Chat WhatsApp Pembeli (+${customerPhone})">
+                  WA CS
                 </a>
               ` : `
-                <a href="javascript:void(0)" onclick="alert('Nomor WhatsApp pembeli tidak valid atau tidak tercantum pada pesanan #${safeId}.');" class="btn-brutal-dark btn-brutal-sm" style="color:#777;border-color:#444;padding:5px 7px;font-size:0.68rem;opacity:0.6;cursor:not-allowed;" title="Nomor WA pembeli tidak valid">
-                  WA
+                <a href="javascript:void(0)" onclick="alert('Nomor WhatsApp pembeli tidak tercantum atau tidak valid pada pesanan #${safeId}.');" class="btn-brutal-sm btn-order-wa-cs" style="padding:6px 10px;font-size:0.72rem;font-weight:800;background:#161616;color:#666;border:1px solid #333;text-decoration:none;cursor:not-allowed;" title="Nomor WA pembeli tidak valid">
+                  WA CS
                 </a>
               `}
+              <button type="button" class="btn-brutal-sm btn-order-manage-toggle" data-index="${originalIdx}" data-id="${safeId}" style="padding:6px 10px;font-size:0.72rem;font-weight:900;background:#181818;color:#FFF;border:1px solid #444;display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="Kelola opsi pesanan #${safeId}">
+                KELOLA ▼
+              </button>
             </div>
           </td>
         </tr>
       `;
     }).join('');
 
-    tbody.querySelectorAll('.order-status-select').forEach(sel => {
+    // Wire status pill select
+    tbody.querySelectorAll('.order-status-select-pill').forEach(sel => {
       sel.addEventListener('change', (e) => {
         const idx = Number(e.target.dataset.index);
         const newStatus = e.target.value;
@@ -1473,204 +1464,15 @@ async function initAdminDashboard() {
         if (all[idx]) {
           all[idx].status = newStatus;
           localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-
           syncOrderStatusToLocalUser(all[idx].id, newStatus);
           updateCloudOrderStatus(all[idx].id, newStatus).catch(() => {});
-
           showAdminToast('success', 'STATUS DIPERBARUI', `Pesanan #${all[idx].id} diubah ke ${newStatus}.`);
           renderOrders();
         }
       });
     });
 
-    // Fase 1: Kirim Rekening & Tagihan (Target Buyer WA)
-    tbody.querySelectorAll('.btn-action-p1').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const idx = Number(btn.dataset.index);
-        const id = btn.dataset.id;
-        const all = getAdminOrders();
-        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
-        if (!ord) return;
-
-        const sent = openAdminWhatsAppAction(ord, 1);
-        if (!sent) return;
-
-        ord.status = 'PENDING_PAYMENT';
-        localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-        updateCloudOrderStatus(ord.id, 'PENDING_PAYMENT').catch(() => {});
-
-        showAdminToast('success', 'FASE 1: TAGIHAN DIKIRIM', `WhatsApp pembeli #${ord.id} terbuka. Status diubah ke PENDING_PAYMENT.`);
-        renderOrders();
-      });
-    });
-
-    // Cek Status Pembayaran Midtrans per Baris Pesanan
-    tbody.querySelectorAll('.btn-action-check-midtrans').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const id = btn.dataset.id;
-        const cleanId = cleanOrderId(id);
-        const origText = btn.innerHTML;
-        btn.innerHTML = 'CEK...';
-        btn.disabled = true;
-
-        try {
-          const res = await fetch(`/api/midtrans-sync?orderId=${encodeURIComponent(cleanId)}`);
-          const data = await res.json();
-          const r = data?.results?.[0];
-
-          if (r && r.isPaid) {
-            const all = getAdminOrders();
-            const ord = all.find(o => cleanOrderId(o.id) === cleanId);
-            if (ord) {
-              ord.status = 'PAID_PROCESSING';
-              ord.payment_status = r.transactionStatus || 'settlement';
-              ord.payment_type = r.paymentType || 'midtrans';
-              localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-              updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
-              syncOrderStatusToLocalUser(ord.id, 'PAID_PROCESSING');
-              renderOrders();
-              showAdminToast('success', 'PEMBAYARAN LUNAS', `Pesanan #${cleanId} terverifikasi LUNAS di Midtrans.`);
-            }
-          } else if (r && r.transactionStatus === 'pending') {
-            showAdminToast('info', 'MENUNGGU PEMBAYARAN', `Pesanan #${cleanId} di Midtrans masih berstatus PENDING (belum dibayar pembeli).`);
-          } else {
-            showAdminToast('warning', 'BELUM ADA TRANSAKSI', `Transaksi #${cleanId} belum ditemukan di Midtrans Sandbox.`);
-          }
-        } catch (err) {
-          showAdminToast('error', 'GAGAL CEK', err.message || 'Gagal menghubungi Midtrans.');
-        } finally {
-          btn.innerHTML = origText;
-          btn.disabled = false;
-        }
-      });
-    });
-
-    function dispatchPaidReceipt(order) {
-      if (!order) return;
-      const buyerEmail = order.email || order.custEmail || order.customerEmail;
-      if (!buyerEmail || !buyerEmail.includes('@')) return;
-      import('./services/emailService.js').then(({ sendOrderSuccessEmail }) => {
-        sendOrderSuccessEmail({
-          ...order,
-          email: buyerEmail
-        }).then(res => {
-          if (res && res.success) {
-            console.log(`[Admin] Resi otomatis terkirim ke email pembeli ${buyerEmail} untuk #${order.id}`);
-          }
-        }).catch(err => {
-          console.warn('[Admin] Gagal dispatch resi otomatis:', err);
-        });
-      }).catch(() => {});
-    }
-
-    // Fase 2: Verifikasi Pembayaran Lunas (Target Buyer WA)
-    tbody.querySelectorAll('.btn-action-p2').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const idx = Number(btn.dataset.index);
-        const id = btn.dataset.id;
-        const all = getAdminOrders();
-        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
-        if (!ord) return;
-
-        const sent = openAdminWhatsAppAction(ord, 2);
-        if (!sent) return;
-
-        ord.status = 'PAID_PROCESSING';
-        localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-        updateCloudOrderStatus(ord.id, 'PAID_PROCESSING').catch(() => {});
-        dispatchPaidReceipt(ord);
-
-        showAdminToast('success', 'FASE 2: PEMBAYARAN LUNAS', `WhatsApp pembeli #${ord.id} terbuka. Resi otomatis dikirim ke email & status diubah ke PAID.`);
-        renderOrders();
-      });
-    });
-
-    // Fase 3: Input Resi & Kirim ke WhatsApp
-    tbody.querySelectorAll('.btn-action-p3').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const idx = Number(btn.dataset.index);
-        const id = btn.dataset.id;
-        const all = getAdminOrders();
-        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
-        if (ord) {
-          if (typeof openResiModal === 'function') {
-            openResiModal(ord);
-          } else if (typeof globalOpenResiModal === 'function') {
-            globalOpenResiModal(ord);
-          }
-        }
-      });
-    });
-
-    // Aksi Pembatalan Pesanan (Contextual Cancel)
-    tbody.querySelectorAll('.btn-action-cancel').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const idx = Number(btn.dataset.index);
-        const id = btn.dataset.id;
-        const all = getAdminOrders();
-        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
-        if (!ord) return;
-
-        const confirmed = confirm(`⚠️ Apakah Anda yakin ingin membatalkan pesanan #${ord.id}?`);
-        if (!confirmed) return;
-
-        ord.status = 'CANCELLED';
-        localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-        await updateCloudOrderStatus(ord.id, 'CANCELLED').catch(() => {});
-
-        showAdminToast('warning', 'PESANAN DIBATALKAN', `Pesanan #${ord.id} telah dibatalkan.`);
-        renderOrders();
-      });
-    });
-
-    // Fase 4: Minta Review & Ulasan Pelanggan (Target Buyer WA)
-    tbody.querySelectorAll('.btn-action-p4').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const idx = Number(btn.dataset.index);
-        const id = btn.dataset.id;
-        const all = getAdminOrders();
-        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
-        if (!ord) return;
-
-        const sent = openAdminWhatsAppAction(ord, 4);
-        if (!sent) return;
-
-        ord.status = 'COMPLETED';
-        localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-        syncOrderStatusToLocalUser(ord.id, 'COMPLETED');
-        updateCloudOrderStatus(ord.id, 'COMPLETED').catch(() => {});
-
-        showAdminToast('success', 'FASE 4: UNDANGAN ULASAN', `Link testimoni dikirim ke WhatsApp pembeli #${ord.id}. Status diubah ke COMPLETED.`);
-        renderOrders();
-      });
-    });
-
-    // Quick Mark Delivered
-    tbody.querySelectorAll('.btn-order-quick-delivered').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const idx = Number(btn.dataset.index);
-        const id = btn.dataset.id;
-        const all = getAdminOrders();
-        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
-        if (ord) {
-          ord.status = 'DELIVERED';
-          localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
-          syncOrderStatusToLocalUser(ord.id, 'DELIVERED');
-          updateCloudOrderStatus(ord.id, 'DELIVERED').catch(() => {});
-          showAdminToast('success', 'STATUS DELIVERED', `Pesanan #${ord.id} telah ditandai SELESAI (DELIVERED). Pembeli kini dapat memberikan ulasan.`);
-          renderOrders();
-        }
-      });
-    });
-
+    // Wire receipt preview
     tbody.querySelectorAll('.btn-view-receipt').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1680,6 +1482,262 @@ async function initAdminDashboard() {
         openReceiptModal(idx, id);
       });
     });
+
+    // Wire dropdown toggle for Popover
+    tbody.querySelectorAll('.btn-order-manage-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = Number(btn.dataset.index);
+        const id = btn.dataset.id;
+        const all = getAdminOrders();
+        const ord = (id ? all.find(o => cleanOrderId(o.id) === cleanOrderId(id)) : null) || all[idx];
+        if (!ord) return;
+
+        const existing = document.querySelector('.order-action-popover');
+        if (existing && existing.dataset.id === String(ord.id)) {
+          closeOrderPopover();
+          return;
+        }
+        closeOrderPopover();
+        openOrderActionPopover(btn, ord, idx);
+      });
+    });
+  }
+
+  function closeOrderPopover() {
+    const existing = document.querySelector('.order-action-popover');
+    if (existing) existing.remove();
+  }
+
+  // Close popover when clicking outside or scrolling
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.btn-order-manage-toggle') && !e.target.closest('.order-action-popover')) {
+      closeOrderPopover();
+    }
+  });
+  window.addEventListener('scroll', closeOrderPopover, { passive: true });
+
+  function dispatchPaidReceipt(order) {
+    if (!order) return;
+    const buyerEmail = order.email || order.custEmail || order.customerEmail;
+    if (!buyerEmail || !buyerEmail.includes('@')) return;
+    import('./services/emailService.js').then(({ sendOrderSuccessEmail }) => {
+      sendOrderSuccessEmail({
+        ...order,
+        email: buyerEmail
+      }).then(res => {
+        if (res && res.success) {
+          console.log(`[Admin] Resi otomatis terkirim ke email pembeli ${buyerEmail} untuk #${order.id}`);
+        }
+      }).catch(err => {
+        console.warn('[Admin] Gagal dispatch resi otomatis:', err);
+      });
+    }).catch(() => {});
+  }
+
+  // Consolidated Popover Action Menu for [ KELOLA ▼ ]
+  function openOrderActionPopover(btn, ord, originalIdx) {
+    closeOrderPopover();
+    const rect = btn.getBoundingClientRect();
+    const safeId = escapeHtml(ord.id);
+    const cleanId = cleanOrderId(ord.id);
+    const ordStatus = (ord.status || 'PENDING').toUpperCase();
+    const isPaid = ordStatus === 'PAID_PROCESSING' || ordStatus === 'PROCESSING' || ordStatus === 'LUNAS (PAID)' || ordStatus === 'PAID' || ordStatus === 'SETTLEMENT';
+    const isShipped = ordStatus === 'SHIPPED' || ordStatus === 'IN TRANSIT';
+    const hasReceipt = Boolean(ord.receiptImage);
+
+    const popover = document.createElement('div');
+    popover.className = 'order-action-popover card-brutal-dark';
+    popover.dataset.id = String(ord.id);
+
+    popover.innerHTML = `
+      <div class="popover-header">
+        OPSI PESANAN #${safeId}
+      </div>
+      <button type="button" class="popover-item btn-pop-invoice">
+        Kirim Invoice WA
+      </button>
+      <button type="button" class="popover-item btn-pop-midtrans">
+        Cek Status Midtrans
+      </button>
+      <button type="button" class="popover-item btn-pop-receipt">
+        ${hasReceipt ? 'Lihat Bukti Bayar' : 'Lampirkan Bukti Bayar'}
+      </button>
+      ${!isShipped && ordStatus !== 'DELIVERED' ? `
+        <button type="button" class="popover-item btn-pop-resi">
+          Input Resi &amp; Shipped
+        </button>
+      ` : ''}
+      ${isShipped ? `
+        <button type="button" class="popover-item btn-pop-delivered">
+          Tandai Diterima (Delivered)
+        </button>
+      ` : ''}
+      <button type="button" class="popover-item btn-pop-review">
+        Minta Ulasan / Review Link
+      </button>
+      <div class="popover-divider"></div>
+      <div style="padding:4px 14px 2px;font-size:0.65rem;color:#777;text-transform:uppercase;font-weight:700;">
+        UPDATE STATUS:
+      </div>
+      <div class="popover-status-grid">
+        <button type="button" class="popover-status-btn" data-status="PENDING">PENDING</button>
+        <button type="button" class="popover-status-btn" data-status="PAID_PROCESSING" style="color:#4ade80;">PAID</button>
+        <button type="button" class="popover-status-btn" data-status="SHIPPED" style="color:#c084fc;">SHIPPED</button>
+        <button type="button" class="popover-status-btn" data-status="DELIVERED" style="color:#22c55e;">DELIVERED</button>
+      </div>
+      <div class="popover-divider"></div>
+      <button type="button" class="popover-item btn-pop-cancel" style="color:#f87171;">
+        Batalkan Pesanan
+      </button>
+    `;
+
+    // Position fixed cleanly under the button
+    const menuWidth = 220;
+    let top = rect.bottom + 6;
+    let left = rect.right - menuWidth;
+    if (left < 10) left = 10;
+    if (left + menuWidth > window.innerWidth - 10) {
+      left = window.innerWidth - menuWidth - 10;
+    }
+    const estimatedHeight = 320;
+    if (top + estimatedHeight > window.innerHeight - 10) {
+      top = Math.max(10, rect.top - estimatedHeight - 6);
+    }
+
+    popover.style.top = `${top}px`;
+    popover.style.left = `${left}px`;
+    document.body.appendChild(popover);
+
+    // 1. Send Invoice WA
+    popover.querySelector('.btn-pop-invoice')?.addEventListener('click', () => {
+      closeOrderPopover();
+      const all = getAdminOrders();
+      const current = all.find(o => cleanOrderId(o.id) === cleanId) || ord;
+      const sent = openAdminWhatsAppAction(current, 1);
+      if (sent) {
+        current.status = 'PENDING_PAYMENT';
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+        updateCloudOrderStatus(current.id, 'PENDING_PAYMENT').catch(() => {});
+        showAdminToast('success', 'INVOICE DIKIRIM', `WhatsApp pembeli #${current.id} terbuka. Status diubah ke PENDING_PAYMENT.`);
+        renderOrders();
+      }
+    });
+
+    // 2. Cek / Bayar via Midtrans
+    popover.querySelector('.btn-pop-midtrans')?.addEventListener('click', async () => {
+      closeOrderPopover();
+      showAdminToast('info', 'MEMERIKSA MIDTRANS', `Memeriksa status pembayaran online pesanan #${cleanId}...`);
+      try {
+        const res = await fetch(`/api/midtrans-sync?orderId=${encodeURIComponent(cleanId)}`);
+        const data = await res.json();
+        const r = data?.results?.[0];
+        if (r && r.isPaid) {
+          const all = getAdminOrders();
+          const current = all.find(o => cleanOrderId(o.id) === cleanId);
+          if (current) {
+            current.status = 'PAID_PROCESSING';
+            current.payment_status = r.transactionStatus || 'settlement';
+            current.payment_type = r.paymentType || 'midtrans';
+            localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+            updateCloudOrderStatus(current.id, 'PAID_PROCESSING').catch(() => {});
+            syncOrderStatusToLocalUser(current.id, 'PAID_PROCESSING');
+            renderOrders();
+            showAdminToast('success', 'PEMBAYARAN LUNAS', `Pesanan #${cleanId} terverifikasi LUNAS di Midtrans.`);
+          }
+        } else if (r && r.transactionStatus === 'pending') {
+          showAdminToast('info', 'MENUNGGU PEMBAYARAN', `Pesanan #${cleanId} di Midtrans masih PENDING.`);
+        } else {
+          showAdminToast('warning', 'BELUM ADA TRANSAKSI', `Transaksi #${cleanId} belum ditemukan di Midtrans.`);
+        }
+      } catch (err) {
+        showAdminToast('error', 'GAGAL CEK', err.message || 'Gagal menghubungi Midtrans.');
+      }
+    });
+
+    // 3. Lihat / Lampirkan Bukti Bayar
+    popover.querySelector('.btn-pop-receipt')?.addEventListener('click', () => {
+      closeOrderPopover();
+      openReceiptModal(originalIdx, safeId);
+    });
+
+    // 4. Input Resi & Shipped
+    popover.querySelector('.btn-pop-resi')?.addEventListener('click', () => {
+      closeOrderPopover();
+      const all = getAdminOrders();
+      const current = all.find(o => cleanOrderId(o.id) === cleanId) || ord;
+      if (typeof openResiModal === 'function') {
+        openResiModal(current);
+      } else if (typeof globalOpenResiModal === 'function') {
+        globalOpenResiModal(current);
+      }
+    });
+
+    // 5. Mark Delivered
+    popover.querySelector('.btn-pop-delivered')?.addEventListener('click', () => {
+      closeOrderPopover();
+      const all = getAdminOrders();
+      const current = all.find(o => cleanOrderId(o.id) === cleanId) || ord;
+      current.status = 'DELIVERED';
+      localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+      syncOrderStatusToLocalUser(current.id, 'DELIVERED');
+      updateCloudOrderStatus(current.id, 'DELIVERED').catch(() => {});
+      showAdminToast('success', 'STATUS DELIVERED', `Pesanan #${current.id} telah ditandai DELIVERED.`);
+      renderOrders();
+    });
+
+    // 6. Minta Ulasan / Review
+    popover.querySelector('.btn-pop-review')?.addEventListener('click', () => {
+      closeOrderPopover();
+      const all = getAdminOrders();
+      const current = all.find(o => cleanOrderId(o.id) === cleanId) || ord;
+      const sent = openAdminWhatsAppAction(current, 4);
+      if (sent) {
+        current.status = 'COMPLETED';
+        localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+        syncOrderStatusToLocalUser(current.id, 'COMPLETED');
+        updateCloudOrderStatus(current.id, 'COMPLETED').catch(() => {});
+        showAdminToast('success', 'UNDANGAN ULASAN', `Link testimoni dikirim ke WhatsApp pembeli #${current.id}.`);
+        renderOrders();
+      }
+    });
+
+    // 7. Status update buttons in popover
+    popover.querySelectorAll('.popover-status-btn').forEach(sBtn => {
+      sBtn.addEventListener('click', () => {
+        closeOrderPopover();
+        const newStatus = sBtn.dataset.status;
+        const all = getAdminOrders();
+        const current = all.find(o => cleanOrderId(o.id) === cleanId) || ord;
+        if (current && newStatus) {
+          current.status = newStatus;
+          localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+          syncOrderStatusToLocalUser(current.id, newStatus);
+          updateCloudOrderStatus(current.id, newStatus).catch(() => {});
+          if (newStatus === 'PAID_PROCESSING') {
+            dispatchPaidReceipt(current);
+          }
+          showAdminToast('success', 'STATUS DIPERBARUI', `Pesanan #${current.id} diubah ke ${newStatus}.`);
+          renderOrders();
+        }
+      });
+    });
+
+    // 8. Batalkan Pesanan
+    popover.querySelector('.btn-pop-cancel')?.addEventListener('click', async () => {
+      closeOrderPopover();
+      const all = getAdminOrders();
+      const current = all.find(o => cleanOrderId(o.id) === cleanId) || ord;
+      const confirmed = confirm(`Apakah Anda yakin ingin membatalkan pesanan #${current.id}?`);
+      if (!confirmed) return;
+      current.status = 'CANCELLED';
+      localStorage.setItem('mustaz_admin_orders', JSON.stringify(all));
+      await updateCloudOrderStatus(current.id, 'CANCELLED').catch(() => {});
+      showAdminToast('warning', 'PESANAN DIBATALKAN', `Pesanan #${current.id} telah dibatalkan.`);
+      renderOrders();
+    });
+  }
   }
 
   // Wire up filter tabs and search events (Usulan 2)
