@@ -189,72 +189,57 @@
               </span>
             </div>
 
-            <!-- REGION PENGIRIMAN: DOMESTIK vs LUAR NEGERI -->
-            <div class="form-group-brutal" style="margin-bottom:20px;">
-              <label class="form-label-brutal">04 // DESTINATION SCOPE (PENGIRIMAN) *</label>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                <button type="button" id="btnScopeDomestic" style="padding:12px 10px;font-family:var(--font-headline);font-size:0.9rem;font-weight:900;background:var(--accent-yellow);color:#000;border:2px solid var(--accent-yellow);cursor:pointer;letter-spacing:0.04em;">
-                  DOMESTIK (INDONESIA)
-                </button>
-                <button type="button" id="btnScopeInternational" style="padding:12px 10px;font-family:var(--font-headline);font-size:0.9rem;font-weight:900;background:#141414;color:#AAA;border:2px solid #333;cursor:pointer;letter-spacing:0.04em;">
-                  LUAR NEGERI (INTERNATIONAL)
-                </button>
-              </div>
+            <!-- 04 // COUNTRY & DESTINATION -->
+            <div class="form-group-brutal" style="margin-bottom:18px;">
+              <label class="form-label-brutal">04 // DESTINATION COUNTRY (NEGARA TUJUAN) *</label>
+              <select id="chkCountry" class="form-input-brutal" style="cursor:pointer;font-weight:700;">
+                <option value="Indonesia" selected>🇮🇩 Indonesia (Domestik)</option>
+                <option value="Malaysia">🇲🇾 Malaysia</option>
+                <option value="Singapore">🇸🇬 Singapore</option>
+                <option value="Australia">🇦🇺 Australia</option>
+                <option value="United States">🇺🇸 United States (USA)</option>
+                <option value="Japan">🇯🇵 Japan (Jepang)</option>
+                <option value="United Kingdom">🇬🇧 United Kingdom (UK)</option>
+                <option value="South Korea">🇰🇷 South Korea (Korea Selatan)</option>
+                <option value="Thailand">🇹🇭 Thailand</option>
+                <option value="Philippines">🇵🇭 Philippines</option>
+                <option value="Germany">🇩🇪 Germany (Jerman)</option>
+                <option value="Netherlands">🇳🇱 Netherlands (Belanda)</option>
+                <option value="Canada">🇨🇦 Canada</option>
+                <option value="Other International">🌐 Negara Lainnya (Rest of World)</option>
+              </select>
               <input type="hidden" id="selectedShippingScope" value="domestic" />
             </div>
 
-            <!-- DOMESTIC FORM BLOCK (INDONESIA BITESHIP) -->
-            <div id="domesticShippingBlock">
-              <div class="form-group-brutal" style="position:relative;">
-                <label class="form-label-brutal">KOTA / KECAMATAN / KODE POS (BITESHIP AREA) *</label>
-                <input type="text" id="chkAreaSearch" class="form-input-brutal" placeholder="Ketik nama Kota atau Kecamatan tujuan Anda..." autocomplete="off" />
-                <div id="areaSearchResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:#0e0e0e;border:2px solid var(--accent-pink);max-height:220px;overflow-y:auto;z-index:999;box-shadow:6px 6px 0px #000;"></div>
-                <input type="hidden" id="selectedAreaId" value="" />
-                <input type="hidden" id="selectedPostalCode" value="" />
-                <input type="hidden" id="selectedAreaName" value="" />
-                <div id="selectedAreaBadge" style="display:none;margin-top:6px;font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);background:#161616;padding:6px 10px;border-left:3px solid var(--accent-yellow);"></div>
-              </div>
-              <div class="form-group-brutal">
-                <label class="form-label-brutal">DELIVERY COORDINATES (ALAMAT LENGKAP) *</label>
-                <textarea id="chkAddress" class="form-input-brutal" rows="2" placeholder="Nama Jalan, No. Rumah, RT/RW, Patokan"></textarea>
-              </div>
+            <!-- DOMESTIC AREA BLOCK (BITESHIP AUTOCOMPLETE) -->
+            <div id="domesticAreaGroup" class="form-group-brutal" style="position:relative;margin-bottom:18px;">
+              <label class="form-label-brutal">KOTA / KECAMATAN / KODE POS (BITESHIP AREA) *</label>
+              <input type="text" id="chkAreaSearch" class="form-input-brutal" placeholder="Ketik nama Kota atau Kecamatan tujuan Anda..." autocomplete="off" />
+              <div id="areaSearchResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:#0e0e0e;border:2px solid var(--accent-pink);max-height:220px;overflow-y:auto;z-index:999;box-shadow:6px 6px 0px #000;"></div>
+              <input type="hidden" id="selectedAreaId" value="" />
+              <input type="hidden" id="selectedPostalCode" value="" />
+              <input type="hidden" id="selectedAreaName" value="" />
+              <div id="selectedAreaBadge" style="display:none;margin-top:6px;font-family:var(--font-mono-sub);font-size:0.72rem;color:var(--accent-yellow);background:#161616;padding:6px 10px;border-left:3px solid var(--accent-yellow);"></div>
             </div>
 
-            <!-- INTERNATIONAL FORM BLOCK (LUAR NEGERI) -->
-            <div id="internationalShippingBlock" style="display:none;">
-              <div class="form-group-brutal">
-                <label class="form-label-brutal">DESTINATION COUNTRY (NEGARA TUJUAN) *</label>
-                <select id="chkIntlCountry" class="form-input-brutal" style="cursor:pointer;">
-                  <option value="" disabled selected>-- Pilih Negara Tujuan --</option>
-                  <option value="Malaysia">Malaysia</option>
-                  <option value="Singapore">Singapore</option>
-                  <option value="Australia">Australia</option>
-                  <option value="United States">United States (USA)</option>
-                  <option value="Japan">Japan (Jepang)</option>
-                  <option value="United Kingdom">United Kingdom (UK)</option>
-                  <option value="South Korea">South Korea (Korea Selatan)</option>
-                  <option value="Thailand">Thailand</option>
-                  <option value="Philippines">Philippines</option>
-                  <option value="Germany">Germany (Jerman)</option>
-                  <option value="Netherlands">Netherlands (Belanda)</option>
-                  <option value="Canada">Canada</option>
-                  <option value="Other International">Negara Lainnya (Rest of World)</option>
-                </select>
-              </div>
+            <!-- INTERNATIONAL CITY & ZIP BLOCK -->
+            <div id="internationalAreaGroup" style="display:none;margin-bottom:18px;">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div class="form-group-brutal">
+                <div class="form-group-brutal" style="margin-bottom:0;">
                   <label class="form-label-brutal">CITY / STATE *</label>
                   <input type="text" id="chkIntlCity" class="form-input-brutal" placeholder="City & State / Province" />
                 </div>
-                <div class="form-group-brutal">
+                <div class="form-group-brutal" style="margin-bottom:0;">
                   <label class="form-label-brutal">POSTAL / ZIP CODE *</label>
                   <input type="text" id="chkIntlZip" class="form-input-brutal" placeholder="Postal / Zip Code" />
                 </div>
               </div>
-              <div class="form-group-brutal">
-                <label class="form-label-brutal">STREET ADDRESS (ALAMAT LENGKAP) *</label>
-                <textarea id="chkIntlAddress" class="form-input-brutal" rows="2" placeholder="Street address, building, suite, unit"></textarea>
-              </div>
+            </div>
+
+            <!-- UNIVERSAL DELIVERY COORDINATES -->
+            <div class="form-group-brutal" style="margin-bottom:18px;">
+              <label class="form-label-brutal">DELIVERY COORDINATES (ALAMAT LENGKAP) *</label>
+              <textarea id="chkAddress" class="form-input-brutal" rows="2" placeholder="Nama Jalan, No. Rumah / Gedung, RT/RW, Patokan"></textarea>
             </div>
 
             <!-- COURIER SELECTION BLOCK -->
@@ -535,11 +520,10 @@
   }
 
   function initShippingControls() {
-    const btnScopeDom = document.getElementById('btnScopeDomestic');
-    const btnScopeIntl = document.getElementById('btnScopeInternational');
+    const countrySelect = document.getElementById('chkCountry');
     const hiddenScope = document.getElementById('selectedShippingScope');
-    const domBlock = document.getElementById('domesticShippingBlock');
-    const intlBlock = document.getElementById('internationalShippingBlock');
+    const domAreaGroup = document.getElementById('domesticAreaGroup');
+    const intlAreaGroup = document.getElementById('internationalAreaGroup');
     const courierSelect = document.getElementById('chkCourier');
 
     const searchInput = document.getElementById('chkAreaSearch');
@@ -549,62 +533,34 @@
     const hiddenPostal = document.getElementById('selectedPostalCode');
     const hiddenName = document.getElementById('selectedAreaName');
 
-    const intlCountry = document.getElementById('chkIntlCountry');
+    // Handle Country Selection
+    countrySelect?.addEventListener('change', () => {
+      const selectedCountry = countrySelect.value;
+      const isDomestic = selectedCountry === 'Indonesia' || selectedCountry === 'ID';
 
-    // Switch to Domestic
-    btnScopeDom?.addEventListener('click', () => {
-      currentShippingScope = 'domestic';
-      if (hiddenScope) hiddenScope.value = 'domestic';
-      btnScopeDom.style.background = 'var(--accent-yellow)';
-      btnScopeDom.style.color = '#000';
-      btnScopeDom.style.borderColor = 'var(--accent-yellow)';
-      btnScopeIntl.style.background = '#141414';
-      btnScopeIntl.style.color = '#AAA';
-      btnScopeIntl.style.borderColor = '#333';
-      domBlock.style.display = 'block';
-      intlBlock.style.display = 'none';
+      if (isDomestic) {
+        currentShippingScope = 'domestic';
+        if (hiddenScope) hiddenScope.value = 'domestic';
+        if (domAreaGroup) domAreaGroup.style.display = 'block';
+        if (intlAreaGroup) intlAreaGroup.style.display = 'none';
 
-      // Check if area already selected
-      if (hiddenName && hiddenName.value) {
-        loadBiteshipRates(hiddenName.value, hiddenPostal?.value, hiddenId?.value);
+        // If local area was already selected, reload rates
+        if (hiddenName && hiddenName.value) {
+          loadBiteshipRates(hiddenName.value, hiddenPostal?.value, hiddenId?.value);
+        } else {
+          currentShippingCost = 0;
+          currentCourierName = '';
+          courierSelect.disabled = true;
+          courierSelect.innerHTML = '<option value="" disabled selected>-- Masukkan Kota/Kecamatan di atas untuk cek kurir --</option>';
+          updateCheckoutManifestTotals();
+        }
       } else {
-        currentShippingCost = 0;
-        currentCourierName = '';
-        courierSelect.disabled = true;
-        courierSelect.innerHTML = '<option value="" disabled selected>-- Masukkan Alamat & Kota di atas untuk cek kurir --</option>';
-        updateCheckoutManifestTotals();
-      }
-    });
+        currentShippingScope = 'international';
+        if (hiddenScope) hiddenScope.value = 'international';
+        if (domAreaGroup) domAreaGroup.style.display = 'none';
+        if (intlAreaGroup) intlAreaGroup.style.display = 'block';
 
-    // Switch to International
-    btnScopeIntl?.addEventListener('click', () => {
-      currentShippingScope = 'international';
-      if (hiddenScope) hiddenScope.value = 'international';
-      btnScopeIntl.style.background = 'var(--accent-yellow)';
-      btnScopeIntl.style.color = '#000';
-      btnScopeIntl.style.borderColor = 'var(--accent-yellow)';
-      btnScopeDom.style.background = '#141414';
-      btnScopeDom.style.color = '#AAA';
-      btnScopeDom.style.borderColor = '#333';
-      domBlock.style.display = 'none';
-      intlBlock.style.display = 'block';
-
-      if (intlCountry && intlCountry.value) {
-        loadInternationalRates(intlCountry.value);
-      } else {
-        currentShippingCost = 0;
-        currentCourierName = '';
-        courierSelect.disabled = true;
-        courierSelect.innerHTML = '<option value="" disabled selected>-- Pilih Negara Tujuan di atas untuk cek kurir --</option>';
-        updateCheckoutManifestTotals();
-      }
-    });
-
-    // International Country Change
-    intlCountry?.addEventListener('change', () => {
-      const countryVal = intlCountry.value;
-      if (countryVal) {
-        loadInternationalRates(countryVal);
+        loadInternationalRates(selectedCountry);
       }
     });
 
@@ -779,15 +735,20 @@
       let shippingScope = currentShippingScope;
       let postalCode = '';
       let areaSearch = '';
-      let address = '';
+      const address = (document.getElementById('chkAddress')?.value || '').trim();
+      const country = (document.getElementById('chkCountry')?.value || 'Indonesia').trim();
+
+      if (!address) {
+        alert("Mohon masukkan Alamat Lengkap pengiriman.");
+        return;
+      }
 
       if (shippingScope === 'domestic') {
         areaSearch = (document.getElementById('chkAreaSearch')?.value || '').trim();
-        address = (document.getElementById('chkAddress')?.value || '').trim();
         postalCode = document.getElementById('selectedPostalCode')?.value || '';
 
-        if (!areaSearch || !address) {
-          alert("Mohon masukkan Kota/Kecamatan dan Alamat Lengkap pengiriman.");
+        if (!areaSearch) {
+          alert("Mohon masukkan dan pilih Kota/Kecamatan pengiriman.");
           return;
         }
 
@@ -798,25 +759,22 @@
 
         fullShippingAddress = `${address}, ${areaSearch} [Kode Pos: ${postalCode || '-'}]`;
       } else {
-        const intlCountry = (document.getElementById('chkIntlCountry')?.value || '').trim();
         const intlCity = (document.getElementById('chkIntlCity')?.value || '').trim();
         const intlZip = (document.getElementById('chkIntlZip')?.value || '').trim();
-        const intlAddress = (document.getElementById('chkIntlAddress')?.value || '').trim();
         postalCode = intlZip;
-        areaSearch = `${intlCity}, ${intlCountry}`;
-        address = intlAddress;
+        areaSearch = `${intlCity}, ${country}`;
 
-        if (!intlCountry || !intlCity || !intlAddress) {
-          alert("Mohon lengkapi Negara Tujuan, Kota, dan Alamat Lengkap Pengiriman Internasional.");
+        if (!intlCity) {
+          alert("Mohon lengkapi City / State Pengiriman Internasional.");
           return;
         }
 
         if (courierSelect.disabled || !courierSelect.value || currentShippingCost <= 0) {
-          alert("Mohon pilih Negara Tujuan dan Kurir Pengiriman Internasional sebelum melanjutkan pembayaran.");
+          alert("Mohon pilih Kurir Pengiriman Internasional sebelum melanjutkan pembayaran.");
           return;
         }
 
-        fullShippingAddress = `${intlAddress}, ${intlCity} [ZIP: ${intlZip || '-'}], ${intlCountry} (International Shipment)`;
+        fullShippingAddress = `${address}, ${intlCity} [ZIP: ${intlZip || '-'}], ${country} (International Shipment)`;
       }
 
       const courier = courierSelect.value;
