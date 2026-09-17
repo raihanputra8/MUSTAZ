@@ -299,13 +299,13 @@
               </div>
             </div>
 
-            <!-- EXCLUSIVE MIDTRANS PAYMENT CARD (SINGLE METHOD) -->
+            <!-- EXCLUSIVE INSTANT ONLINE PAYMENT CARD -->
             <div class="form-group-brutal" style="margin-bottom:28px;">
-              <label class="form-label-brutal">06 // PAYMENT GATEWAY (MIDTRANS ONLY) *</label>
+              <label class="form-label-brutal">06 // METODE PEMBAYARAN (PAYMENT METHOD) *</label>
               <div style="background:#111;border:2px solid var(--accent-pink);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
                 <div>
                   <div style="font-family:var(--font-headline);font-size:1.05rem;color:#FFF;font-weight:900;letter-spacing:0.04em;">
-                    MIDTRANS PAYMENT GATEWAY
+                    PEMBAYARAN INSTANT &amp; OTOMATIS
                   </div>
                   <div style="font-family:var(--font-mono-sub);font-size:0.73rem;color:var(--accent-yellow);margin-top:3px;line-height:1.4;">
                     QRIS, Virtual Account (BCA, Mandiri, BNI, BRI), Kartu Kredit, GoPay &amp; ShopeePay
@@ -315,11 +315,11 @@
                   INSTANT SECURE
                 </span>
               </div>
-              <input type="hidden" id="chkPayment" value="Midtrans Payment Gateway (QRIS, Virtual Account, Kartu Kredit, GoPay)" />
+              <input type="hidden" id="chkPayment" value="Pembayaran Online Otomatis (QRIS, Virtual Account, Kartu Kredit, GoPay)" />
             </div>
 
             <button type="submit" id="btnSubmitCheckout" class="btn-brutal-pink" style="width:100%;padding:18px;font-size:1.15rem;">
-              BAYAR DENGAN MIDTRANS →
+              BAYAR SEKARANG →
             </button>
           </form>
         </div>
@@ -754,7 +754,7 @@
       const phone = (document.getElementById('chkPhone')?.value || '').trim();
       const email = (document.getElementById('chkEmail')?.value || '').trim();
       const courierSelect = document.getElementById('chkCourier');
-      const payment = 'Midtrans Payment Gateway (QRIS, Virtual Account, Kartu Kredit, GoPay)';
+      const payment = 'Pembayaran Online Otomatis (QRIS, Virtual Account, Kartu Kredit, GoPay)';
 
       if (!name || !phone || !email) {
         alert("Mohon lengkapi Nama Lengkap, Nomor WhatsApp, dan Email Anda.");
@@ -826,7 +826,7 @@
       const orderId = 'MSTZ-' + Math.floor(1000 + Math.random() * 9000);
 
       const submitBtn = document.querySelector('#directCheckoutForm button[type="submit"]');
-      const origBtnContent = submitBtn ? submitBtn.innerHTML : 'BAYAR DENGAN MIDTRANS →';
+      const origBtnContent = submitBtn ? submitBtn.innerHTML : 'BAYAR SEKARANG →';
 
       try {
         isSubmittingCheckout = true;
@@ -952,14 +952,14 @@
           localStorage.setItem('mustaz_auth_logged_in', 'true');
         } catch {}
 
-        // Handle Midtrans Snap Payment
-        if (payment.includes('Midtrans')) {
+        // Handle Online Payment (Midtrans Snap)
+        if (payment.includes('Online') || payment.includes('Midtrans') || payment.includes('Instant')) {
           if (typeof window.snap === 'undefined' || typeof window.snap.pay !== 'function') {
-            throw new Error('Sistem Midtrans Snap belum selesai dimuat. Silakan muat ulang halaman.');
+            throw new Error('Sistem gateway pembayaran belum selesai dimuat. Silakan muat ulang halaman.');
           }
 
           if (submitBtn) {
-            submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMBUKA GATEWAY PEMBAYARAN...</span>';
+            submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMBUKA PEMBAYARAN...</span>';
           }
 
           const snapRes = await fetch('/api/midtrans-snap', {
@@ -993,15 +993,15 @@
 
           const snapData = await snapRes.json();
           if (!snapData.success || !snapData.token) {
-            throw new Error(snapData.error || 'Gagal menginisialisasi sesi pembayaran Midtrans');
+            throw new Error(snapData.error || 'Gagal menginisialisasi sesi pembayaran');
           }
 
           // Launch Midtrans Snap In-App Popup
           window.snap.pay(snapData.token, {
             onSuccess: async function(result) {
-              console.log('[Midtrans Payment Success]:', result);
+              console.log('[Payment Success]:', result);
               orderRecord.status = 'PAID_PROCESSING';
-              orderRecord.paymentType = result.payment_type || 'midtrans';
+              orderRecord.paymentType = result.payment_type || 'online_gateway';
 
               // 1. Trigger backend verification and update Supabase
               fetch(`/api/midtrans-sync?orderId=${encodeURIComponent(finalOrderId)}`).catch(() => {});
@@ -1013,7 +1013,7 @@
                 if (m) {
                   m.status = 'PAID_PROCESSING';
                   m.payment_status = 'settlement';
-                  m.payment_type = result.payment_type || 'midtrans';
+                  m.payment_type = result.payment_type || 'online_gateway';
                 } else {
                   adminOrders.unshift({
                     id: finalOrderId,
@@ -1027,7 +1027,7 @@
                     date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
                     status: 'PAID_PROCESSING',
                     payment_status: 'settlement',
-                    payment_type: result.payment_type || 'midtrans',
+                    payment_type: result.payment_type || 'online_gateway',
                     city: address + ` (${courier})`,
                     phone: cleanPhone,
                     courier: courier
@@ -1042,18 +1042,18 @@
               showOrderSuccessModal(orderRecord);
             },
             onPending: async function(result) {
-              console.log('[Midtrans Payment Pending]:', result);
+              console.log('[Payment Pending]:', result);
               orderRecord.status = 'PENDING_PAYMENT';
-              orderRecord.paymentType = result.payment_type || 'midtrans';
+              orderRecord.paymentType = result.payment_type || 'online_gateway';
               // Tampilkan modal menunggu pembayaran dengan instruksi transfer (Bukan Pesanan Berhasil)
               showOrderPendingModal(orderRecord, result);
             },
             onError: function(result) {
-              console.error('[Midtrans Payment Error]:', result);
-              alert('Pembayaran melalui Midtrans gagal atau dibatalkan. Silakan coba kembali.');
+              console.error('[Payment Error]:', result);
+              alert('Pembayaran gagal atau dibatalkan. Silakan coba kembali.');
             },
             onClose: function() {
-              console.log('[Midtrans Popup Closed]');
+              console.log('[Payment Popup Closed]');
               // Popup ditutup oleh pengguna: JANGAN tandai pesanan berhasil, jangan bersihkan keranjang
               alert('Popup pembayaran ditutup. Pembayaran belum diselesaikan. Keranjang belanja Anda tetap tersimpan.');
             }
@@ -1090,7 +1090,7 @@
     });
 
     const submitBtnEl = document.getElementById('btnSubmitCheckout');
-    if (submitBtnEl) submitBtnEl.innerHTML = 'BAYAR DENGAN MIDTRANS →';
+    if (submitBtnEl) submitBtnEl.innerHTML = 'BAYAR SEKARANG →';
 
     window.addEventListener('mustaz:currency_changed', () => {
       renderPageCheckout();

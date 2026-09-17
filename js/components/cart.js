@@ -95,10 +95,10 @@ function getCheckoutModalHTML() {
               </select>
             </div>
             <div class="form-group-brutal">
-              <label class="form-label-brutal" for="paymentMethod">06 // PAYMENT PROTOCOL *</label>
+              <label class="form-label-brutal" for="paymentMethod">06 // METODE PEMBAYARAN *</label>
               <select id="paymentMethod" class="form-input-brutal" style="cursor:pointer;">
-                <option value="Midtrans Payment Gateway (QRIS, VA Bank, CC, GoPay)" selected>
-                  Midtrans Payment Gateway (QRIS, Virtual Account, Kartu Kredit, GoPay)
+                <option value="Pembayaran Online Otomatis (QRIS, VA Bank, CC, GoPay)" selected>
+                  Pembayaran Online Otomatis (QRIS, Virtual Account, Kartu Kredit, GoPay)
                 </option>
                 <option value="Transfer Bank (BCA / Mandiri)">Transfer Bank Manual (BCA / Mandiri)</option>
                 <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
@@ -106,7 +106,7 @@ function getCheckoutModalHTML() {
             </div>
             <div id="checkoutError" style="display:none;color:var(--accent-pink);font-family:var(--font-mono-sub);font-size:0.85rem;margin-bottom:16px;padding:12px;background:rgba(217,0,108,0.1);border:1px solid var(--accent-pink);"></div>
             <button type="submit" id="checkoutSubmitBtn" class="btn-brutal-pink" style="width:100%;font-size:1.15rem;padding:16px;">
-              BAYAR DENGAN MIDTRANS →
+              BAYAR SEKARANG →
             </button>
           </form>
         </div>
@@ -398,9 +398,9 @@ export function initCart() {
   const modalSubmitBtn = document.getElementById('checkoutSubmitBtn');
   function updateModalSubmitBtnLabel() {
     if (!modalSubmitBtn) return;
-    const isMidtrans = (paymentMethodSelect?.value || '').includes('Midtrans');
-    modalSubmitBtn.innerHTML = isMidtrans 
-      ? 'BAYAR DENGAN MIDTRANS →' 
+    const isOnline = (paymentMethodSelect?.value || '').includes('Online') || (paymentMethodSelect?.value || '').includes('Midtrans');
+    modalSubmitBtn.innerHTML = isOnline 
+      ? 'BAYAR SEKARANG →' 
       : 'KONFIRMASI PESANAN →';
   }
   paymentMethodSelect?.addEventListener('change', updateModalSubmitBtnLabel);
@@ -492,7 +492,7 @@ export function initCart() {
     }
 
     const submitBtn = document.getElementById('checkoutSubmitBtn');
-    const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'BAYAR DENGAN MIDTRANS →';
+    const originalBtnContent = submitBtn ? submitBtn.innerHTML : 'BAYAR SEKARANG →';
 
     try {
       isSubmittingOrder = true;
@@ -518,62 +518,46 @@ export function initCart() {
       const finalOrderId = rpcResult?.orderId || ('MSTZ-' + Math.floor(1000 + Math.random() * 9000));
       const finalTotal = (typeof rpcResult?.totalAmount === 'number') ? rpcResult.totalAmount : getCartTotal();
 
-      // 2. Prepare order record
+      // 2. Prepare unified orderRecord
       const orderRecord = {
-        id: finalOrderId,
         orderId: finalOrderId,
         customerName: name,
-        phone: cleanPhone,
-        customer_phone: cleanPhone,
-        email: email,
-        address: address,
+        customerPhone: cleanPhone,
+        customerEmail: email,
+        shippingAddress: address,
         courier: courier,
         paymentMethod: payment,
-        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-        status: 'PENDING_PAYMENT',
-        tracking: `VERIFIKASI ADMIN [${courier}]`,
+        paymentType: 'online_gateway',
         items: cartItems.map(i => ({
+          id: i.id,
           name: i.name,
-          spec: i.sub || 'Custom Pet Helm',
-          qty: i.quantity,
           price: i.price,
-          image: i.image || i.image_url || 'assets/images/pet_visor_yellow_flame.png'
+          quantity: i.quantity || 1,
+          size: i.size || 'M',
+          color: i.color || 'Default',
+          image: i.image || ''
         })),
-        total: finalTotal
+        totalAmount: finalTotal,
+        status: 'PENDING_PAYMENT',
+        date: new Date().toISOString()
       };
 
-      // 3. (Order confirmation email will only be sent after payment is confirmed or for offline checkout)
-
-      // Update localized admin orders cache
-      try {
-        const adminOrders = JSON.parse(localStorage.getItem('mustaz_admin_orders') || '[]');
-        adminOrders.unshift({
-          id: finalOrderId,
-          customer: name + (email ? ` (${email})` : ''),
-          items: cartItems.map(i => `${i.name} x${i.quantity}`).join(', '),
-          total: finalTotal,
-          date: new Date().toISOString().split('T')[0],
-          status: 'PENDING_PAYMENT',
-          city: `${address} (${courier})`,
-          phone: cleanPhone,
-          customer_phone: cleanPhone,
-          courier: courier,
-          receiptImage: ''
-        });
-        localStorage.setItem('mustaz_admin_orders', JSON.stringify(adminOrders));
-      } catch {}
+      // 3. Save order record to Supabase
+      saveCloudOrder(orderRecord).catch(err => {
+        console.warn('[Supabase Cloud Order Warning]:', err.message);
+      });
 
       // 4. Save to user's localized order history
       try {
         saveUserOrder(email, orderRecord);
       } catch {}
 
-      // Handle Midtrans Online Gateway Payment
-      if (payment.includes('Midtrans')) {
+      // Handle Online Gateway Payment
+      if (payment.includes('Midtrans') || payment.includes('Online')) {
         await ensureSnapLoaded();
 
         if (submitBtn) {
-          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMBUKA GATEWAY PEMBAYARAN...</span>';
+          submitBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;">MEMBUKA PEMBAYARAN...</span>';
         }
 
         const snapRes = await fetch('/api/midtrans-snap', {
@@ -599,16 +583,16 @@ export function initCart() {
 
         const snapData = await snapRes.json();
         if (!snapData.success || !snapData.token) {
-          throw new Error(snapData.error || 'Gagal menginisialisasi pembayaran Midtrans');
+          throw new Error(snapData.error || 'Gagal menginisialisasi pembayaran');
         }
 
         closeCheckout();
 
         window.snap.pay(snapData.token, {
           onSuccess: async function(result) {
-            console.log('[Midtrans Success]:', result);
+            console.log('[Payment Success]:', result);
             orderRecord.status = 'PAID_PROCESSING';
-            orderRecord.paymentType = result.payment_type || 'midtrans';
+            orderRecord.paymentType = result.payment_type || 'online_gateway';
 
             // 1. Trigger backend verification and update Supabase
             fetch(`/api/midtrans-sync?orderId=${encodeURIComponent(finalOrderId)}`).catch(() => {});
@@ -620,7 +604,7 @@ export function initCart() {
               if (m) {
                 m.status = 'PAID_PROCESSING';
                 m.payment_status = 'settlement';
-                m.payment_type = result.payment_type || 'midtrans';
+                m.payment_type = result.payment_type || 'online_gateway';
               } else {
                 adminOrders.unshift({
                   id: finalOrderId,
@@ -634,7 +618,7 @@ export function initCart() {
                   date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
                   status: 'PAID_PROCESSING',
                   payment_status: 'settlement',
-                  payment_type: result.payment_type || 'midtrans',
+                  payment_type: result.payment_type || 'online_gateway',
                   city: address + ` (${courier})`,
                   phone: cleanPhone,
                   courier: courier
@@ -649,15 +633,15 @@ export function initCart() {
             showOrderSuccessModal(orderRecord);
           },
           onPending: function(result) {
-            console.log('[Midtrans Pending]:', result);
+            console.log('[Payment Pending]:', result);
             orderRecord.status = 'PENDING_PAYMENT';
-            orderRecord.paymentType = result.payment_type || 'midtrans';
+            orderRecord.paymentType = result.payment_type || 'online_gateway';
             // Tampilkan modal menunggu pembayaran dengan instruksi transfer (Bukan Pesanan Berhasil)
             showOrderPendingModal(orderRecord, result);
           },
           onError: function(result) {
-            console.error('[Midtrans Error]:', result);
-            alert('Pembayaran melalui Midtrans gagal atau dibatalkan. Anda dapat mengulanginya atau memilih metode pembayaran lain.');
+            console.error('[Payment Error]:', result);
+            alert('Pembayaran gagal atau dibatalkan. Anda dapat mengulanginya atau memilih metode pembayaran lain.');
           },
           onClose: function() {
             console.log('[Midtrans Popup Closed]');

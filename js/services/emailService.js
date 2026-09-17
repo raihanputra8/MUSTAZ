@@ -338,7 +338,7 @@ export function showOrderPendingModal(orderData, snapResult = {}) {
     vaDetail = `KODE PEMBAYARAN: <strong style="color:var(--accent-yellow);">${snapResult.payment_code}</strong>`;
   }
 
-  const paymentType = (snapResult?.payment_type || orderData.paymentType || 'Midtrans Payment Gateway').replace(/_/g, ' ').toUpperCase();
+  const paymentType = (snapResult?.payment_type || orderData.paymentType || 'Pembayaran Online').replace(/_/g, ' ').toUpperCase();
 
   const modalHtml = `
     <div id="orderPendingModalOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;">
@@ -396,7 +396,7 @@ export function showOrderPendingModal(orderData, snapResult = {}) {
 
   checkBtn?.addEventListener('click', async () => {
     checkBtn.disabled = true;
-    checkBtn.textContent = 'MENGECEK KE MIDTRANS...';
+    checkBtn.textContent = 'MENGECEK STATUS PEMBAYARAN...';
     if (statusMsg) {
       statusMsg.style.display = 'block';
       statusMsg.textContent = 'Menghubungkan ke gateway pembayaran...';
