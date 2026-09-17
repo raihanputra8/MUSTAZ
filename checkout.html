@@ -303,7 +303,7 @@
 </main>
 
 <script type="module">
-  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, getActiveCurrency, getDynamicAdminWhatsApp } from './js/services/cartService.js';
+  import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, getActiveCurrency, getDynamicAdminWhatsApp, getDynamicParts } from './js/services/cartService.js';
   import { saveCloudOrder, submitOrderSecure } from './js/services/supabaseService.js';
   import { sendOrderSuccessEmail, showOrderSuccessModal } from './js/services/emailService.js';
 
@@ -360,20 +360,34 @@
         `;
       }
     } else {
-      list.innerHTML = items.map(item => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #EEE;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <img src="${item.image || item.image_url || 'assets/images/Product1.webp'}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" loading="lazy" width="48" height="48" style="width:48px;height:48px;object-fit:cover;border:1px solid #000;">
-            <div>
-              <div style="font-family:var(--font-headline);font-size:1.1rem;color:#000;">${item.name}</div>
-              <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#666;">QTY: ${item.quantity}</div>
+      const dynamicParts = (typeof getDynamicParts === 'function') ? getDynamicParts() : [];
+      list.innerHTML = items.map(item => {
+        const matched = dynamicParts.find(p => p.id === item.id);
+        const rawStock = (matched && matched.stock !== undefined && matched.stock !== null) 
+          ? Number(matched.stock) 
+          : ((item.stock !== undefined && item.stock !== null) ? Number(item.stock) : Infinity);
+        const isSoldOut = rawStock <= 0 || (matched && (matched.status === 'Sold Out' || matched.is_sold_out === true));
+
+        return `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #EEE;${isSoldOut ? 'background:rgba(220,38,38,0.08);padding:10px;border:1px dashed #dc2626;' : ''}">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <img src="${item.image || item.image_url || 'assets/images/Product1.webp'}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" loading="lazy" width="48" height="48" style="width:48px;height:48px;object-fit:cover;border:1px solid #000;${isSoldOut ? 'filter:grayscale(100%);' : ''}">
+              <div>
+                <div style="font-family:var(--font-headline);font-size:1.1rem;color:#000;display:flex;align-items:center;gap:6px;">
+                  <span>${item.name}</span>
+                  ${isSoldOut ? '<span style="background:#dc2626;color:#FFF;font-size:0.6rem;padding:2px 6px;font-weight:900;">SOLD OUT</span>' : ''}
+                </div>
+                <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:${isSoldOut ? '#dc2626' : '#666'};font-weight:${isSoldOut ? '700' : 'normal'};">
+                  ${isSoldOut ? 'STOK SUDAH HABIS - MOHON HAPUS DARI KERANJANG' : `QTY: ${item.quantity}`}
+                </div>
+              </div>
+            </div>
+            <div style="font-family:var(--font-headline);font-size:1.15rem;color:${isSoldOut ? '#888' : 'var(--accent-pink)'};font-weight:900;">
+              ${formatRupiah(item.price * item.quantity)}
             </div>
           </div>
-          <div style="font-family:var(--font-headline);font-size:1.15rem;color:var(--accent-pink);font-weight:900;">
-            ${formatRupiah(item.price * item.quantity)}
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
   }
 
@@ -719,6 +733,21 @@
           okText: 'LIHAT KATALOG',
           onOk: () => { window.location.href = 'parts.html'; }
         });
+        return;
+      }
+
+      // Pre-flight check: Ensure no items in cart are sold out
+      const dynamicParts = (typeof getDynamicParts === 'function') ? getDynamicParts() : [];
+      const soldOutItem = items.find(item => {
+        const matched = dynamicParts.find(p => p.id === item.id);
+        const rawStock = (matched && matched.stock !== undefined && matched.stock !== null) 
+          ? Number(matched.stock) 
+          : ((item.stock !== undefined && item.stock !== null) ? Number(item.stock) : Infinity);
+        return rawStock <= 0 || (matched && (matched.status === 'Sold Out' || matched.is_sold_out === true));
+      });
+
+      if (soldOutItem) {
+        alert(`Item "${soldOutItem.name}" saat ini sudah SOLD OUT (Stok Habis). Silakan buka keranjang dan hapus item ini sebelum melanjutkan pembayaran.`);
         return;
       }
 

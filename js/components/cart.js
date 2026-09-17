@@ -5,7 +5,8 @@
 import {
   getCart, removeFromCart, updateCartQty, clearCart,
   getCartTotal, getCartCount, formatRupiah, generateWhatsAppUrl,
-  getActiveUserEmail, getUserAddresses, saveUserOrder, getDynamicAdminWhatsApp
+  getActiveUserEmail, getUserAddresses, saveUserOrder, getDynamicAdminWhatsApp,
+  getDynamicParts
 } from '../services/cartService.js';
 import { sendOrderSuccessEmail, showOrderSuccessModal } from '../services/emailService.js';
 import { saveCloudOrder, submitOrderSecure } from '../services/supabaseService.js';
@@ -178,26 +179,63 @@ function renderCartItems() {
     return;
   }
 
-  list.innerHTML = items.map(item => `
-    <div class="cart-item" data-id="${item.id}">
-      <img class="cart-item-img"
-        src="${item.image || item.image_url || ''}"
-        alt="${item.name}"
-        onerror="this.onerror=null;this.src='assets/images/Product1.webp'">
-      <div class="cart-item-info">
-        <p class="cart-item-title">${item.name}</p>
-        <p class="cart-item-price">${formatRupiah(item.price)}</p>
+  const dynamicParts = (typeof getDynamicParts === 'function') ? getDynamicParts() : [];
+  let hasSoldOutItems = false;
+
+  list.innerHTML = items.map(item => {
+    const matched = dynamicParts.find(p => p.id === item.id);
+    const rawStock = (matched && matched.stock !== undefined && matched.stock !== null) 
+      ? Number(matched.stock) 
+      : ((item.stock !== undefined && item.stock !== null) ? Number(item.stock) : Infinity);
+    const itemSoldOut = rawStock <= 0 || (matched && (matched.status === 'Sold Out' || matched.is_sold_out === true));
+    if (itemSoldOut) hasSoldOutItems = true;
+
+    return `
+      <div class="cart-item" data-id="${item.id}" style="${itemSoldOut ? 'border:1px dashed #dc2626;background:rgba(220,38,38,0.06);padding:8px;' : ''}">
+        <img class="cart-item-img"
+          src="${item.image || item.image_url || ''}"
+          alt="${item.name}"
+          onerror="this.onerror=null;this.src='assets/images/Product1.webp'"
+          style="${itemSoldOut ? 'filter:grayscale(80%);' : ''}">
+        <div class="cart-item-info">
+          <p class="cart-item-title" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span>${item.name}</span>
+            ${itemSoldOut ? `<span style="background:#dc2626;color:#FFF;font-size:0.62rem;padding:2px 6px;font-weight:900;font-family:var(--font-mono-sub);letter-spacing:0.06em;">SOLD OUT</span>` : ''}
+          </p>
+          <p class="cart-item-price">${formatRupiah(item.price)}</p>
+          ${itemSoldOut ? `<p style="font-family:var(--font-mono-sub);font-size:0.7rem;color:#ff5555;margin:4px 0 0;line-height:1.2;">⚠️ Stok habis. Mohon hapus dari keranjang untuk lanjut checkout.</p>` : ''}
+        </div>
+        <div class="cart-qty-ctrl">
+          <button class="cart-qty-btn" data-id="${item.id}" data-delta="-1">−</button>
+          <span class="cart-qty-num">${item.quantity}</span>
+          <button class="cart-qty-btn" data-id="${item.id}" data-delta="1" ${itemSoldOut ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''}>+</button>
+        </div>
+        <button class="cart-remove-btn" data-id="${item.id}" title="Remove item">
+          <span class="material-symbols-outlined" style="font-size:20px;">delete</span>
+        </button>
       </div>
-      <div class="cart-qty-ctrl">
-        <button class="cart-qty-btn" data-id="${item.id}" data-delta="-1">−</button>
-        <span class="cart-qty-num">${item.quantity}</span>
-        <button class="cart-qty-btn" data-id="${item.id}" data-delta="1">+</button>
-      </div>
-      <button class="cart-remove-btn" data-id="${item.id}" title="Remove item">
-        <span class="material-symbols-outlined" style="font-size:20px;">delete</span>
-      </button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
+
+  // Lock checkout button if any sold out item is present
+  const startBtn = document.getElementById('startCheckoutBtn');
+  if (startBtn) {
+    if (hasSoldOutItems) {
+      startBtn.style.opacity = '0.6';
+      startBtn.style.pointerEvents = 'none';
+      startBtn.style.background = '#222';
+      startBtn.style.color = '#ff5555';
+      startBtn.style.borderColor = '#ff5555';
+      startBtn.innerHTML = '⚠️ HAPUS ITEM SOLD OUT UNTUK CHECKOUT';
+    } else {
+      startBtn.style.opacity = '1';
+      startBtn.style.pointerEvents = 'auto';
+      startBtn.style.background = 'var(--accent-yellow)';
+      startBtn.style.color = '#000';
+      startBtn.style.borderColor = '#000';
+      startBtn.innerHTML = 'PROSES CHECKOUT →';
+    }
+  }
 
   // Attach qty and remove listeners
   list.querySelectorAll('.cart-qty-btn').forEach(btn => {

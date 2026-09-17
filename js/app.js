@@ -71,6 +71,16 @@ async function initApp() {
       const partId = btn.dataset.addToCart;
       const part = getDynamicParts().find(p => p.id === partId);
       if (!part) return;
+      const stock = (part.stock !== undefined && part.stock !== null) ? Number(part.stock) : 10;
+      const isSoldOut = stock <= 0 || part.status === 'Sold Out' || part.is_sold_out === true;
+      if (isSoldOut) {
+        showToast({
+          title: 'STOK HABIS // SOLD OUT',
+          message: `Maaf, "${part.name}" sudah habis terjual.`,
+          image: part.image
+        });
+        return;
+      }
       const price = btn.dataset.price ? parseInt(btn.dataset.price, 10) : part.price;
       const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
       addToCart({ ...part, price });
@@ -332,6 +342,25 @@ async function initApp() {
       const priceEl = slide.querySelector('span[style*="font-size:1.3rem"], span[style*="font-size: 1.3rem"], .product-price');
       if (priceEl) {
         priceEl.textContent = formatRupiah(product.price);
+      }
+    });
+
+    // 6. Disable add-to-cart buttons for sold-out items across all pages
+    document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
+      const partId = btn.dataset.addToCart;
+      const product = dynamicParts.find(p => p.id === partId);
+      if (product) {
+        const stock = (product.stock !== undefined && product.stock !== null) ? Number(product.stock) : 10;
+        const isSoldOut = stock <= 0 || product.status === 'Sold Out' || product.is_sold_out === true;
+        if (isSoldOut) {
+          btn.disabled = true;
+          btn.textContent = 'SOLD OUT';
+          btn.style.opacity = '0.6';
+          btn.style.cursor = 'not-allowed';
+          btn.style.background = '#222';
+          btn.style.color = '#777';
+          btn.style.borderColor = '#444';
+        }
       }
     });
   }

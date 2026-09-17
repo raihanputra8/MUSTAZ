@@ -431,12 +431,43 @@ export function addToCart(product) {
     return [];
   }
 
+  // ─── STRICT SOLD OUT & STOCK VALIDATION ────────────────────────────────────
+  const dynamicParts = getDynamicParts();
+  const matched = dynamicParts.find(p => p.id === product.id) || product;
+  const rawStock = (matched.stock !== undefined && matched.stock !== null) 
+    ? Number(matched.stock) 
+    : ((product.stock !== undefined && product.stock !== null) ? Number(product.stock) : Infinity);
+  const isSoldOut = rawStock <= 0 || matched.status === 'Sold Out' || matched.is_sold_out === true;
+
+  if (isSoldOut) {
+    import('../components/toast.js').then(({ showToast }) => {
+      showToast({
+        title: 'STOK HABIS // SOLD OUT',
+        message: `Maaf, "${product.name || 'Item ini'}" sudah habis terjual dan tidak dapat dimasukkan ke keranjang.`,
+        image: product.image || product.image_url
+      });
+    }).catch(() => {
+      alert(`Maaf, "${product.name || 'Item ini'}" sudah habis (sold out).`);
+    });
+    return readCart();
+  }
+
   const cart = readCart();
   const existing = cart.find(i => i.id === product.id);
   if (existing) {
+    if (rawStock !== Infinity && existing.quantity >= rawStock) {
+      import('../components/toast.js').then(({ showToast }) => {
+        showToast({
+          title: 'BATAS MAKSIMAL STOK',
+          message: `Jumlah di keranjang (${existing.quantity}) sudah mencapai sisa stok yang tersedia (${rawStock} pcs).`,
+          image: product.image || product.image_url
+        });
+      }).catch(() => {});
+      return cart;
+    }
     existing.quantity += 1;
   } else {
-    cart.push({ ...product, quantity: 1 });
+    cart.push({ ...product, quantity: 1, stock: rawStock !== Infinity ? rawStock : undefined });
   }
   writeCart(cart);
   return cart;
@@ -449,8 +480,23 @@ export function removeFromCart(id) {
 }
 
 export function updateCartQty(id, delta) {
+  const dynamicParts = getDynamicParts();
+  const matched = dynamicParts.find(p => p.id === id) || (HELMETS_DATA || []).find(h => h.id === id);
+  const rawStock = (matched && matched.stock !== undefined && matched.stock !== null) ? Number(matched.stock) : Infinity;
+
   const cart = readCart().map(i => {
-    if (i.id === id) return { ...i, quantity: Math.max(0, i.quantity + delta) };
+    if (i.id === id) {
+      if (delta > 0 && rawStock !== Infinity && i.quantity >= rawStock) {
+        import('../components/toast.js').then(({ showToast }) => {
+          showToast({
+            title: 'BATAS MAKSIMAL STOK',
+            message: `Maksimal stok yang tersedia hanya ${rawStock} pcs.`
+          });
+        }).catch(() => {});
+        return i;
+      }
+      return { ...i, quantity: Math.max(0, i.quantity + delta) };
+    }
     return i;
   }).filter(i => i.quantity > 0);
   writeCart(cart);

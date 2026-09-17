@@ -24,11 +24,19 @@ import { verifyAdminSession } from '../services/authService.js';
 export function executeInstantWaBuy(part) {
   if (!part) return;
 
-  if (part.stock !== undefined && part.stock <= 0) {
+  const stock = (part.stock !== undefined && part.stock !== null) ? Number(part.stock) : 10;
+  const isSoldOut = stock <= 0 || part.status === 'Sold Out' || part.is_sold_out === true;
+
+  if (isSoldOut) {
+    const waText = encodeURIComponent(`Halo Admin MUSTAZ Garage, saya tertarik dengan item "${part.name}" yang sedang SOLD OUT di website. Apakah produk ini bisa di-preorder atau ada info restock batch berikutnya? Terima kasih!`);
     showToast({
-      title: 'STOK HABIS',
-      message: 'Item ini sedang sold out. Silakan hubungi CS untuk ketersediaan batch berikutnya.'
+      title: 'STOK HABIS // HUBUNGI CS',
+      message: 'Mengarahkan ke WhatsApp CS untuk info ketersediaan batch berikutnya...',
+      image: part.image
     });
+    setTimeout(() => {
+      window.open(`https://wa.me/62857288833?text=${waText}`, '_blank');
+    }, 600);
     return;
   }
 
@@ -171,6 +179,8 @@ export function openProductDetail(product) {
   if (catEl) catEl.textContent = (product.category || 'HARDWARE').toUpperCase();
 
   const isChopper = product.type === 'choppers' || product.type === 'helmets';
+  const productStock = (product.stock !== undefined && product.stock !== null) ? Number(product.stock) : 10;
+  const isSoldOut = productStock <= 0 || product.status === 'Sold Out' || product.is_sold_out === true;
 
   content.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:32px;align-items:start;">
@@ -179,8 +189,15 @@ export function openProductDetail(product) {
         <div class="tape-decor tape-top-left"></div>
         <div style="background:#050505;border:3px solid #FFF;box-shadow:6px 6px 0px #000;overflow:hidden;position:relative;width:100%;aspect-ratio:4/5;max-height:480px;display:flex;align-items:center;justify-content:center;">
           <img src="${product.image}" alt="${product.name}" loading="lazy" width="400" height="500" style="width:100%;height:100%;object-fit:contain;background:#050505;filter:contrast(110%);">
+          ${isSoldOut ? `
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;z-index:12;">
+              <span style="background:#dc2626;color:#FFF;font-family:var(--font-headline);font-size:1.5rem;font-weight:900;padding:8px 20px;letter-spacing:0.12em;border:3px solid #000;transform:rotate(-6deg);box-shadow:6px 6px 0px #000;">
+                SOLD OUT
+              </span>
+            </div>
+          ` : ''}
           <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);padding:16px;">
-            <span class="zine-tag-pink">${product.badge || (isChopper ? product.status : 'IN STOCK')}</span>
+            <span class="zine-tag-pink">${isSoldOut ? 'SOLD OUT' : (product.badge || (isChopper ? product.status : 'IN STOCK'))}</span>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
@@ -204,7 +221,7 @@ export function openProductDetail(product) {
         </div>
 
         <div style="display:flex;align-items:baseline;gap:12px;padding:12px 0;border-top:1px dashed #333;border-bottom:1px dashed #333;">
-          <span style="font-family:var(--font-headline);font-size:2.2rem;color:var(--accent-pink);font-weight:900;">
+          <span style="font-family:var(--font-headline);font-size:2.2rem;color:${isSoldOut ? '#888' : 'var(--accent-pink)'};font-weight:900;">
             ${formatRupiah(product.price)}
           </span>
           ${product.original_price ? `<span style="text-decoration:line-through;color:#666;font-size:1rem;font-family:var(--font-mono-sub);">${formatRupiah(product.original_price)}</span>` : ''}
@@ -235,17 +252,17 @@ export function openProductDetail(product) {
             </div>
             <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:6px 0;align-items:center;">
               <span style="color:#888;font-family:var(--font-mono-sub);">STOCK STATUS</span>
-              ${(product.stock || 10) <= 3 && (product.stock || 10) > 0 ? `
-                <span class="stock-pulse-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.72rem;padding:3px 8px;letter-spacing:0.06em;border:1px solid #000;">
-                  ⚡ SISA ${(product.stock || 1)} PCS // SEGERA HABIS
+              ${isSoldOut ? `
+                <span style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.75rem;padding:4px 10px;border:1px solid #000;">
+                  SOLD OUT // STOK HABIS
                 </span>
-              ` : (product.stock || 10) <= 0 ? `
-                <span style="background:#444;color:#AAA;font-family:var(--font-mono-sub);font-weight:900;font-size:0.72rem;padding:3px 8px;">
-                  SOLD OUT
+              ` : productStock <= 3 ? `
+                <span class="stock-pulse-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.72rem;padding:3px 8px;letter-spacing:0.06em;border:1px solid #000;">
+                  ⚡ SISA ${productStock} PCS // SEGERA HABIS
                 </span>
               ` : `
-                <span style="color:${(product.stock || 10) <= 5 ? 'var(--accent-pink)' : '#4ADE80'};font-weight:700;">
-                  ${(product.stock || 10) <= 5 ? `CRITICAL - ${(product.stock || 5)} REMAINING` : `VERIFIED AVAILABLE (${product.stock || 10})`}
+                <span style="color:${productStock <= 5 ? 'var(--accent-pink)' : '#4ADE80'};font-weight:700;">
+                  ${productStock <= 5 ? `CRITICAL - ${productStock} REMAINING` : `VERIFIED AVAILABLE (${productStock})`}
                 </span>
               `}
             </div>
@@ -258,13 +275,23 @@ export function openProductDetail(product) {
 
         <!-- CTA BUTTONS (Usulan 1) -->
         <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;" id="modalActionButtons">
-          <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:14px;font-size:1.05rem;min-width:160px;letter-spacing:0.04em;">
-            + TAMBAH KE KERANJANG
-          </button>
-          <button id="modalInstantWaBtn" class="btn-brutal-dark" data-id="${product.id}" style="flex:1;padding:14px;font-size:0.92rem;margin:0;min-width:180px;display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--accent-yellow);color:var(--accent-yellow);letter-spacing:0.05em;background:#141414;cursor:pointer;" title="Order express langsung via WhatsApp">
-            <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-yellow);">bolt</span>
-            <span>EXPRESS ORDER (WA)</span>
-          </button>
+          ${isSoldOut ? `
+            <button id="modalAddToCartBtn" class="btn-brutal-dark" disabled style="flex:1;padding:14px;font-size:1.02rem;min-width:160px;letter-spacing:0.04em;background:#1e1e1e;color:#777;border:2px solid #333;cursor:not-allowed;opacity:0.65;font-weight:900;">
+              STOK HABIS // SOLD OUT
+            </button>
+            <button id="modalInstantWaBtn" class="btn-brutal-dark" data-id="${product.id}" style="flex:1;padding:14px;font-size:0.92rem;margin:0;min-width:180px;display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid #555;color:#BBB;letter-spacing:0.05em;background:#141414;cursor:pointer;" title="Hubungi CS untuk info restock batch berikutnya">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#BBB;">support_agent</span>
+              <span>TANYA RESTOCK (CS WA)</span>
+            </button>
+          ` : `
+            <button id="modalAddToCartBtn" class="btn-brutal-pink" style="flex:1;padding:14px;font-size:1.05rem;min-width:160px;letter-spacing:0.04em;">
+              + TAMBAH KE KERANJANG
+            </button>
+            <button id="modalInstantWaBtn" class="btn-brutal-dark" data-id="${product.id}" style="flex:1;padding:14px;font-size:0.92rem;margin:0;min-width:180px;display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--accent-yellow);color:var(--accent-yellow);letter-spacing:0.05em;background:#141414;cursor:pointer;" title="Order express langsung via WhatsApp">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-yellow);">bolt</span>
+              <span>EXPRESS ORDER (WA)</span>
+            </button>
+          `}
           ${_isAdminCached ? `
             <a href="/admin.html?tab=inventory&edit=${encodeURIComponent(product.id)}" class="btn-brutal-white admin-modal-edit-btn" style="padding:14px;font-size:0.95rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;border:2px solid #FFF;" title="Edit Produk di Admin">
               ✏️ ADMIN EDIT
@@ -276,6 +303,14 @@ export function openProductDetail(product) {
   `;
 
   document.getElementById('modalAddToCartBtn')?.addEventListener('click', () => {
+    if (isSoldOut) {
+      showToast({
+        title: 'STOK HABIS // SOLD OUT',
+        message: 'Produk ini sedang sold out dan tidak dapat ditambahkan ke keranjang.',
+        image: product.image
+      });
+      return;
+    }
     const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
     addToCart(product);
     if (isLoggedIn) {
@@ -345,6 +380,8 @@ function renderParts(data) {
     const num = String(index + 1).padStart(2, '0');
     // Rotate every 3rd card slightly for brutalist zine variety
     const tiltStyle = index % 3 === 1 ? 'transform: rotate(1deg);' : index % 3 === 2 ? 'transform: rotate(-1deg);' : '';
+    const partStock = (part.stock !== undefined && part.stock !== null) ? Number(part.stock) : 10;
+    const isSoldOut = partStock <= 0 || part.status === 'Sold Out' || part.is_sold_out === true;
     
     return `
       <article class="part-card group" data-category="${part.category}" style="${tiltStyle}transition:all 0.2s ease;">
@@ -371,6 +408,13 @@ function renderParts(data) {
           <!-- Product Image with raw border (4:5 proportional ratio) -->
           <div class="part-img-box quick-view-trigger" style="position:relative;width:100%;aspect-ratio:4/5;background:#080808;border:2px solid #000;overflow:hidden;margin-bottom:14px;cursor:pointer;" data-id="${part.id}">
             ${part.badge ? `<div class="zine-tag-pink" style="position:absolute;top:8px;left:8px;z-index:10;">${part.badge}</div>` : ''}
+            ${isSoldOut ? `
+              <div style="position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:11;">
+                <span style="background:#dc2626;color:#FFF;font-family:var(--font-headline);font-size:1.15rem;font-weight:900;padding:6px 14px;letter-spacing:0.1em;border:2px solid #000;transform:rotate(-7deg);box-shadow:4px 4px 0px #000;">
+                  SOLD OUT
+                </span>
+              </div>
+            ` : ''}
             <img src="${part.image}" alt="${part.name}"
               loading="lazy"
               width="400"
@@ -390,35 +434,41 @@ function renderParts(data) {
               ${part.sub}
             </p>
 
-            <!-- Price & Stock (Usulan 4) -->
+            <!-- Price & Stock -->
             <div class="part-price-row" style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #000;padding-top:10px;margin-top:auto;margin-bottom:12px;">
-              <span class="part-price" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:var(--accent-pink);">
+              <span class="part-price" style="font-family:var(--font-headline);font-size:1.35rem;font-weight:900;color:${isSoldOut ? '#888' : 'var(--accent-pink)'};">
                 ${formatRupiah(part.price)}
               </span>
-              ${part.stock <= 3 && part.stock > 0 ? `
-                <span class="stock-pulse-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.68rem;padding:3px 8px;letter-spacing:0.06em;border:1px solid #000;">
-                  ⚡ SISA ${part.stock} PCS // SEGERA HABIS
-                </span>
-              ` : part.stock <= 0 ? `
+              ${isSoldOut ? `
                 <span style="background:#444;color:#AAA;font-family:var(--font-mono-sub);font-weight:900;font-size:0.68rem;padding:3px 8px;border:1px solid #000;">
                   SOLD OUT
                 </span>
-              ` : part.stock <= 5 ? `
+              ` : partStock <= 3 ? `
+                <span class="stock-pulse-badge" style="background:#dc2626;color:#FFF;font-family:var(--font-mono-sub);font-weight:900;font-size:0.68rem;padding:3px 8px;letter-spacing:0.06em;border:1px solid #000;">
+                  ⚡ SISA ${partStock} PCS // SEGERA HABIS
+                </span>
+              ` : partStock <= 5 ? `
                 <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:var(--accent-pink);">
-                  ⚠️ ${part.stock} REMAINING
+                  ⚠️ ${partStock} REMAINING
                 </span>
               ` : `
                 <span style="font-family:var(--font-mono-sub);font-size:0.7rem;font-weight:700;color:#333;">
-                  IN STOCK (${part.stock})
+                  IN STOCK (${partStock})
                 </span>
               `}
             </div>
 
             <!-- Action Buttons: Add to Cart + Quick View -->
             <div class="part-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
-              <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.92rem;justify-content:center;letter-spacing:0.04em;">
-                + KERANJANG
-              </button>
+              ${isSoldOut ? `
+                <button class="btn-brutal-dark" disabled style="flex:1;padding:10px;font-size:0.88rem;justify-content:center;letter-spacing:0.04em;background:#222;color:#777;border:2px solid #444;cursor:not-allowed;opacity:0.65;font-weight:900;" title="Produk sudah habis terjual">
+                  SOLD OUT
+                </button>
+              ` : `
+                <button class="add-to-cart-btn btn-brutal-pink" data-id="${part.id}" style="flex:1;padding:10px;font-size:0.92rem;justify-content:center;letter-spacing:0.04em;">
+                  + KERANJANG
+                </button>
+              `}
               <button class="quick-view-btn" data-id="${part.id}" style="background:#000;color:#FFF;border:2px solid #000;padding:10px 14px;font-family:var(--font-headline);font-size:0.92rem;cursor:pointer;letter-spacing:0.04em;" title="Lihat Detail">
                 DETAIL →
               </button>
@@ -439,9 +489,18 @@ function renderParts(data) {
   grid.querySelectorAll('.add-to-cart-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
       const part = getDynamicParts().find(p => p.id === btn.dataset.id);
       if (!part) return;
+      const partStock = (part.stock !== undefined && part.stock !== null) ? Number(part.stock) : 10;
+      if (partStock <= 0 || part.status === 'Sold Out' || part.is_sold_out === true) {
+        showToast({
+          title: 'STOK HABIS // SOLD OUT',
+          message: `Maaf, "${part.name}" sudah habis terjual.`,
+          image: part.image
+        });
+        return;
+      }
+      const isLoggedIn = typeof localStorage !== 'undefined' && localStorage.getItem('mustaz_auth_logged_in') === 'true';
       addToCart(part);
       if (isLoggedIn) {
         showToast({
