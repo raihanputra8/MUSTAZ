@@ -305,7 +305,7 @@
 <script type="module">
   import { getCart, getCartTotal, formatRupiah, generateWhatsAppUrl, clearCart, saveUserOrder, getActiveUserEmail, getActiveCurrency, getDynamicAdminWhatsApp, getDynamicParts } from './js/services/cartService.js';
   import { saveCloudOrder, submitOrderSecure } from './js/services/supabaseService.js';
-  import { sendOrderSuccessEmail, showOrderSuccessModal } from './js/services/emailService.js';
+  import { sendOrderSuccessEmail, showOrderSuccessModal, showOrderPendingModal } from './js/services/emailService.js';
 
   let currentShippingCost = 0;
   let currentCourierName = '';
@@ -880,8 +880,7 @@
           currency: getActiveCurrency()
         };
 
-        // 1. Send Order Confirmation Email to Buyer
-        sendOrderSuccessEmail(orderRecord).catch(() => {});
+        // 1. (Order confirmation email will only be sent after payment is confirmed or for offline checkout)
 
         // Also update localized admin orders cache
         try {
@@ -1045,10 +1044,8 @@
               console.log('[Midtrans Payment Pending]:', result);
               orderRecord.status = 'PENDING_PAYMENT';
               orderRecord.paymentType = result.payment_type || 'midtrans';
-              sendOrderSuccessEmail(orderRecord).catch(() => {});
-              clearCart();
-              renderPageCheckout();
-              showOrderSuccessModal(orderRecord);
+              // Tampilkan modal menunggu pembayaran dengan instruksi transfer (Bukan Pesanan Berhasil)
+              showOrderPendingModal(orderRecord, result);
             },
             onError: function(result) {
               console.error('[Midtrans Payment Error]:', result);
@@ -1056,12 +1053,14 @@
             },
             onClose: function() {
               console.log('[Midtrans Popup Closed]');
-              alert('Popup pembayaran ditutup. Pesanan Anda tersimpan sebagai draft menunggu pembayaran.');
+              // Popup ditutup oleh pengguna: JANGAN tandai pesanan berhasil, jangan bersihkan keranjang
+              alert('Popup pembayaran ditutup. Pembayaran belum diselesaikan. Keranjang belanja Anda tetap tersimpan.');
             }
           });
 
         } else {
           // Standard Offline / WhatsApp Flow
+          sendOrderSuccessEmail(orderRecord).catch(() => {});
           showOrderSuccessModal(orderRecord);
 
           let targetWa = null;

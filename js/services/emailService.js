@@ -311,3 +311,125 @@ export function showOrderSuccessModal(orderData) {
     if (modal) modal.remove();
   });
 }
+
+/**
+ * 4. Render In-App Order Pending Modal (When payment is awaiting transfer or popup was closed in pending state)
+ */
+export function showOrderPendingModal(orderData, snapResult = {}) {
+  const existingPending = document.getElementById('orderPendingModalOverlay');
+  if (existingPending) existingPending.remove();
+  const existingSuccess = document.getElementById('orderSuccessModalOverlay');
+  if (existingSuccess) existingSuccess.remove();
+
+  const buyerEmail = orderData.email || 'Email Pembeli';
+  const orderId = orderData.orderId || orderData.id || 'MSTZ-ORDER';
+  const totalStr = formatRupiah(orderData.total, orderData.currency);
+
+  // Extract payment details from Midtrans snap result if available
+  let vaDetail = '';
+  if (Array.isArray(snapResult?.va_numbers) && snapResult.va_numbers.length > 0) {
+    const va = snapResult.va_numbers[0];
+    vaDetail = `BANK ${String(va.bank || '').toUpperCase()} VA: <strong style="color:var(--accent-yellow);letter-spacing:1px;">${va.va_number}</strong>`;
+  } else if (snapResult?.permata_va_number) {
+    vaDetail = `PERMATA VA: <strong style="color:var(--accent-yellow);letter-spacing:1px;">${snapResult.permata_va_number}</strong>`;
+  } else if (snapResult?.biller_code && snapResult?.bill_key) {
+    vaDetail = `MANDIRI BILL: KODE PERUSAHAAN <strong>${snapResult.biller_code}</strong> • BILL KEY <strong>${snapResult.bill_key}</strong>`;
+  } else if (snapResult?.payment_code) {
+    vaDetail = `KODE PEMBAYARAN: <strong style="color:var(--accent-yellow);">${snapResult.payment_code}</strong>`;
+  }
+
+  const paymentType = (snapResult?.payment_type || orderData.paymentType || 'Midtrans Payment Gateway').replace(/_/g, ' ').toUpperCase();
+
+  const modalHtml = `
+    <div id="orderPendingModalOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;">
+      <div style="background:#111;border:3px solid #FFA500;box-shadow:8px 8px 0px #FFA500;max-width:540px;width:100%;padding:32px;text-align:center;position:relative;">
+        <div style="background:#FFA500;color:#000;font-family:var(--font-headline);font-weight:900;font-size:0.85rem;padding:4px 14px;display:inline-block;margin-bottom:14px;border:1px solid #000;letter-spacing:0.5px;">
+          STATUS: MENUNGGU PEMBAYARAN
+        </div>
+        <h2 style="font-family:var(--font-headline);font-size:1.85rem;color:#FFF;margin:0 0 8px;line-height:1.2;">
+          PEMBAYARAN BELUM SELESAI
+        </h2>
+        <div style="background:#181818;border:2px solid #444;padding:16px;margin:16px 0;text-align:left;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--font-mono-sub);font-size:0.8rem;color:#AAA;">
+            <span>Order ID: <strong style="color:#FFF;">#${orderId}</strong></span>
+            <span>Total: <strong style="color:var(--accent-pink);">${totalStr}</strong></span>
+          </div>
+          <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;margin-top:6px;">METODE: ${paymentType}</div>
+          ${vaDetail ? `
+            <div style="margin-top:10px;padding:10px;background:#222;border:1px dashed #FFA500;font-family:var(--font-mono-sub);font-size:0.85rem;color:#EEE;">
+              ${vaDetail}
+            </div>
+          ` : ''}
+          ${snapResult?.pdf_url ? `
+            <div style="margin-top:10px;">
+              <a href="${snapResult.pdf_url}" target="_blank" style="color:var(--accent-yellow);font-size:0.8rem;font-family:var(--font-mono-sub);text-decoration:underline;">
+                📄 Unduh Petunjuk Pembayaran (PDF)
+              </a>
+            </div>
+          ` : ''}
+        </div>
+        <p style="font-family:var(--font-mono-sub);font-size:0.8rem;color:#AAA;line-height:1.5;margin-bottom:20px;">
+          Pesanan Anda tersimpan sebagai draft menunggu pembayaran. Selesaikan pembayaran sebelum batas waktu agar pesanan dapat segera diproses & dikirim.
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button id="btnCheckPendingStatus" class="btn-brutal-yellow btn-brutal-sm" style="flex:1;min-width:180px;text-align:center;">
+            CEK STATUS PEMBAYARAN ↻
+          </button>
+          <button id="btnClosePendingModal" class="btn-brutal-ghost btn-brutal-sm" style="padding:10px 20px;">
+            TUTUP
+          </button>
+        </div>
+        <div id="pendingStatusMsg" style="margin-top:12px;font-size:0.75rem;font-family:var(--font-mono-sub);color:#FFA500;display:none;"></div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  document.getElementById('btnClosePendingModal')?.addEventListener('click', () => {
+    const modal = document.getElementById('orderPendingModalOverlay');
+    if (modal) modal.remove();
+  });
+
+  const checkBtn = document.getElementById('btnCheckPendingStatus');
+  const statusMsg = document.getElementById('pendingStatusMsg');
+
+  checkBtn?.addEventListener('click', async () => {
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'MENGECEK KE MIDTRANS...';
+    if (statusMsg) {
+      statusMsg.style.display = 'block';
+      statusMsg.textContent = 'Menghubungkan ke gateway pembayaran...';
+    }
+
+    try {
+      const res = await fetch(`/api/midtrans-sync?orderId=${encodeURIComponent(orderId)}`);
+      const data = await res.json().catch(() => ({}));
+      const isPaid = data.synced && (data.status === 'PAID_PROCESSING' || data.isPaid || data.transaction_status === 'settlement');
+
+      if (isPaid) {
+        if (statusMsg) statusMsg.textContent = 'Pembayaran terverifikasi lunas! Membuka bukti pesanan...';
+        setTimeout(() => {
+          const modal = document.getElementById('orderPendingModalOverlay');
+          if (modal) modal.remove();
+          orderData.status = 'PAID_PROCESSING';
+          sendOrderSuccessEmail(orderData).catch(() => {});
+          showOrderSuccessModal(orderData);
+        }, 1000);
+      } else {
+        if (statusMsg) {
+          statusMsg.textContent = 'Pembayaran belum terdeteksi. Silakan selesaikan pembayaran via aplikasi bank/e-wallet Anda lalu klik cek kembali.';
+        }
+        checkBtn.disabled = false;
+        checkBtn.textContent = 'CEK STATUS PEMBAYARAN ↻';
+      }
+    } catch (err) {
+      if (statusMsg) {
+        statusMsg.textContent = 'Gagal memeriksa status: ' + (err.message || 'Koneksi bermasalah');
+      }
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'CEK STATUS PEMBAYARAN ↻';
+    }
+  });
+}
+
