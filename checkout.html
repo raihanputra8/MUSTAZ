@@ -266,6 +266,9 @@
               <select id="chkCourier" class="form-input-brutal" style="cursor:pointer;" required disabled>
                 <option value="" disabled selected>-- Masukkan Alamat &amp; Kota / Negara di atas untuk cek tarif --</option>
               </select>
+              <div style="margin-top:6px;font-family:var(--font-mono-sub);font-size:0.68rem;color:#888;">
+                * Ongkir dihitung otomatis berdasarkan Kota/Kecamatan &amp; Kode Pos terpilih melalui Biteship API.
+              </div>
             </div>
 
             <!-- EXCLUSIVE MIDTRANS PAYMENT CARD (SINGLE METHOD) -->
@@ -746,10 +749,12 @@
       let fullShippingAddress = '';
       let shippingScope = currentShippingScope;
       let postalCode = '';
+      let areaSearch = '';
+      let address = '';
 
       if (shippingScope === 'domestic') {
-        const areaSearch = (document.getElementById('chkAreaSearch')?.value || '').trim();
-        const address = (document.getElementById('chkAddress')?.value || '').trim();
+        areaSearch = (document.getElementById('chkAreaSearch')?.value || '').trim();
+        address = (document.getElementById('chkAddress')?.value || '').trim();
         postalCode = document.getElementById('selectedPostalCode')?.value || '';
 
         if (!areaSearch || !address) {
@@ -769,6 +774,8 @@
         const intlZip = (document.getElementById('chkIntlZip')?.value || '').trim();
         const intlAddress = (document.getElementById('chkIntlAddress')?.value || '').trim();
         postalCode = intlZip;
+        areaSearch = `${intlCity}, ${intlCountry}`;
+        address = intlAddress;
 
         if (!intlCountry || !intlCity || !intlAddress) {
           alert("Mohon lengkapi Negara Tujuan, Kota, dan Alamat Lengkap Pengiriman Internasional.");
