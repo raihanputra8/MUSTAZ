@@ -19,6 +19,45 @@
   <link rel=apple-touch-icon sizes=180x180 href="assets/icons/apple-touch-icon.png?v=3">
   <link rel="stylesheet" href="css/main.css">
   
+  <style>
+    /* Scoped Mobile Overrides for Checkout Page */
+    @media (max-width: 768px) {
+      .checkout-main-section {
+        padding: 20px 0 60px !important;
+      }
+      .checkout-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+      }
+      .checkout-summary-card,
+      .checkout-form-card {
+        padding: 16px !important;
+        box-shadow: 4px 4px 0px #000 !important;
+      }
+      .checkout-manifest-row img,
+      .checkout-item-thumb,
+      #checkoutPageItemsList img {
+        width: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+        height: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
+        flex-shrink: 0 !important;
+        object-fit: cover !important;
+      }
+      .editorial-title {
+        font-size: 2.2rem !important;
+        line-height: 1.1 !important;
+      }
+      .editorial-desc {
+        font-size: 0.85rem !important;
+        margin-bottom: 20px !important;
+      }
+    }
+  </style>
+
   <!-- Midtrans Snap JS SDK (Sandbox Mode) -->
   <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-f2QU56sMP76GLn_0"></script>
 </head>
@@ -61,7 +100,11 @@
 
       <div id="headerAuthBtn" class="header-auth-slot"></div>
       <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
-        <span class="material-symbols-outlined" id="hamburgerIcon">menu</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
       </button>
     </div>
   </div>
@@ -119,17 +162,17 @@
   </div>
 </div>
 
-<main style="padding-top:70px;background:#080808;min-height:calc(100vh - 70px);">
-  <section style="padding:60px 0 100px;">
+<main style="background:#080808;min-height:calc(100vh - 70px);">
+  <section class="checkout-main-section" style="padding:40px 0 100px;">
     <div class="wrap">
       
       <!-- Checkout Document Header -->
-      <div style="border-bottom:2px solid #282828;padding-bottom:32px;margin-bottom:48px;">
+      <div style="border-bottom:2px solid #282828;padding-bottom:24px;margin-bottom:36px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
           <span class="zine-tag-pink">FINAL PROTOCOL</span>
           <span style="font-family:var(--font-mono-sub);font-size:0.75rem;color:#888;">GATEWAY 01 // DIRECT WHATSAPP</span>
         </div>
-        <h1 class="editorial-title" style="font-size:clamp(3rem, 7vw, 6rem);margin-bottom:8px;color:var(--accent-pink);">
+        <h1 class="editorial-title" style="font-size:clamp(2.4rem, 6vw, 5.5rem);margin-bottom:8px;color:var(--accent-pink);">
           ORDER MANIFEST
         </h1>
         <p class="editorial-desc">
@@ -137,10 +180,10 @@
         </p>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:48px;align-items:start;">
+      <div class="checkout-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:36px;align-items:start;">
         
         <!-- Left: Dynamic Cargo Manifest (From LocalStorage) -->
-        <div class="card-brutal-white" style="box-shadow:10px 10px 0px #000;">
+        <div class="card-brutal-white checkout-summary-card" style="box-shadow:8px 8px 0px #000;">
           <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px;">
             <h2 style="font-family:var(--font-headline);font-size:1.6rem;color:#000;">01 // CARGO SUMMARY</h2>
             <span class="barcode-decor-dark" style="height:20px;width:80px;"></span>
@@ -168,7 +211,7 @@
         </div>
 
         <!-- Right: Deployment Form -->
-        <div class="card-brutal-dark" style="border-color:var(--accent-pink);padding:32px;">
+        <div class="card-brutal-dark checkout-form-card" style="border-color:var(--accent-pink);padding:32px;">
           <h2 style="font-family:var(--font-headline);font-size:1.6rem;color:#FFF;margin-bottom:24px;border-bottom:1px solid #333;padding-bottom:12px;">
             02 // DISPATCH PROTOCOL
           </h2>
@@ -354,21 +397,21 @@
         const isSoldOut = rawStock <= 0 || (matched && (matched.status === 'Sold Out' || matched.is_sold_out === true));
 
         return `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #EEE;${isSoldOut ? 'background:rgba(220,38,38,0.08);padding:10px;border:1px dashed #dc2626;' : ''}">
-            <div style="display:flex;align-items:center;gap:12px;">
-              <img src="${item.image || item.image_url || 'assets/images/Product1.webp'}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" loading="lazy" width="48" height="48" style="width:48px;height:48px;object-fit:cover;border:1px solid #000;${isSoldOut ? 'filter:grayscale(100%);' : ''}">
-              <div>
-                <div style="font-family:var(--font-headline);font-size:1.1rem;color:#000;display:flex;align-items:center;gap:6px;">
-                  <span>${item.name}</span>
-                  ${isSoldOut ? '<span style="background:#dc2626;color:#FFF;font-size:0.6rem;padding:2px 6px;font-weight:900;">SOLD OUT</span>' : ''}
+          <div class="checkout-manifest-row" style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #EEE;${isSoldOut ? 'background:rgba(220,38,38,0.08);padding:10px;border:1px dashed #dc2626;' : ''}">
+            <img class="checkout-item-thumb" src="${item.image || item.image_url || 'assets/images/Product1.webp'}" onerror="this.onerror=null;this.src='assets/images/Product1.png';" loading="lazy" width="56" height="56" style="width:56px !important;min-width:56px !important;max-width:56px !important;height:56px !important;min-height:56px !important;max-height:56px !important;object-fit:cover !important;border:1px solid #000;flex-shrink:0 !important;${isSoldOut ? 'filter:grayscale(100%);' : ''}">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                <div style="font-family:var(--font-headline);font-size:0.95rem;color:#000;font-weight:900;line-height:1.2;word-break:break-word;">
+                  ${item.name}
+                  ${isSoldOut ? '<span style="background:#dc2626;color:#FFF;font-size:0.6rem;padding:2px 6px;font-weight:900;margin-left:4px;display:inline-block;">SOLD OUT</span>' : ''}
                 </div>
-                <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:${isSoldOut ? '#dc2626' : '#666'};font-weight:${isSoldOut ? '700' : 'normal'};">
-                  ${isSoldOut ? 'STOK SUDAH HABIS - MOHON HAPUS DARI KERANJANG' : `QTY: ${item.quantity}`}
+                <div style="font-family:var(--font-headline);font-size:1.05rem;color:${isSoldOut ? '#888' : 'var(--accent-pink)'};font-weight:900;white-space:nowrap;flex-shrink:0;text-align:right;">
+                  ${formatRupiah(item.price * item.quantity)}
                 </div>
               </div>
-            </div>
-            <div style="font-family:var(--font-headline);font-size:1.15rem;color:${isSoldOut ? '#888' : 'var(--accent-pink)'};font-weight:900;">
-              ${formatRupiah(item.price * item.quantity)}
+              <div style="font-family:var(--font-mono-sub);font-size:0.75rem;color:${isSoldOut ? '#dc2626' : '#666'};font-weight:${isSoldOut ? '700' : 'normal'};">
+                ${isSoldOut ? 'STOK HABIS - MOHON HAPUS DARI KERANJANG' : `QTY: ${item.quantity}`}
+              </div>
             </div>
           </div>
         `;

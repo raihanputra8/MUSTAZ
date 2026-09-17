@@ -917,7 +917,8 @@
   /* --------------------------------------------------------------------------
      7. CHECKOUT PAGE & MODAL PROTOCOL
      -------------------------------------------------------------------------- */
-  div[style*="grid-template-columns:repeat(auto-fit, minmax(320px, 1fr))"] {
+  div[style*="grid-template-columns:repeat(auto-fit, minmax(320px, 1fr))"],
+  .checkout-grid {
     display: flex !important;
     flex-direction: column !important;
     gap: 16px !important;
@@ -927,11 +928,21 @@
   .checkout-container .card-brutal-dark,
   #checkoutPage .card-brutal-white,
   #checkoutPage .card-brutal-dark,
+  .checkout-summary-card,
+  .checkout-form-card,
   form .card-brutal-white,
   form .card-brutal-dark {
-    padding: 14px !important;
+    padding: 16px !important;
     border-width: 2px !important;
     box-shadow: 4px 4px 0px #000 !important;
+  }
+
+  .checkout-manifest-row {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid #eee !important;
   }
 
   .card-brutal-white h2,
@@ -1382,14 +1393,28 @@
     overflow-wrap: break-word !important;
   }
 
-  /* Img di dalam card: tidak stretching keluar */
+  /* Img di dalam card: tidak stretching keluar (kecuali thumbnail checkout/cart) */
   .part-card-inner img,
-  .card-brutal-white img,
-  .card-brutal-dark img {
+  .card-brutal-white img:not(.checkout-item-thumb):not(#checkoutPageItemsList img),
+  .card-brutal-dark img:not(.checkout-item-thumb):not(#checkoutPageItemsList img) {
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
     object-fit: cover !important;
+  }
+
+  /* Checkout Manifest Thumbnail Fix */
+  #checkoutPageItemsList img,
+  .checkout-item-thumb {
+    width: 56px !important;
+    min-width: 56px !important;
+    max-width: 56px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+    border: 1px solid #000 !important;
   }
 
   /* Barcode dekorasi di card: sembunyikan di mobile */
