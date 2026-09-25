@@ -83,9 +83,6 @@ export default function JournalSection({ posts: initialPosts }: { posts: Journal
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
-                      <div className="absolute top-3 left-3 bg-[#070F18]/90 text-[#C5AA00] px-2.5 py-1 text-[9px] font-bold tracking-[0.2em] uppercase rounded-xs backdrop-blur-xs">
-                        FEATURED
-                      </div>
                     </div>
 
                     <div className="p-6 flex-1 flex flex-col justify-between">
@@ -126,9 +123,6 @@ export default function JournalSection({ posts: initialPosts }: { posts: Journal
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
-                      <div className="absolute top-3 left-3 bg-[#070F18]/90 text-[#C5AA00] px-2.5 py-1 text-[9px] font-bold tracking-[0.2em] uppercase rounded-xs backdrop-blur-xs">
-                        FEATURED
-                      </div>
                     </div>
 
                     <div className="p-6 flex-1 flex flex-col justify-between">

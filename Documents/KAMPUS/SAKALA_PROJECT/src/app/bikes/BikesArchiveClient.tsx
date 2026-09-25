@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Eye, Wrench, Shield, Filter } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Bike } from '@/types/database';
 import EditableWrapper from '@/components/cms/EditableWrapper';
 import { useInlineCMS } from '@/context/InlineCMSContext';
@@ -25,7 +25,7 @@ export default function BikesArchiveClient({ initialBikes }: BikesArchiveClientP
       {/* Archive Header */}
       <div className="mb-10 pb-8 border-b border-[#E5E2D9]">
         <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
-          02 / BUILDS — THE ATELIER
+          BUILDS — THE ATELIER
         </span>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -78,9 +78,6 @@ export default function BikesArchiveClient({ initialBikes }: BikesArchiveClientP
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                 />
-                <div className="absolute top-3 left-3 bg-[#070F18]/85 backdrop-blur-xs text-[#C5AA00] px-2.5 py-1 text-[9px] font-bold tracking-[0.2em] uppercase rounded-xs">
-                  {bike.status.replace('_', ' ')}
-                </div>
               </Link>
 
               {/* Card Body */}
@@ -130,28 +127,6 @@ export default function BikesArchiveClient({ initialBikes }: BikesArchiveClientP
             </div>
           </EditableWrapper>
         ))}
-      </div>
-
-      {/* Atelier Bespoke Commission Banner */}
-      <div className="mt-16 p-8 sm:p-12 bg-[#070F18] text-white rounded-xs border border-[#C5AA00]/30 relative overflow-hidden">
-        <div className="relative z-10 max-w-2xl">
-          <span className="text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase block mb-2">
-            ATELIER COMMISSION WORK
-          </span>
-          <h3 className="font-serif-editorial text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
-            COMMISSION A BESPOKE BUILD
-          </h3>
-          <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed mb-6">
-            We accept limited custom commissions each calendar year. Every project starts with a donor machine consultation, chassis geometry analysis, and custom fabrication roadmap.
-          </p>
-          <Link
-            href="/#newsletter"
-            className="inline-flex items-center gap-3 bg-[#0047AB] hover:bg-[#00388A] text-white px-6 py-3.5 text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-all duration-300 shadow-lg shadow-[#0047AB]/25 btn-tactile"
-          >
-            <Wrench className="w-4 h-4" />
-            <span>START A COMMISSION INQUIRY</span>
-          </Link>
-        </div>
       </div>
     </div>
   );

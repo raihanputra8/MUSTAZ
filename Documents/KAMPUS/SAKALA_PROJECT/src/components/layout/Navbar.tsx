@@ -120,13 +120,10 @@ export default function Navbar() {
             <button
               onClick={() => setSearchModalOpen(true)}
               className="text-[#070F18] hover:text-[#C5AA00] transition-colors p-1.5 flex items-center gap-1.5 btn-tactile"
-              aria-label="Open Search (Cmd+K)"
-              title="Search archive (Cmd+K)"
+              aria-label="Open Search"
+              title="Search archive"
             >
               <Search className="w-4 h-4 stroke-[2]" />
-              <span className="hidden xl:inline text-[9px] text-[#94A3B8] font-mono border border-[#E5E2D9] px-1.5 py-0.5 rounded-xs">
-                ⌘K
-              </span>
             </button>
 
             {/* Cart Button with Count Badge */}

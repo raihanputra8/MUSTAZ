@@ -141,9 +141,6 @@ export default function JournalIndexPage() {
                       priority
                       className="object-cover group-hover:scale-103 transition-transform duration-500"
                     />
-                    <div className="absolute top-4 left-4 bg-[#070F18]/90 text-[#C5AA00] px-3 py-1 text-[9px] font-bold tracking-[0.2em] uppercase rounded-xs">
-                      FEATURED EXPEDITION DISPATCH
-                    </div>
                   </div>
 
                   <div className="lg:col-span-5 p-8 sm:p-10 flex flex-col justify-between">
@@ -219,9 +216,6 @@ export default function JournalIndexPage() {
                           fill
                           className="object-cover group-hover:scale-103 transition-transform duration-500"
                         />
-                        <div className="absolute top-3 left-3 bg-[#070F18]/90 text-white px-2.5 py-1 text-[9px] font-bold tracking-[0.2em] uppercase rounded-xs">
-                          {post.category}
-                        </div>
                       </div>
 
                       <div className="p-6">
