@@ -64,6 +64,17 @@ export default function ImageCropperModal({
     };
   }, [isOpen, imageSrc]);
 
+  // Lock background body scroll when cropper modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
   // Handle Drag / Pan (Mouse and Touch)
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -224,7 +235,7 @@ export default function ImageCropperModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-6 overflow-hidden">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity" 
@@ -232,9 +243,12 @@ export default function ImageCropperModal({
       />
 
       {/* Modal Dialog */}
-      <div className="relative bg-[#070F18] border border-[#C5AA00]/30 rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col z-10 animate-fade-in-up">
+      <div 
+        className="relative bg-[#070F18] border border-[#C5AA00]/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[92vh] overflow-hidden flex flex-col z-10 animate-fade-in-up"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0C1724]">
+        <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0C1724]">
           <div className="flex items-center gap-2">
             <Crop className="w-4 h-4 text-[#C5AA00]" />
             <span className="font-serif-editorial text-base font-bold text-white tracking-wide">
@@ -243,14 +257,17 @@ export default function ImageCropperModal({
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-1 rounded transition-colors"
+            className="text-gray-400 hover:text-white p-1 rounded transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Workspace Body */}
-        <div className="p-6 flex flex-col items-center select-none">
+        <div 
+          className="p-6 flex flex-col items-center select-none overflow-y-auto flex-1 min-h-0"
+          style={{ overscrollBehavior: 'contain' }}
+        >
           {/* Instructions banner */}
           <div className="w-full flex items-center justify-between text-[11px] text-[#94A3B8] mb-3 px-1">
             <span className="flex items-center gap-1.5">
@@ -421,8 +438,8 @@ export default function ImageCropperModal({
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-white/10 bg-[#0C1724]">
+        {/* Footer Actions (Fixed Bottom) */}
+        <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-white/10 bg-[#0C1724]">
           <button
             type="button"
             onClick={onClose}

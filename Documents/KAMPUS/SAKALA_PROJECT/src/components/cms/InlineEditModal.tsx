@@ -31,6 +31,17 @@ export default function InlineEditModal() {
     }
   }, [editingItem]);
 
+  // Lock background body scroll when modal is open so the page behind cannot move
+  useEffect(() => {
+    if (editingItem) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [editingItem]);
+
   if (!editingItem) return null;
 
   function updateField(key: string, value: unknown) {
@@ -139,17 +150,20 @@ export default function InlineEditModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-[65] flex items-start justify-center p-4 pt-12 overflow-y-auto">
-      {/* Overlay */}
+    <div className="fixed inset-0 z-[65] flex items-center justify-center p-3 sm:p-4 overflow-hidden">
+      {/* Overlay Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/75 backdrop-blur-sm"
         onClick={() => setEditingItem(null)}
       />
 
-      {/* Modal */}
-      <div className="relative bg-white border border-[#E5E2D9] rounded-lg shadow-2xl w-full max-w-2xl animate-fade-in-up mb-12">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E2D9] bg-[#070F18] rounded-t-lg">
+      {/* Modal Dialog Card */}
+      <div 
+        className="relative bg-white border border-[#E5E2D9] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col z-10 animate-fade-in-up"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header (Fixed Top) */}
+        <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-[#E5E2D9] bg-[#070F18] rounded-t-xl">
           <div>
             <span className="text-[9px] font-bold tracking-[0.22em] text-[#C5AA00] uppercase block">
               INLINE CMS EDITOR
@@ -160,14 +174,17 @@ export default function InlineEditModal() {
           </div>
           <button
             onClick={() => setEditingItem(null)}
-            className="text-gray-400 hover:text-white transition-colors p-1.5 rounded"
+            className="text-gray-400 hover:text-white transition-colors p-1.5 rounded cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
+        {/* Scrollable Body (Smooth scrolling, overscroll contained) */}
+        <div 
+          className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 min-h-0"
+          style={{ overscrollBehavior: 'contain' }}
+        >
           {/* Image Preview & Upload & Crop */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -395,8 +412,8 @@ export default function InlineEditModal() {
           )}
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E5E2D9] bg-[#FAF9F5] rounded-b-lg">
+        {/* Footer Actions (Fixed Bottom) */}
+        <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[#E5E2D9] bg-[#FAF9F5] rounded-b-xl">
           {/* Delete */}
           <div>
             {confirmDelete ? (
