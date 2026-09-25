@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2, Loader2, Crop } from 'lucide-react';
+import { X, Save, Trash2, Loader2, Crop, CheckCircle, Instagram, Sparkles } from 'lucide-react';
 import { useInlineCMS, EditingItem } from '@/context/InlineCMSContext';
 import { updateBike, deleteBike } from '@/lib/supabase/admin';
 import { updateProduct, deleteProduct } from '@/lib/supabase/admin';
@@ -23,6 +23,36 @@ export default function InlineEditModal() {
   const [imageToCrop, setImageToCrop] = useState<string>('');
   const [cropTargetField, setCropTargetField] = useState<string>('image_url');
   const [cropTargetFolder, setCropTargetFolder] = useState<string>('bikes');
+
+  // Instagram Auto-Fetch State
+  const [isFetchingIg, setIsFetchingIg] = useState(false);
+
+  async function handleFetchInstagramMedia(urlToFetch?: string) {
+    const rawUrl = urlToFetch || (formData.link as string) || (formData.post_link as string) || '';
+    if (!rawUrl) {
+      showToast('Masukkan link Instagram terlebih dahulu', 'error');
+      return;
+    }
+    setIsFetchingIg(true);
+    try {
+      const res = await fetch(`/api/instagram?url=${encodeURIComponent(rawUrl.trim())}`);
+      const data = await res.json();
+      if (data.success && data.image_url) {
+        setFormData((prev) => ({
+          ...prev,
+          image_url: data.image_url,
+          link: data.post_url || rawUrl.trim(),
+        }));
+        showToast('Foto Instagram berhasil diambil otomatis! ✓');
+      } else {
+        showToast('Tidak dapat mengambil foto otomatis. Pastikan postingan publik.', 'error');
+      }
+    } catch {
+      showToast('Gagal terhubung ke Instagram.', 'error');
+    } finally {
+      setIsFetchingIg(false);
+    }
+  }
 
   useEffect(() => {
     if (editingItem) {
@@ -119,6 +149,21 @@ export default function InlineEditModal() {
       } else if (type === 'journal') {
         await updateJournalPost(id, updates as Partial<JournalPost>);
       } else if (type === 'content') {
+        if (id.startsWith('culture_ig_')) {
+          const rawUrl = ((formData.link || formData.post_link || formData.external_link) as string) || '';
+          if (rawUrl && (rawUrl.includes('/p/') || rawUrl.includes('/reel/'))) {
+            try {
+              const res = await fetch(`/api/instagram?url=${encodeURIComponent(rawUrl.trim())}`);
+              const data = await res.json();
+              if (data.success && data.image_url) {
+                updates.image_url = data.image_url;
+                updates.link = data.post_url || rawUrl.trim();
+              }
+            } catch (e) {
+              console.warn('Auto fetch on save error:', e);
+            }
+          }
+        }
         await saveContent(id, updates);
       }
 
@@ -192,39 +237,81 @@ export default function InlineEditModal() {
           className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 min-h-0"
           style={{ overscrollBehavior: 'contain' }}
         >
-          {/* Image Preview & Upload & Crop */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                Image / Visual Media
-              </label>
-              {((formData.image_url as string) || (formData.cover_image_url as string)) && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleOpenCropperForCurrent(
-                      editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
-                    )
-                  }
-                  className="flex items-center gap-1.5 text-[10px] font-bold text-[#070F18] hover:text-[#C5AA00] transition-colors cursor-pointer"
-                >
-                  <Crop className="w-3.5 h-3.5 text-[#C5AA00]" />
-                  <span>SESUAIKAN CROP</span>
-                </button>
-              )}
-            </div>
+          {/* Specialized Instagram Post Editor (Hanya Input Link IG & Foto Otomatis Terhubung) */}
+          {editingItem.id.startsWith('culture_ig_') ? (
+            <div className="space-y-4">
+              <div>
+                <FieldInput
+                  label="Link Postingan Instagram (URL)"
+                  value={((formData.link || formData.post_link || formData.external_link) as string) || ''}
+                  onChange={(v) => {
+                    updateField('link', v);
+                    updateField('post_link', v);
+                    updateField('external_link', v);
+                  }}
+                  placeholder="https://www.instagram.com/p/..."
+                />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2">
+                  <span className="text-[10.5px] text-[#64748B]">
+                    Cukup tempel link postingan Instagram. Foto dan tautan otomatis terambil dari Instagram.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleFetchInstagramMedia()}
+                    disabled={isFetchingIg}
+                    className="shrink-0 text-[11px] font-bold text-[#070F18] bg-[#FAF9F5] hover:bg-[#C5AA00] hover:text-black border border-[#E5E2D9] px-3 py-1.5 rounded-md flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50 shadow-xs"
+                  >
+                    {isFetchingIg ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C5AA00]" />
+                        <span>Mengambil foto...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-[#C5AA00]" />
+                        <span>Ambil Foto Otomatis</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
 
-            <div className="relative group">
-              {((formData.image_url as string) || (formData.cover_image_url as string)) && (
-                <div className="relative w-full h-52 bg-[#FAF9F5] border border-[#E5E2D9] rounded-md overflow-hidden mb-2 group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={(formData.image_url || formData.cover_image_url) as string}
-                    alt="Preview"
-                    className="w-full h-full object-contain p-2"
-                  />
-                  {/* Hover Overlay Button to Crop */}
+              {/* Live Preview Foto yang Terambil Otomatis dari IG */}
+              <div>
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-2">
+                  Foto Postingan (Otomatis Diambil Dari Link IG)
+                </label>
+                {formData.image_url ? (
+                  <div className="relative w-full h-64 bg-[#070F18] border border-[#E5E2D9] rounded-md overflow-hidden shadow-inner flex items-center justify-center group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={formData.image_url as string}
+                      alt="Preview Instagram"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 left-2 bg-black/85 px-3 py-1.5 rounded text-[10px] text-[#C5AA00] font-bold flex items-center gap-1.5 backdrop-blur-xs shadow-md">
+                      <CheckCircle className="w-3.5 h-3.5 text-green-400" />
+                      <span>Foto Terhubung dari Instagram</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-44 bg-[#FAF9F5] border border-dashed border-[#E5E2D9] rounded-md flex flex-col items-center justify-center gap-2 text-center p-4">
+                    <Instagram className="w-8 h-8 text-[#94A3B8]" />
+                    <span className="text-xs text-[#64748B]">
+                      Tempel link Instagram di atas dan klik &ldquo;Ambil Foto Otomatis&rdquo;, atau langsung klik &ldquo;Save Changes&rdquo;.
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Regular Image Preview & Upload & Crop (Untuk Motor, Produk, Journal, & Konten Biasa) */
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                  Image / Visual Media
+                </label>
+                {((formData.image_url as string) || (formData.cover_image_url as string)) && (
                   <button
                     type="button"
                     onClick={() =>
@@ -233,83 +320,110 @@ export default function InlineEditModal() {
                         editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
                       )
                     }
-                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 text-white text-xs font-bold tracking-wider uppercase cursor-pointer backdrop-blur-[2px]"
+                    className="flex items-center gap-1.5 text-[10px] font-bold text-[#070F18] hover:text-[#C5AA00] transition-colors cursor-pointer"
                   >
-                    <Crop className="w-6 h-6 text-[#C5AA00]" />
-                    <span>KLIK UNTUK CROP / ATUR POSISI FOTO</span>
-                    <span className="text-[10px] text-[#94A3B8] font-normal normal-case">
-                      Geser &amp; zoom area foto yang ingin ditampilkan
-                    </span>
+                    <Crop className="w-3.5 h-3.5 text-[#C5AA00]" />
+                    <span>SESUAIKAN CROP</span>
                   </button>
-                </div>
-              )}
+                )}
+              </div>
 
-              {/* Dedicated Crop Action Button */}
-              {((formData.image_url as string) || (formData.cover_image_url as string)) && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleOpenCropperForCurrent(
-                      editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
-                    )
-                  }
-                  className="w-full mb-3 py-2.5 px-3 bg-[#070F18] hover:bg-[#C5AA00] text-white hover:text-black text-[11px] font-bold tracking-wider uppercase rounded-md transition-all flex items-center justify-center gap-2 border border-[#070F18] shadow-xs btn-tactile cursor-pointer"
-                >
-                  <Crop className="w-4 h-4 text-[#C5AA00] group-hover:text-black" />
-                  <span>PILIH CROP / SESUAIKAN FRAMING FOTO</span>
-                </button>
-              )}
-
-              <div className="flex items-center gap-2">
-                <label className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border-2 border-dashed border-[#E5E2D9] hover:border-[#C5AA00] rounded-md cursor-pointer transition-all ${imageUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                  {imageUploading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-[#C5AA00]" />
-                      <span className="text-[10px] text-[#64748B]">Menyimpan &amp; Mengunggah...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                        Upload Image (Bisa Langsung Di-Crop)
+              <div className="relative group">
+                {((formData.image_url as string) || (formData.cover_image_url as string)) && (
+                  <div className="relative w-full h-52 bg-[#FAF9F5] border border-[#E5E2D9] rounded-md overflow-hidden mb-2 group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={(formData.image_url || formData.cover_image_url) as string}
+                      alt="Preview"
+                      className="w-full h-full object-contain p-2"
+                    />
+                    {/* Hover Overlay Button to Crop */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenCropperForCurrent(
+                          editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
+                          editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
+                        )
+                      }
+                      className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 text-white text-xs font-bold tracking-wider uppercase cursor-pointer backdrop-blur-[2px]"
+                    >
+                      <Crop className="w-6 h-6 text-[#C5AA00]" />
+                      <span>KLIK UNTUK CROP / ATUR POSISI FOTO</span>
+                      <span className="text-[10px] text-[#94A3B8] font-normal normal-case">
+                        Geser &amp; zoom area foto yang ingin ditampilkan
                       </span>
-                    </>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleFileSelect(
-                        e,
+                    </button>
+                  </div>
+                )}
+
+                {/* Dedicated Crop Action Button */}
+                {((formData.image_url as string) || (formData.cover_image_url as string)) && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleOpenCropperForCurrent(
                         editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
                         editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
                       )
                     }
-                    className="hidden"
-                  />
-                </label>
-              </div>
+                    className="w-full mb-3 py-2.5 px-3 bg-[#070F18] hover:bg-[#C5AA00] text-white hover:text-black text-[11px] font-bold tracking-wider uppercase rounded-md transition-all flex items-center justify-center gap-2 border border-[#070F18] shadow-xs btn-tactile cursor-pointer"
+                  >
+                    <Crop className="w-4 h-4 text-[#C5AA00] group-hover:text-black" />
+                    <span>PILIH CROP / SESUAIKAN FRAMING FOTO</span>
+                  </button>
+                )}
 
-              {/* Manual URL input */}
-              <div className="mt-2">
-                <label className="block text-[9px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">
-                  Atau Masukkan Path / URL Gambar
-                </label>
-                <input
-                  type="text"
-                  placeholder="/assets/... atau https://..."
-                  value={(formData.image_url || formData.cover_image_url || '') as string}
-                  onChange={(e) =>
-                    updateField(
-                      editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                      e.target.value
-                    )
-                  }
-                  className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-1.5 text-xs rounded-md outline-none focus:border-[#070F18] transition-colors font-mono"
-                />
+                <div className="flex items-center gap-2">
+                  <label className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border-2 border-dashed border-[#E5E2D9] hover:border-[#C5AA00] rounded-md cursor-pointer transition-all ${imageUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                    {imageUploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-[#C5AA00]" />
+                        <span className="text-[10px] text-[#64748B]">Menyimpan &amp; Mengunggah...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                          Upload Image (Bisa Langsung Di-Crop)
+                        </span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        handleFileSelect(
+                          e,
+                          editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
+                          editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
+                        )
+                      }
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {/* Manual URL input */}
+                <div className="mt-2">
+                  <label className="block text-[9px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">
+                    Atau Masukkan Path / URL Gambar
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="/assets/... atau https://..."
+                    value={(formData.image_url || formData.cover_image_url || '') as string}
+                    onChange={(e) =>
+                      updateField(
+                        editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
+                        e.target.value
+                      )
+                    }
+                    className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-1.5 text-xs rounded-md outline-none focus:border-[#070F18] transition-colors font-mono"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Dynamic Fields Based on Type */}
           {editingItem.type === 'bike' && (
@@ -429,57 +543,10 @@ export default function InlineEditModal() {
             </>
           )}
 
-          {/* Content Block Editor */}
-          {editingItem.type === 'content' && (
+          {/* Content Block Editor (Hanya untuk non-Instagram content) */}
+          {editingItem.type === 'content' && !editingItem.id.startsWith('culture_ig_') && (
             <>
-              {/* Specialized Form for Instagram Post Items */}
-              {editingItem.id.startsWith('culture_ig_') ? (
-                <>
-                  <div>
-                    <FieldInput
-                      label="Link Hyperlink Postingan Instagram (URL)"
-                      value={((formData.link || formData.post_link || formData.external_link) as string) || ''}
-                      onChange={(v) => {
-                        updateField('link', v);
-                        updateField('post_link', v);
-                        updateField('external_link', v);
-                      }}
-                    />
-                    <span className="text-[10px] text-[#64748B] block mt-1">
-                      Tempel URL postingan IG (cth: https://www.instagram.com/p/...). Di website, pengunjung yang mengklik kartu ini akan langsung diarahkan ke postingan tersebut.
-                    </span>
-                  </div>
-
-                  <FieldTextarea
-                    label="Caption / Deskripsi Postingan"
-                    value={((formData.caption || formData.description || formData.content) as string) || ''}
-                    onChange={(v) => {
-                      updateField('caption', v);
-                      updateField('description', v);
-                      updateField('content', v);
-                    }}
-                    rows={4}
-                  />
-
-                  <div className="grid grid-cols-3 gap-3">
-                    <FieldInput
-                      label="Label Waktu"
-                      value={(formData.date as string) || ''}
-                      onChange={(v) => updateField('date', v)}
-                    />
-                    <FieldInput
-                      label="Likes (Opsional)"
-                      value={(formData.likes as string) || ''}
-                      onChange={(v) => updateField('likes', v)}
-                    />
-                    <FieldInput
-                      label="Comments (Opsional)"
-                      value={(formData.comments as string) || ''}
-                      onChange={(v) => updateField('comments', v)}
-                    />
-                  </div>
-                </>
-              ) : editingItem.id === 'culture_video' ? (
+              {editingItem.id === 'culture_video' ? (
                 /* Specialized Form for YouTube Video */
                 <>
                   <div>

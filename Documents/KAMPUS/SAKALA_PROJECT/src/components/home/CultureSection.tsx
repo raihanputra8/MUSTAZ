@@ -247,6 +247,7 @@ export default function CultureSection() {
                       src={post.image_url}
                       alt={post.caption || post.title}
                       fill
+                      unoptimized={Boolean(post.image_url?.includes('fbcdn.net') || post.image_url?.includes('cdninstagram.com'))}
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {/* Hover Overlay */}
