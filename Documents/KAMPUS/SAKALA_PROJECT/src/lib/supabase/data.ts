@@ -169,19 +169,19 @@ export async function getUserProfile(): Promise<Profile> {
 
 export async function subscribeToCircle(email: string): Promise<{ success: boolean; message: string }> {
   if (!isSupabaseConfigured || !supabase) {
-    return { success: true, message: 'Welcome to The Circle. Dispatch coordinates registered.' };
+    return { success: true, message: 'Terima kasih! Email Anda telah terdaftar untuk menerima informasi terbaru.' };
   }
   try {
     const { error } = await supabase.from('newsletter_subscribers').insert([{ email }]);
     if (error) {
       if (error.code === '23505') {
-        return { success: true, message: 'You are already registered in The Circle registry.' };
+        return { success: true, message: 'Email Anda sudah terdaftar sebelumnya untuk menerima informasi terbaru.' };
       }
       return { success: false, message: error.message };
     }
-    return { success: true, message: 'Dispatch coordinates confirmed. Welcome to The Circle.' };
-  } catch (err) {
-    return { success: false, message: 'Connection error. Please try again.' };
+    return { success: true, message: 'Terima kasih! Email Anda telah terdaftar untuk menerima informasi terbaru.' };
+  } catch {
+    return { success: false, message: 'Terjadi gangguan koneksi. Silakan coba lagi.' };
   }
 }
 

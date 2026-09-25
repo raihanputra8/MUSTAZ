@@ -111,7 +111,7 @@ export default function AccountPage() {
         {/* Breadcrumb Header */}
         <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#64748B] mb-8 pb-4 border-b border-[#E5E2D9]">
           <Link href="/" className="hover:text-[#070F18] transition-colors">
-            THE CIRCLE ARCHIVE
+            BERANDA
           </Link>
           <span>/</span>
           <span className="text-[#0047AB]">MEMBER REGISTRY</span>

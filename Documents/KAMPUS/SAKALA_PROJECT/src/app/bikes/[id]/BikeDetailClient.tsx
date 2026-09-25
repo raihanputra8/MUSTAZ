@@ -5,8 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
-  ShieldCheck, 
-  Wrench, 
   Maximize2,
   Camera,
   Layers,
@@ -218,9 +216,6 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-[#070F18]/85 backdrop-blur-xs text-[#C5AA00] px-2 py-0.5 text-[8.5px] font-bold tracking-widest uppercase rounded-xs">
-                  0{idx + 1} • DETAIL
-                </div>
                 <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-xs text-white p-1.5 rounded-xs opacity-0 group-hover:opacity-100 transition-opacity">
                   <Maximize2 className="w-3.5 h-3.5" />
                 </div>
@@ -238,60 +233,6 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Build Record Matrix Specs Table */}
-        <div className="mt-16 bg-white border border-[#E5E2D9] rounded-xs p-6 sm:p-10 shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-[#E5E2D9] mb-6 gap-4">
-            <div>
-              <span className="text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase block mb-1">
-                TECHNICAL SPECIFICATION SHEET
-              </span>
-              <h3 className="font-serif-editorial text-2xl font-black text-[#070F18] tracking-tight">
-                GARIS BESAR &amp; SPESIFIKASI BUILD
-              </h3>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-[#0047AB]" />
-              <span className="text-xs font-bold uppercase tracking-wider text-[#070F18]">
-                AUTHENTICATED GUILD SPECIMEN
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
-            <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs">
-              <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">Base Platform</span>
-              <strong className="text-sm text-[#070F18]">{bike.year} {bike.make} {bike.model}</strong>
-            </div>
-
-            <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs">
-              <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">Build Status</span>
-              <strong className="text-sm text-[#0047AB] uppercase">{bike.status.replace('_', ' ')}</strong>
-            </div>
-
-            {Object.entries(bike.specs || {}).map(([k, v]) => (
-              <div key={k} className="p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs">
-                <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">{k}</span>
-                <strong className="text-sm text-[#070F18]">{v}</strong>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-[#E5E2D9] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-[#64748B]">
-              Tertarik membangun motor kustom dengan konsep serupa? Konsultasikan langsung dengan tim builder kami.
-            </p>
-            <a
-              href="https://wa.me/6282126262026?text=Halo%20SAKALA,%20saya%20tertarik%20dengan%20build%20motor"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#070F18] hover:bg-[#0047AB] text-white text-xs font-bold tracking-widest uppercase rounded-xs transition-colors shrink-0"
-            >
-              <Wrench className="w-3.5 h-3.5" />
-              <span>KONSULTASI BUILD MOTOR</span>
-            </a>
-          </div>
         </div>
       </section>
 

@@ -75,7 +75,7 @@ export default function TrackingPage() {
           date: 'OCT 20, 2026',
           time: '14:32 WIB',
           status: 'MANIFEST REGISTERED & SETTLED',
-          location: 'The Circle Online Registry',
+          location: 'Sakala Order Registry',
           detail: 'Order payment verified via BCA Virtual Account.',
           done: true,
         },

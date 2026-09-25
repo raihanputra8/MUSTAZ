@@ -69,7 +69,7 @@ export default function JournalIndexPage() {
         {/* Breadcrumb Header */}
         <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#64748B] mb-8 pb-4 border-b border-[#E5E2D9]">
           <Link href="/" className="hover:text-[#070F18] transition-colors">
-            THE CIRCLE
+            BERANDA
           </Link>
           <span>/</span>
           <span className="text-[#0047AB]">HISTORICAL MONOGRAPHS</span>
@@ -251,33 +251,33 @@ export default function JournalIndexPage() {
         {/* Newsletter Inset Card */}
         <section className="mt-16 bg-[#070F18] text-white p-8 sm:p-12 rounded-xs border border-[#C5AA00]/30 shadow-lg text-center max-w-4xl mx-auto">
           <span className="text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase block mb-3">
-            SAKALA PRINT ARCHIVE
+            INFORMASI RESMI &amp; UPDATE
           </span>
           <h3 className="font-serif-editorial text-2xl sm:text-4xl font-bold mb-4">
-            RECEIVE PRINTED QUARTERLY MONOGRAPHS
+            DAPATKAN INFORMASI &amp; MONOGRAF TERBARU
           </h3>
           <p className="text-xs sm:text-sm text-[#94A3B8] max-w-lg mx-auto mb-8 leading-relaxed">
-            Archival photo books printed on 150 GSM matte stock, featuring unreleased 35mm film logs and technical diagrams from our West Java expeditions.
+            Daftarkan email Anda untuk menerima informasi rilisan monograf cetak berkala, dokumentasi ekspedisi Jawa Barat, dan arsip visual eksklusif Sakala.
           </p>
 
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              alert('Postal registration coordinates noted. Welcome to The Circle archive.');
+              alert('Terima kasih. Email Anda telah terdaftar untuk menerima informasi terbaru dari Sakala.');
             }}
             className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
           >
             <input
               type="email"
               required
-              placeholder="Enter dispatch email address..."
+              placeholder="Masukkan alamat email Anda..."
               className="bg-[#0D1926] border border-[#2A374A] px-4 py-3 text-xs text-white rounded-xs outline-none focus:border-[#C5AA00] flex-1"
             />
             <button
               type="submit"
               className="bg-[#C5AA00] hover:bg-white text-[#070F18] px-6 py-3 text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors flex-shrink-0"
             >
-              REGISTER
+              DAPATKAN INFORMASI
             </button>
           </form>
         </section>

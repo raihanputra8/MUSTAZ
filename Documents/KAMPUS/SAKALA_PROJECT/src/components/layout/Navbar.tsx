@@ -364,7 +364,7 @@ export default function Navbar() {
                   className="w-full py-3 bg-[#C5AA00] hover:bg-[#B39900] text-black text-xs font-bold tracking-[0.2em] uppercase rounded-xs transition-colors flex items-center justify-center gap-2 mb-4 btn-tactile"
                 >
                   <User className="w-4 h-4" />
-                  <span>SIGN IN TO THE CIRCLE</span>
+                  <span>SIGN IN</span>
                 </Link>
               )}
 

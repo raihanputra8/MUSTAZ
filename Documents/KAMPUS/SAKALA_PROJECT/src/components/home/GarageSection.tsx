@@ -115,21 +115,14 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
 
                     {/* Actions Button */}
                     {!isEditMode && (
-                      <div className="flex items-center gap-2">
+                      <div>
                         <button
                           onClick={() => setSelectedBike(bike)}
-                          className="flex-1 flex items-center justify-center gap-1.5 bg-[#FAF9F5] border border-[#E5E2D9] hover:border-[#070F18] text-[#070F18] py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase rounded-xs transition-colors cursor-pointer"
+                          className="w-full flex items-center justify-center gap-1.5 bg-[#FAF9F5] border border-[#E5E2D9] hover:border-[#070F18] hover:bg-[#070F18] hover:text-white text-[#070F18] py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase rounded-xs transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>SPECS</span>
                         </button>
-                        <Link
-                          href={`/bikes/${bike.id}`}
-                          className="flex-1 flex items-center justify-center gap-1.5 bg-[#070F18] hover:bg-[#0047AB] text-white py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase rounded-xs btn-tactile transition-colors"
-                        >
-                          <span>DOSSIER</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </Link>
                       </div>
                     )}
                   </div>
