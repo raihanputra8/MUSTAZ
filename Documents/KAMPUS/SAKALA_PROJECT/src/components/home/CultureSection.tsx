@@ -3,13 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { 
-  Play, 
-  ExternalLink, 
   Heart, 
   MessageCircle, 
   ArrowUpRight,
-  Volume2,
-  Sparkles
+  Pencil
 } from 'lucide-react';
 import ScrollReveal from '@/components/common/ScrollReveal';
 import EditableWrapper from '@/components/cms/EditableWrapper';
@@ -23,39 +20,25 @@ function getYouTubeVideoId(url: string): string {
 }
 
 export default function CultureSection() {
-  const { getContent, isEditMode } = useInlineCMS();
+  const { getContent, isEditMode, setEditingItem } = useInlineCMS();
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const [isAutoPlayTriggered, setIsAutoPlayTriggered] = useState(false);
-  const [isManualPlay, setIsManualPlay] = useState(false);
 
-  // 1. CMS Header Content
-  const headerContent = getContent('culture_header', {
-    label: '05 / CULTURE — CLUB ACTIVITIES',
-    title: 'BROTHERHOOD IN MOTION',
-    description: 'Dokumentasi perjalanan, persaudaraan, dan aktivitas guild SAKALA di aspal Nusantara dan atelier Bandung.',
-    image_url: '/assets/SAKALA_MC.PNG',
-    club_title: 'SAKALA MOTORCYCLE CLUB',
-    club_tagline: 'EST. 2026 • BANDUNG GUILD',
-  });
-
-  // 2. Official Social Links
+  // 1. Official Social Links
   const officialLinks = {
     instagram: 'https://www.instagram.com/sakala_ina?stkn=ZDNlZDc0MzIxNw==',
     youtube: 'https://youtube.com/@sakala.id25?si=4ScKIl-5ZM3UJ0tS',
     tiktok: 'https://www.tiktok.com/@sakala_ina?is_from_webapp=1&sender_device=pc',
   };
 
-  // 3. YouTube Video Content (Editable via CMS)
+  // 2. YouTube Video Content (Editable via CMS)
   const videoContent = getContent('culture_video', {
-    label: 'OFFICIAL CINEMATIC ARCHIVE',
     title: 'SAKALA MOTORCYCLE CLUB — OFFICIAL VIDEO',
     video_url: 'https://youtu.be/IK0VG7j2P9s',
     image_url: '/assets/culture_ceremony.png',
-    cta_text: 'TONTON DI YOUTUBE',
-    description: 'Dokumentasi visual sinematik lingkaran persaudaraan SAKALA.',
   });
 
-  // 4. Instagram Posts (Editable via CMS)
+  // 3. Instagram Posts (Editable via CMS: Link, Image, Caption)
   const defaultPosts = [
     {
       id: 'culture_ig_1',
@@ -124,7 +107,7 @@ export default function CultureSection() {
         }
       },
       {
-        threshold: 0.25, // Starts playing when 25% of the video is visible
+        threshold: 0.25,
         rootMargin: '0px 0px -50px 0px',
       }
     );
@@ -136,8 +119,6 @@ export default function CultureSection() {
     };
   }, []);
 
-  const shouldPlay = isAutoPlayTriggered || isManualPlay;
-
   return (
     <section id="culture" className="bg-[#070F18] text-white py-16 sm:py-20 lg:py-24 border-b border-[#C5AA00]/20 relative overflow-hidden">
       {/* Background Radial Glow */}
@@ -145,32 +126,11 @@ export default function CultureSection() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
-        {/* Section Header (Editable via CMS) */}
-        <EditableWrapper
-          item={{
-            type: 'content',
-            id: 'culture_header',
-            data: headerContent,
-          }}
-        >
-          <ScrollReveal direction="up" delay={50} className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase mb-2 block">
-              {headerContent.label || '05 / CULTURE — CLUB ACTIVITIES'}
-            </span>
-            <h2 className="font-serif-editorial text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-3">
-              {headerContent.title || 'BROTHERHOOD IN MOTION'}
-            </h2>
-            <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed max-w-xl mx-auto">
-              {headerContent.description}
-            </p>
-          </ScrollReveal>
-        </EditableWrapper>
-
         {/* 1. DI TENGAH: LOGO SAKALA_MC.PNG */}
-        <ScrollReveal direction="up" delay={80} className="flex flex-col items-center justify-center text-center mb-12">
+        <ScrollReveal direction="up" delay={50} className="flex flex-col items-center justify-center text-center mb-10 sm:mb-12">
           <div className="relative w-32 h-32 sm:w-44 sm:h-44 drop-shadow-[0_20px_45px_rgba(197,170,0,0.25)] hover:scale-105 transition-transform duration-500">
             <Image
-              src={headerContent.image_url || '/assets/SAKALA_MC.PNG'}
+              src="/assets/SAKALA_MC.PNG"
               alt="Sakala MC Logo"
               fill
               className="object-contain"
@@ -178,15 +138,15 @@ export default function CultureSection() {
             />
           </div>
           <span className="font-serif-editorial text-xl sm:text-3xl font-black tracking-[0.16em] text-white mt-3 block">
-            {headerContent.club_title || 'SAKALA MOTORCYCLE CLUB'}
+            SAKALA MOTORCYCLE CLUB
           </span>
           <span className="text-[9.5px] sm:text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase mt-1">
-            {headerContent.club_tagline || 'EST. 2026 • BANDUNG GUILD'}
+            EST. 2026 • BANDUNG GUILD
           </span>
         </ScrollReveal>
 
         {/* 2. AKUN MEDIA SOSIAL (Tombol Akses Resmi) */}
-        <ScrollReveal direction="up" delay={110} className="mb-14 sm:mb-16">
+        <ScrollReveal direction="up" delay={80} className="mb-14 sm:mb-16">
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-2xl mx-auto">
             {/* Instagram */}
             <a
@@ -232,8 +192,8 @@ export default function CultureSection() {
           </div>
         </ScrollReveal>
 
-        {/* 3. PREVIEW POSTINGAN INSTAGRAM (CMS Active: Edit Image, Caption, Link) */}
-        <div className="mb-14 sm:mb-18">
+        {/* 3. PREVIEW POSTINGAN INSTAGRAM (CMS Edit: Link IG, Gambar, Caption) */}
+        <div className="mb-14 sm:mb-16">
           <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-white/10 mb-6">
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 fill-current text-[#E1306C]" viewBox="0 0 24 24">
@@ -242,12 +202,6 @@ export default function CultureSection() {
               <span className="text-xs font-bold tracking-wider uppercase text-white">
                 INSTAGRAM DISPATCHES (@SAKALA_INA)
               </span>
-              {isEditMode && (
-                <span className="ml-2 text-[9px] font-bold text-[#C5AA00] bg-[#C5AA00]/10 border border-[#C5AA00]/30 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                  <Sparkles className="w-2.5 h-2.5" />
-                  <span>KLIK KARTU UNTUK EDIT</span>
-                </span>
-              )}
             </div>
             <a
               href={officialLinks.instagram}
@@ -286,6 +240,7 @@ export default function CultureSection() {
                   target="_blank"
                   rel="noreferrer"
                   className="bg-[#0C1724] border border-white/10 rounded-xs overflow-hidden group hover:border-[#C5AA00] transition-all flex flex-col shadow-lg h-full"
+                  title="Klik untuk membuka postingan di Instagram"
                 >
                   <div className="relative h-56 sm:h-60 w-full overflow-hidden bg-black/40">
                     <Image
@@ -325,104 +280,66 @@ export default function CultureSection() {
           </div>
         </div>
 
-        {/* 4. VIDEO UTAMA DENGAN AUTO-PLAY ON SCROLL & RASIO LEBIH PAS / COMPACT */}
-        <ScrollReveal direction="up" delay={150}>
-          <div className="max-w-3xl sm:max-w-3xl lg:max-w-3xl mx-auto" ref={videoContainerRef}>
-            <EditableWrapper
-              item={{
-                type: 'content',
-                id: 'culture_video',
-                data: {
-                  title: videoContent.title,
-                  label: videoContent.label,
-                  subtitle: videoContent.label,
-                  video_url: videoContent.video_url,
-                  image_url: videoContent.image_url,
-                  cta_text: videoContent.cta_text,
-                },
-              }}
-            >
-              <div className="bg-[#0C1724] border border-[#C5AA00]/30 rounded-xs overflow-hidden shadow-2xl transition-all duration-300">
-                {/* Header Video Card */}
-                <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="text-[9.5px] sm:text-[10px] font-bold tracking-[0.22em] text-[#C5AA00] uppercase block mb-0.5">
-                      {videoContent.label || 'OFFICIAL CINEMATIC ARCHIVE'}
-                    </span>
-                    <h3 className="font-serif-editorial text-lg sm:text-2xl font-black text-white tracking-tight">
-                      {videoContent.title || 'SAKALA MOTORCYCLE CLUB — OFFICIAL VIDEO'}
-                    </h3>
+        {/* 4. VIDEO UTAMA (CLEAN: TANPA HEADER/FOOTER ORNAMEN, AUTO-PLAY SAAT SCROLL, RASIO PAS) */}
+        <ScrollReveal direction="up" delay={120}>
+          <div className="max-w-3xl mx-auto" ref={videoContainerRef}>
+            <div className="relative aspect-video w-full bg-black rounded-xs overflow-hidden shadow-2xl border border-[#C5AA00]/30 group">
+              {/* YouTube Iframe Player with Scroll Autoplay */}
+              {isAutoPlayTriggered ? (
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}?autoplay=1&mute=1&playsinline=1&controls=1&loop=1&playlist=${youtubeVideoId}`}
+                  title={videoContent.title || 'SAKALA Motorcycle Club Official Video'}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="w-full h-full border-0"
+                />
+              ) : (
+                <div className="relative w-full h-full">
+                  <Image
+                    src={videoContent.image_url || '/assets/culture_ceremony.png'}
+                    alt="SAKALA Video Cover"
+                    fill
+                    className="object-cover opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-full bg-[#C5AA00] text-black flex items-center justify-center pl-1 shadow-lg">
+                      <span className="w-4 h-4 border-t-2 border-r-2 border-black rotate-45" />
+                    </div>
                   </div>
+                </div>
+              )}
 
-                  <a
-                    href={videoContent.video_url || officialLinks.youtube}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#FF0000] hover:bg-[#D90000] text-white text-[11px] font-bold tracking-wider uppercase rounded-xs transition-colors shrink-0 shadow-md self-start sm:self-auto"
+              {/* CMS Edit Button Overlay (Hanya muncul saat Mode CMS aktif) */}
+              {isEditMode && (
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setEditingItem({
+                      type: 'content',
+                      id: 'culture_video',
+                      data: {
+                        video_url: videoContent.video_url,
+                        title: videoContent.title,
+                        image_url: videoContent.image_url,
+                      },
+                    });
+                  }}
+                  className="absolute inset-0 z-30 bg-black/50 hover:bg-black/70 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer backdrop-blur-[2px]"
+                >
+                  <button
+                    type="button"
+                    className="bg-[#C5AA00] hover:bg-[#D4B800] text-black px-4 py-2 rounded shadow-2xl flex items-center gap-2 font-bold text-xs uppercase tracking-wider hover:scale-105 transition-transform cursor-pointer"
                   >
-                    <span>{videoContent.cta_text || 'TONTON DI YOUTUBE'}</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                    <Pencil className="w-4 h-4" />
+                    <span>Ganti Link Video YouTube</span>
+                  </button>
+                  <span className="text-[11px] text-white/90 font-medium">
+                    Klik untuk memasukkan link YouTube baru
+                  </span>
                 </div>
-
-                {/* Compact Aspect Video Frame with Direct Autoplay on Scroll */}
-                <div className="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
-                  {shouldPlay ? (
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}?autoplay=1&mute=1&playsinline=1&controls=1&loop=1&playlist=${youtubeVideoId}`}
-                      title={videoContent.title || 'SAKALA Motorcycle Club Official Video'}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      className="w-full h-full border-0"
-                    />
-                  ) : (
-                    <>
-                      <Image
-                        src={videoContent.image_url || '/assets/culture_ceremony.png'}
-                        alt="SAKALA Video Cover"
-                        fill
-                        className="object-cover opacity-75 group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60 pointer-events-none" />
-
-                      {/* Manual Play Trigger Fallback */}
-                      <div className="relative z-10 flex flex-col items-center gap-3 text-center px-4">
-                        <button
-                          type="button"
-                          onClick={() => setIsManualPlay(true)}
-                          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#C5AA00] hover:bg-[#D4B800] text-black flex items-center justify-center pl-1 shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
-                          aria-label="Putar Video SAKALA"
-                        >
-                          <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current" />
-                        </button>
-                        
-                        <div>
-                          <span className="text-[11px] sm:text-xs font-bold tracking-[0.18em] uppercase text-white block">
-                            KLIK UNTUK MEMUTAR
-                          </span>
-                          <span className="text-[9.5px] text-[#94A3B8]">
-                            (Atau otomatis berputar saat di-scroll)
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Footer Sub-bar with Autoplay/Mute Info and Quick Controls */}
-                <div className="px-4 py-2.5 sm:px-6 sm:py-3 bg-[#070F18] border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#94A3B8]">
-                  <div className="flex items-center gap-2">
-                    <Volume2 className="w-3.5 h-3.5 text-[#C5AA00]" />
-                    <span>Auto-play aktif saat di-scroll (Muted otomatis oleh browser, klik video untuk audio)</span>
-                  </div>
-                  {isEditMode && (
-                    <span className="text-[#C5AA00] font-bold">
-                      Mode CMS: Klik kartu video untuk mengganti link YouTube
-                    </span>
-                  )}
-                </div>
-              </div>
-            </EditableWrapper>
+              )}
+            </div>
           </div>
         </ScrollReveal>
 

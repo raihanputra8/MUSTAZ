@@ -171,7 +171,12 @@ export default function InlineEditModal() {
               INLINE CMS EDITOR
             </span>
             <h2 className="font-serif-editorial text-lg font-bold text-white">
-              Edit {editingItem.type === 'bike' ? 'Bike' : editingItem.type === 'product' ? 'Product' : editingItem.type === 'journal' ? 'Journal Post' : 'Page Content'}
+              {editingItem.type === 'bike' ? 'Edit Motor' : 
+               editingItem.type === 'product' ? 'Edit Merchandise' : 
+               editingItem.type === 'journal' ? 'Edit Journal Post' : 
+               editingItem.id.startsWith('culture_ig_') ? 'Edit Postingan Instagram' :
+               editingItem.id === 'culture_video' ? 'Edit Video YouTube' :
+               'Edit Konten Halaman'}
             </h2>
           </div>
           <button
@@ -427,84 +432,114 @@ export default function InlineEditModal() {
           {/* Content Block Editor */}
           {editingItem.type === 'content' && (
             <>
-              <FieldInput
-                label="Section / Block Label"
-                value={((formData.label || formData.subtitle) as string) || ''}
-                onChange={(v) => {
-                  updateField('label', v);
-                  updateField('subtitle', v);
-                }}
-              />
-              <FieldInput
-                label="Headline / Title"
-                value={((formData.title || formData.value) as string) || ''}
-                onChange={(v) => {
-                  updateField('title', v);
-                  updateField('value', v);
-                }}
-              />
-              <FieldTextarea
-                label="Description / Caption Body"
-                value={((formData.description || formData.content || formData.caption) as string) || ''}
-                onChange={(v) => {
-                  updateField('description', v);
-                  updateField('content', v);
-                  updateField('caption', v);
-                }}
-                rows={4}
-              />
+              {/* Specialized Form for Instagram Post Items */}
+              {editingItem.id.startsWith('culture_ig_') ? (
+                <>
+                  <div>
+                    <FieldInput
+                      label="Link Hyperlink Postingan Instagram (URL)"
+                      value={((formData.link || formData.post_link || formData.external_link) as string) || ''}
+                      onChange={(v) => {
+                        updateField('link', v);
+                        updateField('post_link', v);
+                        updateField('external_link', v);
+                      }}
+                    />
+                    <span className="text-[10px] text-[#64748B] block mt-1">
+                      Tempel URL postingan IG (cth: https://www.instagram.com/p/...). Di website, pengunjung yang mengklik kartu ini akan langsung diarahkan ke postingan tersebut.
+                    </span>
+                  </div>
 
-              {/* YouTube / Video URL */}
-              {(formData.video_url !== undefined || editingItem.id.includes('video') || editingItem.id.includes('youtube')) && (
-                <FieldInput
-                  label="YouTube / Video URL (contoh: https://youtu.be/IK0VG7j2P9s)"
-                  value={((formData.video_url || formData.link) as string) || ''}
-                  onChange={(v) => {
-                    updateField('video_url', v);
-                  }}
-                />
-              )}
+                  <FieldTextarea
+                    label="Caption / Deskripsi Postingan"
+                    value={((formData.caption || formData.description || formData.content) as string) || ''}
+                    onChange={(v) => {
+                      updateField('caption', v);
+                      updateField('description', v);
+                      updateField('content', v);
+                    }}
+                    rows={4}
+                  />
 
-              {/* Instagram / External Post Link */}
-              {(formData.link !== undefined || formData.post_link !== undefined || formData.external_link !== undefined || editingItem.id.includes('ig') || editingItem.id.includes('post')) && (
-                <FieldInput
-                  label="Instagram Post URL / Link (contoh: https://www.instagram.com/sakala_ina)"
-                  value={((formData.link || formData.post_link || formData.external_link) as string) || ''}
-                  onChange={(v) => {
-                    updateField('link', v);
-                    updateField('post_link', v);
-                    updateField('external_link', v);
-                  }}
-                />
-              )}
-
-              {/* Instagram Metrics (Likes, Comments, Date) */}
-              {(formData.likes !== undefined || formData.comments !== undefined || formData.date !== undefined || editingItem.id.includes('ig')) && (
-                <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <FieldInput
+                      label="Label Waktu"
+                      value={(formData.date as string) || ''}
+                      onChange={(v) => updateField('date', v)}
+                    />
+                    <FieldInput
+                      label="Likes (Opsional)"
+                      value={(formData.likes as string) || ''}
+                      onChange={(v) => updateField('likes', v)}
+                    />
+                    <FieldInput
+                      label="Comments (Opsional)"
+                      value={(formData.comments as string) || ''}
+                      onChange={(v) => updateField('comments', v)}
+                    />
+                  </div>
+                </>
+              ) : editingItem.id === 'culture_video' ? (
+                /* Specialized Form for YouTube Video */
+                <>
+                  <div>
+                    <FieldInput
+                      label="Link Video YouTube (URL)"
+                      value={((formData.video_url || formData.link || formData.value) as string) || ''}
+                      onChange={(v) => {
+                        updateField('video_url', v);
+                        updateField('link', v);
+                        updateField('value', v);
+                      }}
+                    />
+                    <span className="text-[10px] text-[#64748B] block mt-1">
+                      Tempel link video YouTube (cth: https://youtu.be/IK0VG7j2P9s atau https://www.youtube.com/watch?v=...). Video di web akan otomatis terupdate dan berputar saat di-scroll.
+                    </span>
+                  </div>
                   <FieldInput
-                    label="Likes (cth: 1.2k)"
-                    value={(formData.likes as string) || ''}
-                    onChange={(v) => updateField('likes', v)}
+                    label="Judul Video (Opsional)"
+                    value={((formData.title || formData.value) as string) || ''}
+                    onChange={(v) => updateField('title', v)}
+                  />
+                </>
+              ) : (
+                /* Default Content Form */
+                <>
+                  <FieldInput
+                    label="Section / Block Label"
+                    value={((formData.label || formData.subtitle) as string) || ''}
+                    onChange={(v) => {
+                      updateField('label', v);
+                      updateField('subtitle', v);
+                    }}
                   />
                   <FieldInput
-                    label="Comments"
-                    value={(formData.comments as string) || ''}
-                    onChange={(v) => updateField('comments', v)}
+                    label="Headline / Title"
+                    value={((formData.title || formData.value) as string) || ''}
+                    onChange={(v) => {
+                      updateField('title', v);
+                      updateField('value', v);
+                    }}
                   />
-                  <FieldInput
-                    label="Date Label"
-                    value={(formData.date as string) || ''}
-                    onChange={(v) => updateField('date', v)}
+                  <FieldTextarea
+                    label="Description / Caption Body"
+                    value={((formData.description || formData.content || formData.caption) as string) || ''}
+                    onChange={(v) => {
+                      updateField('description', v);
+                      updateField('content', v);
+                      updateField('caption', v);
+                    }}
+                    rows={4}
                   />
-                </div>
-              )}
 
-              {formData.cta_text !== undefined && (
-                <FieldInput
-                  label="Button / CTA Text"
-                  value={(formData.cta_text as string) || ''}
-                  onChange={(v) => updateField('cta_text', v)}
-                />
+                  {formData.cta_text !== undefined && (
+                    <FieldInput
+                      label="Button / CTA Text"
+                      value={(formData.cta_text as string) || ''}
+                      onChange={(v) => updateField('cta_text', v)}
+                    />
+                  )}
+                </>
               )}
             </>
           )}
