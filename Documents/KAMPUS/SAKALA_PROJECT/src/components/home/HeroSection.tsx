@@ -1,113 +1,78 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, Compass } from 'lucide-react';
-import EditableWrapper from '@/components/cms/EditableWrapper';
+import EditableWrapper from "@/components/cms/EditableWrapper";
+import { ArrowRight, ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <section className="relative bg-[#070F18] text-white overflow-hidden border-b border-[#C5AA00]/25">
-      {/* Top Editorial Masthead Bar */}
-      <div className="border-b border-white/10 px-4 sm:px-6 lg:px-12 py-2.5 text-[10px] sm:text-xs text-[#94A3B8] font-medium tracking-wider flex items-center justify-between">
-        <span className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#C5AA00]" />
-          BANDUNG, JAWA BARAT
-        </span>
-        <span className="hidden sm:inline-block text-[#CBD5E1]">
-          PERSAUDARAAN RODA DUA &amp; KUSTOM INDONESIA
-        </span>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10 sm:py-16 lg:py-20">
+    <section className="relative bg-[#070F18] text-white overflow-hidden py-8 sm:py-14 lg:py-20 border-b border-[#C5AA00]/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         <EditableWrapper
           item={{
-            type: 'content',
-            id: 'home_hero',
+            type: "content",
+            id: "home_hero",
             data: {
-              key: 'hero_title',
-              label: 'Judul Utama Hero',
-              value: 'SAKALA MOTORCYCLE CLUB',
+              key: "hero_title",
+              label: "Judul Utama Hero",
+              value: "SAKALA MOTORCYCLE CLUB",
               description:
-                'Klub motor dan ruang karya dari Bandung. Berjalan bersama atas dasar persaudaraan, motor kustom, dan catatan perjalanan nyata.',
-              image_url: '/assets/SAKALA_MC.PNG',
+                "Klub motor dan ruang karya dari Bandung. Berjalan bersama atas dasar persaudaraan, motor kustom, dan catatan perjalanan.",
+              image_url: "/assets/SAKALA_MC.PNG",
             },
           }}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left: Editorial Lead & Ethos (7 Cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-center">
-              <span className="text-[11px] sm:text-xs font-bold text-[#C5AA00] uppercase tracking-widest mb-3 block">
-                CATATAN PERJALANAN &amp; GARASI
-              </span>
-
-              <h1 className="font-serif-editorial text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight leading-[0.95] mb-4">
+          <div className="grid grid-cols-12 gap-3 sm:gap-8 lg:gap-12 items-center">
+            {/* Left Column: Monograph Typography & CTAs (Col 7) */}
+            <div className="col-span-7 flex flex-col justify-center animate-fade-in-up">
+              {/* Main Brand Title */}
+              <h1 className="font-serif-editorial text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tight text-white leading-none mb-1 sm:mb-2">
                 SAKALA
-                <span className="block text-2xl sm:text-4xl md:text-5xl font-light text-[#E2E8F0] tracking-normal mt-1">
-                  MOTORCYCLE CLUB
-                </span>
               </h1>
 
-              <p className="text-sm sm:text-base text-[#CBD5E1] max-w-xl leading-relaxed mb-8 font-normal">
-                Klub motor dan ruang karya dari Bandung. Berjalan bersama atas dasar persaudaraan, perawatan mesin kustom, dan catatan perjalanan nyata melintasi tanah Pasundan.
+              {/* Subtitle */}
+              <p className="text-[8px] xs:text-[9.5px] sm:text-xs md:text-sm font-semibold tracking-[0.18em] sm:tracking-[0.25em] text-[#94A3B8] uppercase mb-2 sm:mb-4">
+                MOTORCYCLE CLUB
               </p>
 
-              {/* Editorial Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              {/* Concise On-Point Description */}
+              <p className="text-[10px] xs:text-[11px] sm:text-sm lg:text-base text-[#CBD5E1] max-w-lg leading-relaxed mb-3 sm:mb-6 font-normal">
+                Klub motor dan ruang karya dari Bandung. Berjalan bersama atas
+                dasar persaudaraan, motor kustom, dan catatan perjalanan.
+              </p>
+
+              {/* Dual CTAs */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 xs:gap-2 sm:gap-4">
                 <Link
                   href="#garage"
-                  className="inline-flex items-center gap-2.5 bg-[#0047AB] hover:bg-[#00388A] text-white px-5 sm:px-6 py-3 sm:py-3.5 text-xs font-bold tracking-wider uppercase rounded-xs transition-colors shadow-md"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-3 bg-[#0047AB] hover:bg-[#00388A] text-white px-2.5 py-2 xs:px-3 xs:py-2.5 sm:px-5 sm:py-3.5 text-[8.5px] xs:text-[10px] sm:text-xs font-bold tracking-[0.1em] sm:tracking-[0.16em] uppercase rounded-xs transition-colors shadow-md text-center"
                 >
-                  <span>GARASI &amp; SPESIFIKASI MOTOR</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>GARASI MOTOR</span>
+                  <ArrowRight className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
                 </Link>
 
                 <Link
-                  href="#journal"
-                  className="inline-flex items-center gap-2.5 bg-transparent hover:bg-white/5 text-white border border-white/20 hover:border-white px-5 sm:px-6 py-3 sm:py-3.5 text-xs font-bold tracking-wider uppercase rounded-xs transition-colors"
+                  href="#supply"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-3 bg-white hover:bg-[#F5F4EF] text-[#070F18] px-2.5 py-2 xs:px-3 xs:py-2.5 sm:px-5 sm:py-3.5 text-[8.5px] xs:text-[10px] sm:text-xs font-bold tracking-[0.1em] sm:tracking-[0.16em] uppercase rounded-xs transition-colors shadow-sm text-center"
                 >
-                  <Compass className="w-3.5 h-3.5 text-[#C5AA00]" />
-                  <span>JURNAL PERJALANAN</span>
+                  <ShoppingBag className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-[#070F18]" />
+                  <span>MERCHANDISE</span>
                 </Link>
               </div>
             </div>
 
-            {/* Right: Authentic Photograph Frame with Club Emblem (5 Cols) */}
-            <div className="lg:col-span-5 flex flex-col items-center">
-              <div className="w-full relative border border-white/15 bg-[#0C1724] p-3 sm:p-4 rounded-xs shadow-2xl">
-                {/* Real Photo: Members riding on mountain route */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#1E293B]">
-                  <Image
-                    src="/assets/culture_members.png"
-                    alt="Anggota Sakala Motorcycle Club melintasi jalur kabut"
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 40vw"
-                    className="object-cover"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  
-                  {/* Real Club Patch Emblem Badge */}
-                  <div className="absolute bottom-3 right-3 w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-                    <Image
-                      src="/assets/SAKALA_MC.PNG"
-                      alt="Logo Resmi Sakala MC"
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-
-                {/* Editorial Caption Tag */}
-                <div className="pt-3 px-1 flex items-center justify-between text-[11px] text-[#94A3B8]">
-                  <span className="font-mono text-[10px] text-[#C5AA00]">
-                    DOKUMENTASI #01
-                  </span>
-                  <span className="italic truncate ml-2">
-                    Jalur Kabut Tangkuban Perahu – Subang
-                  </span>
-                </div>
+            {/* Right Column: SAKALA MC Official Colors Patch (Col 5) */}
+            <div className="col-span-5 flex justify-center items-center relative">
+              <div className="relative w-full aspect-[2075/2338] max-w-[155px] xs:max-w-[185px] sm:max-w-[280px] lg:max-w-[420px]">
+                <Image
+                  src="/assets/SAKALA_MC.PNG"
+                  alt="SAKALA Motorcycle Club Indonesia Official Emblem"
+                  fill
+                  sizes="(max-width: 640px) 185px, (max-width: 1024px) 280px, 450px"
+                  className="object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]"
+                  priority
+                />
               </div>
             </div>
           </div>

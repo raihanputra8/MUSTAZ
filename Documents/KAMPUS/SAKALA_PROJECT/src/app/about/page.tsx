@@ -108,7 +108,7 @@ export default function AboutPage() {
                 }}
               >
                 <div className="space-y-8">
-                  <span className="text-[11px] font-bold tracking-wider text-[#0050A0] uppercase block">
+                  <span className="text-[11px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block">
                     {heroContent.label}
                   </span>
 
@@ -123,7 +123,7 @@ export default function AboutPage() {
                   <div>
                     <a 
                       href="#origin"
-                      className="inline-block bg-[#070F18] text-white text-[11px] font-bold tracking-wider px-8 py-4 hover:bg-[#0050A0] transition-colors uppercase shadow-sm"
+                      className="inline-block bg-[#070F18] text-white text-[11px] font-bold tracking-[0.25em] px-8 py-4 hover:bg-[#0050A0] transition-colors uppercase shadow-sm"
                     >
                       {heroContent.cta_text || 'PELAJARI FILOSOFI'}
                     </a>
@@ -200,7 +200,7 @@ export default function AboutPage() {
                   }}
                 >
                   <div className="pb-8 border-b border-[#E5E2D9]">
-                    <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                    <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                       {sanskritContent.label}
                     </span>
                     <h3 className="font-serif-editorial text-2xl font-bold text-[#070F18] mb-2">
@@ -221,7 +221,7 @@ export default function AboutPage() {
                   }}
                 >
                   <div className="pb-8 border-b border-[#E5E2D9]">
-                    <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                    <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                       {kawiContent.label}
                     </span>
                     <h3 className="font-serif-editorial text-2xl font-bold text-[#070F18] mb-2">
@@ -242,7 +242,7 @@ export default function AboutPage() {
                   }}
                 >
                   <div>
-                    <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                    <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                       {sundaContent.label}
                     </span>
                     <h3 className="font-serif-editorial text-2xl font-bold text-[#070F18] mb-2">
@@ -271,7 +271,7 @@ export default function AboutPage() {
               {/* Pillar 01 */}
               <EditableWrapper item={{ type: 'content', id: 'about_pillar_1', data: pillar1 }}>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                     {pillar1.label}
                   </span>
                   <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-2">
@@ -286,7 +286,7 @@ export default function AboutPage() {
               {/* Pillar 02 */}
               <EditableWrapper item={{ type: 'content', id: 'about_pillar_2', data: pillar2 }}>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                     {pillar2.label}
                   </span>
                   <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-2">
@@ -301,7 +301,7 @@ export default function AboutPage() {
               {/* Pillar 03 */}
               <EditableWrapper item={{ type: 'content', id: 'about_pillar_3', data: pillar3 }}>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                     {pillar3.label}
                   </span>
                   <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-2">
@@ -316,7 +316,7 @@ export default function AboutPage() {
               {/* Pillar 04 */}
               <EditableWrapper item={{ type: 'content', id: 'about_pillar_4', data: pillar4 }}>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                     {pillar4.label}
                   </span>
                   <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-2">
@@ -331,7 +331,7 @@ export default function AboutPage() {
               {/* Division 01 */}
               <EditableWrapper item={{ type: 'content', id: 'about_div_1', data: div1 }}>
                 <div id="divisions">
-                  <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                     {div1.label}
                   </span>
                   <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-2">
@@ -346,7 +346,7 @@ export default function AboutPage() {
               {/* Division 02 */}
               <EditableWrapper item={{ type: 'content', id: 'about_div_2', data: div2 }}>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-[#0050A0] uppercase block mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-1">
                     {div2.label}
                   </span>
                   <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-2">
@@ -375,7 +375,7 @@ export default function AboutPage() {
                 {quoteContent.title}
               </h2>
 
-              <div className="text-[11px] font-bold tracking-widest text-[#F0D000] uppercase">
+              <div className="text-[11px] font-bold tracking-[0.3em] text-[#F0D000] uppercase">
                 {quoteContent.label}
               </div>
 

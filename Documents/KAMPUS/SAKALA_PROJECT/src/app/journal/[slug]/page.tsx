@@ -5,9 +5,17 @@ import { notFound } from 'next/navigation';
 import { 
   ArrowLeft, 
   ArrowRight, 
+  Compass, 
+  Thermometer, 
+  Mountain, 
   Clock, 
-  User,
-  ShieldCheck
+  Camera, 
+  User, 
+  Volume2, 
+  Share2, 
+  Bookmark, 
+  ShieldCheck,
+  ChevronRight
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
