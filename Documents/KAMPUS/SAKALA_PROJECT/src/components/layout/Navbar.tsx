@@ -79,8 +79,8 @@ export default function Navbar() {
           >
             <div className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 transition-transform duration-300 group-hover:scale-105">
               <Image
-                src="/assets/sakala_mc_patch.png"
-                alt="SAKALA Motorcycle Club Indonesia"
+                src="/assets/cakra_rahayu_kencana.png"
+                alt="Cakra Rahayu Kencana — SAKALA Sacred Emblem"
                 fill
                 sizes="48px"
                 className="object-contain"
