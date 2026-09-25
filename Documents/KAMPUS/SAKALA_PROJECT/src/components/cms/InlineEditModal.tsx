@@ -11,7 +11,7 @@ import { Bike, Product, JournalPost } from '@/types/database';
 import ImageCropperModal from './ImageCropperModal';
 
 export default function InlineEditModal() {
-  const { editingItem, setEditingItem, triggerRefresh, showToast } = useInlineCMS();
+  const { editingItem, setEditingItem, triggerRefresh, showToast, saveContent } = useInlineCMS();
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -119,13 +119,7 @@ export default function InlineEditModal() {
       } else if (type === 'journal') {
         await updateJournalPost(id, updates as Partial<JournalPost>);
       } else if (type === 'content') {
-        const key = (formData.key as string) || id;
-        const val = (formData.value as string) || (formData.content as string) || '';
-        try {
-          await updateSiteContent(key, val);
-        } catch (err) {
-          console.warn('Site content fallback save:', err);
-        }
+        await saveContent(id, updates);
       }
 
       showToast('Saved successfully! ✓');
@@ -197,7 +191,7 @@ export default function InlineEditModal() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                Image
+                Image / Visual Media
               </label>
               {((formData.image_url as string) || (formData.cover_image_url as string)) && (
                 <button
@@ -205,7 +199,7 @@ export default function InlineEditModal() {
                   onClick={() =>
                     handleOpenCropperForCurrent(
                       editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
+                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
                     )
                   }
                   className="flex items-center gap-1.5 text-[10px] font-bold text-[#070F18] hover:text-[#C5AA00] transition-colors cursor-pointer"
@@ -218,12 +212,12 @@ export default function InlineEditModal() {
 
             <div className="relative group">
               {((formData.image_url as string) || (formData.cover_image_url as string)) && (
-                <div className="relative w-full h-48 bg-[#FAF9F5] border border-[#E5E2D9] rounded-md overflow-hidden mb-2 group">
+                <div className="relative w-full h-52 bg-[#FAF9F5] border border-[#E5E2D9] rounded-md overflow-hidden mb-2 group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={(formData.image_url || formData.cover_image_url) as string}
                     alt="Preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-2"
                   />
                   {/* Hover Overlay Button to Crop */}
                   <button
@@ -231,7 +225,7 @@ export default function InlineEditModal() {
                     onClick={() =>
                       handleOpenCropperForCurrent(
                         editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                        editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
+                        editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
                       )
                     }
                     className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 text-white text-xs font-bold tracking-wider uppercase cursor-pointer backdrop-blur-[2px]"
@@ -252,7 +246,7 @@ export default function InlineEditModal() {
                   onClick={() =>
                     handleOpenCropperForCurrent(
                       editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
+                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
                     )
                   }
                   className="w-full mb-3 py-2.5 px-3 bg-[#070F18] hover:bg-[#C5AA00] text-white hover:text-black text-[11px] font-bold tracking-wider uppercase rounded-md transition-all flex items-center justify-center gap-2 border border-[#070F18] shadow-xs btn-tactile cursor-pointer"
@@ -272,7 +266,7 @@ export default function InlineEditModal() {
                   ) : (
                     <>
                       <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                        Upload New Image (Bisa Langsung Di-Crop)
+                        Upload Image (Bisa Langsung Di-Crop)
                       </span>
                     </>
                   )}
@@ -283,7 +277,7 @@ export default function InlineEditModal() {
                       handleFileSelect(
                         e,
                         editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                        editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
+                        editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : editingItem.type === 'content' ? 'content' : 'journal'
                       )
                     }
                     className="hidden"
@@ -292,18 +286,23 @@ export default function InlineEditModal() {
               </div>
 
               {/* Manual URL input */}
-              <input
-                type="text"
-                value={(formData.image_url || formData.cover_image_url || '') as string}
-                onChange={(e) =>
-                  updateField(
-                    editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
-                    e.target.value
-                  )
-                }
-                placeholder="Or paste image URL..."
-                className="w-full mt-2 bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-2 text-[11px] rounded-md outline-none focus:border-[#070F18] transition-colors"
-              />
+              <div className="mt-2">
+                <label className="block text-[9px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">
+                  Atau Masukkan Path / URL Gambar
+                </label>
+                <input
+                  type="text"
+                  placeholder="/assets/... atau https://..."
+                  value={(formData.image_url || formData.cover_image_url || '') as string}
+                  onChange={(e) =>
+                    updateField(
+                      editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
+                      e.target.value
+                    )
+                  }
+                  className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-1.5 text-xs rounded-md outline-none focus:border-[#070F18] transition-colors font-mono"
+                />
+              </div>
             </div>
           </div>
 
@@ -407,7 +406,7 @@ export default function InlineEditModal() {
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={formData.featured as boolean}
+                  checked={Boolean(formData.featured)}
                   onChange={(e) => updateField('featured', e.target.checked)}
                   id="featured-toggle"
                   className="w-4 h-4 accent-[#C5AA00]"
@@ -424,20 +423,36 @@ export default function InlineEditModal() {
             <>
               <FieldInput
                 label="Section / Block Label"
-                value={(formData.label as string) || ''}
-                onChange={(v) => updateField('label', v)}
+                value={((formData.label || formData.subtitle) as string) || ''}
+                onChange={(v) => {
+                  updateField('label', v);
+                  updateField('subtitle', v);
+                }}
               />
               <FieldInput
-                label="Headline / Value"
-                value={(formData.value as string) || (formData.title as string) || ''}
-                onChange={(v) => updateField('value', v)}
+                label="Headline / Title"
+                value={((formData.title || formData.value) as string) || ''}
+                onChange={(v) => {
+                  updateField('title', v);
+                  updateField('value', v);
+                }}
               />
               <FieldTextarea
                 label="Description / Narrative Body"
-                value={(formData.description as string) || (formData.content as string) || ''}
-                onChange={(v) => updateField('description', v)}
+                value={((formData.description || formData.content) as string) || ''}
+                onChange={(v) => {
+                  updateField('description', v);
+                  updateField('content', v);
+                }}
                 rows={5}
               />
+              {formData.cta_text !== undefined && (
+                <FieldInput
+                  label="Button / CTA Text"
+                  value={(formData.cta_text as string) || ''}
+                  onChange={(v) => updateField('cta_text', v)}
+                />
+              )}
             </>
           )}
         </div>
@@ -446,31 +461,33 @@ export default function InlineEditModal() {
         <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[#E5E2D9] bg-[#FAF9F5] rounded-b-xl">
           {/* Delete */}
           <div>
-            {confirmDelete ? (
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-red-600 font-bold">Yakin hapus?</span>
+            {editingItem.type !== 'content' && (
+              confirmDelete ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-red-600 font-bold">Yakin hapus?</span>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="px-3 py-1.5 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase rounded-md hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {deleting ? 'Deleting...' : 'Ya, Hapus'}
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="px-3 py-1.5 border border-[#E5E2D9] text-[10px] font-bold tracking-wider uppercase rounded-md hover:border-[#070F18]"
+                  >
+                    Batal
+                  </button>
+                </div>
+              ) : (
                 <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="px-3 py-1.5 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase rounded-md hover:bg-red-700 disabled:opacity-50"
+                  onClick={() => setConfirmDelete(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-red-500 hover:text-red-700 text-[10px] font-bold tracking-wider uppercase transition-colors"
                 >
-                  {deleting ? 'Deleting...' : 'Ya, Hapus'}
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Delete
                 </button>
-                <button
-                  onClick={() => setConfirmDelete(false)}
-                  className="px-3 py-1.5 border border-[#E5E2D9] text-[10px] font-bold tracking-wider uppercase rounded-md hover:border-[#070F18]"
-                >
-                  Batal
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setConfirmDelete(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-red-500 hover:text-red-700 text-[10px] font-bold tracking-wider uppercase transition-colors"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Delete
-              </button>
+              )
             )}
           </div>
 

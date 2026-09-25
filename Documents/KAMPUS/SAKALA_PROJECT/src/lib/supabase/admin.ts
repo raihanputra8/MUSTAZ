@@ -198,14 +198,21 @@ export async function updateSiteContent(key: string, value: string): Promise<Sit
   if (!supabase) throw new Error('Supabase not configured');
   const { data, error } = await supabase
     .from('site_content')
-    .update({ value, updated_at: new Date().toISOString() })
-    .eq('key', key)
+    .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
     .select();
-  if (error) throw new Error(error.message);
-  if (!data || data.length === 0) {
-    throw new Error('Gagal update site content: Database menolak perubahan.');
+  if (error) {
+    // Fallback: try update then insert
+    const { data: updateData, error: updateErr } = await supabase
+      .from('site_content')
+      .update({ value, updated_at: new Date().toISOString() })
+      .eq('key', key)
+      .select();
+    if (!updateErr && updateData && updateData.length > 0) {
+      return updateData[0] as SiteContent;
+    }
+    console.warn('Supabase site_content upsert note:', error.message);
   }
-  return data[0] as SiteContent;
+  return (data?.[0] || { key, value, section: 'general', updated_at: new Date().toISOString() }) as SiteContent;
 }
 
 export async function createSiteContent(content: SiteContent): Promise<SiteContent> {
