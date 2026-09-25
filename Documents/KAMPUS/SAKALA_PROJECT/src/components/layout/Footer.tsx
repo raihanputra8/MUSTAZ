@@ -3,64 +3,209 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Clock, 
+  ArrowUpRight,
+  Shield
+} from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#070F18] text-white border-t border-white/10 py-10 sm:py-12">
+    <footer className="bg-[#070F18] text-white border-t border-[#1E293B] pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Main Content Row */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 border-b border-white/10">
-          {/* Brand Identity */}
-          <div className="flex items-center gap-3.5 text-center md:text-left">
-            <div className="relative w-9 h-9 shrink-0">
-              <Image
-                src="/assets/sakala_emblem.png"
-                alt="SAKALA Emblem"
-                fill
-                className="object-contain"
-              />
+        {/* Main Grid: 4 Balanced Strategic Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-14 border-b border-white/10">
+          {/* Column 1: Brand & About / Informasi Perusahaan (Col 4) */}
+          <div className="lg:col-span-4 space-y-5">
+            {/* Logo / Brand */}
+            <div className="flex items-center gap-3.5">
+              <div className="relative w-10 h-10 shrink-0">
+                <Image
+                  src="/assets/sakala_emblem.png"
+                  alt="SAKALA Emblem"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div>
+                <span className="font-serif-editorial text-xl font-bold tracking-[0.16em] text-white block leading-none mb-1">
+                  SAKALA
+                </span>
+                <span className="text-[9px] tracking-[0.22em] text-[#C5AA00] uppercase font-bold block">
+                  MOTORCYCLE CLUB • BANDUNG
+                </span>
+              </div>
             </div>
-            <div>
-              <span className="font-serif-editorial text-lg font-bold tracking-[0.16em] text-white block leading-none mb-1">
-                SAKALA
+
+            {/* About / Informasi Perusahaan */}
+            <p className="text-xs text-[#94A3B8] leading-relaxed max-w-sm font-normal">
+              Bandung-born motorcycle collective &amp; custom engineering guild. Built on lifelong fraternity, raw displacement, and Indonesian archival motorcycle heritage. A circle, not a crowd.
+            </p>
+
+            {/* Social Media Links */}
+            <div className="pt-2">
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase block mb-3">
+                SOSIAL MEDIA
               </span>
-              <span className="text-[9px] tracking-[0.22em] text-[#94A3B8] uppercase block">
-                EST. 2026 • BANDUNG
-              </span>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-9 h-9 rounded-xs bg-white/5 border border-white/10 flex items-center justify-center text-[#94A3B8] hover:text-[#C5AA00] hover:border-[#C5AA00] transition-colors"
+                  aria-label="Instagram"
+                >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                  </svg>
+                </a>
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-9 h-9 rounded-xs bg-white/5 border border-white/10 flex items-center justify-center text-[#94A3B8] hover:text-[#C5AA00] hover:border-[#C5AA00] transition-colors"
+                  aria-label="YouTube"
+                >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                </a>
+                <a
+                  href="mailto:contact@sakala-mc.id"
+                  className="w-9 h-9 rounded-xs bg-white/5 border border-white/10 flex items-center justify-center text-[#94A3B8] hover:text-[#C5AA00] hover:border-[#C5AA00] transition-colors"
+                  aria-label="Email"
+                >
+                  <Mail className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
 
-          {/* Simple Navigation Links */}
-          <nav className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs font-semibold tracking-[0.14em] uppercase text-[#94A3B8]">
-            <Link href="/shop" className="hover:text-[#C5AA00] transition-colors">
-              Shop
-            </Link>
-            <Link href="/bikes" className="hover:text-[#C5AA00] transition-colors">
-              Bikes
-            </Link>
-            <Link href="/journal" className="hover:text-[#C5AA00] transition-colors">
-              Journal
-            </Link>
-            <Link href="/about" className="hover:text-[#C5AA00] transition-colors">
-              About
-            </Link>
-            <Link href="/tracking" className="hover:text-[#C5AA00] transition-colors">
-              Tracking
-            </Link>
-            <Link href="/account" className="hover:text-[#C5AA00] transition-colors">
-              Account
-            </Link>
-          </nav>
+          {/* Column 2: Navigasi Utama (Col 3) */}
+          <div className="lg:col-span-3 space-y-4">
+            <span className="text-[11px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase block">
+              NAVIGASI
+            </span>
+            <ul className="space-y-2.5 text-xs text-[#94A3B8]">
+              <li>
+                <Link href="/shop" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
+                  <span>Supply &amp; Shop</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-60" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/bikes" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
+                  <span>The Garage (Bikes)</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-60" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/journal" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
+                  <span>Chronicle Journal</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-60" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
+                  <span>About &amp; Ethos</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-60" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/tracking" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
+                  <span>Track Order / Resi</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-60" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/account" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
+                  <span>Member Account</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-60" />
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Kontak & Layanan (Col 2) */}
+          <div className="lg:col-span-2 space-y-4">
+            <span className="text-[11px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase block">
+              KONTAK
+            </span>
+            <ul className="space-y-3 text-xs text-[#94A3B8]">
+              <li className="flex items-start gap-2.5">
+                <Mail className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
+                <div>
+                  <span className="block text-[10px] text-[#64748B] uppercase font-bold">Email Concierge</span>
+                  <a href="mailto:contact@sakala-mc.id" className="hover:text-white transition-colors">
+                    contact@sakala-mc.id
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Phone className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
+                <div>
+                  <span className="block text-[10px] text-[#64748B] uppercase font-bold">WhatsApp Guild</span>
+                  <a href="https://wa.me/6282126262026" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                    +62 821-2626-2026
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Clock className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
+                <div>
+                  <span className="block text-[10px] text-[#64748B] uppercase font-bold">Jam Operasional</span>
+                  <span>Selasa – Minggu<br />10:00 – 21:00 WIB</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Alamat Workshop (Col 3) */}
+          <div className="lg:col-span-3 space-y-4">
+            <span className="text-[11px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase block">
+              ALAMAT ATELIER
+            </span>
+            <div className="flex items-start gap-2.5 text-xs text-[#94A3B8]">
+              <MapPin className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
+              <div className="leading-relaxed">
+                <strong className="text-white block font-medium">SAKALA HEADQUARTERS &amp; ATELIER</strong>
+                <span>Jl. Ciroyom No. 26, Dago Atas</span>
+                <span className="block">Bandung, Jawa Barat 40135</span>
+                <span className="block text-[#64748B]">Indonesia</span>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xs text-[10px] text-[#C5AA00] font-mono">
+                <Shield className="w-3 h-3" />
+                <span>ATELIER VERIFIED • BANDUNG ID</span>
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Creed */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#64748B] text-center sm:text-left">
-          <span>
-            © 2026 SAKALA MOTORCYCLE CLUB. All rights reserved.
-          </span>
-          <span className="italic font-serif text-[#94A3B8]">
-            “A circle, not a crowd.”
-          </span>
+        {/* Bottom Bar: Copyright & Legal Policies */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#64748B]">
+          <div>
+            © 2026 <strong>SAKALA MOTORCYCLE CLUB</strong>. All rights reserved.
+          </div>
+
+          <div className="flex items-center gap-5 tracking-wider uppercase text-[10px]">
+            <Link href="/about" className="hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <span>•</span>
+            <Link href="/about" className="hover:text-white transition-colors">
+              Terms &amp; Conditions
+            </Link>
+            <span>•</span>
+            <span className="italic font-serif text-[#94A3B8] normal-case">
+              “A circle, not a crowd.”
+            </span>
+          </div>
         </div>
       </div>
     </footer>

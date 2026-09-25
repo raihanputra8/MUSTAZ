@@ -325,6 +325,12 @@ export default function InlineEditModal() {
                   { value: 'private_collection', label: 'Private Collection' },
                 ]}
               />
+              <FieldTextarea
+                label="Deskripsi / Garis Besar Build"
+                value={((formData.description as string) || '')}
+                onChange={(v) => updateField('description', v)}
+                rows={3}
+              />
               {/* Specs */}
               <div>
                 <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-2">

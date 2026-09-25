@@ -5,16 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
-  ArrowRight, 
   ShieldCheck, 
   Wrench, 
-  Eye, 
-  Layers, 
-  Calendar, 
-  Tag, 
-  CheckCircle2,
-  ChevronRight,
-  ExternalLink
+  Maximize2,
+  Camera,
+  Layers,
+  Sparkles,
+  ChevronRight
 } from 'lucide-react';
 import { Bike } from '@/types/database';
 import EditableWrapper from '@/components/cms/EditableWrapper';
@@ -28,16 +25,18 @@ interface BikeDetailClientProps {
 export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientProps) {
   const { isEditMode } = useInlineCMS();
 
-  // Plates for the showcase stage
-  const plates = [
-    { id: 1, title: 'PRIMARY PROFILE', image: bike.image_url, subtitle: 'Studio / Field Monograph' },
-    { id: 2, title: 'ENGINE ARCHITECTURE', image: '/assets/culture_workshop.png', subtitle: 'Displacement & Tuning' },
-    { id: 3, title: 'CHASSIS & GEOMETRY', image: '/assets/journal_subang.png', subtitle: 'Bespoke Frame Geometry' },
-    { id: 4, title: 'METAL FABRICATION', image: '/assets/culture_ceremony.png', subtitle: 'Hand-Hammered Bodywork' },
-    { id: 5, title: 'COCKPIT & DIALS', image: '/assets/culture_members.png', subtitle: 'Precision Controls' },
+  // Detail macro plates for photography showcase
+  const defaultPlates = [
+    { title: 'FULL MONOGRAPH PROFILE', image: bike.image_url, subtitle: 'Studio / Side Profile' },
+    { title: 'ENGINE & DISPLACEMENT', image: (bike.gallery && bike.gallery[1]) || '/assets/culture_workshop.png', subtitle: 'Rebuilt Powerplant & Mechanical Geometry' },
+    { title: 'TANK CRAFT & FINISH', image: (bike.gallery && bike.gallery[2]) || '/assets/journal_subang.png', subtitle: 'Hand-Beaten Tank & Bespoke Colorway' },
+    { title: 'COCKPIT & BESPOKE DIALS', image: (bike.gallery && bike.gallery[3]) || '/assets/culture_ceremony.png', subtitle: 'Handcrafted Controls & Custom Cockpit' },
+    { title: 'CHASSIS WELDS & SADDLE', image: (bike.gallery && bike.gallery[4]) || '/assets/culture_members.png', subtitle: 'De-Tabbed Frame & Hand-Stitched Leather' },
+    { title: 'EXHAUST & RUNNING GEAR', image: (bike.gallery && bike.gallery[5]) || '/assets/sakala_emblem.png', subtitle: 'Bespoke Megaphone & Spoke Lacing' },
   ];
 
-  const [activePlate, setActivePlate] = useState(plates[0]);
+  const [activePhoto, setActivePhoto] = useState(defaultPlates[0]);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   // Find previous and next bike from database
   const currentIndex = allBikes.findIndex((b) => b.id === bike.id);
@@ -46,16 +45,17 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
 
   return (
     <div className="flex-1">
-      {/* Top Header / Breadcrumbs */}
-      <section className="pt-8 pb-6 border-b border-[#E5E2D9] bg-[#FAF9F5]">
+      {/* Top Header / Garis Besar Build */}
+      <section className="pt-8 pb-8 border-b border-[#E5E2D9] bg-[#FAF9F5]">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          {/* Breadcrumb Bar */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <Link
               href="/bikes"
               className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-[#64748B] hover:text-[#0047AB] uppercase transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>BACK TO GARAGE ARCHIVE</span>
+              <span>KEMBALI KE GARAGE ARCHIVE</span>
             </Link>
 
             <span className="text-[10px] font-mono tracking-widest text-[#94A3B8] uppercase px-2.5 py-1 bg-white border border-[#E5E2D9] rounded-xs">
@@ -63,8 +63,8 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
             </span>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div className="lg:col-span-8">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase">
                   {bike.year} {bike.make} {bike.model}
@@ -75,14 +75,37 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
                 </span>
               </div>
 
-              <h1 className="font-serif-editorial text-4xl sm:text-6xl font-black text-[#070F18] tracking-tight leading-tight">
+              <h1 className="font-serif-editorial text-4xl sm:text-6xl font-black text-[#070F18] tracking-tight leading-tight mb-3">
                 {bike.title}
               </h1>
+
+              {/* Garis Besar Motor (Ringkas & Padat) */}
+              <p className="text-sm sm:text-base text-[#475569] leading-relaxed max-w-2xl font-normal">
+                {bike.description || `${bike.title} adalah hasil rancang bangun atelier SAKALA Bandung berbasis ${bike.year} ${bike.make} ${bike.model}, mengedepankan reduksi bobot, geometri custom, dan performa displacement murni.`}
+              </p>
             </div>
 
-            <p className="text-xs sm:text-sm text-[#475569] max-w-md leading-relaxed font-normal">
-              Bandung-built custom machine by SAKALA Atelier. Handcrafted fabrication, bespoke geometry, and race-tuned displacement.
-            </p>
+            {/* Quick Specs Highlight Chips */}
+            <div className="lg:col-span-4 flex flex-wrap gap-2 lg:justify-end">
+              {bike.specs?.displacement && (
+                <div className="px-3 py-1.5 bg-white border border-[#E5E2D9] rounded-xs text-[10px] text-[#070F18]">
+                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Displacement</span>
+                  <strong>{bike.specs.displacement}</strong>
+                </div>
+              )}
+              {bike.specs?.frame && (
+                <div className="px-3 py-1.5 bg-white border border-[#E5E2D9] rounded-xs text-[10px] text-[#070F18]">
+                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Chassis / Frame</span>
+                  <strong>{bike.specs.frame}</strong>
+                </div>
+              )}
+              {bike.specs?.workshop && (
+                <div className="px-3 py-1.5 bg-white border border-[#E5E2D9] rounded-xs text-[10px] text-[#070F18]">
+                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Atelier</span>
+                  <strong>{bike.specs.workshop}</strong>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -93,39 +116,49 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
           {/* Main Showcase Viewport */}
           <div className="relative h-[380px] sm:h-[540px] lg:h-[620px] w-full rounded-sm overflow-hidden bg-white border border-[#E5E2D9] shadow-sm mb-6 group">
             <Image
-              src={activePlate.image}
-              alt={`${bike.title} — ${activePlate.title}`}
+              src={activePhoto.image}
+              alt={`${bike.title} — ${activePhoto.title}`}
               fill
               className="object-contain p-4 sm:p-8 transition-all duration-300"
               priority
             />
 
             {/* Corner Badge */}
-            <div className="absolute top-4 left-4 bg-[#070F18]/90 backdrop-blur-xs text-white px-3 py-1.5 text-[9px] font-mono tracking-widest uppercase rounded-xs">
-              {activePlate.title}
+            <div className="absolute top-4 left-4 bg-[#070F18]/90 backdrop-blur-xs text-white px-3 py-1.5 text-[9px] font-mono tracking-widest uppercase rounded-xs flex items-center gap-2">
+              <Camera className="w-3.5 h-3.5 text-[#C5AA00]" />
+              <span>{activePhoto.title}</span>
             </div>
+
+            {/* Zoom Lightbox Trigger */}
+            <button
+              onClick={() => setLightboxImage(activePhoto.image)}
+              className="absolute top-4 right-4 bg-[#070F18]/80 hover:bg-[#0047AB] text-white p-2 rounded-xs opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              title="Perbesar Foto"
+            >
+              <Maximize2 className="w-4 h-4" />
+            </button>
 
             {/* Atelier Watermark */}
             <div className="absolute bottom-6 right-6 text-right opacity-25 select-none pointer-events-none">
               <span className="font-serif-editorial text-xl sm:text-3xl font-black tracking-widest text-[#070F18]">
-                SAKALA GARAGE • {bike.id.toUpperCase()}
+                SAKALA ARCHIVE • {bike.id.toUpperCase()}
               </span>
             </div>
           </div>
 
-          {/* Interactive Plate Selector Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            {plates.map((plate) => (
+          {/* Thumbnail Selector Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {defaultPlates.map((plate, idx) => (
               <button
-                key={plate.id}
-                onClick={() => setActivePlate(plate)}
-                className={`p-2.5 rounded-xs border text-left flex items-center gap-3 transition-all cursor-pointer ${
-                  activePlate.id === plate.id
+                key={idx}
+                onClick={() => setActivePhoto(plate)}
+                className={`p-2 rounded-xs border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                  activePhoto.image === plate.image && activePhoto.title === plate.title
                     ? 'bg-[#070F18] text-white border-[#070F18] shadow-sm'
                     : 'bg-white text-[#475569] border-[#E5E2D9] hover:border-[#C5AA00]'
                 }`}
               >
-                <div className="relative w-10 h-10 bg-gray-100 rounded-xs overflow-hidden flex-shrink-0">
+                <div className="relative w-11 h-11 bg-gray-100 rounded-xs overflow-hidden flex-shrink-0">
                   <Image
                     src={plate.image}
                     alt={plate.title}
@@ -135,9 +168,9 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
                 </div>
                 <div className="min-w-0">
                   <span className="text-[8px] tracking-[0.2em] font-bold block uppercase opacity-70">
-                    PLATE 0{plate.id}
+                    FOTO 0{idx + 1}
                   </span>
-                  <span className="text-[10px] font-bold tracking-wider truncate block uppercase">
+                  <span className="text-[9.5px] font-bold tracking-wider truncate block uppercase">
                     {plate.title}
                   </span>
                 </div>
@@ -147,112 +180,122 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
         </div>
       </section>
 
-      {/* Chronicle Entry & Build Record Matrix */}
+      {/* GALERI FOTO DETAIL RESOLUSI TINGGI (DETAIL & MACRO ARCHIVE) */}
       <section className="py-16 lg:py-24 max-w-7xl mx-auto px-6 lg:px-12 border-b border-[#E5E2D9]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          {/* Left Column: Build Narrative & Philosophy */}
-          <div className="lg:col-span-7">
-            <span className="text-[10px] font-bold tracking-[0.25em] text-[#0047AB] uppercase block mb-3">
-              CHRONICLE ENTRY • SAKALA BUILD ARCHIVE
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase">
+              GALLERY SHOWCASE
             </span>
+            <span className="text-[#C5AA00]">•</span>
+            <span className="text-[11px] text-[#64748B] uppercase tracking-wider">
+              {defaultPlates.length} FOTO DETAIL
+            </span>
+          </div>
+          <h2 className="font-serif-editorial text-3xl sm:text-4xl font-extrabold text-[#070F18] tracking-tight">
+            DETAIL &amp; MACRO PHOTOGRAPHY
+          </h2>
+          <p className="text-xs sm:text-sm text-[#64748B] max-w-xl mt-2 leading-relaxed">
+            Koleksi foto detail komponen, pengerjaan metal, geometri knalpot, hingga cockpit setiap motor yang dirancang bangun oleh guild SAKALA.
+          </p>
+        </div>
 
-            <h2 className="font-serif-editorial text-3xl sm:text-4xl font-extrabold text-[#070F18] leading-tight mb-6">
-              THE PHILOSOPHY OF {bike.title.toUpperCase()}: DISPLACEMENT, GEOMETRY &amp; RAW METAL
-            </h2>
+        {/* Photography Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {defaultPlates.map((item, idx) => (
+            <div 
+              key={idx}
+              className="bg-white border border-[#E5E2D9] rounded-xs overflow-hidden shadow-xs hover:border-[#070F18] transition-all group flex flex-col cursor-pointer"
+              onClick={() => {
+                setActivePhoto(item);
+                setLightboxImage(item.image);
+              }}
+            >
+              <div className="relative h-64 w-full bg-[#EFECE6] overflow-hidden">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-3 left-3 bg-[#070F18]/85 backdrop-blur-xs text-[#C5AA00] px-2 py-0.5 text-[8.5px] font-bold tracking-widest uppercase rounded-xs">
+                  0{idx + 1} • DETAIL
+                </div>
+                <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-xs text-white p-1.5 rounded-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Maximize2 className="w-3.5 h-3.5" />
+                </div>
+              </div>
 
-            <div className="space-y-4 text-xs sm:text-sm text-[#475569] leading-relaxed mb-8">
-              <p>
-                Recovered and reconstituted within our Ciroyom guild, <strong>{bike.title}</strong> is an uncompromising mechanical synthesis built to conquer the steep climbs and punishing monsoon passes of West Java. Built on the foundation of a {bike.year} {bike.make} {bike.model}, every redundant component was stripped down to raw displacement.
-              </p>
+              <div className="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-serif-editorial text-base font-bold text-[#070F18] group-hover:text-[#0047AB] transition-colors mb-1">
+                    {item.title}
+                  </h3>
+                  <p className="text-[11px] text-[#64748B]">
+                    {item.subtitle}
+                  </p>
+                </div>
+              </div>
             </div>
+          ))}
+        </div>
 
-            {/* Highlight Quote */}
-            <div className="bg-[#FAF9F5] border-l-4 border-[#C5AA00] p-6 sm:p-8 rounded-r mb-8">
-              <blockquote className="font-serif-editorial text-lg sm:text-xl font-bold text-[#070F18] italic leading-snug mb-3">
-                “We don&apos;t build machines for static pedestals. Every bead of weld was laid down with the expectation of high oil temperatures, elevation changes, and midnight rides through the Cikole mist.”
-              </blockquote>
-              <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                — SAKALA ATELIER FABRICATION TEAM • BANDUNG
+        {/* Build Record Matrix Specs Table */}
+        <div className="mt-16 bg-white border border-[#E5E2D9] rounded-xs p-6 sm:p-10 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-[#E5E2D9] mb-6 gap-4">
+            <div>
+              <span className="text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase block mb-1">
+                TECHNICAL SPECIFICATION SHEET
               </span>
+              <h3 className="font-serif-editorial text-2xl font-black text-[#070F18] tracking-tight">
+                GARIS BESAR &amp; SPESIFIKASI BUILD
+              </h3>
             </div>
-
-            <div className="space-y-4 text-xs sm:text-sm text-[#475569] leading-relaxed">
-              <p>
-                From hand-shaped aluminum bodywork to custom stainless exhaust geometries, {bike.title} embodies our character-first ethos: an ode to vintage displacement balanced with modern road discipline.
-              </p>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-[#0047AB]" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#070F18]">
+                AUTHENTICATED GUILD SPECIMEN
+              </span>
             </div>
           </div>
 
-          {/* Right Column: Build Record Matrix (Synchronized directly with Database Specs) */}
-          <div className="lg:col-span-5">
-            <div className="bg-white border border-[#E5E2D9] rounded-xs p-6 sm:p-8 shadow-xs sticky top-28">
-              <div className="flex items-center justify-between pb-4 border-b border-[#E5E2D9] mb-6">
-                <div>
-                  <span className="text-[9px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase block">
-                    ATELIER DOSSIER
-                  </span>
-                  <h3 className="font-serif-editorial text-xl font-black text-[#070F18] tracking-tight">
-                    BUILD RECORD MATRIX
-                  </h3>
-                </div>
-                <ShieldCheck className="w-5 h-5 text-[#0047AB]" />
-              </div>
-
-              {/* Specs List pulled from Supabase Database */}
-              <div className="divide-y divide-[#E5E2D9] text-xs">
-                <div className="py-2.5 flex items-center justify-between">
-                  <span className="text-[#64748B] uppercase tracking-wider font-semibold text-[10px]">
-                    BASE MACHINE
-                  </span>
-                  <span className="font-bold text-[#070F18]">
-                    {bike.year} {bike.make} {bike.model}
-                  </span>
-                </div>
-
-                <div className="py-2.5 flex items-center justify-between">
-                  <span className="text-[#64748B] uppercase tracking-wider font-semibold text-[10px]">
-                    STATUS
-                  </span>
-                  <span className="font-bold text-[#0047AB] uppercase">
-                    {bike.status.replace('_', ' ')}
-                  </span>
-                </div>
-
-                {Object.entries(bike.specs || {}).map(([key, val]) => (
-                  <div key={key} className="py-2.5 flex items-center justify-between">
-                    <span className="text-[#64748B] uppercase tracking-wider font-semibold text-[10px]">
-                      {key}
-                    </span>
-                    <span className="font-bold text-[#070F18] text-right truncate max-w-[200px]">
-                      {val}
-                    </span>
-                  </div>
-                ))}
-
-                <div className="py-2.5 flex items-center justify-between bg-[#0047AB]/5 px-2 rounded">
-                  <span className="text-[#0047AB] uppercase tracking-wider font-bold text-[10px]">
-                    ATELIER ORIGIN
-                  </span>
-                  <span className="font-extrabold text-[#0047AB]">SAKALA Ciroyom, Bandung</span>
-                </div>
-              </div>
-
-              {/* Commission CTA */}
-              <div className="mt-8 pt-6 border-t border-[#E5E2D9]">
-                <Link
-                  href="/#newsletter"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#070F18] hover:bg-[#0047AB] text-white py-3.5 text-xs font-bold tracking-[0.18em] uppercase rounded-xs transition-colors btn-tactile"
-                >
-                  <Wrench className="w-3.5 h-3.5" />
-                  <span>INQUIRE COMMISSION BUILD</span>
-                </Link>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
+            <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs">
+              <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">Base Platform</span>
+              <strong className="text-sm text-[#070F18]">{bike.year} {bike.make} {bike.model}</strong>
             </div>
+
+            <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs">
+              <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">Build Status</span>
+              <strong className="text-sm text-[#0047AB] uppercase">{bike.status.replace('_', ' ')}</strong>
+            </div>
+
+            {Object.entries(bike.specs || {}).map(([k, v]) => (
+              <div key={k} className="p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs">
+                <span className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">{k}</span>
+                <strong className="text-sm text-[#070F18]">{v}</strong>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-[#E5E2D9] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-[#64748B]">
+              Tertarik membangun motor kustom dengan konsep serupa? Konsultasikan langsung dengan tim builder kami.
+            </p>
+            <a
+              href="https://wa.me/6282126262026?text=Halo%20SAKALA,%20saya%20tertarik%20dengan%20build%20motor"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#070F18] hover:bg-[#0047AB] text-white text-xs font-bold tracking-widest uppercase rounded-xs transition-colors shrink-0"
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              <span>KONSULTASI BUILD MOTOR</span>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Previous & Next Specimen Navigation (Synchronized with Database) */}
+      {/* Previous & Next Specimen Navigation */}
       <section className="py-12 bg-white border-b border-[#E5E2D9]">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 divide-y sm:divide-y-0 sm:divide-x divide-[#E5E2D9]">
@@ -272,7 +315,7 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
                 </div>
                 <div>
                   <span className="text-[9px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                    ← PREVIOUS SPECIMEN
+                    ← PREVIOUS MOTOR
                   </span>
                   <h4 className="font-serif-editorial text-base font-bold text-[#070F18] group-hover:text-[#0047AB] transition-colors">
                     {prevBike.year} {prevBike.make} {prevBike.title}
@@ -292,7 +335,7 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
               >
                 <div>
                   <span className="text-[9px] font-bold tracking-[0.2em] text-[#0047AB] uppercase block">
-                    NEXT SPECIMEN →
+                    NEXT MOTOR →
                   </span>
                   <h4 className="font-serif-editorial text-base font-bold text-[#070F18] group-hover:text-[#0047AB] transition-colors">
                     {nextBike.year} {nextBike.make} {nextBike.title}
@@ -314,6 +357,29 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
           </div>
         </div>
       </section>
+
+      {/* Lightbox Modal for High-Res Detail Inspection */}
+      {lightboxImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setLightboxImage(null)}
+        >
+          <div className="relative max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <Image
+              src={lightboxImage}
+              alt="Detail Inspection"
+              fill
+              className="object-contain"
+            />
+            <button
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 text-xs font-bold tracking-widest uppercase rounded-xs"
+            >
+              TUTUP (ESC)
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

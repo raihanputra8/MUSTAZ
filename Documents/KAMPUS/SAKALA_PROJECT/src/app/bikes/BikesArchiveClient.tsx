@@ -91,15 +91,22 @@ export default function BikesArchiveClient({ initialBikes }: BikesArchiveClientP
                   </span>
                   
                   <Link href={`/bikes/${bike.id}`}>
-                    <h2 className="font-serif-editorial text-2xl font-black text-[#070F18] mb-4 tracking-tight group-hover:text-[#0047AB] transition-colors">
+                    <h2 className="font-serif-editorial text-2xl font-black text-[#070F18] mb-2 tracking-tight group-hover:text-[#0047AB] transition-colors">
                       {bike.title}
                     </h2>
                   </Link>
 
+                  {/* Garis Besar Description */}
+                  {bike.description && (
+                    <p className="text-xs text-[#64748B] mb-4 line-clamp-2 leading-relaxed">
+                      {bike.description}
+                    </p>
+                  )}
+
                   {/* Specs List */}
                   <div className="divide-y divide-[#E5E2D9]/80 text-[11px] mb-6">
-                    {Object.entries(bike.specs || {}).map(([key, val]) => (
-                      <div key={key} className="py-2 flex items-center justify-between">
+                    {Object.entries(bike.specs || {}).slice(0, 3).map(([key, val]) => (
+                      <div key={key} className="py-1.5 flex items-center justify-between">
                         <span className="font-semibold text-[#64748B] uppercase tracking-wider text-[10px]">
                           {key}
                         </span>
@@ -116,7 +123,7 @@ export default function BikesArchiveClient({ initialBikes }: BikesArchiveClientP
                   href={`/bikes/${bike.id}`}
                   className="w-full inline-flex items-center justify-center gap-2 bg-[#070F18] group-hover:bg-[#0047AB] text-white py-3 text-[10px] font-bold tracking-[0.2em] uppercase rounded-xs transition-colors btn-tactile"
                 >
-                  <span>EXPLORE BUILD DOSSIER</span>
+                  <span>EXPLORE DETAIL GALLERY</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200" />
                 </Link>
               </div>

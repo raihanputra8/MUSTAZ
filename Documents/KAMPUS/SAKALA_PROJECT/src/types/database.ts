@@ -28,6 +28,8 @@ export interface Bike {
   };
   image_url: string;
   status: 'archival' | 'commissioned' | 'private_collection';
+  description?: string;
+  gallery?: string[];
 }
 
 export interface Product {
