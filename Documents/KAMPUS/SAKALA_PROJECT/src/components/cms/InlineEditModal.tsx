@@ -219,6 +219,7 @@ export default function InlineEditModal() {
               {editingItem.type === 'bike' ? 'Edit Motor' : 
                editingItem.type === 'product' ? 'Edit Merchandise' : 
                editingItem.type === 'journal' ? 'Edit Journal Post' : 
+               editingItem.id === 'instagram_config' ? 'Konfigurasi Instagram Feed' :
                editingItem.id.startsWith('culture_ig_') ? 'Edit Postingan Instagram' :
                editingItem.id === 'culture_video' ? 'Edit Video YouTube' :
                'Edit Konten Halaman'}
@@ -237,8 +238,61 @@ export default function InlineEditModal() {
           className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 min-h-0"
           style={{ overscrollBehavior: 'contain' }}
         >
-          {/* Specialized Instagram Post Editor (Hanya Input Link IG & Foto Otomatis Terhubung) */}
-          {editingItem.id.startsWith('culture_ig_') ? (
+          {/* Specialized Instagram Configuration Editor (CMS-Controlled) */}
+          {editingItem.id === 'instagram_config' ? (
+            <div className="space-y-5">
+              <FieldInput
+                label="Instagram Profile URL"
+                value={((formData.profile_url as string) || '')}
+                onChange={(v) => updateField('profile_url', v)}
+                placeholder="https://www.instagram.com/sakala_ina/"
+              />
+              <p className="text-[10.5px] text-[#64748B] -mt-3">
+                URL profil resmi Instagram. Handle (@username) dan tombol follow otomatis membaca URL ini.
+              </p>
+
+              <div>
+                <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1.5">
+                  Daftar Post / Reel URLs (Satu URL per baris)
+                </label>
+                <textarea
+                  value={
+                    Array.isArray(formData.post_urls)
+                      ? (formData.post_urls as string[]).join('\n')
+                      : typeof formData.post_urls === 'string'
+                      ? formData.post_urls
+                      : ''
+                  }
+                  onChange={(e) => {
+                    const lines = e.target.value
+                      .split('\n')
+                      .map((l) => l.trim())
+                      .filter(Boolean);
+                    updateField('post_urls', lines);
+                  }}
+                  rows={6}
+                  placeholder={`https://www.instagram.com/p/DAXwK_JzV2O/\nhttps://www.instagram.com/p/DAUvP91TVnI/`}
+                  className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-2 text-xs rounded-md outline-none focus:border-[#070F18] font-mono leading-relaxed transition-colors resize-none"
+                />
+                <p className="text-[10.5px] text-[#64748B] mt-1.5">
+                  Masukkan permalink resmi postingan/reel Instagram (contoh: https://www.instagram.com/p/... atau /reel/...).
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5 p-3 bg-[#FAF9F5] border border-[#E5E2D9] rounded-md">
+                <input
+                  type="checkbox"
+                  id="ig-enabled-toggle"
+                  checked={formData.enabled !== false}
+                  onChange={(e) => updateField('enabled', e.target.checked)}
+                  className="w-4 h-4 accent-[#070F18] cursor-pointer"
+                />
+                <label htmlFor="ig-enabled-toggle" className="text-xs font-semibold text-[#070F18] cursor-pointer">
+                  Tampilkan Section Instagram di Halaman Depan
+                </label>
+              </div>
+            </div>
+          ) : editingItem.id.startsWith('culture_ig_') ? (
             <div className="space-y-4">
               <div>
                 <FieldInput

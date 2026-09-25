@@ -53,6 +53,7 @@ export default function AdminContentPage() {
   const sectionLabels: Record<string, string> = {
     hero: 'Hero Section',
     manifesto: 'Manifesto Section',
+    culture: 'Culture & Instagram Section',
     about: 'About Page',
     newsletter: 'Newsletter Section',
     footer: 'Footer',

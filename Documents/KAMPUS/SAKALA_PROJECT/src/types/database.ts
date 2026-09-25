@@ -105,3 +105,9 @@ export interface AdminStats {
   totalMembers: number;
   recentOrders: Order[];
 }
+
+export interface InstagramConfig {
+  profile_url: string;
+  post_urls: string[];
+  enabled: boolean;
+}
