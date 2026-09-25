@@ -16,24 +16,26 @@ export default function HeroSection() {
           {/* Left Column: Monograph Typography & CTAs */}
           <div className="lg:col-span-7 flex flex-col justify-center animate-fade-in-up">
             {/* Title & Mobile-Only Emblem beside SAKALA */}
-            <div className="flex items-center justify-between sm:justify-start gap-4 sm:gap-6 mb-3">
-              <div>
-                <h1 className="font-serif-editorial text-4xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white leading-none">
+            <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-6 mb-4">
+              <div className="flex-1 min-w-0">
+                <h1 className="font-serif-editorial text-[34px] xs:text-4xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white leading-none">
                   SAKALA
                 </h1>
-                <p className="text-[10px] sm:text-xs md:text-sm font-semibold tracking-[0.25em] sm:tracking-[0.3em] text-[#94A3B8] uppercase mt-2">
+                <p className="text-[10px] xs:text-xs sm:text-sm font-semibold tracking-[0.22em] sm:tracking-[0.3em] text-[#94A3B8] uppercase mt-2">
                   MOTORCYCLE CLUB
                 </p>
               </div>
 
               {/* Mobile-Only Emblem beside SAKALA */}
-              <div className="lg:hidden shrink-0 relative w-20 h-24 xs:w-24 xs:h-28 sm:w-28 sm:h-32">
+              <div className="lg:hidden shrink-0 relative w-32 h-36 xs:w-36 xs:h-40 sm:w-44 sm:h-48">
+                {/* Atmospheric Glow */}
+                <div className="absolute inset-0 bg-[#0047AB]/25 rounded-full blur-xl pointer-events-none" />
                 <Image
                   src="/assets/SAKALA_MC.PNG"
                   alt="SAKALA Motorcycle Club Indonesia"
                   fill
-                  sizes="120px"
-                  className="object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.7)]"
+                  sizes="(max-width: 640px) 160px, 200px"
+                  className="object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)] relative z-10"
                   priority
                 />
               </div>
