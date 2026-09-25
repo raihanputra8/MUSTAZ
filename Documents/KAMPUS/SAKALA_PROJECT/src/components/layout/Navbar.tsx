@@ -89,7 +89,7 @@ export default function Navbar() {
             </div>
 
             <div className="flex flex-col transition-transform duration-200 group-hover:translate-x-0.5">
-              <span className="font-western text-2xl tracking-[0.12em] text-[#070F18] leading-none group-hover:text-[#C5AA00] transition-colors">
+              <span className="font-western text-base sm:text-lg tracking-[0.08em] text-[#070F18] leading-none group-hover:text-[#C5AA00] transition-colors">
                 SAKALA
               </span>
               <span className="text-[9px] tracking-[0.25em] font-medium text-[#737373] uppercase mt-1">
