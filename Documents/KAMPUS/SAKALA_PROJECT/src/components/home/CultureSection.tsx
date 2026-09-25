@@ -210,7 +210,7 @@ export default function CultureSection() {
           <ScrollReveal direction="up" delay={80} className="mb-14 sm:mb-16">
             <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 sm:p-6 lg:p-7 backdrop-blur-xs shadow-2xl">
               
-              {/* Profile Header (Driven by CMS profile_url) */}
+              {/* Profile Header (Driven by CMS profile_url, zero fake follower/post counts) */}
               <EditableWrapper
                 item={{
                   type: 'content',
@@ -223,31 +223,26 @@ export default function CultureSection() {
                 }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 px-1">
-                  {/* Left Profile Info */}
-                  <div className="flex items-center gap-3.5">
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-white/20 p-0.5 bg-[#0C1724] shrink-0 shadow-lg">
-                      <div className="relative w-full h-full rounded-full overflow-hidden">
-                        <Image
-                          src="/assets/SAKALA_MC.PNG"
-                          alt="Sakala MC"
-                          fill
-                          className="object-cover"
-                        />
+                  {/* Left: Instagram Icon + Handle */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] p-0.5 flex items-center justify-center shrink-0 shadow-md">
+                      <div className="w-full h-full bg-[#070F18] rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
                       </div>
                     </div>
                     <div className="flex flex-col">
-                      <h3 className="text-sm sm:text-base font-bold text-white tracking-tight leading-snug">
-                        Sakala Motorcycle Club
-                      </h3>
-                      <div className="flex items-center gap-2 text-xs sm:text-[13px] text-[#94A3B8] font-normal mt-0.5">
-                        <span className="text-[#CBD5E1] font-medium">{profileHandle}</span>
-                        <span className="text-white/40">•</span>
-                        <span>Official Dispatch Feed</span>
-                      </div>
+                      <span className="text-sm sm:text-base font-bold text-white tracking-tight leading-snug">
+                        {profileHandle}
+                      </span>
+                      <span className="text-[11px] text-[#94A3B8]">
+                        Instagram
+                      </span>
                     </div>
                   </div>
 
-                  {/* Right: Official Follow / View Instagram Button */}
+                  {/* Right: Official Follow Button */}
                   <a
                     href={profileUrl}
                     target="_blank"
@@ -262,7 +257,7 @@ export default function CultureSection() {
                 </div>
               </EditableWrapper>
 
-              {/* Real Feed Carousel */}
+              {/* Feed Track */}
               <div className="relative group/carousel min-h-[300px]">
                 
                 {/* Floating Left Arrow */}
@@ -342,78 +337,54 @@ export default function CultureSection() {
                           target="_blank"
                           rel="noreferrer"
                           className="relative block aspect-[4/5] w-full rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 bg-[#0C1724] shadow-xl group transition-all duration-300"
-                          title={post.title || `Instagram Post ${post.shortcode}`}
                         >
                           {post.has_official_media && post.thumbnail_url ? (
                             /* Sub-case 1: Official Media from Meta Graph oEmbed */
                             <>
                               <Image
                                 src={post.thumbnail_url}
-                                alt={post.title || `Instagram Post ${post.shortcode}`}
+                                alt={post.title || 'Instagram Post'}
                                 fill
                                 sizes="280px"
                                 unoptimized={Boolean(post.thumbnail_url.includes('fbcdn.net') || post.thumbnail_url.includes('cdninstagram.com'))}
                                 className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                               />
 
-                              {/* Top-Right Reel / Video Badge */}
-                              <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-md w-7 h-7 rounded-lg flex items-center justify-center text-white shadow-md">
-                                <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
-                              </div>
-
-                              {/* Bottom Info Gradient Overlay */}
-                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent pt-14 pb-3.5 px-3.5 flex items-end justify-between gap-2">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="relative w-6 h-6 rounded-full border border-white/40 overflow-hidden bg-black shrink-0">
-                                    <Image
-                                      src="/assets/SAKALA_MC.PNG"
-                                      alt="Sakala"
-                                      fill
-                                      className="object-cover"
-                                    />
-                                  </div>
-                                  <div className="min-w-0 flex flex-col">
-                                    <span className="text-white text-[11px] font-semibold leading-tight truncate">
-                                      {post.author_name ? `@${post.author_name}` : profileHandle}
-                                    </span>
-                                    <span className="text-white/70 text-[9.5px] leading-tight mt-0.5">
-                                      View on Instagram
+                              {/* Bottom Info Gradient Overlay: Only authentic data from Meta */}
+                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent pt-14 pb-3.5 px-3.5 flex flex-col justify-end">
+                                {post.title && (
+                                  <p className="text-white text-[11px] line-clamp-2 leading-snug mb-1.5 opacity-90">
+                                    {post.title}
+                                  </p>
+                                )}
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="min-w-0 flex items-center gap-1.5">
+                                    {post.author_name && (
+                                      <span className="text-white text-[11px] font-semibold leading-tight truncate">
+                                        @{post.author_name}
+                                      </span>
+                                    )}
+                                    <span className="text-white/60 text-[9.5px] leading-tight">
+                                      • View on Instagram
                                     </span>
                                   </div>
+                                  <ExternalLink className="w-3 h-3 text-white/70 shrink-0" />
                                 </div>
-
-                                <svg className="w-4 h-4 fill-white shrink-0 opacity-90 mb-0.5" viewBox="0 0 24 24">
-                                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                                </svg>
                               </div>
                             </>
                           ) : (
-                            /* Sub-case 2: Official Fallback Card (No media scraping, clean direct permalink card) */
-                            <div className="w-full h-full p-6 flex flex-col justify-between bg-gradient-to-b from-[#0F1E32] to-[#070F18] border border-white/5">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
-                                    <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
-                                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                                    </svg>
-                                  </div>
-                                  <span className="text-xs font-semibold text-white">{profileHandle}</span>
-                                </div>
-                                <span className="text-[10px] text-[#C5AA00] font-mono uppercase tracking-wider">
-                                  POST /{post.shortcode.slice(0, 6)}
-                                </span>
-                              </div>
-
-                              <div className="my-auto py-4">
-                                <p className="text-xs text-[#CBD5E1] line-clamp-3 leading-relaxed">
-                                  Official Instagram post dispatch from Sakala Motorcycle Club guild archive.
-                                </p>
-                              </div>
-
-                              <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-[#0095F6] group-hover:text-white font-semibold transition-colors">
+                            /* Sub-case 2: Clean fallback when official media is not available (Zero fake data) */
+                            <div className="w-full h-full p-6 flex flex-col items-center justify-center text-center bg-[#0B1522] border border-white/5">
+                              <svg className="w-8 h-8 fill-[#E1306C] mb-3 opacity-80" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                              </svg>
+                              <p className="text-xs text-[#94A3B8] mb-4">
+                                Instagram post unavailable
+                              </p>
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0095F6] group-hover:bg-[#1877F2] text-white text-[11px] font-semibold rounded transition-colors">
                                 <span>View on Instagram</span>
-                                <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                              </div>
+                                <ExternalLink className="w-3 h-3" />
+                              </span>
                             </div>
                           )}
                         </a>
