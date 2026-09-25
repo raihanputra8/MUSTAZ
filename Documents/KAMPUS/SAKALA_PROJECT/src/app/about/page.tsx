@@ -367,131 +367,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION 5: THE CIRCLE — HIERARCHY, MOTOR STORY & PROTOCOLS */}
-        <section id="circle" className="border-t border-[#E5E2D9] pt-20 pb-24 bg-[#FAF9F5]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-12">
-            <div className="max-w-3xl">
-              <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-2">
-                CHAPTER IV: THE CIRCLE
-              </span>
-              <h2 className="font-serif-editorial text-2xl sm:text-3xl font-bold tracking-wider text-[#070F18] uppercase">
-                HOW SAKALA CHOOSES ITS MEMBERS &amp; HOLDS THE LINE
-              </h2>
-              <p className="text-xs sm:text-sm text-[#64748B] mt-2">
-                “We don't seek crowds. We seek commitment. Membership is not advertised. Entry is by introduction, vetted application, and extended prospecting.”
-              </p>
-            </div>
-
-            {/* The Motor Story Protocol Feature Card */}
-            <div className="bg-[#070F18] text-white p-8 sm:p-12 border border-[#1E293B] shadow-xl">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                <div className="lg:col-span-7 space-y-4">
-                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#F0D000] uppercase block">
-                    OUR FIRST TEST OF CHARACTER
-                  </span>
-                  <h3 className="font-serif-editorial text-2xl sm:text-3xl font-black">
-                    THE MOTOR STORY PROTOCOL
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
-                    When a prospect is considered for SAKALA membership, the rider presents their motorcycle to the circle and tells its story: How they found it. Why they chose it. What they built into it. What it means.
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/10 text-xs">
-                    <div>
-                      <span className="font-bold text-white block mb-1">Authenticity &amp; Craft</span>
-                      <p className="text-[#64748B] text-[11px]">Is this a relationship or a purchase? Effort invested in understanding and building.</p>
-                    </div>
-                    <div>
-                      <span className="font-bold text-white block mb-1">Humility &amp; Ambition</span>
-                      <p className="text-[#64748B] text-[11px]">Recognition of mentors, and what this machine says about what the rider intends to become.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-5 bg-[#0D1926] p-6 border border-white/10 text-center space-y-3">
-                  <span className="font-serif-editorial text-xl sm:text-2xl font-bold text-[#F0D000] block italic">
-                    “The bike matters less than the builder.”
-                  </span>
-                  <p className="text-[11px] text-[#64748B] tracking-wider uppercase">
-                    Format: 30-min conversation, garage or ride. No slides. No rehearsal.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Monarchy Compass & Patch Hierarchy */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Monarchy Compass */}
-              <div className="lg:col-span-6 bg-white border border-[#E5E2D9] p-8 shadow-xs">
-                <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-2">
-                  THE MONARCHY COMPASS
-                </span>
-                <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-6">
-                  Four Directional Guardians
-                </h3>
-
-                <div className="grid grid-cols-2 gap-4 text-xs">
-                  <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9]">
-                    <span className="font-bold text-[#070F18] block">NARPATI (North)</span>
-                    <span className="text-[11px] text-[#64748B]">Leader &amp; Sovereign Vision</span>
-                  </div>
-                  <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9]">
-                    <span className="font-bold text-[#070F18] block">PATIH (West)</span>
-                    <span className="text-[11px] text-[#64748B]">Executor &amp; Operations</span>
-                  </div>
-                  <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9]">
-                    <span className="font-bold text-[#070F18] block">MANGKUBUMI (East)</span>
-                    <span className="text-[11px] text-[#64748B]">Internal Welfare &amp; Domain</span>
-                  </div>
-                  <div className="p-4 bg-[#FAF9F5] border border-[#E5E2D9]">
-                    <span className="font-bold text-[#070F18] block">PURBAKA (South)</span>
-                    <span className="text-[11px] text-[#64748B]">Elders &amp; Ancestral Honor</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Patch Hierarchy & Unwritten Rules */}
-              <div className="lg:col-span-6 bg-white border border-[#E5E2D9] p-8 shadow-xs flex flex-col justify-between">
-                <div>
-                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block mb-2">
-                    PATCH RANKS &amp; PROTOCOL
-                  </span>
-                  <h3 className="font-serif-editorial text-xl font-bold text-[#070F18] mb-4">
-                    Hierarchy Ladder
-                  </h3>
-
-                  <div className="space-y-2.5 text-xs">
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E5E2D9]">
-                      <span className="font-bold text-[#070F18]">ADVAITA</span>
-                      <span className="text-[10px] font-mono text-[#64748B]">Full Patch dengan Side Rockers</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E5E2D9]">
-                      <span className="font-bold text-[#070F18]">SENAPATI</span>
-                      <span className="text-[10px] font-mono text-[#64748B]">Full Patch tanpa Side Rockers</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E5E2D9]">
-                      <span className="font-bold text-[#070F18]">WADYA</span>
-                      <span className="text-[10px] font-mono text-[#64748B]">Top Rockers &amp; Bottom</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E5E2D9]">
-                      <span className="font-bold text-[#070F18]">PROSPECT / YODHA</span>
-                      <span className="text-[10px] font-mono text-[#64748B]">Prospect Patch</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1.5">
-                      <span className="font-bold text-[#070F18]">BARUDAK SAKALA</span>
-                      <span className="text-[10px] font-mono text-[#64748B]">Non Patch, Menggunakan Slayers</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-[#E5E2D9] text-[11px] text-[#64748B]">
-                  <strong>Unwritten Rules:</strong> Never touch a patched rider's cut (vest/jacket). Respect the veteran hierarchy.
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 6: GIANT DARK NAVY QUOTE SECTION MATCHING DESIGN */}
+        {/* SECTION 5: GIANT DARK NAVY QUOTE SECTION */}
         <section className="bg-[#070F18] text-white py-24 lg:py-32 border-t border-[#1E293B] text-center px-6">
           <div className="max-w-4xl mx-auto space-y-10">
             <h2 className="font-serif-editorial text-2xl sm:text-4xl lg:text-5xl font-light italic leading-tight text-white/95">
@@ -499,16 +375,16 @@ export default function AboutPage() {
             </h2>
 
             <div className="text-[11px] font-bold tracking-[0.3em] text-[#F0D000] uppercase">
-              — THE ROAD. THE RANGE. THE CIRCLE.
+              — THE ROAD. THE RANGE. SAKALA.
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <a
-                href="#circle"
+              <Link
+                href="/bikes"
                 className="w-full sm:w-auto px-8 py-4 border border-white/40 text-white text-xs font-bold tracking-[0.2em] uppercase hover:border-[#F0D000] hover:text-[#F0D000] transition-colors"
               >
-                APPLY FOR PROSPECT
-              </a>
+                EXPLORE GARAGE
+              </Link>
               <Link
                 href="/shop"
                 className="w-full sm:w-auto px-8 py-4 bg-[#F0D000] text-[#070F18] text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#C5AA00] transition-colors"
