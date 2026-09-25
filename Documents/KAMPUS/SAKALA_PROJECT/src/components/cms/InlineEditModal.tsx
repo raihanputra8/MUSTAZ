@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2, Loader2 } from 'lucide-react';
+import { X, Save, Trash2, Loader2, Crop } from 'lucide-react';
 import { useInlineCMS, EditingItem } from '@/context/InlineCMSContext';
 import { updateBike, deleteBike } from '@/lib/supabase/admin';
 import { updateProduct, deleteProduct } from '@/lib/supabase/admin';
 import { updateJournalPost, deleteJournalPost } from '@/lib/supabase/admin';
 import { uploadImage } from '@/lib/supabase/admin';
 import { Bike, Product, JournalPost } from '@/types/database';
+import ImageCropperModal from './ImageCropperModal';
 
 export default function InlineEditModal() {
   const { editingItem, setEditingItem, triggerRefresh, showToast } = useInlineCMS();
@@ -16,6 +17,12 @@ export default function InlineEditModal() {
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+
+  // Image Cropper State
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string>('');
+  const [cropTargetField, setCropTargetField] = useState<string>('image_url');
+  const [cropTargetFolder, setCropTargetFolder] = useState<string>('bikes');
 
   useEffect(() => {
     if (editingItem) {
@@ -37,7 +44,7 @@ export default function InlineEditModal() {
     }));
   }
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, field: string, folder: string) {
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>, field: string, folder: string) {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -45,18 +52,40 @@ export default function InlineEditModal() {
       showToast('Please upload an image file', 'error');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('File must be less than 5MB', 'error');
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('File must be less than 10MB', 'error');
       return;
     }
 
+    const objectUrl = URL.createObjectURL(file);
+    setImageToCrop(objectUrl);
+    setCropTargetField(field);
+    setCropTargetFolder(folder);
+    setCropperOpen(true);
+    e.target.value = '';
+  }
+
+  function handleOpenCropperForCurrent(field: string, folder: string) {
+    const currentUrl = (formData[field] as string) || '';
+    if (!currentUrl) {
+      showToast('Belum ada foto untuk di-crop', 'error');
+      return;
+    }
+    setImageToCrop(currentUrl);
+    setCropTargetField(field);
+    setCropTargetFolder(folder);
+    setCropperOpen(true);
+  }
+
+  async function handleCropComplete(croppedBlob: Blob) {
     setImageUploading(true);
     try {
-      const url = await uploadImage(file, folder);
-      updateField(field, url);
-      showToast('Image uploaded!');
+      const croppedFile = new File([croppedBlob], `crop-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      const url = await uploadImage(croppedFile, cropTargetFolder);
+      updateField(cropTargetField, url);
+      showToast('Foto berhasil di-crop & disimpan! ✓');
     } catch (err) {
-      showToast(err instanceof Error ? err.message : 'Upload failed', 'error');
+      showToast(err instanceof Error ? err.message : 'Gagal mengunggah foto', 'error');
     } finally {
       setImageUploading(false);
     }
@@ -139,33 +168,86 @@ export default function InlineEditModal() {
 
         {/* Body */}
         <div className="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
-          {/* Image Preview & Upload */}
+          {/* Image Preview & Upload & Crop */}
           <div>
-            <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-2">
-              Image
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                Image
+              </label>
+              {((formData.image_url as string) || (formData.cover_image_url as string)) && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleOpenCropperForCurrent(
+                      editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
+                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
+                    )
+                  }
+                  className="flex items-center gap-1.5 text-[10px] font-bold text-[#070F18] hover:text-[#C5AA00] transition-colors cursor-pointer"
+                >
+                  <Crop className="w-3.5 h-3.5 text-[#C5AA00]" />
+                  <span>SESUAIKAN CROP</span>
+                </button>
+              )}
+            </div>
+
             <div className="relative group">
               {((formData.image_url as string) || (formData.cover_image_url as string)) && (
-                <div className="w-full h-48 bg-[#FAF9F5] border border-[#E5E2D9] rounded-md overflow-hidden mb-2">
+                <div className="relative w-full h-48 bg-[#FAF9F5] border border-[#E5E2D9] rounded-md overflow-hidden mb-2 group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={(formData.image_url || formData.cover_image_url) as string}
                     alt="Preview"
                     className="w-full h-full object-cover"
                   />
+                  {/* Hover Overlay Button to Crop */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleOpenCropperForCurrent(
+                        editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
+                        editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
+                      )
+                    }
+                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 text-white text-xs font-bold tracking-wider uppercase cursor-pointer backdrop-blur-[2px]"
+                  >
+                    <Crop className="w-6 h-6 text-[#C5AA00]" />
+                    <span>KLIK UNTUK CROP / ATUR POSISI FOTO</span>
+                    <span className="text-[10px] text-[#94A3B8] font-normal normal-case">
+                      Geser &amp; zoom area foto yang ingin ditampilkan
+                    </span>
+                  </button>
                 </div>
               )}
+
+              {/* Dedicated Crop Action Button */}
+              {((formData.image_url as string) || (formData.cover_image_url as string)) && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleOpenCropperForCurrent(
+                      editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
+                      editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
+                    )
+                  }
+                  className="w-full mb-3 py-2.5 px-3 bg-[#070F18] hover:bg-[#C5AA00] text-white hover:text-black text-[11px] font-bold tracking-wider uppercase rounded-md transition-all flex items-center justify-center gap-2 border border-[#070F18] shadow-xs btn-tactile cursor-pointer"
+                >
+                  <Crop className="w-4 h-4 text-[#C5AA00] group-hover:text-black" />
+                  <span>PILIH CROP / SESUAIKAN FRAMING FOTO</span>
+                </button>
+              )}
+
               <div className="flex items-center gap-2">
                 <label className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border-2 border-dashed border-[#E5E2D9] hover:border-[#C5AA00] rounded-md cursor-pointer transition-all ${imageUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                   {imageUploading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin text-[#C5AA00]" />
-                      <span className="text-[10px] text-[#64748B]">Uploading...</span>
+                      <span className="text-[10px] text-[#64748B]">Menyimpan &amp; Mengunggah...</span>
                     </>
                   ) : (
                     <>
                       <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                        Upload New Image
+                        Upload New Image (Bisa Langsung Di-Crop)
                       </span>
                     </>
                   )}
@@ -173,7 +255,7 @@ export default function InlineEditModal() {
                     type="file"
                     accept="image/*"
                     onChange={(e) =>
-                      handleImageUpload(
+                      handleFileSelect(
                         e,
                         editingItem.type === 'journal' ? 'cover_image_url' : 'image_url',
                         editingItem.type === 'bike' ? 'bikes' : editingItem.type === 'product' ? 'products' : 'journal'
@@ -183,6 +265,7 @@ export default function InlineEditModal() {
                   />
                 </label>
               </div>
+
               {/* Manual URL input */}
               <input
                 type="text"
@@ -372,6 +455,16 @@ export default function InlineEditModal() {
           </div>
         </div>
       </div>
+
+      {/* Interactive Crop Modal */}
+      <ImageCropperModal
+        isOpen={cropperOpen}
+        imageSrc={imageToCrop}
+        defaultAspectRatio={editingItem.type === 'product' ? 1 : 16 / 9}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        title={`Crop Foto ${editingItem.type === 'bike' ? 'Motor' : editingItem.type === 'product' ? 'Produk' : 'Artikel'}`}
+      />
     </div>
   );
 }
