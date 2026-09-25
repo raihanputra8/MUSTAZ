@@ -305,6 +305,55 @@ export default function InlineEditModal() {
                   </div>
                 )}
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <FieldInput
+                  label="Tanggal Ditampilkan"
+                  value={((formData.date as string) || '')}
+                  onChange={(v) => updateField('date', v)}
+                  placeholder="Contoh: 15 April 2026"
+                />
+                <FieldInput
+                  label="Nama Akun / Judul Singkat"
+                  value={((formData.title as string) || '')}
+                  onChange={(v) => updateField('title', v)}
+                  placeholder="Contoh: Sakala Motorcycle Club"
+                />
+              </div>
+            </div>
+          ) : editingItem.id === 'culture_ig_profile' ? (
+            <div className="space-y-4">
+              <FieldInput
+                label="Nama Profil"
+                value={((formData.name as string) || '')}
+                onChange={(v) => updateField('name', v)}
+                placeholder="Sakala Motorcycle Club Indonesia"
+              />
+              <FieldInput
+                label="Username / Handle"
+                value={((formData.handle as string) || '')}
+                onChange={(v) => updateField('handle', v)}
+                placeholder="@sakala_ina"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <FieldInput
+                  label="Jumlah Posts"
+                  value={((formData.posts_count as string) || '')}
+                  onChange={(v) => updateField('posts_count', v)}
+                  placeholder="3.0K posts"
+                />
+                <FieldInput
+                  label="Jumlah Followers"
+                  value={((formData.followers_count as string) || '')}
+                  onChange={(v) => updateField('followers_count', v)}
+                  placeholder="47K followers"
+                />
+              </div>
+              <FieldInput
+                label="Link Tombol Follow Instagram"
+                value={((formData.follow_url as string) || '')}
+                onChange={(v) => updateField('follow_url', v)}
+                placeholder="https://www.instagram.com/sakala_ina?..."
+              />
             </div>
           ) : (
             /* Regular Image Preview & Upload & Crop (Untuk Motor, Produk, Journal, & Konten Biasa) */
