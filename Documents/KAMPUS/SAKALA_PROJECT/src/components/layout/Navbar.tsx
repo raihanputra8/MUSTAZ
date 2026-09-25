@@ -92,7 +92,7 @@ export default function Navbar() {
             <Link href="/shop" className="nav-link-animated hover:text-[#C5AA00] transition-colors uppercase">
               SHOP
             </Link>
-            <Link href="/bikes/bike-01" className="nav-link-animated hover:text-[#C5AA00] transition-colors uppercase">
+            <Link href="/bikes" className="nav-link-animated hover:text-[#C5AA00] transition-colors uppercase">
               BIKES
             </Link>
             <Link href="/journal" className="nav-link-animated hover:text-[#C5AA00] transition-colors uppercase">
@@ -237,7 +237,7 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/bikes/bike-01"
+                href="/bikes"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-between py-3.5 px-3 rounded-xs border-b border-white/5 hover:bg-white/5 transition-colors group"
               >

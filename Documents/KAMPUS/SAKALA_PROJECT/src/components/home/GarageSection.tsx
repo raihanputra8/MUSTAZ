@@ -57,7 +57,7 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
               ← Geser Motor →
             </span>
             <Link
-              href="/bikes/bike-01"
+              href="/bikes"
               className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-[#070F18] hover:text-[#0047AB] transition-colors uppercase flex-shrink-0 group"
             >
               <span>ALL BUILDS</span>
@@ -76,7 +76,7 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                 >
                 <div className="bg-white border border-[#E5E2D9] rounded-xs overflow-hidden shadow-xs card-interactive flex flex-col group h-full hover:border-[#070F18]">
                   {/* Bike Image Container */}
-                  <div className="relative h-56 w-full bg-[#EFECE6] overflow-hidden border-b border-[#E5E2D9]">
+                  <Link href={`/bikes/${bike.id}`} className="relative h-56 w-full bg-[#EFECE6] overflow-hidden border-b border-[#E5E2D9] block">
                     <Image
                       src={bike.image_url}
                       alt={`${bike.year} ${bike.make} ${bike.model}`}
@@ -84,7 +84,7 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
-                  </div>
+                  </Link>
 
                   {/* Card Body */}
                   <div className="p-5 flex-1 flex flex-col justify-between">
@@ -92,9 +92,11 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                       <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase block mb-1">
                         {bike.year} {bike.make} {bike.model}
                       </span>
-                      <h3 className="font-serif-editorial text-xl font-black text-[#070F18] mb-4 tracking-tight group-hover:text-[#0047AB] transition-colors">
-                        {bike.title}
-                      </h3>
+                      <Link href={`/bikes/${bike.id}`}>
+                        <h3 className="font-serif-editorial text-xl font-black text-[#070F18] mb-4 tracking-tight group-hover:text-[#0047AB] transition-colors">
+                          {bike.title}
+                        </h3>
+                      </Link>
 
                       {/* Technical Specs Summary */}
                       <div className="divide-y divide-[#E5E2D9]/80 text-[11px] mb-5">
@@ -111,15 +113,24 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                       </div>
                     </div>
 
-                    {/* View Specs Button */}
+                    {/* Actions Button */}
                     {!isEditMode && (
-                      <button
-                        onClick={() => setSelectedBike(bike)}
-                        className="w-full flex items-center justify-center gap-2 bg-[#070F18] hover:bg-[#0047AB] text-white py-2.5 text-[10px] font-bold tracking-[0.18em] uppercase rounded-xs btn-tactile transition-colors"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>VIEW SPECS</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setSelectedBike(bike)}
+                          className="flex-1 flex items-center justify-center gap-1.5 bg-[#FAF9F5] border border-[#E5E2D9] hover:border-[#070F18] text-[#070F18] py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase rounded-xs transition-colors cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>SPECS</span>
+                        </button>
+                        <Link
+                          href={`/bikes/${bike.id}`}
+                          className="flex-1 flex items-center justify-center gap-1.5 bg-[#070F18] hover:bg-[#0047AB] text-white py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase rounded-xs btn-tactile transition-colors"
+                        >
+                          <span>DOSSIER</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -173,13 +184,20 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                 ))}
               </div>
 
-              <div className="mt-6 flex justify-end">
+              <div className="mt-6 flex items-center justify-between gap-3 pt-4 border-t border-[#E5E2D9]">
                 <button
                   onClick={() => setSelectedBike(null)}
-                  className="px-6 py-2.5 bg-[#070F18] hover:bg-[#0047AB] text-white text-xs font-bold tracking-[0.16em] uppercase rounded-xs btn-tactile"
+                  className="px-5 py-2.5 border border-[#E5E2D9] text-[#64748B] hover:text-[#070F18] text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors cursor-pointer"
                 >
-                  CLOSE DOSSIER
+                  CLOSE
                 </button>
+                <Link
+                  href={`/bikes/${selectedBike.id}`}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#070F18] hover:bg-[#0047AB] text-white text-xs font-bold tracking-[0.16em] uppercase rounded-xs btn-tactile transition-colors"
+                >
+                  <span>FULL BUILD DOSSIER</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
           </div>

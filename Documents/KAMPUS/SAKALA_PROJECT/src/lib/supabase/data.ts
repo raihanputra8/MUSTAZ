@@ -30,6 +30,29 @@ export async function getBikes(): Promise<Bike[]> {
   }
 }
 
+export async function getBikeById(id: string): Promise<Bike | null> {
+  const bikes = await getBikes();
+  const normalizedId = decodeURIComponent(id).toLowerCase();
+  const found = bikes.find((b) => b.id.toLowerCase() === normalizedId);
+  if (found) return found;
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase.from('bikes').select('*').eq('id', id).single();
+      if (!error && data) {
+        return {
+          ...(data as Bike),
+          image_url: resolveAssetUrl((data as Bike).image_url),
+        };
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return bikes[0] || null;
+}
+
 export async function getProducts(category?: string): Promise<Product[]> {
   if (!isSupabaseConfigured || !supabase) {
     const prods = (!category || category === 'all')
