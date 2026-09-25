@@ -50,18 +50,19 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Sacred Cakra Rahayu Kencana Emblem */}
+          {/* Right Column: SAKALA MC Official Colors Patch */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
-            {/* Glowing Golden Aura */}
-            <div className="absolute w-56 h-56 sm:w-72 sm:h-72 lg:w-96 lg:h-96 rounded-full bg-[#C5AA00]/15 blur-3xl pointer-events-none self-center" />
+            {/* Subtle Atmospheric Glow */}
+            <div className="absolute w-60 h-60 sm:w-80 sm:h-80 lg:w-[420px] lg:h-[420px] rounded-full bg-[#0047AB]/20 blur-3xl pointer-events-none self-center" />
+            <div className="absolute w-44 h-44 sm:w-60 sm:h-60 lg:w-72 lg:h-72 rounded-full bg-[#C5AA00]/15 blur-2xl pointer-events-none self-center" />
 
-            <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[400px] lg:h-[400px] animate-fade-in animate-float-gentle will-change-transform">
+            <div className="relative w-64 h-72 sm:w-80 sm:h-92 lg:w-[420px] lg:h-[470px] animate-fade-in animate-float-gentle will-change-transform">
               <Image
-                src="/assets/cakra_rahayu_kencana.png"
-                alt="Cakra Rahayu Kencana — Sacred Sunda-Galuh Emblem"
+                src="/assets/SAKALA_MC.PNG"
+                alt="SAKALA Motorcycle Club Indonesia Official Emblem"
                 fill
-                sizes="(max-width: 768px) 256px, 400px"
-                className="object-contain transition-transform duration-500 hover:scale-103"
+                sizes="(max-width: 768px) 280px, 450px"
+                className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)] transition-transform duration-500 hover:scale-103"
                 priority
               />
             </div>
