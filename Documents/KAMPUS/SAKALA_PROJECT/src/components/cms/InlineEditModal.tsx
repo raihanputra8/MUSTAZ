@@ -444,14 +444,61 @@ export default function InlineEditModal() {
                 }}
               />
               <FieldTextarea
-                label="Description / Narrative Body"
-                value={((formData.description || formData.content) as string) || ''}
+                label="Description / Caption Body"
+                value={((formData.description || formData.content || formData.caption) as string) || ''}
                 onChange={(v) => {
                   updateField('description', v);
                   updateField('content', v);
+                  updateField('caption', v);
                 }}
-                rows={5}
+                rows={4}
               />
+
+              {/* YouTube / Video URL */}
+              {(formData.video_url !== undefined || editingItem.id.includes('video') || editingItem.id.includes('youtube')) && (
+                <FieldInput
+                  label="YouTube / Video URL (contoh: https://youtu.be/IK0VG7j2P9s)"
+                  value={((formData.video_url || formData.link) as string) || ''}
+                  onChange={(v) => {
+                    updateField('video_url', v);
+                  }}
+                />
+              )}
+
+              {/* Instagram / External Post Link */}
+              {(formData.link !== undefined || formData.post_link !== undefined || formData.external_link !== undefined || editingItem.id.includes('ig') || editingItem.id.includes('post')) && (
+                <FieldInput
+                  label="Instagram Post URL / Link (contoh: https://www.instagram.com/sakala_ina)"
+                  value={((formData.link || formData.post_link || formData.external_link) as string) || ''}
+                  onChange={(v) => {
+                    updateField('link', v);
+                    updateField('post_link', v);
+                    updateField('external_link', v);
+                  }}
+                />
+              )}
+
+              {/* Instagram Metrics (Likes, Comments, Date) */}
+              {(formData.likes !== undefined || formData.comments !== undefined || formData.date !== undefined || editingItem.id.includes('ig')) && (
+                <div className="grid grid-cols-3 gap-3">
+                  <FieldInput
+                    label="Likes (cth: 1.2k)"
+                    value={(formData.likes as string) || ''}
+                    onChange={(v) => updateField('likes', v)}
+                  />
+                  <FieldInput
+                    label="Comments"
+                    value={(formData.comments as string) || ''}
+                    onChange={(v) => updateField('comments', v)}
+                  />
+                  <FieldInput
+                    label="Date Label"
+                    value={(formData.date as string) || ''}
+                    onChange={(v) => updateField('date', v)}
+                  />
+                </div>
+              )}
+
               {formData.cta_text !== undefined && (
                 <FieldInput
                   label="Button / CTA Text"
