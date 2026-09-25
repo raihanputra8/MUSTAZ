@@ -6,7 +6,7 @@ import { useInlineCMS, EditingItem } from '@/context/InlineCMSContext';
 import { updateBike, deleteBike } from '@/lib/supabase/admin';
 import { updateProduct, deleteProduct } from '@/lib/supabase/admin';
 import { updateJournalPost, deleteJournalPost } from '@/lib/supabase/admin';
-import { uploadImage } from '@/lib/supabase/admin';
+import { updateSiteContent, uploadImage } from '@/lib/supabase/admin';
 import { Bike, Product, JournalPost } from '@/types/database';
 import ImageCropperModal from './ImageCropperModal';
 
@@ -118,6 +118,14 @@ export default function InlineEditModal() {
         await updateProduct(id, updates as Partial<Product>);
       } else if (type === 'journal') {
         await updateJournalPost(id, updates as Partial<JournalPost>);
+      } else if (type === 'content') {
+        const key = (formData.key as string) || id;
+        const val = (formData.value as string) || (formData.content as string) || '';
+        try {
+          await updateSiteContent(key, val);
+        } catch (err) {
+          console.warn('Site content fallback save:', err);
+        }
       }
 
       showToast('Saved successfully! ✓');
@@ -169,7 +177,7 @@ export default function InlineEditModal() {
               INLINE CMS EDITOR
             </span>
             <h2 className="font-serif-editorial text-lg font-bold text-white">
-              Edit {editingItem.type === 'bike' ? 'Bike' : editingItem.type === 'product' ? 'Product' : 'Journal Post'}
+              Edit {editingItem.type === 'bike' ? 'Bike' : editingItem.type === 'product' ? 'Product' : editingItem.type === 'journal' ? 'Journal Post' : 'Page Content'}
             </h2>
           </div>
           <button
@@ -408,6 +416,28 @@ export default function InlineEditModal() {
                   Featured Article
                 </label>
               </div>
+            </>
+          )}
+
+          {/* Content Block Editor */}
+          {editingItem.type === 'content' && (
+            <>
+              <FieldInput
+                label="Section / Block Label"
+                value={(formData.label as string) || ''}
+                onChange={(v) => updateField('label', v)}
+              />
+              <FieldInput
+                label="Headline / Value"
+                value={(formData.value as string) || (formData.title as string) || ''}
+                onChange={(v) => updateField('value', v)}
+              />
+              <FieldTextarea
+                label="Description / Narrative Body"
+                value={(formData.description as string) || (formData.content as string) || ''}
+                onChange={(v) => updateField('description', v)}
+                rows={5}
+              />
             </>
           )}
         </div>

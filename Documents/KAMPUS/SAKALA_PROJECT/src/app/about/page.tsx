@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import EditableWrapper from '@/components/cms/EditableWrapper';
 
 export default function AboutPage() {
   const [expandedTradition, setExpandedTradition] = useState<string | null>(null);
@@ -31,65 +32,79 @@ export default function AboutPage() {
       <main className="flex-1">
         {/* SECTION 1: HERO — THE MANIFEST REALM & BROTHERHOOD */}
         <section className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 lg:pt-24 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Left Column: Editorial Headline & Origin Statement */}
-            <div className="lg:col-span-7 space-y-8">
-              <span className="text-[11px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block">
-                FOUNDED IN BANDUNG • EST. 2026
-              </span>
+          <EditableWrapper
+            item={{
+              type: 'content',
+              id: 'about_hero',
+              data: {
+                key: 'about_hero',
+                label: 'About Hero Origin Statement',
+                value: 'THE MANIFEST REALM, & BROTHERHOOD.',
+                description: 'Founded in Bandung in 2026 by Adil Lothar Hasan. We are an exclusive brotherhood that honors the humanity in every member. We are motorcycle-agnostic and character-selective. A circle, not a crowd.',
+                image_url: '/assets/sakala_emblem.png',
+              },
+            }}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Left Column: Editorial Headline & Origin Statement */}
+              <div className="lg:col-span-7 space-y-8">
+                <span className="text-[11px] font-bold tracking-[0.25em] text-[#0050A0] uppercase block">
+                  FOUNDED IN BANDUNG • EST. 2026
+                </span>
 
-              <h1 className="font-serif-editorial text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#070F18] leading-[1.05]">
-                THE MANIFEST<br />
-                REALM,<br />
-                <span className="italic font-normal font-serif text-[#0050A0]">&amp;</span><br />
-                <span className="italic font-normal font-serif">BROTHERHOOD.</span>
-              </h1>
+                <h1 className="font-serif-editorial text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#070F18] leading-[1.05]">
+                  THE MANIFEST<br />
+                  REALM,<br />
+                  <span className="italic font-normal font-serif text-[#0050A0]">&amp;</span><br />
+                  <span className="italic font-normal font-serif">BROTHERHOOD.</span>
+                </h1>
 
-              <p className="text-sm sm:text-base text-[#475569] leading-relaxed max-w-xl font-normal">
-                Founded in Bandung in 2026 by <strong>Adil Lothar Hasan</strong>. We are an exclusive brotherhood that honors the humanity in every member. We are motorcycle-agnostic and character-selective. A circle, not a crowd.
-              </p>
+                <p className="text-sm sm:text-base text-[#475569] leading-relaxed max-w-xl font-normal">
+                  Founded in Bandung in 2026 by <strong>Adil Lothar Hasan</strong>. We are an exclusive brotherhood that honors the humanity in every member. We are motorcycle-agnostic and character-selective. A circle, not a crowd.
+                </p>
 
-              <div>
-                <a 
-                  href="#origin"
-                  className="inline-block bg-[#070F18] text-white text-[11px] font-bold tracking-[0.25em] px-8 py-4 hover:bg-[#0050A0] transition-colors uppercase shadow-sm"
-                >
-                  DISCOVER ORIGIN
-                </a>
+                <div>
+                  <a 
+                    href="#origin"
+                    className="inline-block bg-[#070F18] text-white text-[11px] font-bold tracking-[0.25em] px-8 py-4 hover:bg-[#0050A0] transition-colors uppercase shadow-sm"
+                  >
+                    DISCOVER ORIGIN
+                  </a>
+                </div>
               </div>
-            </div>
 
-            {/* Right Column: Dark Navy Graphic Card */}
-            <div className="lg:col-span-5">
-              <div className="bg-[#070F18] text-white p-8 sm:p-10 border border-[#1E293B] shadow-xl flex flex-col justify-between min-h-[460px]">
-                {/* Top Logo / Skull & Emblem Composition */}
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <div className="relative w-40 h-40 mb-4 drop-shadow-[0_10px_25px_rgba(240,208,0,0.18)]">
-                    <Image
-                      src="/assets/sakala_emblem.png"
-                      alt="SAKALA Emblem"
-                      fill
-                      className="object-contain"
-                    />
+              {/* Right Column: Dark Navy Graphic Card */}
+              <div className="lg:col-span-5">
+                <div className="bg-[#070F18] text-white p-8 sm:p-10 border border-[#1E293B] shadow-xl flex flex-col justify-between min-h-[460px]">
+                  {/* Top Logo / Skull & Emblem Composition */}
+                  <div className="flex flex-col items-center justify-center py-6 text-center">
+                    <div className="relative w-40 h-40 mb-4 drop-shadow-[0_10px_25px_rgba(240,208,0,0.18)]">
+                      <Image
+                        src="/assets/sakala_emblem.png"
+                        alt="SAKALA Emblem"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+
+                    <span className="font-serif-editorial text-3xl font-black tracking-[0.2em] text-[#F0D000] block mb-1">
+                      SAKALA
+                    </span>
+                    <span className="text-[10px] font-bold tracking-[0.25em] text-[#94A3B8] uppercase">
+                      MOTORCYCLE CLUB
+                    </span>
                   </div>
 
-                  <span className="font-serif-editorial text-3xl font-black tracking-[0.2em] text-[#F0D000] block mb-1">
-                    SAKALA
-                  </span>
-                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#94A3B8] uppercase">
-                    MOTORCYCLE CLUB
-                  </span>
-                </div>
-
-                {/* Bottom Narrative Caption */}
-                <div className="pt-6 border-t border-white/10">
-                  <p className="text-xs text-[#94A3B8] leading-relaxed font-light">
-                    Where metal meets spirit across the asphalt ribbons of the archipelago. We celebrate character over displacement, camaraderie over speed, and stories earned through rain, distance, and brotherhood.
-                  </p>
+                  {/* Bottom Narrative Caption */}
+                  <div className="pt-6 border-t border-white/10">
+                    <p className="text-xs text-[#94A3B8] leading-relaxed font-light">
+                      Where metal meets spirit across the asphalt ribbons of the archipelago. We celebrate character over displacement, camaraderie over speed, and stories earned through rain, distance, and brotherhood.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </EditableWrapper>
         </section>
 
         {/* SECTION 2: THE ALCHEMY OF SAKALA PHILOSOPHY */}
@@ -369,30 +384,43 @@ export default function AboutPage() {
 
         {/* SECTION 5: GIANT DARK NAVY QUOTE SECTION */}
         <section className="bg-[#070F18] text-white py-24 lg:py-32 border-t border-[#1E293B] text-center px-6">
-          <div className="max-w-4xl mx-auto space-y-10">
-            <h2 className="font-serif-editorial text-2xl sm:text-4xl lg:text-5xl font-light italic leading-tight text-white/95">
-              “We do not ride for an audience. We ride because the sound of four pistons singing in unison through a Bandung valley mist at dawn is the only thing that silences the modern world.”
-            </h2>
+          <EditableWrapper
+            item={{
+              type: 'content',
+              id: 'about_quote',
+              data: {
+                key: 'about_quote',
+                label: 'Closing Atelier Manifesto Quote',
+                value: '“We do not ride for an audience. We ride because the sound of four pistons singing in unison through a Bandung valley mist at dawn is the only thing that silences the modern world.”',
+                description: '— THE ROAD. THE RANGE. SAKALA.',
+              },
+            }}
+          >
+            <div className="max-w-4xl mx-auto space-y-10">
+              <h2 className="font-serif-editorial text-2xl sm:text-4xl lg:text-5xl font-light italic leading-tight text-white/95">
+                “We do not ride for an audience. We ride because the sound of four pistons singing in unison through a Bandung valley mist at dawn is the only thing that silences the modern world.”
+              </h2>
 
-            <div className="text-[11px] font-bold tracking-[0.3em] text-[#F0D000] uppercase">
-              — THE ROAD. THE RANGE. SAKALA.
-            </div>
+              <div className="text-[11px] font-bold tracking-[0.3em] text-[#F0D000] uppercase">
+                — THE ROAD. THE RANGE. SAKALA.
+              </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link
-                href="/bikes"
-                className="w-full sm:w-auto px-8 py-4 border border-white/40 text-white text-xs font-bold tracking-[0.2em] uppercase hover:border-[#F0D000] hover:text-[#F0D000] transition-colors"
-              >
-                EXPLORE GARAGE
-              </Link>
-              <Link
-                href="/shop"
-                className="w-full sm:w-auto px-8 py-4 bg-[#F0D000] text-[#070F18] text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#C5AA00] transition-colors"
-              >
-                ENTER STORE
-              </Link>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Link
+                  href="/bikes"
+                  className="w-full sm:w-auto px-8 py-4 border border-white/40 text-white text-xs font-bold tracking-[0.2em] uppercase hover:border-[#F0D000] hover:text-[#F0D000] transition-colors"
+                >
+                  EXPLORE GARAGE
+                </Link>
+                <Link
+                  href="/shop"
+                  className="w-full sm:w-auto px-8 py-4 bg-[#F0D000] text-[#070F18] text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#C5AA00] transition-colors"
+                >
+                  ENTER STORE
+                </Link>
+              </div>
             </div>
-          </div>
+          </EditableWrapper>
         </section>
 
 

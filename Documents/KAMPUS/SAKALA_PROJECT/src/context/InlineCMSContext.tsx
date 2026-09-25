@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 
 export type EditingItem = {
-  type: 'bike' | 'product' | 'journal';
+  type: 'bike' | 'product' | 'journal' | 'content';
   id: string;
   data: Record<string, unknown>;
 } | null;
@@ -38,11 +38,14 @@ export function InlineCMSProvider({ children }: { children: React.ReactNode }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  // Can edit if admin or local development
+  const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const canEdit = isAdmin || isDev;
+
   const toggleEditMode = useCallback(() => {
-    if (!isAdmin) return;
     setIsEditMode((prev) => !prev);
     setEditingItem(null);
-  }, [isAdmin]);
+  }, []);
 
   const triggerRefresh = useCallback(() => {
     setRefreshKey((k) => k + 1);
@@ -53,8 +56,8 @@ export function InlineCMSProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // Only provide CMS capabilities if user is admin
-  if (!isAdmin) {
+  // Provide CMS capabilities
+  if (!canEdit) {
     return (
       <InlineCMSContext.Provider
         value={{

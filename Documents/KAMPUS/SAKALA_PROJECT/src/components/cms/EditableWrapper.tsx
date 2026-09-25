@@ -7,9 +7,10 @@ import { useInlineCMS, EditingItem } from '@/context/InlineCMSContext';
 interface EditableWrapperProps {
   children: React.ReactNode;
   item: {
-    type: 'bike' | 'product' | 'journal';
+    type: 'bike' | 'product' | 'journal' | 'content';
     id: string;
-    data: Record<string, unknown>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any;
   };
   className?: string;
 }

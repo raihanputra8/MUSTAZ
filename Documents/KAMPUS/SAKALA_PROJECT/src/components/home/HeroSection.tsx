@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
+import EditableWrapper from '@/components/cms/EditableWrapper';
 
 export default function HeroSection() {
   return (
@@ -12,7 +13,20 @@ export default function HeroSection() {
       <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#0047AB] via-[#070F18] to-transparent" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
-        <div className="grid grid-cols-12 gap-3 sm:gap-8 lg:gap-12 items-center">
+        <EditableWrapper
+          item={{
+            type: 'content',
+            id: 'home_hero',
+            data: {
+              key: 'hero_title',
+              label: 'Hero Main Title & Monograph',
+              value: 'SAKALA MOTORCYCLE CLUB',
+              description: 'Bandung-born motorcycle collective & custom atelier. Built on fraternity, raw displacement, and Indonesian motorcycle heritage.',
+              image_url: '/assets/SAKALA_MC.PNG',
+            },
+          }}
+        >
+          <div className="grid grid-cols-12 gap-3 sm:gap-8 lg:gap-12 items-center">
           {/* Left Column: Monograph Typography & CTAs (Col 7) */}
           <div className="col-span-7 flex flex-col justify-center animate-fade-in-up">
             {/* Main Brand Title */}
@@ -68,7 +82,8 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
+      </EditableWrapper>
+    </div>
+  </section>
+);
 }
