@@ -6,7 +6,6 @@ import GarageSection from '@/components/home/GarageSection';
 import SupplySection from '@/components/home/SupplySection';
 import CultureSection from '@/components/home/CultureSection';
 import JournalSection from '@/components/home/JournalSection';
-import NewsletterSection from '@/components/home/NewsletterSection';
 import Footer from '@/components/layout/Footer';
 import { getBikes, getProducts, getJournalPosts } from '@/lib/supabase/data';
 
@@ -29,7 +28,6 @@ export default async function HomePage() {
         <SupplySection initialProducts={products} />
         <JournalSection posts={journalPosts} />
         <CultureSection />
-        <NewsletterSection />
       </main>
       <Footer />
     </div>
