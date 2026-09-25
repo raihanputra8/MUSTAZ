@@ -45,39 +45,39 @@ export default function NewsletterSection() {
       <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
         <ScrollReveal direction="up" delay={50}>
           {/* Register Badge */}
-          <span className="inline-block text-[10px] font-bold tracking-[0.25em] text-[#0047AB] bg-[#0047AB]/10 border border-[#0047AB]/30 px-3.5 py-1 uppercase rounded-xs mb-4">
-            MEMBERSHIP DISPATCH REGISTER
+          <span className="inline-block text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] bg-[#C5AA00]/10 border border-[#C5AA00]/30 px-3 py-1 uppercase rounded-xs mb-3">
+            COMMUNITY MEMBERSHIP
           </span>
 
           {/* Title */}
-          <h2 className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl font-black text-[#C5AA00] tracking-tight mb-4">
-            STAY IN THE CIRCLE.
+          <h2 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2">
+            JOIN THE <span className="text-[#C5AA00]">CIRCLE</span>
           </h2>
 
           {/* Subtitle */}
-          <p className="text-[11px] sm:text-xs font-semibold tracking-[0.25em] text-[#E2E8F0] uppercase mb-10 max-w-xl mx-auto">
-            NEW BUILDS • PRIVATE APPAREL DROPS • ROAD CHRONICLES • RIDE COORDINATES
+          <p className="text-xs text-[#94A3B8] max-w-md mx-auto mb-8 leading-relaxed">
+            Private apparel drops, garage build dispatches, and Bandung chapter ride coordinates.
           </p>
         </ScrollReveal>
 
         {/* Email Form */}
-        <ScrollReveal direction="up" delay={150}>
-          <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-6">
+        <ScrollReveal direction="up" delay={120}>
+          <form onSubmit={handleSubmit} className="max-w-lg mx-auto mb-4">
             <div className="flex flex-col sm:flex-row items-stretch gap-2 bg-white/5 p-1.5 border border-[#C5AA00]/30 rounded-xs backdrop-blur-xs transition-all duration-300 focus-within:border-[#C5AA00]">
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address..."
-                className="flex-1 bg-white text-gray-900 px-4 py-3 text-xs outline-none rounded-xs placeholder-gray-500 font-medium transition-all"
+                placeholder="Enter your email..."
+                className="flex-1 bg-white text-gray-900 px-4 py-2.5 text-xs outline-none rounded-xs placeholder-gray-500 font-medium transition-all"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#C5AA00] hover:bg-[#B39900] disabled:opacity-75 text-black px-6 py-3 text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer btn-tactile"
+                className="bg-[#C5AA00] hover:bg-[#B39900] disabled:opacity-75 text-black px-5 py-2.5 text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer btn-tactile"
               >
-                <span>{loading ? 'REGISTERING...' : 'JOIN THE CIRCLE'}</span>
+                <span>{loading ? 'JOINING...' : 'JOIN CIRCLE'}</span>
                 <Lock className="w-3.5 h-3.5 stroke-[2.5]" />
               </button>
             </div>
@@ -87,7 +87,7 @@ export default function NewsletterSection() {
         {/* Status Message */}
         {status.message && (
           <div
-            className={`text-xs font-medium max-w-md mx-auto p-2.5 rounded mb-4 flex items-center justify-center gap-2 animate-scale-in ${
+            className={`text-xs font-medium max-w-md mx-auto p-2.5 rounded mb-3 flex items-center justify-center gap-2 animate-scale-in ${
               status.success ? 'bg-emerald-950/70 text-emerald-400 border border-emerald-500/30' : 'bg-red-950/70 text-red-400 border border-red-500/30'
             }`}
           >
@@ -97,8 +97,8 @@ export default function NewsletterSection() {
         )}
 
         {/* Disclaimer */}
-        <p className="text-[10px] text-[#64748B] max-w-md mx-auto leading-relaxed">
-          No spam. Strictly confidential dispatch notices, private garage drops, and chapter ride coordinates directly from Bandung HQ.
+        <p className="text-[10px] text-[#64748B] max-w-md mx-auto">
+          Directly from Bandung HQ. A circle, not a crowd.
         </p>
       </div>
     </section>

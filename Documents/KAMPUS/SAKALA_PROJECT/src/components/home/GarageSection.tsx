@@ -36,70 +36,68 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
   }, [refreshKey, refetchBikes]);
 
   return (
-    <section id="garage" className="bg-[#FAF9F5] py-20 lg:py-28 border-b border-[#E5E2D9]">
+    <section id="garage" className="bg-[#FAF9F5] py-16 lg:py-24 border-b border-[#E5E2D9]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header */}
-        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-3 block">
-              02 — THE GARAGE & ATELIER
+            <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
+              02 / BUILDS — THE ATELIER
             </span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#070F18] tracking-tight leading-tight">
-              MACHINES WITH STORIES
+              THE SAKALA GARAGE
             </h2>
-            <p className="text-xs sm:text-sm text-[#64748B] mt-2">
-              Built by hand. Ridden without apology. Each machine is a one-of-one archival specimen.
+            <p className="text-xs sm:text-sm text-[#64748B] mt-1.5">
+              Handcrafted machines with history. Built to ride without compromise.
             </p>
           </div>
 
           <Link
-            href="#garage"
-            className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-[#070F18] hover:text-[#C5AA00] transition-colors uppercase flex-shrink-0 group"
+            href="/bikes/bike-01"
+            className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-[#070F18] hover:text-[#0047AB] transition-colors uppercase flex-shrink-0 group"
           >
-            <span>EXPLORE ALL GARAGE BUILDS</span>
+            <span>ALL BUILDS</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
           </Link>
         </ScrollReveal>
 
         {/* 3 Bikes Grid with Staggered ScrollReveal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {bikes.map((bike, idx) => (
-            <ScrollReveal key={bike.id} direction="up" delay={120 + idx * 120}>
+            <ScrollReveal key={bike.id} direction="up" delay={100 + idx * 100}>
               <EditableWrapper
                 item={{ type: 'bike', id: bike.id, data: bike as unknown as Record<string, unknown> }}
               >
                 <div className="bg-white border border-[#E5E2D9] rounded-xs overflow-hidden shadow-xs card-interactive flex flex-col group h-full hover:border-[#070F18]">
                   {/* Bike Image Container */}
-                  <div className="relative h-60 w-full bg-[#EFECE6] overflow-hidden border-b border-[#E5E2D9]">
+                  <div className="relative h-56 w-full bg-[#EFECE6] overflow-hidden border-b border-[#E5E2D9]">
                     <Image
                       src={bike.image_url}
                       alt={`${bike.year} ${bike.make} ${bike.model}`}
                       fill
-                      className="object-cover group-hover:scale-106 transition-transform duration-700 ease-out"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
-                    <div className="absolute top-3 left-3 bg-[#070F18]/85 text-white text-[9px] font-bold tracking-[0.18em] px-2.5 py-1 uppercase rounded-xs backdrop-blur-xs transition-colors group-hover:bg-[#0047AB]">
-                      {bike.status}
-                    </div>
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
                       <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase block mb-1">
                         {bike.year} {bike.make} {bike.model}
                       </span>
-                      <h3 className="font-serif-editorial text-2xl font-black text-[#070F18] mb-5 tracking-tight group-hover:text-[#0047AB] transition-colors">
+                      <h3 className="font-serif-editorial text-xl font-black text-[#070F18] mb-4 tracking-tight group-hover:text-[#0047AB] transition-colors">
                         {bike.title}
                       </h3>
 
-                      {/* Technical Specs Table */}
-                      <div className="divide-y divide-[#E5E2D9]/80 text-[11px] mb-6">
-                        {Object.entries(bike.specs).map(([key, val]) => (
-                          <div key={key} className="py-2 flex items-center justify-between transition-colors hover:bg-slate-50 px-1 rounded-xs">
-                            <span className="font-semibold text-[#64748B] uppercase tracking-wider">
+                      {/* Technical Specs Summary */}
+                      <div className="divide-y divide-[#E5E2D9]/80 text-[11px] mb-5">
+                        {Object.entries(bike.specs).slice(0, 3).map(([key, val]) => (
+                          <div key={key} className="py-1.5 flex items-center justify-between">
+                            <span className="font-semibold text-[#64748B] uppercase tracking-wider text-[10px]">
                               {key}
                             </span>
-                            <span className="font-medium text-[#070F18] text-right">
+                            <span className="font-medium text-[#070F18] text-right truncate max-w-[160px]">
                               {val}
                             </span>
                           </div>
@@ -111,10 +109,10 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                     {!isEditMode && (
                       <button
                         onClick={() => setSelectedBike(bike)}
-                        className="w-full flex items-center justify-center gap-2 bg-[#070F18] hover:bg-[#0047AB] text-white py-3 text-[11px] font-bold tracking-[0.18em] uppercase rounded-xs btn-tactile"
+                        className="w-full flex items-center justify-center gap-2 bg-[#070F18] hover:bg-[#0047AB] text-white py-2.5 text-[10px] font-bold tracking-[0.18em] uppercase rounded-xs btn-tactile transition-colors"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span>VIEW BUILD SPECS</span>
+                        <span>VIEW SPECS</span>
                       </button>
                     )}
                   </div>

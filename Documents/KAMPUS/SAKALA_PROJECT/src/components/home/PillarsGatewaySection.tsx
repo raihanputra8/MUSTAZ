@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
-
-import bannerImg from '../../../public/assets/sakala_pillars_banner_v2.png';
+import desktopBannerImg from '../../../public/assets/sakala_pillars_banner_v2.png';
+import mobileBannerImg from '../../../public/assets/sakala_pillars_banner_mobile.png';
 
 export default function PillarsGatewaySection() {
   return (
@@ -12,23 +12,33 @@ export default function PillarsGatewaySection() {
       className="w-full relative bg-[#002243] overflow-hidden p-0 m-0 border-b border-[#C5AA00]/30"
     >
       {/* 
-        High-Fidelity Archival Gateway with Skull Watermark
-        Uses object-contain with matching #002243 background so the complete artwork 
-        (all 4 pillars from capital crowns to base pedestals, plus the skull and SAKALA MC emblem)
-        is 100% visible without any cropping or cut-off on all screen ratios.
+        Desktop / Tablet View (md and up):
+        Full-bleed edge-to-edge layout where the 4 Corinthian pillars touch the left and right screen borders
       */}
-      <div className="w-full relative flex items-center justify-center bg-[#002243] py-4 sm:py-6 lg:py-8 px-2 sm:px-6">
-        <div className="w-full max-w-[1920px] aspect-[16/9] max-h-[85vh] relative overflow-hidden select-none">
-          <Image
-            src={bannerImg}
-            alt="SAKALA Motorcycle Club — Four Pillars Archival Gateway"
-            fill
-            priority
-            quality={100}
-            sizes="100vw"
-            className="object-contain w-full h-full block select-none"
-          />
-        </div>
+      <div className="hidden md:block w-full relative aspect-[1024/575] overflow-hidden select-none">
+        <Image
+          src={desktopBannerImg}
+          alt="SAKALA Motorcycle Club — Four Pillars Archival Gateway"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover w-full h-full select-none"
+        />
+      </div>
+
+      {/* 
+        Mobile View (below md):
+        Dedicated vertical archway composition tailored for smartphones with pillars flanking the screen edges
+      */}
+      <div className="block md:hidden w-full relative aspect-[5/4] sm:aspect-[4/3] overflow-hidden select-none">
+        <Image
+          src={mobileBannerImg}
+          alt="SAKALA Motorcycle Club — Mobile Archival Gateway"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover w-full h-full select-none"
+        />
       </div>
 
       {/* Subtle bottom decorative line highlight */}

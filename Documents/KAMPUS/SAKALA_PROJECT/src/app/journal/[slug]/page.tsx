@@ -254,9 +254,10 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
               <div className="space-y-2">
                 <div className="relative aspect-[4/3] w-full bg-[#070F18] rounded-xs overflow-hidden border border-[#E5E2D9]">
                   <Image
-                    src="/assets/culture_riders.png"
+                    src="/assets/culture_members.png"
                     alt="The 9 riders regrouping in the mist"
                     fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover"
                   />
                 </div>
