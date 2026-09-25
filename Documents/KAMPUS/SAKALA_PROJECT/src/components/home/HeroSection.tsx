@@ -20,13 +20,9 @@ export default function HeroSection() {
               SAKALA
             </h1>
 
-            {/* Credo Subtitle */}
-            <p className="text-xs sm:text-sm font-semibold tracking-[0.3em] text-[#94A3B8] uppercase mb-4 flex items-center gap-2">
-              <span>BROTHERHOOD</span>
-              <span className="text-[#C5AA00]">•</span>
-              <span>LOYALTY</span>
-              <span className="text-[#C5AA00]">•</span>
-              <span>CIRCLE</span>
+            {/* Subtitle */}
+            <p className="text-xs sm:text-sm font-semibold tracking-[0.3em] text-[#94A3B8] uppercase mb-4">
+              MOTORCYCLE CLUB
             </p>
 
             {/* Concise On-Point Description */}
