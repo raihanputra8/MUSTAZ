@@ -40,6 +40,10 @@
   letter-spacing: -0.02em;
 }
 
+.font-western {
+  font-family: var(--font-rye), Georgia, serif;
+}
+
 .bg-sakala-dark {
   background-color: #070F18;
 }

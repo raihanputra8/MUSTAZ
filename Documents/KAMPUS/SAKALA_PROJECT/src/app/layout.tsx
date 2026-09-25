@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Inter } from 'next/font/google';
+import { Playfair_Display, Inter, Rye } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { AuthProvider } from '@/context/AuthContext';
@@ -24,6 +24,13 @@ const inter = Inter({
   display: 'swap',
 });
 
+const rye = Rye({
+  subsets: ['latin'],
+  variable: '--font-rye',
+  weight: '400',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: 'SAKALA — Motorcycle Club | Bandung',
   description: 'Klub motor dan ruang karya mandiri dari Bandung, Jawa Barat. Berjalan bersama atas dasar persaudaraan, motor kustom, dan catatan perjalanan.',
@@ -38,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${inter.variable} ${rye.variable}`}>
       <body className="antialiased min-h-screen flex flex-col selection:bg-[#C5AA00] selection:text-black">
         <SmoothScroll>
           <AuthProvider>
