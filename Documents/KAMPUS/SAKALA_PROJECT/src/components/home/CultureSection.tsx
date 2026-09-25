@@ -12,7 +12,7 @@ export default function CultureSection() {
         <ScrollReveal direction="up" delay={50} className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 md:mb-10 items-end">
           <div className="lg:col-span-7">
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase mb-2 block">
-              04 / CULTURE — CLUB ACTIVITIES
+              05 / CULTURE — CLUB ACTIVITIES
             </span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
               BROTHERHOOD IN MOTION

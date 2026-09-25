@@ -27,8 +27,8 @@ export default async function HomePage() {
         <HeroSection />
         <GarageSection bikes={bikes} />
         <SupplySection initialProducts={products} />
-        <CultureSection />
         <JournalSection posts={journalPosts} />
+        <CultureSection />
         <NewsletterSection />
       </main>
       <Footer />

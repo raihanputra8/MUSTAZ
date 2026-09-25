@@ -40,13 +40,13 @@ export default function JournalSection({ posts: initialPosts }: { posts: Journal
 
 
   return (
-    <section id="journal" className="bg-[#FAF9F5] py-16 lg:py-24 border-b border-[#E5E2D9]">
+    <section id="journal" className="bg-[#FAF9F5] py-12 sm:py-16 lg:py-24 border-b border-[#E5E2D9]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header */}
-        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-10 gap-4">
           <div>
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
-              05 / DISPATCHES — SAKALA JOURNAL
+              04 / DISPATCHES — SAKALA JOURNAL
             </span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#070F18] tracking-tight leading-tight">
               STORIES FROM THE ROAD
