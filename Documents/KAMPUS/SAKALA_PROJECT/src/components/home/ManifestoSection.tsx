@@ -13,29 +13,29 @@ export default function ManifestoSection() {
           <ScrollReveal direction="up" delay={50} className="lg:col-span-5 flex flex-col justify-between">
             <div>
               <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-3 block">
-                — 01 / PROFILE — ABOUT SAKALA
+                TENTANG SAKALA
               </span>
 
               <h2 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#070F18] leading-[1.12] mb-6">
-                FORGED IN STEEL &amp; SOLIDARITY.
+                PERSAUDARAAN &amp; PERJALANAN NYATA.
               </h2>
 
               <div className="space-y-4 text-xs sm:text-sm text-[#475569] leading-relaxed">
                 <p>
-                  Founded in Bandung, Sakala is an independent brotherhood honoring the tactile weight of mechanical machinery and lifelong fraternity.
+                  Didirikan di Bandung, Sakala Motorcycle Club adalah wadah persaudaraan roda dua yang mencatat perjalanan, motor, dan kegiatan bersama.
                 </p>
                 <p>
-                  Motorcycle-agnostic and character-selective — we do not measure our club in mass numbers, but in loyalty, shared miles, and commitments kept without compromise.
+                  Terbuka untuk berbagai jenis motor dengan mengutamakan rasa saling menghargai, kebersamaan di jalan, dan komitmen antaranggota.
                 </p>
               </div>
             </div>
 
-            {/* Guild Insignia Badge */}
+            {/* Emblem Badge */}
             <div className="mt-8 pt-6 border-t border-[#E5E2D9] flex items-center gap-3">
               <div className="w-9 h-9 rounded-xs bg-[#070F18] flex items-center justify-center p-2 flex-shrink-0 transition-transform hover:scale-105 duration-300">
                 <Image
                   src="/assets/sakala_emblem.png"
-                  alt="Sakala Guild Insignia"
+                  alt="Lambang Sakala MC"
                   width={24}
                   height={24}
                   className="object-contain"
@@ -46,7 +46,7 @@ export default function ManifestoSection() {
                   SAKALA EMBLEM
                 </span>
                 <span className="text-[10px] tracking-[0.2em] text-[#64748B] uppercase block">
-                  WEST JAVA HERITAGE GUILD
+                  BANDUNG, JAWA BARAT
                 </span>
               </div>
             </div>
@@ -57,13 +57,13 @@ export default function ManifestoSection() {
             <ScrollReveal direction="up" delay={120}>
               <div className="bg-[#FAF9F5] p-6 sm:p-8 border border-[#E5E2D9] rounded-xs mb-8 shadow-xs card-interactive">
                 <span className="text-[10px] font-bold tracking-[0.22em] text-[#C5AA00] uppercase mb-2 block">
-                  CANONICAL CREDO
+                  PRINSIP KITA
                 </span>
                 <blockquote className="font-serif-editorial text-xl sm:text-2xl font-bold text-[#070F18] leading-snug mb-3">
-                  “SAKALA IS MORE THAN A MOTORCYCLE. IT IS THE PEOPLE, THE ROAD, AND THE STORIES WE CREATE TOGETHER.”
+                  “SAKALA BUKAN HANYA TENTANG MOTOR, TETAPI TENTANG ORANG-ORANGNYA, JALANAN, DAN CERITA YANG KITA BANGUN BERSAMA.”
                 </blockquote>
                 <p className="text-xs text-[#64748B] leading-relaxed">
-                  Every machine in our circle carries a vow: no brother rides alone, and our craft speaks through actions, not claims.
+                  Setiap perjalanan mempererat kebersamaan dan rasa saling menjaga di antara sesama anggota.
                 </p>
               </div>
             </ScrollReveal>
@@ -75,14 +75,14 @@ export default function ManifestoSection() {
                 <div className="bg-white p-5 border border-[#E5E2D9] rounded-xs shadow-xs card-interactive h-full flex flex-col justify-between hover:border-[#070F18]">
                   <div>
                     <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase mb-2">
-                      <span>01 / PILLAR</span>
+                      <span>PILAR</span>
                       <span className="w-1.5 h-1.5 bg-[#070F18]" />
                     </div>
                     <h3 className="font-serif-editorial text-base font-bold text-[#070F18] mb-1.5 tracking-wide">
-                      BROTHERHOOD
+                      PERSAUDARAAN
                     </h3>
                     <p className="text-[11px] text-[#64748B] leading-relaxed">
-                      Unconditional allegiance on and off the road. We ride as one unified column.
+                      Kebersamaan dan saling menjaga, baik saat berkendara di jalan maupun di luar kegiatan bermotor.
                     </p>
                   </div>
                 </div>
@@ -93,14 +93,14 @@ export default function ManifestoSection() {
                 <div className="bg-white p-5 border border-[#E5E2D9] rounded-xs shadow-xs card-interactive h-full flex flex-col justify-between hover:border-[#0047AB]">
                   <div>
                     <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase mb-2">
-                      <span>02 / PILLAR</span>
+                      <span>PILAR</span>
                       <span className="w-1.5 h-1.5 bg-[#0047AB]" />
                     </div>
                     <h3 className="font-serif-editorial text-base font-bold text-[#070F18] mb-1.5 tracking-wide">
-                      LOYALTY
+                      LOYALITAS
                     </h3>
                     <p className="text-[11px] text-[#64748B] leading-relaxed">
-                      Devotion to the code, mutual respect, and the heritage of custom craftsmanship.
+                      Saling menghormati, menjaga komitmen bersama, dan saling mendukung antaranggota.
                     </p>
                   </div>
                 </div>
@@ -111,14 +111,14 @@ export default function ManifestoSection() {
                 <div className="bg-white p-5 border border-[#E5E2D9] rounded-xs shadow-xs card-interactive h-full flex flex-col justify-between hover:border-[#C5AA00]">
                   <div>
                     <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase mb-2">
-                      <span>03 / PILLAR</span>
+                      <span>PILAR</span>
                       <span className="w-1.5 h-1.5 bg-[#C5AA00]" />
                     </div>
                     <h3 className="font-serif-editorial text-base font-bold text-[#070F18] mb-1.5 tracking-wide">
-                      CIRCLE
+                      KEBERSAMAAN
                     </h3>
                     <p className="text-[11px] text-[#64748B] leading-relaxed">
-                      A tight collective of builders, artisans, and riders rooted in West Java.
+                      Komunitas pengendara motor yang berakar dan berbasis di Bandung, Jawa Barat.
                     </p>
                   </div>
                 </div>

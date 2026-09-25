@@ -27,19 +27,19 @@ export default function LoginPage() {
           />
         </div>
         <span className="text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase mb-2 block">
-          AUTHENTICATED IDENTITY
+          SUDAH MASUK
         </span>
         <h1 className="font-serif-editorial text-3xl font-bold mb-4">
-          WELCOME BACK, {user.user_metadata?.full_name?.toUpperCase() || user.email?.toUpperCase()}
+          SELAMAT DATANG KEMBALI, {user.user_metadata?.full_name?.toUpperCase() || user.email?.toUpperCase()}
         </h1>
         <p className="text-xs text-[#94A3B8] mb-8 max-w-sm">
-          You are currently signed in with Google. Your atelier dossier and machines are ready.
+          Anda telah masuk dengan akun Google. Profil dan data motor Anda siap diakses.
         </p>
         <Link
           href="/account"
           className="bg-[#C5AA00] hover:bg-[#D4B800] text-black text-xs font-bold tracking-[0.2em] px-8 py-3.5 uppercase transition-colors"
         >
-          ENTER MEMBER DOSSIER →
+          MASUK KE AKUN SAYA →
         </Link>
       </div>
     );
@@ -71,7 +71,7 @@ export default function LoginPage() {
           className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.2em] uppercase text-[#94A3B8] hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>RETURN TO SANCTUARY</span>
+          <span>KEMBALI KE BERANDA</span>
         </Link>
 
         <Link href="/" className="font-serif-editorial text-xl font-bold tracking-[0.18em] text-[#C5AA00]">
@@ -82,12 +82,12 @@ export default function LoginPage() {
       {/* Main Login Card */}
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md bg-[#0D1926] border border-[#C5AA00]/30 p-8 sm:p-10 shadow-2xl relative">
-          {/* Sacred Emblem Accent */}
+          {/* Emblem Accent */}
           <div className="flex flex-col items-center text-center mb-8">
             <div className="relative w-20 h-20 mb-4 drop-shadow-[0_8px_20px_rgba(197,170,0,0.35)]">
               <Image
                 src="/assets/cakra_rahayu_kencana.png"
-                alt="SAKALA Sacred Seal"
+                alt="SAKALA Seal"
                 fill
                 className="object-contain"
                 priority
@@ -95,15 +95,15 @@ export default function LoginPage() {
             </div>
 
             <span className="text-[10px] font-bold tracking-[0.28em] text-[#C5AA00] uppercase block mb-1">
-              BANDUNG ARCHIVAL SPEED GUILD
+              BANDUNG, INDONESIA
             </span>
 
             <h1 className="font-serif-editorial text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
-              MEMBER ACCESS
+              MASUK ANGGOTA
             </h1>
 
             <p className="text-xs text-[#94A3B8] leading-relaxed font-light max-w-xs">
-              Sign in with your verified Google account to access your machines, order manifests, and dispatch telemetry.
+              Masuk dengan akun Google untuk melihat data motor, riwayat pesanan, dan akun Anda.
             </p>
           </div>
 
@@ -112,7 +112,7 @@ export default function LoginPage() {
             <div className="mb-6 p-3.5 bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold block mb-0.5">Authentication Notice</span>
+                <span className="font-bold block mb-0.5">Pemberitahuan</span>
                 <span className="text-[11px] leading-tight block">{authError}</span>
               </div>
             </div>
@@ -144,32 +144,32 @@ export default function LoginPage() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              <span>{isSubmitting ? 'CONNECTING GOOGLE...' : 'SIGN IN WITH GOOGLE'}</span>
+              <span>{isSubmitting ? 'MENGHUBUNGKAN...' : 'MASUK DENGAN GOOGLE'}</span>
             </button>
 
             {/* Quick Demo Access Divider */}
             <div className="relative flex py-2 items-center">
               <div className="flex-grow border-t border-white/10" />
               <span className="flex-shrink mx-4 text-[10px] tracking-[0.2em] uppercase text-[#64748B]">
-                OR PREVIEW ACCESS
+                ATAU MODE TAMU
               </span>
               <div className="flex-grow border-t border-white/10" />
             </div>
 
-            {/* Guest / Senior Artisan Access */}
+            {/* Guest Access */}
             <button
               onClick={handleGuestLogin}
               className="w-full bg-[#070F18] hover:bg-[#0A1624] text-[#C5AA00] hover:text-white border border-[#C5AA00]/30 hover:border-[#C5AA00] text-xs font-bold tracking-[0.18em] uppercase py-3.5 px-6 transition-all flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4 text-[#C5AA00]" />
-              <span>CONTINUE AS SENIOR ARTISAN (DEV GUEST)</span>
+              <span>MASUK SEBAGAI TAMU (DEMO)</span>
             </button>
           </div>
 
-          {/* Privacy & Protocol Note */}
+          {/* Privacy Note */}
           <div className="mt-8 pt-6 border-t border-white/10 text-center">
             <p className="text-[10px] text-[#64748B] leading-relaxed">
-              Google OAuth credentials are encrypted securely under SAKALA Guild Protocol. Protected under the Indonesian Digital Privacy Act.
+              Autentikasi akun aman melalui Google OAuth.
             </p>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function LoginPage() {
 
       {/* Footer */}
       <footer className="p-6 text-center text-[10px] text-[#64748B] tracking-widest uppercase border-t border-white/10">
-        © 2026 SAKALA MOTORCYCLE CLUB • BANDUNG, ID
+        © SAKALA MOTORCYCLE CLUB • BANDUNG, INDONESIA
       </footer>
     </div>
   );

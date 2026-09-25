@@ -181,14 +181,11 @@ export default function CultureSection() {
 
   return (
     <section id="culture" className="bg-[#070F18] text-white py-16 sm:py-20 lg:py-24 border-b border-[#C5AA00]/20 relative overflow-hidden">
-      {/* Background Radial Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#0047AB]/10 blur-[130px] pointer-events-none rounded-full" />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
         {/* 1. DI TENGAH: LOGO SAKALA_MC.PNG */}
         <ScrollReveal direction="up" delay={50} className="flex flex-col items-center justify-center text-center mb-12 sm:mb-14">
-          <div className="relative w-32 h-32 sm:w-44 sm:h-44 drop-shadow-[0_20px_45px_rgba(197,170,0,0.25)] hover:scale-105 transition-transform duration-500">
+          <div className="relative w-32 h-32 sm:w-44 sm:h-44 drop-shadow-[0_20px_45px_rgba(197,170,0,0.25)]">
             <Image
               src="/assets/SAKALA_MC.PNG"
               alt="Sakala MC Logo"
@@ -201,7 +198,7 @@ export default function CultureSection() {
             SAKALA MOTORCYCLE CLUB
           </span>
           <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase mt-1">
-            EST. 2026 • BANDUNG GUILD
+            BANDUNG, INDONESIA
           </span>
         </ScrollReveal>
 
@@ -432,12 +429,12 @@ export default function CultureSection() {
               href="https://youtube.com/@sakala.id25?si=4ScKIl-5ZM3UJ0tS"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 hover:border-[#FF0000] hover:bg-[#FF0000]/10 transition-all text-xs font-semibold text-white group shadow-sm hover:scale-105"
+              className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 hover:border-[#FF0000] hover:bg-[#FF0000]/10 transition-all text-xs font-semibold text-white group shadow-sm"
             >
               <svg className="w-4 h-4 fill-current text-[#FF0000]" viewBox="0 0 24 24">
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
               </svg>
-              <span>YouTube Guild</span>
+              <span>YouTube Sakala</span>
               <ArrowUpRight className="w-3.5 h-3.5 opacity-60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 

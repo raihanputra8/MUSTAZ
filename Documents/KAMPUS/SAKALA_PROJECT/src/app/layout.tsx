@@ -25,8 +25,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'SAKALA — Archival Speed Culture & Custom Guild | Bandung',
-  description: 'A cultural collective and custom engineering atelier built around the philosophy of lifelong fraternity, raw displacement, and Indonesian archival motorcycle heritage.',
+  title: 'SAKALA — Motorcycle Club | Bandung',
+  description: 'Klub motor dan ruang karya mandiri dari Bandung, Jawa Barat. Berjalan bersama atas dasar persaudaraan, motor kustom, dan catatan perjalanan.',
   icons: {
     icon: '/assets/sakala_emblem.png',
   },

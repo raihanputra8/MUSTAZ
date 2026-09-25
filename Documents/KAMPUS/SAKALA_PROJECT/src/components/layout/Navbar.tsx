@@ -93,7 +93,7 @@ export default function Navbar() {
                 SAKALA
               </span>
               <span className="text-[9px] tracking-[0.25em] font-medium text-[#737373] uppercase mt-1">
-                EST. 2026 • BANDUNG
+                BANDUNG
               </span>
             </div>
           </Link>
@@ -224,7 +224,7 @@ export default function Navbar() {
           <div className="md:hidden fixed inset-x-0 top-20 bottom-0 bg-[#070F18]/98 backdrop-blur-xl border-t border-[#C5AA00]/20 z-50 flex flex-col justify-between overflow-y-auto animate-fade-in">
             <div className="p-6 space-y-2">
               <span className="text-[9px] font-bold tracking-[0.3em] text-[#C5AA00] uppercase block mb-3">
-                NAVIGATION ARCHIVE
+                MENU NAVIGASI
               </span>
 
               {/* Navigation Links */}
@@ -238,7 +238,7 @@ export default function Navbar() {
                     SHOP
                   </span>
                   <span className="text-[10px] tracking-[0.18em] text-[#94A3B8] uppercase">
-                    Official Apparel &amp; Gear
+                    Pakaian &amp; Perlengkapan
                   </span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#C5AA00] group-hover:translate-x-1 transition-transform" />
@@ -251,10 +251,10 @@ export default function Navbar() {
               >
                 <div>
                   <span className="font-serif-editorial text-xl font-bold tracking-wider text-white group-hover:text-[#C5AA00] transition-colors block">
-                    THE GARAGE
+                    GARASI MOTOR
                   </span>
                   <span className="text-[10px] tracking-[0.18em] text-[#94A3B8] uppercase">
-                    Custom Builds &amp; Specs
+                    Katalog Motor Kustom
                   </span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#C5AA00] group-hover:translate-x-1 transition-transform" />
@@ -267,10 +267,10 @@ export default function Navbar() {
               >
                 <div>
                   <span className="font-serif-editorial text-xl font-bold tracking-wider text-white group-hover:text-[#C5AA00] transition-colors block">
-                    JOURNAL
+                    JURNAL
                   </span>
                   <span className="text-[10px] tracking-[0.18em] text-[#94A3B8] uppercase">
-                    Dispatches &amp; Road Logs
+                    Catatan Perjalanan
                   </span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#C5AA00] group-hover:translate-x-1 transition-transform" />
@@ -283,10 +283,10 @@ export default function Navbar() {
               >
                 <div>
                   <span className="font-serif-editorial text-xl font-bold tracking-wider text-white group-hover:text-[#C5AA00] transition-colors block">
-                    ABOUT SAKALA
+                    TENTANG SAKALA
                   </span>
                   <span className="text-[10px] tracking-[0.18em] text-[#94A3B8] uppercase">
-                    Manifesto &amp; Brotherhood
+                    Profil &amp; Nilai
                   </span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#C5AA00] group-hover:translate-x-1 transition-transform" />
@@ -299,10 +299,10 @@ export default function Navbar() {
               >
                 <div>
                   <span className="font-serif-editorial text-xl font-bold tracking-wider text-white group-hover:text-[#C5AA00] transition-colors block">
-                    TRACK DISPATCH
+                    LACAK PESANAN
                   </span>
                   <span className="text-[10px] tracking-[0.18em] text-[#94A3B8] uppercase">
-                    Order Tracking / Resi
+                    Status Pengiriman / Resi
                   </span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#C5AA00] group-hover:translate-x-1 transition-transform" />
@@ -346,7 +346,7 @@ export default function Navbar() {
                     </div>
                     <div>
                       <span className="text-xs font-bold text-white block">
-                        {user.user_metadata?.full_name || 'Brotherhood Member'}
+                        {user.user_metadata?.full_name || 'Anggota Sakala'}
                       </span>
                       <span className="text-[10px] text-[#94A3B8] block truncate max-w-[180px]">
                         {user.email}
@@ -354,7 +354,7 @@ export default function Navbar() {
                     </div>
                   </div>
                   <span className="text-[10px] font-bold text-[#C5AA00] tracking-wider uppercase">
-                    PROFILE
+                    PROFIL
                   </span>
                 </Link>
               ) : (
@@ -369,7 +369,7 @@ export default function Navbar() {
               )}
 
               <div className="text-center text-[9px] tracking-[0.25em] text-[#64748B] uppercase">
-                EST. 2026 • BANDUNG, WEST JAVA
+                BANDUNG, JAWA BARAT
               </div>
             </div>
           </div>

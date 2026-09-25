@@ -36,12 +36,12 @@ export default function AccountPage() {
 
   // Edit address state
   const [addressData, setAddressData] = useState({
-    fullName: 'Raihan Putra',
-    email: 'raihan@sakala.cc',
-    phone: '+62 812-9842-1029',
-    address: 'Jl. Jamika No. 42, Ciroyom',
+    fullName: '',
+    email: '',
+    phone: '',
+    address: '',
     city: 'Bandung',
-    postalCode: '40182',
+    postalCode: '',
   });
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -66,6 +66,15 @@ export default function AccountPage() {
         setOrders(fetchedOrders);
         setProfile(fetchedProfile);
         setBikes(fetchedBikes);
+
+        if (fetchedProfile || user) {
+          setAddressData((prev) => ({
+            ...prev,
+            fullName: user?.user_metadata?.full_name || fetchedProfile?.full_name || '',
+            email: user?.email || fetchedProfile?.email || '',
+            phone: '',
+          }));
+        }
       } catch (err) {
         console.error('Failed to load account data:', err);
       } finally {
@@ -73,7 +82,7 @@ export default function AccountPage() {
       }
     }
     loadData();
-  }, []);
+  }, [user]);
 
   const handleSaveAddress = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +93,7 @@ export default function AccountPage() {
   const handleRegisterBike = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newBikeData.title || !newBikeData.make) return;
-    const newSpecimen: Bike = {
+    const newBike: Bike = {
       id: `bike-${Date.now()}`,
       title: newBikeData.title.toUpperCase(),
       year: parseInt(newBikeData.year) || 1980,
@@ -92,13 +101,13 @@ export default function AccountPage() {
       model: newBikeData.model,
       specs: {
         frame: 'Custom Hardtail Chromoly',
-        workshop: 'SAKALA Ciroyom Atelier',
+        workshop: 'Bengkel Sakala Bandung',
         colorway: 'Raw Brushed Steel & Gold',
       },
       image_url: '/assets/bike_sportster.png',
       status: 'commissioned',
     };
-    setBikes([newSpecimen, ...bikes]);
+    setBikes([newBike, ...bikes]);
     setShowRegisterModal(false);
     setNewBikeData({ title: '', make: '', model: '', year: '1980', plate: '' });
   };
@@ -114,9 +123,9 @@ export default function AccountPage() {
             BERANDA
           </Link>
           <span>/</span>
-          <span className="text-[#0047AB]">MEMBER REGISTRY</span>
+          <span className="text-[#0047AB]">PROFIL ANGGOTA</span>
           <span>/</span>
-          <span className="text-[#070F18]">PROFILE DOSSIER</span>
+          <span className="text-[#070F18]">AKUN</span>
         </div>
 
         {/* Google Sync Notice if not signed in with Google */}
@@ -125,14 +134,14 @@ export default function AccountPage() {
             <div className="flex items-center gap-3 text-xs">
               <span className="w-2.5 h-2.5 rounded-full bg-[#C5AA00] animate-pulse" />
               <span>
-                You are viewing sample artisan records. <strong>Sign in with Google</strong> to link your real motorcycle garage &amp; live orders.
+                Masuk dengan akun Google untuk menghubungkan data motor dan riwayat pesanan Anda.
               </span>
             </div>
             <Link
               href="/login"
               className="bg-[#C5AA00] hover:bg-[#D4B800] text-black text-[11px] font-bold tracking-[0.16em] uppercase px-5 py-2 rounded-xs whitespace-nowrap transition-colors"
             >
-              SIGN IN WITH GOOGLE →
+              MASUK DENGAN GOOGLE →
             </Link>
           </div>
         )}
@@ -154,18 +163,18 @@ export default function AccountPage() {
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold tracking-[0.2em] text-[#0047AB] uppercase">
-                    REGISTRY ID: {user ? `SKL-ID-${user.id.slice(0, 6).toUpperCase()}` : 'SKL-MBR-0482'}
+                    ID ANGGOTA: {user ? `SKL-${user.id.slice(0, 6).toUpperCase()}` : 'SKL-MBR-0482'}
                   </span>
                   <span>•</span>
                   {user && !isMockUser ? (
                     <span className="text-[10px] text-emerald-600 font-bold uppercase flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5" />
-                      GOOGLE AUTH VERIFIED
+                      TERVERIFIKASI GOOGLE
                     </span>
                   ) : (
                     <span className="text-[10px] text-emerald-600 font-bold uppercase flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5" />
-                      GUILD VERIFIED
+                      ANGGOTA SAKALA
                     </span>
                   )}
                 </div>
@@ -175,18 +184,18 @@ export default function AccountPage() {
                 </h1>
 
                 <p className="text-xs text-[#64748B] font-medium">
-                  {user?.email || 'Senior Artisan & Road Captain — SAKALA Ciroyom Atelier, Bandung'}
+                  {user?.email || 'Anggota Sakala Motorcycle Club Bandung'}
                 </p>
 
                 <div className="flex flex-wrap items-center gap-4 text-[11px] text-[#64748B] pt-1">
                   <span className="flex items-center gap-1">
                     <MapPin className="w-3 h-3 text-[#C5AA00]" />
-                    Ciroyom, Bandung (768 MASL)
+                    Bandung, Jawa Barat
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-[#0047AB]" />
-                    Active Member
+                    Anggota Aktif
                   </span>
                   {user && (
                     <>
@@ -196,7 +205,7 @@ export default function AccountPage() {
                         className="text-red-600 hover:text-red-700 font-bold tracking-wider uppercase inline-flex items-center gap-1 transition-colors"
                       >
                         <LogOut className="w-3 h-3" />
-                        <span>Sign Out</span>
+                        <span>Keluar</span>
                       </button>
                     </>
                   )}
@@ -204,30 +213,22 @@ export default function AccountPage() {
               </div>
             </div>
 
-            {/* Right: Telemetry Counter Stats */}
-            <div className="grid grid-cols-3 gap-4 w-full lg:w-auto p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs text-center">
-              <div className="px-3">
+            {/* Right: Real Counter Stats */}
+            <div className="grid grid-cols-2 gap-4 w-full lg:w-auto p-4 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs text-center">
+              <div className="px-5">
                 <span className="font-serif-editorial text-2xl font-black text-[#070F18] block">
                   {bikes.length}
                 </span>
                 <span className="text-[9px] font-bold tracking-[0.16em] uppercase text-[#64748B]">
-                  MACHINES
+                  MOTOR
                 </span>
               </div>
-              <div className="px-3 border-x border-[#E5E2D9]">
+              <div className="px-5 border-l border-[#E5E2D9]">
                 <span className="font-serif-editorial text-2xl font-black text-[#0047AB] block">
                   {orders.length}
                 </span>
                 <span className="text-[9px] font-bold tracking-[0.16em] uppercase text-[#64748B]">
-                  DISPATCHES
-                </span>
-              </div>
-              <div className="px-3">
-                <span className="font-serif-editorial text-2xl font-black text-[#C5AA00] block">
-                  12.4K
-                </span>
-                <span className="text-[9px] font-bold tracking-[0.16em] uppercase text-[#64748B]">
-                  KM LOGGED
+                  PESANAN
                 </span>
               </div>
             </div>
@@ -245,7 +246,7 @@ export default function AccountPage() {
             }`}
           >
             <Package className="w-4 h-4" />
-            <span>DISPATCH ORDERS ({orders.length})</span>
+            <span>PESANAN SAYA ({orders.length})</span>
           </button>
 
           <button
@@ -257,7 +258,7 @@ export default function AccountPage() {
             }`}
           >
             <Wrench className="w-4 h-4" />
-            <span>MY GARAGE SPECIMENS ({bikes.length})</span>
+            <span>GARASI MOTOR ({bikes.length})</span>
           </button>
 
           <button
@@ -269,27 +270,27 @@ export default function AccountPage() {
             }`}
           >
             <MapPin className="w-4 h-4" />
-            <span>DELIVERY COORDINATES</span>
+            <span>ALAMAT PENGIRIMAN</span>
           </button>
         </div>
 
-        {/* TAB 1: DISPATCH ORDERS */}
+        {/* TAB 1: ORDERS */}
         {activeTab === 'orders' && (
           <div className="space-y-6">
             {orders.length === 0 ? (
               <div className="bg-white border border-[#E5E2D9] rounded-xs p-12 text-center">
                 <Package className="w-10 h-10 text-[#64748B] mx-auto mb-3 opacity-50" />
                 <h3 className="font-serif-editorial text-lg font-bold text-[#070F18] mb-1">
-                  NO DISPATCH ORDERS LOGGED
+                  BELUM ADA PESANAN
                 </h3>
                 <p className="text-xs text-[#64748B] mb-6">
-                  You haven't requested any gear or apparel dispatch manifests yet.
+                  Anda belum memiliki riwayat pesanan merchandise.
                 </p>
                 <Link
                   href="/shop"
                   className="inline-flex items-center gap-2 bg-[#070F18] text-white px-6 py-2.5 text-xs font-bold tracking-[0.16em] uppercase rounded-xs hover:bg-[#0047AB] transition-colors"
                 >
-                  <span>BROWSE SUPPLY CATALOG</span>
+                  <span>LIHAT KATALOG MERCHANDISE</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -309,12 +310,12 @@ export default function AccountPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase">
-                            MANIFEST ID:
+                            ID PESANAN:
                           </span>
                           <span className="font-bold text-[#070F18] text-sm">{order.id}</span>
                         </div>
                         <span className="text-[10px] text-[#64748B] block font-mono">
-                          Placed on: {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recent Dispatch'}
+                          Tanggal: {order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Pesanan Terbaru'}
                         </span>
                       </div>
 
@@ -331,10 +332,10 @@ export default function AccountPage() {
                             }`}
                           >
                             {isDelivered
-                              ? 'DELIVERED TO ATELIER'
+                              ? 'SELESAI'
                               : isDispatching
-                              ? 'DISPATCH IN TRANSIT'
-                              : 'SETTLEMENT PENDING'}
+                              ? 'DALAM PENGIRIMAN'
+                              : 'MENUNGGU PEMBAYARAN'}
                           </span>
                         </div>
 
@@ -342,7 +343,7 @@ export default function AccountPage() {
                           href={`/checkout/confirmation?orderId=${order.id}&total=${order.total_idr}`}
                           className="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.14em] uppercase text-[#070F18] hover:text-[#C5AA00] transition-colors bg-[#FAF9F5] border border-[#E5E2D9] px-3.5 py-1.5 rounded-xs"
                         >
-                          <span>RECEIPT</span>
+                          <span>BUKTI PESANAN</span>
                           <ExternalLink className="w-3 h-3" />
                         </Link>
                       </div>
@@ -366,7 +367,7 @@ export default function AccountPage() {
                               {item.product.name}
                             </h4>
                             <span className="text-[10px] text-[#64748B] block">
-                              SIZE: {item.size || 'M'} • QTY: {item.quantity}
+                              UKURAN: {item.size || 'M'} • JUMLAH: {item.quantity}
                             </span>
                           </div>
 
@@ -383,14 +384,14 @@ export default function AccountPage() {
                     <div className="pt-4 border-t border-[#E5E2D9] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
                       <div className="flex items-center gap-2 text-[#64748B]">
                         <Truck className="w-4 h-4 text-[#0047AB]" />
-                        <span>Courier: {order.courier.toUpperCase()}</span>
+                        <span>Kurir: {order.courier.toUpperCase()}</span>
                         <span>•</span>
-                        <span>Payment: {order.payment_method.toUpperCase()}</span>
+                        <span>Pembayaran: {order.payment_method.toUpperCase()}</span>
                       </div>
 
                       <div className="flex items-center gap-3 justify-between sm:justify-end">
                         <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                          TOTAL SETTLEMENT:
+                          TOTAL PEMBAYARAN:
                         </span>
                         <span className="font-serif-editorial text-base font-black text-[#0047AB]">
                           IDR {order.total_idr.toLocaleString('id-ID')}
@@ -404,16 +405,16 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* TAB 2: MY GARAGE SPECIMENS */}
+        {/* TAB 2: MY GARAGE */}
         {activeTab === 'garage' && (
           <div>
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h3 className="font-serif-editorial text-xl sm:text-2xl font-bold text-[#070F18]">
-                  REGISTERED BROTHERHOOD MACHINES
+                  DAFTAR MOTOR
                 </h3>
                 <p className="text-xs text-[#64748B]">
-                  Specimens crafted or verified by the SAKALA Atelier registry with official plate archives.
+                  Daftar motor anggota Sakala Motorcycle Club Bandung.
                 </p>
               </div>
 
@@ -422,7 +423,7 @@ export default function AccountPage() {
                 className="inline-flex items-center gap-2 bg-[#070F18] hover:bg-[#0047AB] text-white px-4 py-2.5 text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>REGISTER SPECIMEN</span>
+                <span>TAMBAH MOTOR</span>
               </button>
             </div>
 
@@ -455,16 +456,16 @@ export default function AccountPage() {
 
                       <div className="p-3 bg-[#FAF9F5] border border-[#E5E2D9] rounded-xs space-y-1.5 text-[11px] mb-4">
                         <div className="flex justify-between">
-                          <span className="text-[#64748B]">CHASSIS:</span>
+                          <span className="text-[#64748B]">RANGKA:</span>
                           <span className="font-bold text-[#070F18]">{bike.specs?.frame || 'Rigid Loop'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-[#64748B]">EXHAUST:</span>
+                          <span className="text-[#64748B]">KNALPOT:</span>
                           <span className="font-bold text-[#070F18]">{bike.specs?.exhaust || 'Custom Open Pipe'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-[#64748B]">WORKSHOP:</span>
-                          <span className="font-bold text-[#070F18]">{bike.specs?.workshop || 'SAKALA Atelier'}</span>
+                          <span className="text-[#64748B]">BENGKEL:</span>
+                          <span className="font-bold text-[#070F18]">{bike.specs?.workshop || 'Garasi Sakala'}</span>
                         </div>
                       </div>
                     </div>
@@ -473,7 +474,7 @@ export default function AccountPage() {
                       href={`/bikes/${bike.id}`}
                       className="inline-flex items-center justify-between w-full pt-3 border-t border-[#E5E2D9] text-xs font-bold tracking-[0.16em] uppercase text-[#070F18] group-hover:text-[#0047AB] transition-colors"
                     >
-                      <span>VIEW BUILD DOSSIER</span>
+                      <span>LIHAT DETAIL MOTOR</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
@@ -483,27 +484,27 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* TAB 3: DELIVERY COORDINATES & SETTINGS */}
+        {/* TAB 3: DELIVERY SETTINGS */}
         {activeTab === 'settings' && (
           <div className="max-w-2xl bg-white border border-[#E5E2D9] rounded-xs p-8 shadow-xs">
             <h3 className="font-serif-editorial text-xl sm:text-2xl font-bold text-[#070F18] mb-2">
-              DISPATCH DELIVERY COORDINATES
+              ALAMAT PENGIRIMAN
             </h3>
             <p className="text-xs text-[#64748B] mb-8">
-              Update your primary workshop shipping address and contact info for all merchandise dispatches.
+              Perbarui alamat pengiriman dan informasi kontak untuk pesanan merchandise.
             </p>
 
             {savedSuccess && (
               <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xs flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Delivery coordinates successfully updated and registered.</span>
+                <span>Alamat pengiriman berhasil disimpan.</span>
               </div>
             )}
 
             <form onSubmit={handleSaveAddress} className="space-y-4 text-xs">
               <div>
                 <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                  FULL NAME / OPERATOR
+                  NAMA LENGKAP
                 </label>
                 <input
                   type="text"
@@ -517,7 +518,7 @@ export default function AccountPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    DISPATCH EMAIL
+                    EMAIL
                   </label>
                   <input
                     type="email"
@@ -530,7 +531,7 @@ export default function AccountPage() {
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    PHONE / WHATSAPP
+                    NO. TELEPON / WHATSAPP
                   </label>
                   <input
                     type="tel"
@@ -544,7 +545,7 @@ export default function AccountPage() {
 
               <div>
                 <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                  WORKSHOP / STREET ADDRESS
+                  ALAMAT LENGKAP
                 </label>
                 <textarea
                   required
@@ -558,7 +559,7 @@ export default function AccountPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    CITY
+                    KOTA
                   </label>
                   <input
                     type="text"
@@ -571,7 +572,7 @@ export default function AccountPage() {
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    POSTAL CODE
+                    KODE POS
                   </label>
                   <input
                     type="text"
@@ -588,7 +589,7 @@ export default function AccountPage() {
                   type="submit"
                   className="bg-[#070F18] hover:bg-[#0047AB] text-white px-6 py-3 text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors"
                 >
-                  SAVE COORDINATES
+                  SIMPAN ALAMAT
                 </button>
               </div>
             </form>
@@ -601,21 +602,21 @@ export default function AccountPage() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white border border-[#E5E2D9] rounded-xs p-8 max-w-lg w-full shadow-2xl">
             <h3 className="font-serif-editorial text-2xl font-bold text-[#070F18] mb-2">
-              REGISTER NEW SPECIMEN
+              TAMBAH MOTOR BARU
             </h3>
             <p className="text-xs text-[#64748B] mb-6">
-              Enter machine lineage for official entry into SAKALA Brotherhood registry.
+              Masukkan data motor untuk dicatat di daftar garasi anggota.
             </p>
 
             <form onSubmit={handleRegisterBike} className="space-y-4 text-xs">
               <div>
                 <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                  MACHINE TITLE / NICKNAME *
+                  NAMA MOTOR *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. SANGHYANG HEULEUT"
+                  placeholder="Contoh: SANGHYANG HEULEUT"
                   value={newBikeData.title}
                   onChange={(e) => setNewBikeData({ ...newBikeData, title: e.target.value })}
                   className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-2 rounded-xs outline-none focus:border-[#070F18]"
@@ -625,12 +626,12 @@ export default function AccountPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    MAKE *
+                    MEREK *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Yamaha"
+                    placeholder="Contoh: Yamaha"
                     value={newBikeData.make}
                     onChange={(e) => setNewBikeData({ ...newBikeData, make: e.target.value })}
                     className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-2 rounded-xs outline-none focus:border-[#070F18]"
@@ -644,7 +645,7 @@ export default function AccountPage() {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. XS650"
+                    placeholder="Contoh: XS650"
                     value={newBikeData.model}
                     onChange={(e) => setNewBikeData({ ...newBikeData, model: e.target.value })}
                     className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-2 rounded-xs outline-none focus:border-[#070F18]"
@@ -655,7 +656,7 @@ export default function AccountPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    YEAR OF MANUFACTURE
+                    TAHUN PEMBUATAN
                   </label>
                   <input
                     type="number"
@@ -667,11 +668,11 @@ export default function AccountPage() {
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    LICENSE PLATE NUMBER
+                    NOMOR PLAT POLISI
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. D 4029 BDG"
+                    placeholder="Contoh: D 4029 BDG"
                     value={newBikeData.plate}
                     onChange={(e) => setNewBikeData({ ...newBikeData, plate: e.target.value })}
                     className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3 py-2 rounded-xs outline-none focus:border-[#070F18]"
@@ -685,13 +686,13 @@ export default function AccountPage() {
                   onClick={() => setShowRegisterModal(false)}
                   className="px-4 py-2 border border-[#E5E2D9] text-[#64748B] hover:text-[#070F18] font-bold text-xs uppercase rounded-xs"
                 >
-                  CANCEL
+                  BATAL
                 </button>
                 <button
                   type="submit"
                   className="bg-[#070F18] hover:bg-[#0047AB] text-white px-5 py-2 font-bold text-xs uppercase rounded-xs transition-colors"
                 >
-                  CONFIRM REGISTRATION
+                  SIMPAN MOTOR
                 </button>
               </div>
             </form>

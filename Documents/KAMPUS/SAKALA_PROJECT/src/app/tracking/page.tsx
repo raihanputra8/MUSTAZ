@@ -41,42 +41,42 @@ export default function TrackingPage() {
   }> = {
     'SKL-849201': {
       recipient: 'Raihan Putra',
-      city: 'Bandung (Ciroyom Atelier)',
-      courier: 'JNE YES (Next Day Air)',
+      city: 'Bandung',
+      courier: 'JNE YES (Next Day)',
       airwaybill: 'JNE-BDO-9840291',
-      statusText: 'DISPATCH IN TRANSIT',
-      estimatedDelivery: 'Tomorrow, by 14:00 WIB',
+      statusText: 'DALAM PENGIRIMAN',
+      estimatedDelivery: '1-2 hari kerja',
       events: [
         {
-          date: 'OCT 21, 2026',
+          date: '24 Sep 2024',
           time: '14:30 WIB',
-          status: 'IN TRANSIT WITH HIGH-PRIORITY COURIER',
-          location: 'Bandung Central Distribution Gateway Hub',
-          detail: 'Package sorted into JNE YES air fleet container for priority dispatch.',
+          status: 'PAKET SEDANG DIANTAR OLEH KURIR',
+          location: 'Hub Distribusi Bandung',
+          detail: 'Paket sedang dalam perjalanan ke alamat penerima.',
           done: true,
         },
         {
-          date: 'OCT 21, 2026',
+          date: '24 Sep 2024',
           time: '09:15 WIB',
-          status: 'DISPATCHED FROM SAKALA CIROYOM ATELIER',
-          location: 'Jl. Jamika No. 42, Ciroyom, Bandung',
-          detail: 'Handed over to courier driver with sealed waterproof manifest envelope.',
+          status: 'PAKET DISERAHKAN KE KURIR',
+          location: 'Bandung',
+          detail: 'Paket telah diserahkan kepada pihak ekspedisi.',
           done: true,
         },
         {
-          date: 'OCT 20, 2026',
+          date: '23 Sep 2024',
           time: '16:00 WIB',
-          status: 'PACKED & GUILD HALLMARK INSPECTED',
-          location: 'SAKALA Supply Fulfillment Desk',
-          detail: 'Heavyweight garment quality-checked, brass tags passivated, double-box sealed.',
+          status: 'PESANAN SELESAI DIKEMAS',
+          location: 'Gudang Sakala Bandung',
+          detail: 'Pengecekan kualitas produk selesai dan pesanan telah dikemas.',
           done: true,
         },
         {
-          date: 'OCT 20, 2026',
+          date: '23 Sep 2024',
           time: '14:32 WIB',
-          status: 'MANIFEST REGISTERED & SETTLED',
-          location: 'Sakala Order Registry',
-          detail: 'Order payment verified via BCA Virtual Account.',
+          status: 'PEMBAYARAN DIVERIFIKASI',
+          location: 'Sistem Pembayaran',
+          detail: 'Pembayaran pesanan telah diverifikasi.',
           done: true,
         },
       ],
@@ -84,25 +84,25 @@ export default function TrackingPage() {
     'SKL-719304': {
       recipient: 'Raihan Putra',
       city: 'Bandung',
-      courier: 'J&T Cargo Heavy',
+      courier: 'J&T Cargo',
       airwaybill: 'JT-BDO-4019284',
-      statusText: 'DELIVERED TO ATELIER',
-      estimatedDelivery: 'Delivered on SEP 17, 2026',
+      statusText: 'PESANAN DITERIMA',
+      estimatedDelivery: 'Diterima pada 17 Sep 2024',
       events: [
         {
-          date: 'SEP 17, 2026',
+          date: '17 Sep 2024',
           time: '11:20 WIB',
-          status: 'SUCCESSFULLY RECEIVED & SIGNED',
-          location: 'Ciroyom Atelier Front Gate',
-          detail: 'Delivered into the hands of the authorized recipient.',
+          status: 'PAKET BERHASIL DITERIMA',
+          location: 'Alamat Penerima',
+          detail: 'Paket telah diterima dan ditandatangani oleh penerima.',
           done: true,
         },
         {
-          date: 'SEP 16, 2026',
+          date: '16 Sep 2024',
           time: '10:00 WIB',
-          status: 'OUT FOR FINAL DELIVERY',
-          location: 'Bandung West Delivery Hub',
-          detail: 'Courier courier assigned for doorstep handover.',
+          status: 'PAKET DIBAWA KURIR',
+          location: 'Hub Bandung',
+          detail: 'Kurir sedang mengantar paket ke alamat tujuan.',
           done: true,
         },
       ],
@@ -110,19 +110,19 @@ export default function TrackingPage() {
   };
 
   const currentManifest = TRACKING_DATA[searchedId] || {
-    recipient: 'Unknown Operator',
-    city: 'West Java',
-    courier: 'Standard Expedition Logistics',
-    airwaybill: 'SKL-EXP-DEFAULT',
-    statusText: 'MANIFEST VERIFICATION QUEUE',
-    estimatedDelivery: '1-2 business days upon inspection',
+    recipient: 'Pelanggan',
+    city: 'Jawa Barat',
+    courier: 'JNE / J&T',
+    airwaybill: searchedId,
+    statusText: 'DALAM PROSES',
+    estimatedDelivery: '1-2 hari kerja',
     events: [
       {
-        date: 'TODAY',
-        time: 'CURRENT',
-        status: 'MANIFEST IN QUEUE',
-        location: 'Ciroyom Atelier Sorting Station',
-        detail: `Manifest ID ${searchedId} is pending initial courier intake scan.`,
+        date: 'Hari ini',
+        time: 'Sedang Berjalan',
+        status: 'PESANAN DIPROSES',
+        location: 'Bandung',
+        detail: `Nomor pesanan ${searchedId} sedang dipersiapkan oleh tim pengiriman.`,
         done: false,
       },
     ],
@@ -143,24 +143,24 @@ export default function TrackingPage() {
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#64748B] mb-8 pb-4 border-b border-[#E5E2D9]">
           <Link href="/shop" className="hover:text-[#070F18] transition-colors">
-            SAKALA SUPPLY
+            MERCHANDISE
           </Link>
           <span>/</span>
-          <span className="text-[#0047AB]">LOGISTICS WING</span>
+          <span className="text-[#0047AB]">PENGIRIMAN</span>
           <span>/</span>
-          <span className="text-[#070F18]">DISPATCH TRACKER</span>
+          <span className="text-[#070F18]">LACAK PESANAN</span>
         </div>
 
         {/* Title Header */}
         <div className="mb-10 text-center sm:text-left">
           <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
-            ATELIER DISPATCH SYSTEM
+            STATUS PENGIRIMAN
           </span>
           <h1 className="font-serif-editorial text-3xl sm:text-5xl font-black text-[#070F18] tracking-tight mb-3">
-            MANIFEST TRACKING PORTAL
+            LACAK PESANAN
           </h1>
           <p className="text-xs sm:text-sm text-[#64748B]">
-            Enter your encrypted SAKALA dispatch manifest registration number to observe transit progress.
+            Masukkan nomor pesanan atau nomor resi untuk melihat status pengiriman.
           </p>
         </div>
 
@@ -173,7 +173,7 @@ export default function TrackingPage() {
                 type="text"
                 value={manifestId}
                 onChange={(e) => setManifestId(e.target.value)}
-                placeholder="Enter manifest ID (e.g. SKL-849201)..."
+                placeholder="Masukkan nomor pesanan (contoh: SKL-849201)..."
                 className="w-full bg-[#FAF9F5] border border-[#E5E2D9] pl-10 pr-4 py-3 text-xs text-[#070F18] font-mono rounded-xs outline-none focus:border-[#070F18]"
               />
             </div>
@@ -182,13 +182,13 @@ export default function TrackingPage() {
               type="submit"
               className="bg-[#070F18] hover:bg-[#0047AB] text-white px-8 py-3 text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors"
             >
-              TRACK MANIFEST
+              LACAK
             </button>
           </form>
 
           {/* Quick sample chips */}
           <div className="flex items-center gap-2 mt-4 text-[10px] text-[#64748B]">
-            <span>SAMPLE LOGS:</span>
+            <span>CONTOH:</span>
             <button
               type="button"
               onClick={() => {
@@ -197,7 +197,7 @@ export default function TrackingPage() {
               }}
               className="font-mono text-[#0047AB] hover:underline"
             >
-              SKL-849201 (In Transit)
+              SKL-849201 (Dalam Pengiriman)
             </button>
             <span>•</span>
             <button
@@ -208,7 +208,7 @@ export default function TrackingPage() {
               }}
               className="font-mono text-[#0047AB] hover:underline"
             >
-              SKL-719304 (Delivered)
+              SKL-719304 (Selesai)
             </button>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default function TrackingPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-[#E5E2D9] gap-4 mb-6">
             <div>
               <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                MANIFEST NUMBER
+                NOMOR PESANAN
               </span>
               <span className="font-serif-editorial text-2xl font-bold text-[#070F18]">
                 {searchedId}
@@ -235,28 +235,28 @@ export default function TrackingPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs mb-8">
             <div>
               <span className="text-[9px] font-bold tracking-[0.18em] text-[#64748B] uppercase block mb-1">
-                RECIPIENT OPERATOR
+                PENERIMA
               </span>
               <span className="font-bold text-[#070F18]">{currentManifest.recipient}</span>
             </div>
 
             <div>
               <span className="text-[9px] font-bold tracking-[0.18em] text-[#64748B] uppercase block mb-1">
-                DESTINATION CITY
+                KOTA TUJUAN
               </span>
               <span className="font-bold text-[#070F18]">{currentManifest.city}</span>
             </div>
 
             <div>
               <span className="text-[9px] font-bold tracking-[0.18em] text-[#64748B] uppercase block mb-1">
-                LOGISTICS COURIER
+                KURIR
               </span>
               <span className="font-bold text-[#070F18]">{currentManifest.courier}</span>
             </div>
 
             <div>
               <span className="text-[9px] font-bold tracking-[0.18em] text-[#64748B] uppercase block mb-1">
-                AIRWAYBILL NUMBER
+                NOMOR RESI
               </span>
               <span className="font-mono text-[11px] font-bold text-[#0047AB]">{currentManifest.airwaybill}</span>
             </div>
@@ -265,7 +265,7 @@ export default function TrackingPage() {
           {/* Timeline Events */}
           <div>
             <h3 className="font-serif-editorial text-lg font-bold text-[#070F18] mb-6">
-              TRANSIT TIMELINE LOG
+              RIWAYAT PENGIRIMAN
             </h3>
 
             <div className="relative pl-6 space-y-8 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#E5E2D9]">
@@ -307,14 +307,14 @@ export default function TrackingPage() {
             href="/account"
             className="text-[#64748B] hover:text-[#070F18] font-bold uppercase tracking-[0.14em] flex items-center gap-1.5"
           >
-            ← BACK TO MEMBER DOSSIER
+            ← KEMBALI KE AKUN
           </Link>
 
           <Link
             href="/shop"
             className="text-[#070F18] hover:text-[#C5AA00] font-bold uppercase tracking-[0.14em] flex items-center gap-1.5"
           >
-            <span>CONTINUE SHOPPING</span>
+            <span>KEMBALI BELANJA</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>

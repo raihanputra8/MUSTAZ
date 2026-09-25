@@ -43,7 +43,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#64748B] mb-8 pb-4 border-b border-[#E5E2D9]">
           <Link href="/shop" className="hover:text-[#070F18] flex items-center gap-1 transition-colors">
             <ArrowLeft className="w-3 h-3" />
-            <span>SUPPLY CATALOG</span>
+            <span>KATALOG PRODUK</span>
           </Link>
           <span>/</span>
           <span className="text-[#0047AB]">{product.category}</span>
@@ -59,10 +59,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           <div className="flex justify-between items-end mb-8">
             <div>
               <span className="text-[10px] font-bold tracking-[0.25em] text-[#0047AB] uppercase block mb-1">
-                SAKALA SUPPLY SYSTEM
+                MERCHANDISE SAKALA
               </span>
               <h3 className="font-serif-editorial text-2xl sm:text-3xl font-black text-[#070F18]">
-                COMPLEMENTARY SPECIMENS
+                PRODUK LAINNYA
               </h3>
             </div>
 
@@ -70,7 +70,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               href="/shop"
               className="text-xs font-bold tracking-[0.16em] uppercase text-[#070F18] hover:text-[#C5AA00] transition-colors flex items-center gap-1.5"
             >
-              <span>VIEW FULL CATALOG</span>
+              <span>LIHAT SEMUA</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -103,10 +103,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                   </h4>
                   <div className="flex justify-between items-center pt-3 border-t border-[#E5E2D9] text-xs">
                     <span className="font-bold text-[#070F18]">
-                      IDR {item.price_idr.toLocaleString('id-ID')}
+                      Rp {item.price_idr.toLocaleString('id-ID')}
                     </span>
                     <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#0047AB]">
-                      VIEW SPECIMEN →
+                      LIHAT PRODUK →
                     </span>
                   </div>
                 </div>

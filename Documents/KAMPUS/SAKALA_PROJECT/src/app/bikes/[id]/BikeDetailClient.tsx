@@ -23,17 +23,22 @@ interface BikeDetailClientProps {
 export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientProps) {
   const { isEditMode } = useInlineCMS();
 
-  // Detail macro plates for photography showcase
-  const defaultPlates = [
-    { title: 'FULL MONOGRAPH PROFILE', image: bike.image_url, subtitle: 'Studio / Side Profile' },
-    { title: 'ENGINE & DISPLACEMENT', image: (bike.gallery && bike.gallery[1]) || '/assets/culture_workshop.png', subtitle: 'Rebuilt Powerplant & Mechanical Geometry' },
-    { title: 'TANK CRAFT & FINISH', image: (bike.gallery && bike.gallery[2]) || '/assets/journal_subang.png', subtitle: 'Hand-Beaten Tank & Bespoke Colorway' },
-    { title: 'COCKPIT & BESPOKE DIALS', image: (bike.gallery && bike.gallery[3]) || '/assets/culture_ceremony.png', subtitle: 'Handcrafted Controls & Custom Cockpit' },
-    { title: 'CHASSIS WELDS & SADDLE', image: (bike.gallery && bike.gallery[4]) || '/assets/culture_members.png', subtitle: 'De-Tabbed Frame & Hand-Stitched Leather' },
-    { title: 'EXHAUST & RUNNING GEAR', image: (bike.gallery && bike.gallery[5]) || '/assets/sakala_emblem.png', subtitle: 'Bespoke Megaphone & Spoke Lacing' },
-  ];
+  // Only display real bike images from bike.image_url and bike.gallery
+  const realPlates = (bike.gallery && bike.gallery.length > 0)
+    ? bike.gallery.map((img, idx) => ({
+        title: idx === 0 ? 'Foto Utama' : `Dokumentasi 0${idx + 1}`,
+        image: img,
+        subtitle: `${bike.make} ${bike.model}`,
+      }))
+    : [
+        {
+          title: 'Foto Utama',
+          image: bike.image_url,
+          subtitle: `${bike.make} ${bike.model}`,
+        },
+      ];
 
-  const [activePhoto, setActivePhoto] = useState(defaultPlates[0]);
+  const [activePhoto, setActivePhoto] = useState(realPlates[0]);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   // Find previous and next bike from database
@@ -53,11 +58,11 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
               className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-[#64748B] hover:text-[#0047AB] uppercase transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>KEMBALI KE GARAGE ARCHIVE</span>
+              <span>KEMBALI KE GARASI</span>
             </Link>
 
             <span className="text-[10px] font-mono tracking-widest text-[#94A3B8] uppercase px-2.5 py-1 bg-white border border-[#E5E2D9] rounded-xs">
-              SPECIMEN ID: {bike.id.toUpperCase()}
+              ID MOTOR: {bike.id.toUpperCase()}
             </span>
           </div>
 
@@ -77,9 +82,9 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
                 {bike.title}
               </h1>
 
-              {/* Garis Besar Motor (Ringkas & Padat) */}
+              {/* Garis Besar Motor */}
               <p className="text-sm sm:text-base text-[#475569] leading-relaxed max-w-2xl font-normal">
-                {bike.description || `${bike.title} adalah hasil rancang bangun atelier SAKALA Bandung berbasis ${bike.year} ${bike.make} ${bike.model}, mengedepankan reduksi bobot, geometri custom, dan performa displacement murni.`}
+                {bike.description || `${bike.title} dibangun di Bandung berbasis ${bike.year} ${bike.make} ${bike.model}.`}
               </p>
             </div>
 
@@ -87,19 +92,19 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
             <div className="lg:col-span-4 flex flex-wrap gap-2 lg:justify-end">
               {bike.specs?.displacement && (
                 <div className="px-3 py-1.5 bg-white border border-[#E5E2D9] rounded-xs text-[10px] text-[#070F18]">
-                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Displacement</span>
+                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Kapasitas Mesin</span>
                   <strong>{bike.specs.displacement}</strong>
                 </div>
               )}
               {bike.specs?.frame && (
                 <div className="px-3 py-1.5 bg-white border border-[#E5E2D9] rounded-xs text-[10px] text-[#070F18]">
-                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Chassis / Frame</span>
+                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Rangka</span>
                   <strong>{bike.specs.frame}</strong>
                 </div>
               )}
               {bike.specs?.workshop && (
                 <div className="px-3 py-1.5 bg-white border border-[#E5E2D9] rounded-xs text-[10px] text-[#070F18]">
-                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Atelier</span>
+                  <span className="text-[#94A3B8] block text-[8px] uppercase tracking-wider font-bold">Workshop</span>
                   <strong>{bike.specs.workshop}</strong>
                 </div>
               )}
@@ -136,71 +141,73 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
               <Maximize2 className="w-4 h-4" />
             </button>
 
-            {/* Atelier Watermark */}
+            {/* Clean Watermark */}
             <div className="absolute bottom-6 right-6 text-right opacity-25 select-none pointer-events-none">
               <span className="font-serif-editorial text-xl sm:text-3xl font-black tracking-widest text-[#070F18]">
-                SAKALA ARCHIVE • {bike.id.toUpperCase()}
+                SAKALA • {bike.id.toUpperCase()}
               </span>
             </div>
           </div>
 
-          {/* Thumbnail Selector Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {defaultPlates.map((plate, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActivePhoto(plate)}
-                className={`p-2 rounded-xs border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
-                  activePhoto.image === plate.image && activePhoto.title === plate.title
-                    ? 'bg-[#070F18] text-white border-[#070F18] shadow-sm'
-                    : 'bg-white text-[#475569] border-[#E5E2D9] hover:border-[#C5AA00]'
-                }`}
-              >
-                <div className="relative w-11 h-11 bg-gray-100 rounded-xs overflow-hidden flex-shrink-0">
-                  <Image
-                    src={plate.image}
-                    alt={plate.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[8px] tracking-[0.2em] font-bold block uppercase opacity-70">
-                    FOTO 0{idx + 1}
-                  </span>
-                  <span className="text-[9.5px] font-bold tracking-wider truncate block uppercase">
-                    {plate.title}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
+          {/* Thumbnail Selector Strip (only if multiple photos exist) */}
+          {realPlates.length > 1 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {realPlates.map((plate, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActivePhoto(plate)}
+                  className={`p-2 rounded-xs border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                    activePhoto.image === plate.image && activePhoto.title === plate.title
+                      ? 'bg-[#070F18] text-white border-[#070F18] shadow-sm'
+                      : 'bg-white text-[#475569] border-[#E5E2D9] hover:border-[#C5AA00]'
+                  }`}
+                >
+                  <div className="relative w-11 h-11 bg-gray-100 rounded-xs overflow-hidden flex-shrink-0">
+                    <Image
+                      src={plate.image}
+                      alt={plate.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[8px] tracking-[0.2em] font-bold block uppercase opacity-70">
+                      FOTO 0{idx + 1}
+                    </span>
+                    <span className="text-[9.5px] font-bold tracking-wider truncate block uppercase">
+                      {plate.title}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* GALERI FOTO DETAIL RESOLUSI TINGGI (DETAIL & MACRO ARCHIVE) */}
+      {/* DOKUMENTASI FOTO */}
       <section className="py-16 lg:py-24 max-w-7xl mx-auto px-6 lg:px-12 border-b border-[#E5E2D9]">
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase">
-              GALLERY SHOWCASE
+              DOKUMENTASI MOTOR
             </span>
             <span className="text-[#C5AA00]">•</span>
             <span className="text-[11px] text-[#64748B] uppercase tracking-wider">
-              {defaultPlates.length} FOTO DETAIL
+              {realPlates.length} FOTO
             </span>
           </div>
           <h2 className="font-serif-editorial text-3xl sm:text-4xl font-extrabold text-[#070F18] tracking-tight">
-            DETAIL &amp; MACRO PHOTOGRAPHY
+            GALERI FOTO
           </h2>
           <p className="text-xs sm:text-sm text-[#64748B] max-w-xl mt-2 leading-relaxed">
-            Koleksi foto detail komponen, pengerjaan metal, geometri knalpot, hingga cockpit setiap motor yang dirancang bangun oleh guild SAKALA.
+            Dokumentasi motor {bike.title}. Foto detail suku cadang tambahan akan diperbarui saat tersedia.
           </p>
         </div>
 
         {/* Photography Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {defaultPlates.map((item, idx) => (
+          {realPlates.map((item, idx) => (
             <div 
               key={idx}
               className="bg-white border border-[#E5E2D9] rounded-xs overflow-hidden shadow-xs hover:border-[#070F18] transition-all group flex flex-col cursor-pointer"
@@ -236,11 +243,11 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
         </div>
       </section>
 
-      {/* Previous & Next Specimen Navigation */}
+      {/* Previous & Next Bike Navigation */}
       <section className="py-12 bg-white border-b border-[#E5E2D9]">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 divide-y sm:divide-y-0 sm:divide-x divide-[#E5E2D9]">
-            {/* Previous Specimen */}
+            {/* Previous Bike */}
             {prevBike && (
               <Link 
                 href={`/bikes/${prevBike.id}`}
@@ -256,7 +263,7 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
                 </div>
                 <div>
                   <span className="text-[9px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                    ← PREVIOUS MOTOR
+                    ← MOTOR SEBELUMNYA
                   </span>
                   <h4 className="font-serif-editorial text-base font-bold text-[#070F18] group-hover:text-[#0047AB] transition-colors">
                     {prevBike.year} {prevBike.make} {prevBike.title}
@@ -268,7 +275,7 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
               </Link>
             )}
 
-            {/* Next Specimen */}
+            {/* Next Bike */}
             {nextBike && (
               <Link
                 href={`/bikes/${nextBike.id}`}
@@ -276,7 +283,7 @@ export default function BikeDetailClient({ bike, allBikes }: BikeDetailClientPro
               >
                 <div>
                   <span className="text-[9px] font-bold tracking-[0.2em] text-[#0047AB] uppercase block">
-                    NEXT MOTOR →
+                    MOTOR SELANJUTNYA →
                   </span>
                   <h4 className="font-serif-editorial text-base font-bold text-[#070F18] group-hover:text-[#0047AB] transition-colors">
                     {nextBike.year} {nextBike.make} {nextBike.title}

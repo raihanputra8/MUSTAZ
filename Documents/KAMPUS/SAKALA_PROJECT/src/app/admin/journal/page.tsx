@@ -264,7 +264,7 @@ export default function AdminJournalPage() {
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="Publish Date"
-            placeholder="OCTOBER 2026"
+            placeholder="OKTOBER 2024"
             value={form.publish_date}
             onChange={(e) => setForm({ ...form, publish_date: (e.target as HTMLInputElement).value })}
           />

@@ -265,7 +265,7 @@ export default function AdminBikesPage() {
           />
           <FormInput
             label="Workshop"
-            placeholder="SAKALA Ciroyom Atelier"
+            placeholder="Bengkel Sakala Bandung"
             value={form.workshop}
             onChange={(e) => setForm({ ...form, workshop: (e.target as HTMLInputElement).value })}
           />

@@ -49,12 +49,10 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
             <div className="flex items-center gap-2">
               <Link href="/#journal" className="hover:text-[#070F18] flex items-center gap-1 transition-colors">
                 <ArrowLeft className="w-3 h-3" />
-                <span>JOURNAL ARCHIVE</span>
+                <span>ARSIP JURNAL</span>
               </Link>
               <span>/</span>
               <span className="text-[#0047AB]">{post.category}</span>
-              <span>/</span>
-              <span className="text-[#070F18]">DISPATCH 004</span>
             </div>
 
             <div className="flex items-center gap-4 text-[#070F18]">
@@ -71,7 +69,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
         {/* Article Header & Editorial Masthead */}
         <header className="max-w-5xl mx-auto px-6 lg:px-8 pt-12 lg:pt-16 pb-10">
           <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-4 block">
-            EXPEDITION FIELD DISPATCH — OFFICIAL LOG
+            CATATAN PERJALANAN SAKALA
           </span>
 
           <h1 className="font-serif-editorial text-3xl sm:text-5xl lg:text-6xl font-black text-[#070F18] tracking-tight leading-[1.08] mb-6">
@@ -82,51 +80,18 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
             "{post.excerpt}"
           </p>
 
-          {/* Expedition Field Telemetry Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-white border border-[#E5E2D9] rounded-xs text-xs mb-10 shadow-xs">
-            <div className="space-y-1">
-              <span className="text-[9px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                PEAK ELEVATION
-              </span>
-              <div className="flex items-center gap-1.5 font-bold text-[#070F18]">
-                <Mountain className="w-3.5 h-3.5 text-[#0047AB]" />
-                <span>{post.elevation?.replace('//', '—') || '2,084 MASL'}</span>
-              </div>
+          {/* Author info */}
+          <div className="flex items-center gap-3 p-4 bg-white border border-[#E5E2D9] rounded-xs text-xs mb-10 shadow-xs">
+            <div className="flex items-center gap-2 font-bold text-[#070F18]">
+              <User className="w-4 h-4 text-[#0047AB]" />
+              <span>Ditulis oleh: {post.author}</span>
             </div>
-
-            <div className="space-y-1">
-              <span className="text-[9px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                ATMOSPHERE • CLIMATE
-              </span>
-              <div className="flex items-center gap-1.5 font-bold text-[#070F18]">
-                <Thermometer className="w-3.5 h-3.5 text-amber-600" />
-                <span>{post.temperature?.replace('//', '—') || '11°C — Heavy Fog'}</span>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-[9px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                GPS COORDINATES
-              </span>
-              <div className="flex items-center gap-1.5 font-bold text-[#070F18]">
-                <Compass className="w-3.5 h-3.5 text-[#C5AA00]" />
-                <span className="font-mono text-[11px]">{post.coordinates || '6°46\'00"S 107°36\'00"E'}</span>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-[9px] font-bold tracking-[0.2em] text-[#64748B] uppercase block">
-                ROAD CAPTAIN
-              </span>
-              <div className="flex items-center gap-1.5 font-bold text-[#070F18]">
-                <User className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{post.author}</span>
-              </div>
-            </div>
+            <span className="text-[#E5E2D9]">•</span>
+            <span className="text-[#64748B]">{post.publish_date}</span>
           </div>
         </header>
 
-        {/* Hero Photographic Monograph */}
+        {/* Hero Image */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
           <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full bg-[#070F18] rounded-xs overflow-hidden border border-[#E5E2D9] shadow-lg">
             <Image
@@ -136,52 +101,6 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
               priority
               className="object-cover"
             />
-            {/* Dark vignette overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
-
-            {/* Inset Photo Tag */}
-            <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-2 text-white">
-              <div>
-                <span className="text-[9px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase block mb-1">
-                  ARCHIVAL MONOGRAPH — EXPEDITION NEGATIVE #4029
-                </span>
-                <p className="text-xs sm:text-sm font-medium text-white/90">
-                  Plate 01 cutting through the sulfuric clouds along the rim of Kawah Ratu, Tangkuban Perahu at 03:14 WIB.
-                </p>
-              </div>
-              <div className="text-[10px] text-white/60 font-mono sm:text-right">
-                35MM ILFORD HP5+ — 1/60s f/2.8 ISO 1600
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Audio Dispatch Bar (Editorial Feature) */}
-        <section className="max-w-3xl mx-auto px-6 mb-12">
-          <div className="bg-[#070F18] border border-[#2A374A] p-4 sm:p-5 rounded-xs flex items-center justify-between gap-4 text-white">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#C5AA00]/20 flex items-center justify-center text-[#C5AA00] flex-shrink-0">
-                <Volume2 className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-[9px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase block">
-                  FIELD AUDIO DISPATCH (BANDUNG SOUND ARCHIVE)
-                </span>
-                <p className="text-xs font-bold text-white/90">
-                  9 Parallel-Twin Engines Idling at Tangkuban Summit Crater (03:14 WIB)
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-[#64748B] hidden sm:inline">02:45 / 04:30</span>
-              <button 
-                type="button"
-                className="bg-[#C5AA00] hover:bg-white text-[#070F18] px-3.5 py-1.5 rounded-xs text-[10px] font-bold tracking-[0.16em] uppercase transition-colors"
-              >
-                LISTEN LOG
-              </button>
-            </div>
           </div>
         </section>
 
@@ -190,7 +109,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
           {/* Formatted Story Markdown */}
           <div className="space-y-8 text-sm sm:text-base font-normal leading-[1.85]">
             <p className="first-letter:font-serif-editorial first-letter:text-6xl first-letter:font-black first-letter:float-left first-letter:mr-3 first-letter:text-[#070F18] first-letter:leading-none">
-              The rain had been drumming a steady, hollow cadence on the corrugated zinc roof of the Ciroyom Atelier since sundown. Inside, the scent was of burnt SAE 20W-50 mineral oil, damp leather jackets, and the sharp metallic tang of fresh TIG-brazed chromoly tubing.
+              The rain had been drumming a steady, hollow cadence on the corrugated zinc roof of the workshop since sundown. Inside, the scent was of burnt SAE 20W-50 mineral oil, damp leather jackets, and the sharp metallic tang of fresh TIG-brazed chromoly tubing.
             </p>
 
             <p>
@@ -205,7 +124,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
                 "Check the primary drive tensions once more. Once we hit the switchbacks past Setiabudhi, there is no shoulder to pull over. The road becomes black ice when the volcanic silt washes down from the tea slopes."
               </p>
               <span className="text-[10px] text-[#64748B] block mt-2 font-mono">
-                — A. PRATAMA, SAKALA CIROYOM ATELIER
+                — SAKALA MOTORCYCLE CLUB BANDUNG
               </span>
             </div>
 
@@ -262,7 +181,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
                   />
                 </div>
                 <p className="text-[11px] text-[#64748B] italic">
-                  Fig 1.2 — The guild regrouping at Cikole checkpoint under heavy drizzle and near-zero visibility.
+                  Fig 1.2 — Rombongan Sakala berkumpul kembali di pos Cikole dalam kabut tipis dan rintik hujan.
                 </p>
               </div>
             </div>
@@ -280,7 +199,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
             </p>
 
             <p>
-              Steam rose in thick white plumes from hot engine fins into the freezing drizzle. Pratama pulled a battered stainless thermos from his canvas roll and poured black Robusta coffee into tin cups. Nobody spoke for ten minutes. In the customs guild, the silence after a punishing ascent is the truest form of prayer.
+              Steam rose in thick white plumes from hot engine fins into the freezing drizzle. Pratama pulled a battered stainless thermos from his canvas roll and poured black Robusta coffee into tin cups. Nobody spoke for ten minutes. The silence after a punishing ascent is the truest form of brotherhood.
             </p>
 
             {/* Technical Machine Matrix Box */}
@@ -343,7 +262,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
             </p>
           </div>
 
-          {/* Author Dossier & Guild Stamp */}
+          {/* Author info */}
           <div className="my-14 p-6 sm:p-8 bg-white border border-[#E5E2D9] rounded-xs shadow-xs">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <div className="w-16 h-16 rounded-full bg-[#070F18] text-[#C5AA00] flex items-center justify-center font-serif-editorial text-2xl font-bold border-2 border-[#C5AA00] flex-shrink-0">
@@ -352,32 +271,32 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
               <div className="space-y-1 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold tracking-[0.2em] text-[#0047AB] uppercase">
-                    AUTHOR & MASTER ARTISAN
+                    PENULIS
                   </span>
                   <span>•</span>
-                  <span className="text-[10px] text-emerald-600 font-bold uppercase">SAKALA VERIFIED</span>
+                  <span className="text-[10px] text-emerald-600 font-bold uppercase">SAKALA BANDUNG</span>
                 </div>
                 <h4 className="font-serif-editorial text-xl font-bold text-[#070F18]">
                   {post.author}
                 </h4>
                 <p className="text-xs text-[#64748B] leading-relaxed">
-                  Lead frame builder and engine tuner at SAKALA Ciroyom Atelier. He has logged over 80,000 kilometers across the Indonesian archipelago on custom rigid chassis and specializes in vintage Japanese parallel twins.
+                  Anggota dan pencatat perjalanan Sakala Motorcycle Club Bandung.
                 </p>
               </div>
             </div>
           </div>
         </article>
 
-        {/* Read Next Dispatches (Editorial Recirculation) */}
+        {/* Read Next (Editorial Recirculation) */}
         <section className="bg-white border-t border-[#E5E2D9] py-16">
           <div className="max-w-5xl mx-auto px-6 lg:px-8">
             <div className="flex justify-between items-end mb-8">
               <div>
                 <span className="text-[10px] font-bold tracking-[0.25em] text-[#0047AB] uppercase block mb-1">
-                  CONTINUE READING
+                  BACA JUGA
                 </span>
                 <h3 className="font-serif-editorial text-2xl sm:text-3xl font-black text-[#070F18]">
-                  MORE DISPATCHES FROM THE ROAD
+                  CATATAN PERJALANAN LAINNYA
                 </h3>
               </div>
 
@@ -385,7 +304,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
                 href="/#journal"
                 className="text-xs font-bold tracking-[0.16em] uppercase text-[#070F18] hover:text-[#C5AA00] transition-colors flex items-center gap-1.5"
               >
-                <span>ALL DISPATCHES</span>
+                <span>SEMUA ARTIKEL</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -410,7 +329,7 @@ export default async function JournalArticlePage({ params }: JournalPageProps) {
                   </div>
 
                   <div className="pt-4 mt-4 border-t border-[#E5E2D9] flex items-center justify-between text-xs font-bold tracking-[0.16em] uppercase text-[#070F18]">
-                    <span>READ MONOGRAPH</span>
+                    <span>BACA ARTIKEL</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>

@@ -20,7 +20,7 @@ const CATALOG_ITEMS: Product[] = [
     price_usd: 26,
     stock_status: 'available',
     stock_count: 15,
-    description: '280 GSM Ring-Spun Cotton. Vintage Off-White with deep navy screenprint.',
+    description: '280 GSM Cotton. Warna Off-White dengan sablon logo Sakala navy.',
     image_url: '/assets/product_tee.png',
   },
   {
@@ -32,7 +32,7 @@ const CATALOG_ITEMS: Product[] = [
     price_usd: 52,
     stock_status: 'low_stock',
     stock_count: 4,
-    description: '480 GSM French Terry. Grounding Black with Golden Yellow embroidery.',
+    description: '480 GSM French Terry. Warna hitam dengan bordir kuning keemasan.',
     image_url: '/assets/product_hoodie.png',
   },
   {
@@ -44,7 +44,7 @@ const CATALOG_ITEMS: Product[] = [
     price_usd: 82,
     stock_status: 'available',
     stock_count: 8,
-    description: 'Weatherproof Japanese Nylon. Sakala Royal Blue with quilted lining.',
+    description: 'Bahan nylon tahan angin warna biru Sakala dengan furing berlapis.',
     image_url: '/assets/product_jacket.png',
   },
   {
@@ -56,114 +56,17 @@ const CATALOG_ITEMS: Product[] = [
     price_usd: 18,
     stock_status: 'waitlist',
     stock_count: 0,
-    description: 'Heavy Mesh & Twill. Stamped brass closure, Grounding Black finish.',
+    description: 'Topi jaring & twill hitam dengan pengunci logam.',
     image_url: '/assets/product_cap.png',
-  },
-  {
-    id: 'prod-05',
-    sku: 'SKL-TEE-05',
-    name: 'KUJANG LONG-SLEEVE TEE',
-    category: 't-shirts',
-    price_idr: 440000,
-    price_usd: 30,
-    stock_status: 'available',
-    stock_count: 12,
-    description: '300 GSM Heavy Cotton. Raw Bone cotton with distressed gold sleeve print.',
-    image_url: '/assets/manifesto_thumb.png',
-  },
-  {
-    id: 'prod-06',
-    sku: 'SKL-SHT-06',
-    name: 'BANDUNG ATELIER WORK SHIRT',
-    category: 'jackets',
-    price_idr: 890000,
-    price_usd: 64,
-    stock_status: 'available',
-    stock_count: 6,
-    description: '12oz Herringbone Twill. Dual chest utility pockets, vintage brass rivets.',
-    image_url: '/assets/culture_workshop.png',
-  },
-  {
-    id: 'prod-07',
-    sku: 'SKL-CAP-07',
-    name: 'CIROYOM SPEED GUILD SNAPBACK',
-    category: 'headwear',
-    price_idr: 290000,
-    price_usd: 21,
-    stock_status: 'available',
-    stock_count: 9,
-    description: 'Heavy-Wale Corduroy. Flat brim, Royal Blue with gold 3D bullion lettering.',
-    image_url: '/assets/product_cap.png',
-  },
-  {
-    id: 'prod-08',
-    sku: 'SKL-VST-08',
-    name: 'SUBANG PASS WAXED VEST',
-    category: 'jackets',
-    price_idr: 1450000,
-    price_usd: 105,
-    stock_status: 'waitlist',
-    stock_count: 0,
-    description: '16oz Halley Stevensons Canvas. Flannel lined, heavy brass 2-way zipper.',
-    image_url: '/assets/culture_ceremony.png',
-  },
-  {
-    id: 'prod-09',
-    sku: 'SKL-ACC-09',
-    name: 'LEATHER KEY FOB & CARABINER',
-    category: 'accessories',
-    price_idr: 210000,
-    price_usd: 15,
-    stock_status: 'available',
-    stock_count: 20,
-    description: '4mm Tochigi Veg-Tan Leather. Solid stamped Japanese brass, saddle-stitched.',
-    image_url: '/assets/culture_patch.png',
-  },
-  {
-    id: 'prod-10',
-    sku: 'SKL-ACC-10',
-    name: 'BROTHERHOOD BANDANA PACK',
-    category: 'accessories',
-    price_idr: 180000,
-    price_usd: 13,
-    stock_status: 'available',
-    stock_count: 35,
-    description: '100% Selvedge Cotton (Set of 2). Discharge printed with Parahyangan pattern.',
-    image_url: '/assets/journal_subang.png',
-  },
-  {
-    id: 'prod-11',
-    sku: 'SKL-TOOL-11',
-    name: 'MOTO-TOOL ROLL NO. 01',
-    category: 'accessories',
-    price_idr: 480000,
-    price_usd: 34,
-    stock_status: 'available',
-    stock_count: 10,
-    description: 'Water-Repellent Heavy Duck Canvas. Slotted wrench compartments, bridle leather strap.',
-    image_url: '/assets/culture_workshop.png',
-  },
-  {
-    id: 'prod-12',
-    sku: 'SKL-PIN-12',
-    name: 'CIRCULAR ENAMEL PIN SET',
-    category: 'accessories',
-    price_idr: 150000,
-    price_usd: 11,
-    stock_status: 'available',
-    stock_count: 50,
-    description: 'Stamped Brass & Cloisonné. Hard enamel in Sakala Royal Blue and Gold.',
-    image_url: '/assets/sakala_emblem.png',
   },
 ];
 
 const FILTER_TABS = [
-  { id: 'all', label: 'ALL GEAR [24]' },
-  { id: 't-shirts', label: 'HEAVYWEIGHT TEES [8]' },
-  { id: 'hoodies', label: 'HOODIES & FLEECE [4]' },
-  { id: 'jackets', label: 'RIDING JACKETS & VESTS [3]' },
-  { id: 'headwear', label: 'HEADWEAR & CAPS [5]' },
-  { id: 'accessories', label: 'LEATHER & ATELIER TOOLS [4]' },
+  { id: 'all', label: 'SEMUA' },
+  { id: 't-shirts', label: 'KAOS' },
+  { id: 'hoodies', label: 'HOODIE' },
+  { id: 'jackets', label: 'JAKET' },
+  { id: 'headwear', label: 'TOPI' },
 ];
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -188,10 +91,10 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <h1 className="font-serif-editorial text-4xl sm:text-6xl font-black text-[#070F18] tracking-tight leading-none mb-3">
-                SAKALA SUPPLY
+                MERCHANDISE SAKALA
               </h1>
               <p className="text-xs sm:text-sm text-[#475569] max-w-2xl leading-relaxed">
-                Gear for the Brotherhood. Heavyweight textiles, chain-stitched insignias, and industrial-grade motorcycle apparel built for the asphalt corridor.
+                Koleksi merchandise resmi Sakala. Kaos, hoodie, jaket, dan aksesori berkendara dari Bandung.
               </p>
             </div>
 
@@ -199,7 +102,7 @@ export default function ShopPage() {
               <div className="w-8 h-8 rounded bg-[#070F18] flex items-center justify-center p-1.5 flex-shrink-0">
                 <Image
                   src="/assets/sakala_emblem.png"
-                  alt="Guild Insignia"
+                  alt="Sakala Logo"
                   width={24}
                   height={24}
                   className="object-contain"
@@ -207,10 +110,10 @@ export default function ShopPage() {
               </div>
               <div>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-[#070F18] uppercase block">
-                  OFFICIAL ARCHIVE
+                  PRODUK RESMI
                 </span>
                 <span className="text-[9px] tracking-[0.2em] text-[#64748B] uppercase block">
-                  GUILD SPECIMEN DISPATCH
+                  SAKALA BANDUNG
                 </span>
               </div>
             </div>
@@ -240,7 +143,7 @@ export default function ShopPage() {
             {/* Size Selector */}
             <div className="flex items-center gap-3 self-end lg:self-auto">
               <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase">
-                SIZE:
+                UKURAN:
               </span>
               <div className="flex items-center gap-1.5">
                 {SIZES.map((size) => (
@@ -261,29 +164,29 @@ export default function ShopPage() {
           </div>
         </section>
 
-        {/* Feature Drop Banner */}
+        {/* Featured Product Banner */}
         <section className="py-8 max-w-7xl mx-auto px-6 lg:px-12">
           <div className="bg-[#070F18] text-white rounded-xs p-8 lg:p-12 border border-[#C5AA00]/30 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7">
               <span className="text-[10px] font-bold tracking-[0.25em] text-[#C5AA00] uppercase block mb-3">
-                DROP 04 — MONSOON TRANSIT FLEECE & LEATHER
+                PRODUK PILIHAN
               </span>
               <h2 className="font-serif-editorial text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-4">
-                ENGINEERED FOR ASPHALT CLIMBS
+                BROTHERHOOD COACH JACKET
               </h2>
               <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed mb-8 max-w-xl">
-                Engineered for saturated highway runs from Bandung down through the Subang elevation drop. Featuring Japanese weatherproof twill, dual-density fleece storm collars, and solid brass hardware.
+                Jaket coach berbahan nylon tahan angin dengan warna biru khas Sakala, cocok untuk perjalanan malam dan riding sehari-hari.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <button
                   onClick={() => addToCart(CATALOG_ITEMS[2], selectedSize)}
                   className="inline-flex items-center gap-2 bg-[#0047AB] hover:bg-[#00388A] text-white px-6 py-3 text-xs font-bold tracking-[0.18em] uppercase rounded-xs transition-colors"
                 >
-                  <span>ACQUIRE CAPSULE SPECIMEN</span>
+                  <span>TAMBAH KE KERANJANG</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase">
-                  STRICTLY LIMITED TO 100 NUMBERED UNITS
+                  EDISI RESMI SAKALA
                 </span>
               </div>
             </div>
@@ -291,7 +194,7 @@ export default function ShopPage() {
             <div className="lg:col-span-5 relative h-64 sm:h-80 rounded-xs overflow-hidden border border-[#C5AA00]/20">
               <Image
                 src="/assets/product_jacket.png"
-                alt="Drop 04 Capsule"
+                alt="Brotherhood Coach Jacket"
                 fill
                 className="object-contain p-4 bg-[#0C1724]"
               />
@@ -302,11 +205,11 @@ export default function ShopPage() {
         {/* Inventory Index Title */}
         <section className="pt-8 pb-4 max-w-7xl mx-auto px-6 lg:px-12">
           <span className="text-[10px] font-bold tracking-[0.22em] text-[#64748B] uppercase">
-            CURRENT INVENTORY INDEX
+            SEMUA PRODUK
           </span>
         </section>
 
-        {/* 12 Products Grid */}
+        {/* Products Grid */}
         <section className="pb-20 max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredItems.map((item) => {
@@ -353,26 +256,22 @@ export default function ShopPage() {
                       <div className="pt-4 border-t border-[#E5E2D9] flex items-center justify-between">
                         <div>
                           <span className="text-xs font-bold text-[#070F18] block">
-                            IDR {item.price_idr.toLocaleString('id-ID')}
-                          </span>
-                          <span className="text-[10px] text-[#94A3B8] font-medium block">
-                            / ${item.price_usd} USD
+                            Rp {item.price_idr.toLocaleString('id-ID')}
                           </span>
                         </div>
 
                         {isWaitlist ? (
-                          <button
-                            onClick={() => alert(`Registered for waitlist: ${item.name}`)}
-                            className="bg-[#FAF9F5] border border-[#E5E2D9] hover:bg-[#070F18] hover:text-white text-[#070F18] text-[9px] font-bold tracking-[0.16em] uppercase px-3 py-2 rounded-xs transition-colors"
+                          <span
+                            className="bg-[#FAF9F5] border border-[#E5E2D9] text-[#64748B] text-[9px] font-bold tracking-[0.16em] uppercase px-3 py-2 rounded-xs"
                           >
-                            WAITLIST
-                          </button>
+                            HABIS
+                          </span>
                         ) : (
                           <button
                             onClick={() => addToCart(item, selectedSize)}
                             className="bg-[#070F18] hover:bg-[#0047AB] text-white text-[10px] font-bold tracking-[0.18em] uppercase px-4 py-2 rounded-xs transition-colors shadow-xs"
                           >
-                            ACQUIRE
+                            BELI
                           </button>
                         )}
                       </div>

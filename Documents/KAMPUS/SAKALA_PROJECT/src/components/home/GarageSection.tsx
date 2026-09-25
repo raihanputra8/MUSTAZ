@@ -42,13 +42,13 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
         <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-10 gap-4">
           <div>
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
-              02 / BUILDS — THE ATELIER
+              GARASI MOTOR
             </span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#070F18] tracking-tight leading-tight">
-              THE SAKALA GARAGE
+              GARASI SAKALA
             </h2>
             <p className="text-xs sm:text-sm text-[#64748B] mt-1.5">
-              Handcrafted machines with history. Built to ride without compromise.
+              Motor kustom dan mesin yang dirawat serta dikendarai anggota Sakala.
             </p>
           </div>
 
@@ -60,7 +60,7 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
               href="/bikes"
               className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-[#070F18] hover:text-[#0047AB] transition-colors uppercase flex-shrink-0 group"
             >
-              <span>ALL BUILDS</span>
+              <span>SEMUA MOTOR</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
             </Link>
           </div>
@@ -141,7 +141,7 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
             <div className="p-6 bg-[#070F18] text-white flex items-center justify-between border-b border-[#C5AA00]/30">
               <div>
                 <span className="text-[10px] tracking-[0.22em] text-[#C5AA00] font-bold uppercase block">
-                  BUILD DOSSIER ARCHIVE
+                  SPESIFIKASI MOTOR
                 </span>
                 <h4 className="font-serif-editorial text-xl font-bold">
                   {selectedBike.year} {selectedBike.make} {selectedBike.model} {selectedBike.title}
@@ -182,13 +182,13 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                   onClick={() => setSelectedBike(null)}
                   className="px-5 py-2.5 border border-[#E5E2D9] text-[#64748B] hover:text-[#070F18] text-xs font-bold tracking-[0.16em] uppercase rounded-xs transition-colors cursor-pointer"
                 >
-                  CLOSE
+                  TUTUP
                 </button>
                 <Link
                   href={`/bikes/${selectedBike.id}`}
                   className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#070F18] hover:bg-[#0047AB] text-white text-xs font-bold tracking-[0.16em] uppercase rounded-xs btn-tactile transition-colors"
                 >
-                  <span>FULL BUILD DOSSIER</span>
+                  <span>DETAIL MOTOR LENGKAP</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

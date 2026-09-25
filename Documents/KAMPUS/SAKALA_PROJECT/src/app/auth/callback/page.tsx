@@ -7,7 +7,7 @@ import { ShieldCheck, Loader2 } from 'lucide-react';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const [statusMessage, setStatusMessage] = useState('Verifying Google credentials with SAKALA Sanctuary...');
+  const [statusMessage, setStatusMessage] = useState('Memverifikasi akun Google...');
 
   useEffect(() => {
     async function handleAuth() {
@@ -56,7 +56,7 @@ export default function AuthCallbackPage() {
           }
           if (data.session) {
             await handleSessionSync(data.session.user);
-            setStatusMessage('Identity verified. Entering the Circle...');
+            setStatusMessage('Autentikasi berhasil. Mengalihkan ke akun...');
             setTimeout(() => router.push('/account'), 600);
             return;
           }
@@ -95,11 +95,11 @@ export default function AuthCallbackPage() {
       </div>
 
       <span className="text-[10px] font-bold tracking-[0.28em] text-[#C5AA00] uppercase mb-2 block">
-        SAKALA GUILD AUTHENTICATION
+        AUTENTIKASI SAKALA MOTORCYCLE CLUB
       </span>
 
       <h1 className="font-serif-editorial text-2xl sm:text-3xl font-bold tracking-wide text-white mb-4">
-        AUTHORIZING MEMBER ACCESS
+        MEMVERIFIKASI AKSES ANGGOTA
       </h1>
 
       <p className="text-xs sm:text-sm text-[#94A3B8] max-w-md font-light leading-relaxed">

@@ -42,7 +42,7 @@ export default function Footer() {
 
             {/* About / Informasi Perusahaan */}
             <p className="text-xs text-[#94A3B8] leading-relaxed max-w-sm font-normal">
-              Bandung-born motorcycle collective &amp; custom engineering guild. Built on lifelong fraternity, raw displacement, and Indonesian archival motorcycle heritage. A circle, not a crowd.
+              Klub motor dari Bandung, Jawa Barat. Berjalan bersama atas dasar persaudaraan, motor kustom, dan catatan di setiap perjalanan.
             </p>
 
             {/* Social Media Links */}
@@ -109,38 +109,38 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/bikes" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
-                  <span>The Garage (Bikes)</span>
+                  <span>Garasi Motor</span>
                   <ArrowUpRight className="w-3 h-3 opacity-60" />
                 </Link>
               </li>
               <li>
                 <Link href="/journal" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
-                  <span>Chronicle Journal</span>
+                  <span>Jurnal Perjalanan</span>
                   <ArrowUpRight className="w-3 h-3 opacity-60" />
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
-                  <span>About &amp; Ethos</span>
+                  <span>Tentang Sakala</span>
                   <ArrowUpRight className="w-3 h-3 opacity-60" />
                 </Link>
               </li>
               <li>
                 <Link href="/tracking" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
-                  <span>Track Order / Resi</span>
+                  <span>Lacak Pesanan</span>
                   <ArrowUpRight className="w-3 h-3 opacity-60" />
                 </Link>
               </li>
               <li>
                 <Link href="/account" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1.5 transition-all">
-                  <span>Member Account</span>
+                  <span>Akun Anggota</span>
                   <ArrowUpRight className="w-3 h-3 opacity-60" />
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Kontak & Layanan (Col 2) */}
+          {/* Column 3: Kontak (Col 2) */}
           <div className="lg:col-span-2 space-y-4">
             <span className="text-[11px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase block">
               KONTAK
@@ -149,54 +149,35 @@ export default function Footer() {
               <li className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-[10px] text-[#64748B] uppercase font-bold">Email Concierge</span>
+                  <span className="block text-[10px] text-[#64748B] uppercase font-bold">Email</span>
                   <a href="mailto:contact@sakala-mc.id" className="hover:text-white transition-colors">
                     contact@sakala-mc.id
                   </a>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
-                <Phone className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
-                <div>
-                  <span className="block text-[10px] text-[#64748B] uppercase font-bold">WhatsApp Guild</span>
-                  <a href="https://wa.me/6282126262026" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-                    +62 821-2626-2026
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <Clock className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
-                <div>
-                  <span className="block text-[10px] text-[#64748B] uppercase font-bold">Jam Operasional</span>
-                  <span>Selasa – Minggu<br />10:00 – 21:00 WIB</span>
-                </div>
-              </li>
             </ul>
           </div>
 
-          {/* Column 4: Alamat Workshop (Col 3) */}
+          {/* Column 4: Lokasi (Col 3) */}
           <div className="lg:col-span-3 space-y-4">
             <span className="text-[11px] font-bold tracking-[0.2em] text-[#C5AA00] uppercase block">
-              ALAMAT ATELIER
+              LOKASI
             </span>
             <div className="flex items-start gap-2.5 text-xs text-[#94A3B8]">
               <MapPin className="w-4 h-4 text-[#C5AA00] shrink-0 mt-0.5" />
               <div className="leading-relaxed">
-                <strong className="text-white block font-medium">SAKALA HEADQUARTERS &amp; ATELIER</strong>
-                <span>Jl. Ciroyom No. 26, Dago Atas</span>
-                <span className="block">Bandung, Jawa Barat 40135</span>
+                <strong className="text-white block font-medium">SAKALA MOTORCYCLE CLUB</strong>
+                <span>Bandung, Jawa Barat</span>
                 <span className="block text-[#64748B]">Indonesia</span>
               </div>
             </div>
-
-
           </div>
         </div>
 
         {/* Bottom Bar: Copyright & Legal Policies */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#64748B]">
           <div>
-            © 2026 <strong>SAKALA MOTORCYCLE CLUB</strong>. All rights reserved.
+            © SAKALA MOTORCYCLE CLUB. All rights reserved.
           </div>
 
           <div className="flex items-center gap-5 tracking-wider uppercase text-[10px]">
@@ -207,10 +188,6 @@ export default function Footer() {
             <Link href="/about" className="hover:text-white transition-colors">
               Terms &amp; Conditions
             </Link>
-            <span>•</span>
-            <span className="italic font-serif text-[#94A3B8] normal-case">
-              “A circle, not a crowd.”
-            </span>
           </div>
         </div>
       </div>

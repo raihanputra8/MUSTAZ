@@ -58,49 +58,21 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             alt={product.name}
             fill
             priority
-            className="object-cover"
+            className="object-contain p-8"
           />
 
           <div className="absolute top-4 left-4 bg-[#070F18]/90 text-[#C5AA00] px-3 py-1 text-[9px] font-bold tracking-[0.25em] uppercase rounded-xs">
-            AUTHENTIC SPECIMEN • DROP 04
-          </div>
-        </div>
-
-        {/* Thumbnail Selector Grid */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="relative aspect-square bg-white border-2 border-[#070F18] rounded-xs overflow-hidden cursor-pointer">
-            <Image
-              src={product.image_url}
-              alt="Primary front view"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="relative aspect-square bg-white border border-[#E5E2D9] rounded-xs overflow-hidden cursor-pointer hover:border-[#070F18] transition-colors">
-            <Image
-              src="/assets/culture_workshop.png"
-              alt="Workshop craftsmanship"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="relative aspect-square bg-white border border-[#E5E2D9] rounded-xs overflow-hidden cursor-pointer hover:border-[#070F18] transition-colors">
-            <Image
-              src="/assets/culture_members.png"
-              alt="Member apparel fitting"
-              fill
-              className="object-cover"
-            />
+            MERCHANDISE RESMI SAKALA
           </div>
         </div>
       </div>
 
-      {/* Right: Technical Details & Acquisition Controls */}
+      {/* Right: Product Details & Purchase Controls */}
       <div className="lg:col-span-5 flex flex-col justify-between">
         <div>
           {/* Category & SKU Header */}
           <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.2em] uppercase text-[#64748B] mb-2">
-            <span>CATEGORY: {product.category}</span>
+            <span>KATEGORI: {product.category}</span>
             <span>SKU: {product.sku}</span>
           </div>
 
@@ -111,13 +83,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           {/* Pricing */}
           <div className="flex items-baseline gap-3 mb-6 pb-6 border-b border-[#E5E2D9]">
             <span className="font-serif-editorial text-2xl sm:text-3xl font-black text-[#0047AB]">
-              IDR {product.price_idr.toLocaleString('id-ID')}
-            </span>
-            <span className="text-xs text-[#64748B] font-bold">
-              / USD ${product.price_usd}
+              Rp {product.price_idr.toLocaleString('id-ID')}
             </span>
             <span className="ml-auto text-[10px] font-bold tracking-[0.16em] uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-xs">
-              IN STOCK • CIROYOM ATELIER
+              STOK TERSEDIA
             </span>
           </div>
 
@@ -130,7 +99,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase">
-                SELECT SPECIMEN SIZE:
+                PILIH UKURAN:
               </span>
               <button
                 type="button"
@@ -138,7 +107,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 className="text-[10px] font-bold tracking-[0.14em] text-[#0047AB] uppercase flex items-center gap-1 hover:underline"
               >
                 <Ruler className="w-3 h-3" />
-                <span>SIZE MATRIX</span>
+                <span>PANDUAN UKURAN</span>
               </button>
             </div>
 
@@ -163,7 +132,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           {/* Quantity Selection */}
           <div className="mb-8">
             <span className="text-[10px] font-bold tracking-[0.2em] text-[#64748B] uppercase block mb-2">
-              DISPATCH QUANTITY:
+              JUMLAH:
             </span>
             <div className="flex items-center w-36 border border-[#E5E2D9] bg-white rounded-xs">
               <button
@@ -190,11 +159,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           {addedToast && (
             <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xs flex items-center gap-2">
               <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span>Added to your dispatch manifest. Drawer updated.</span>
+              <span>Produk berhasil ditambahkan ke keranjang.</span>
             </div>
           )}
 
-          {/* Dual Action Acquisition Buttons */}
+          {/* Action Buttons */}
           <div className="flex flex-col gap-3 mb-10">
             <button
               type="button"
@@ -202,21 +171,21 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               className="w-full bg-[#070F18] hover:bg-[#0047AB] text-white py-3.5 px-6 rounded-xs text-xs font-bold tracking-[0.18em] uppercase transition-colors flex items-center justify-center gap-2 shadow-xs"
             >
               <ShoppingBag className="w-4 h-4" />
-              <span>ADD TO DISPATCH MANIFEST</span>
+              <span>TAMBAH KE KERANJANG</span>
             </button>
 
             <button
               type="button"
               onClick={handleBuyNow}
-              className="w-full bg-[#C5AA00] hover:bg-white text-[#070F18] border border-[#C5AA00] py-3.5 px-6 rounded-xs text-xs font-bold tracking-[0.18em] uppercase transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-[#C5AA00] hover:bg-[#d8bb00] text-[#070F18] border border-[#C5AA00] py-3.5 px-6 rounded-xs text-xs font-bold tracking-[0.18em] uppercase transition-colors flex items-center justify-center gap-2"
             >
-              <span>INSTANT DISPATCH CHECKOUT</span>
+              <span>BELI SEKARANG</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Tabbed Technical Monograph Details */}
+        {/* Tabbed Product Details */}
         <div className="border-t border-[#E5E2D9] pt-6">
           <div className="flex gap-6 border-b border-[#E5E2D9] pb-3 text-[10px] font-bold tracking-[0.18em] uppercase">
             <button
@@ -228,7 +197,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   : 'text-[#64748B] hover:text-[#070F18]'
               }`}
             >
-              CRAFTSMANSHIP & FABRIC
+              DETAIL BAHAN
             </button>
             <button
               type="button"
@@ -239,7 +208,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   : 'text-[#64748B] hover:text-[#070F18]'
               }`}
             >
-              SIZE GUIDE MATRIX
+              PANDUAN UKURAN
             </button>
             <button
               type="button"
@@ -250,7 +219,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   : 'text-[#64748B] hover:text-[#070F18]'
               }`}
             >
-              LOGISTICS & EXCHANGE
+              PENGIRIMAN
             </button>
           </div>
 
@@ -259,19 +228,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <ul className="space-y-2 text-[11px]">
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-[#C5AA00]" />
-                  <span>240 GSM heavy-knit 100% combed ringspun cotton</span>
+                  <span>Bahan katun berkualitas tinggi dan nyaman dipakai</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-[#C5AA00]" />
-                  <span>Breathable water-based discharge screenprinting</span>
+                  <span>Sablon dan jahitan rapi tahan lama</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-[#C5AA00]" />
-                  <span>Solid brass hem label with serialized guild hallmark</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-[#C5AA00]" />
-                  <span>Pre-washed to eliminate shrinkage during monsoon washes</span>
+                  <span>Label resmi Sakala Motorcycle Club</span>
                 </li>
               </ul>
             )}
@@ -281,10 +246,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 <table className="w-full text-[11px] text-left">
                   <thead>
                     <tr className="border-b border-[#E5E2D9] text-[#64748B] uppercase font-bold">
-                      <th className="py-2">SIZE</th>
-                      <th className="py-2">CHEST (LEBAR)</th>
-                      <th className="py-2">LENGTH (PANJANG)</th>
-                      <th className="py-2">SLEEVE (LENGAN)</th>
+                      <th className="py-2">UKURAN</th>
+                      <th className="py-2">LEBAR DADA</th>
+                      <th className="py-2">PANJANG</th>
+                      <th className="py-2">PANJANG LENGAN</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E5E2D9]">
@@ -326,13 +291,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             {activeTab === 'shipping' && (
               <div className="space-y-3 text-[11px]">
                 <p>
-                  Dispatched directly from SAKALA Ciroyom Atelier in Bandung via JNE YES (Next Day) or J&T Cargo.
+                  Pengiriman langsung dari Bandung menggunakan kurir reguler atau kilat.
                 </p>
                 <p>
-                  Orders confirmed before 15:00 WIB are dispatched on the same business day with encrypted tracking number.
+                  Pesanan diproses pada hari kerja (Senin - Sabtu). Nomor resi akan diberikan setelah barang dikirim.
                 </p>
                 <p className="text-emerald-700 font-bold">
-                  ✓ Complimentary 7-day size exchange guarantee for unworn items.
+                  ✓ Penukaran ukuran dapat dilakukan maksimal 7 hari setelah barang diterima dalam kondisi baru.
                 </p>
               </div>
             )}

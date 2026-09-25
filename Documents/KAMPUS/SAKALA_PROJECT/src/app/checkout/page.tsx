@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) {
-      alert('Your manifest is empty. Please add items from the catalog.');
+      alert('Keranjang belanja Anda masih kosong.');
       return;
     }
     setSubmitting(true);
@@ -74,93 +74,93 @@ export default function CheckoutPage() {
         {/* Step Indicator */}
         <div className="flex items-center gap-3 text-[10px] font-bold tracking-[0.2em] uppercase text-[#64748B] mb-8 pb-4 border-b border-[#E5E2D9]">
           <Link href="/shop" className="hover:text-[#070F18]">
-            01. SUPPLY CATALOG
+            01. KATALOG
           </Link>
           <span>/</span>
-          <span className="text-[#0047AB]">02. SECURE DISPATCH CHECKOUT</span>
+          <span className="text-[#0047AB]">02. PEMBAYARAN</span>
           <span>/</span>
-          <span className="opacity-50">03. ORDER CONFIRMATION</span>
+          <span className="opacity-50">03. KONFIRMASI PESANAN</span>
         </div>
 
         <h1 className="font-serif-editorial text-3xl sm:text-4xl font-black text-[#070F18] tracking-tight mb-2">
-          SECURE DISPATCH MANIFEST
+          DETAIL PESANAN
         </h1>
         <p className="text-xs text-[#64748B] mb-10">
-          Enter operational delivery coordinates and select encrypted payment channel.
+          Masukkan alamat pengiriman dan pilih metode pembayaran.
         </p>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Left Form: Operator Info, Shipping & Payment */}
+          {/* Left Form: Shipping & Payment */}
           <div className="lg:col-span-7 space-y-8">
-            {/* Operator Coordinates */}
+            {/* Alamat Pengiriman */}
             <div className="bg-white border border-[#E5E2D9] rounded-xs p-6 sm:p-8 shadow-xs">
               <div className="flex items-center gap-2 mb-6 text-[#070F18]">
                 <ShieldCheck className="w-4 h-4 text-[#0047AB]" />
                 <h3 className="font-serif-editorial text-base font-bold uppercase tracking-wider">
-                  1. OPERATOR COORDINATES
+                  1. ALAMAT PENGIRIMAN
                 </h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    FULL NAME *
+                    NAMA LENGKAP *
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="e.g. Raihan Putra"
+                    placeholder="Contoh: Raihan Putra"
                     className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3.5 py-2.5 rounded-xs outline-none focus:border-[#070F18]"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    WHATSAPP / PHONE *
+                    NO. TELEPON / WHATSAPP *
                   </label>
                   <input
                     type="tel"
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+62 812-xxxx-xxxx"
+                    placeholder="0812xxxxxxxx"
                     className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3.5 py-2.5 rounded-xs outline-none focus:border-[#070F18]"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    DISPATCH EMAIL *
+                    EMAIL *
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="operator@brotherhood.cc"
+                    placeholder="email@anda.com"
                     className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3.5 py-2.5 rounded-xs outline-none focus:border-[#070F18]"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    STREET ADDRESS / WORKSHOP HQ *
+                    ALAMAT LENGKAP *
                   </label>
                   <textarea
                     required
                     rows={2}
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    placeholder="Complete address with RT/RW and postal district..."
+                    placeholder="Nama jalan, RT/RW, nomor rumah, kelurahan, kecamatan..."
                     className="w-full bg-[#FAF9F5] border border-[#E5E2D9] px-3.5 py-2.5 rounded-xs outline-none focus:border-[#070F18] resize-none"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    CITY / REGENCY
+                    KOTA / KABUPATEN
                   </label>
                   <input
                     type="text"
@@ -172,7 +172,7 @@ export default function CheckoutPage() {
 
                 <div>
                   <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-1">
-                    POSTAL CODE
+                    KODE POS
                   </label>
                   <input
                     type="text"
@@ -189,7 +189,7 @@ export default function CheckoutPage() {
               <div className="flex items-center gap-2 mb-6 text-[#070F18]">
                 <Truck className="w-4 h-4 text-[#0047AB]" />
                 <h3 className="font-serif-editorial text-base font-bold uppercase tracking-wider">
-                  2. DISPATCH & COURIER LOGISTICS
+                  2. JASA PENGIRIMAN
                 </h3>
               </div>
 
@@ -202,7 +202,7 @@ export default function CheckoutPage() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-[#070F18]">JNE YES (Overnight Air)</span>
+                    <span className="font-bold text-[#070F18]">JNE YES (Next Day)</span>
                     <input
                       type="radio"
                       name="courier"
@@ -211,8 +211,8 @@ export default function CheckoutPage() {
                       onChange={() => setFormData({ ...formData, courier: 'jne_yes' })}
                     />
                   </div>
-                  <span className="text-[10px] text-[#64748B]">Next-day priority delivery</span>
-                  <span className="font-bold text-[#070F18] mt-2 block">IDR 35.000</span>
+                  <span className="text-[10px] text-[#64748B]">Pengiriman kilat 1 hari</span>
+                  <span className="font-bold text-[#070F18] mt-2 block">Rp 35.000</span>
                 </label>
 
                 <label
@@ -223,7 +223,7 @@ export default function CheckoutPage() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-[#070F18]">J&T CARGO (Heavy Gear)</span>
+                    <span className="font-bold text-[#070F18]">J&T CARGO</span>
                     <input
                       type="radio"
                       name="courier"
@@ -232,8 +232,8 @@ export default function CheckoutPage() {
                       onChange={() => setFormData({ ...formData, courier: 'cargo' })}
                     />
                   </div>
-                  <span className="text-[10px] text-[#64748B]">Reinforced heavy logistics</span>
-                  <span className="font-bold text-[#070F18] mt-2 block">IDR 45.000</span>
+                  <span className="text-[10px] text-[#64748B]">Paket kargo reguler</span>
+                  <span className="font-bold text-[#070F18] mt-2 block">Rp 45.000</span>
                 </label>
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function CheckoutPage() {
               <div className="flex items-center gap-2 mb-6 text-[#070F18]">
                 <CreditCard className="w-4 h-4 text-[#0047AB]" />
                 <h3 className="font-serif-editorial text-base font-bold uppercase tracking-wider">
-                  3. PAYMENT CHANNEL
+                  3. METODE PEMBAYARAN
                 </h3>
               </div>
 
@@ -257,7 +257,7 @@ export default function CheckoutPage() {
                 >
                   <div>
                     <span className="font-bold text-[#070F18] block">BCA Virtual Account</span>
-                    <span className="text-[10px] text-[#64748B]">Automated 24/7 Verification</span>
+                    <span className="text-[10px] text-[#64748B]">Verifikasi otomatis</span>
                   </div>
                   <input
                     type="radio"
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                   }`}
                 >
                   <div>
-                    <span className="font-bold text-[#070F18] block">QRIS Settlement</span>
+                    <span className="font-bold text-[#070F18] block">QRIS</span>
                     <span className="text-[10px] text-[#64748B]">GoPay, OVO, Dana, ShopeePay</span>
                   </div>
                   <input
@@ -295,13 +295,13 @@ export default function CheckoutPage() {
           <div className="lg:col-span-5">
             <div className="bg-white border border-[#E5E2D9] rounded-xs p-6 sm:p-8 shadow-sm sticky top-28">
               <h3 className="font-serif-editorial text-lg font-bold text-[#070F18] uppercase tracking-wider mb-6 pb-3 border-b border-[#E5E2D9]">
-                DISPATCH SUMMARY
+                RINGKASAN PESANAN
               </h3>
 
               {/* Items List */}
               <div className="divide-y divide-[#E5E2D9] mb-6 max-h-72 overflow-y-auto pr-1">
                 {cart.length === 0 ? (
-                  <p className="text-xs text-[#64748B] py-4">No specimens selected in cart.</p>
+                  <p className="text-xs text-[#64748B] py-4">Belum ada produk di keranjang.</p>
                 ) : (
                   cart.map((item) => (
                     <div key={item.product.id} className="py-3 flex items-center gap-3">
@@ -318,11 +318,11 @@ export default function CheckoutPage() {
                           {item.product.name}
                         </h4>
                         <span className="text-[10px] text-[#64748B]">
-                          QTY: {item.quantity} • SIZE: {item.size || 'M'}
+                          Jumlah: {item.quantity} • Ukuran: {item.size || 'M'}
                         </span>
                       </div>
                       <span className="text-xs font-bold text-[#070F18] flex-shrink-0">
-                        IDR {(item.product.price_idr * item.quantity).toLocaleString('id-ID')}
+                        Rp {(item.product.price_idr * item.quantity).toLocaleString('id-ID')}
                       </span>
                     </div>
                   ))
@@ -332,21 +332,21 @@ export default function CheckoutPage() {
               {/* Cost Breakdown */}
               <div className="space-y-2 text-xs border-t border-[#E5E2D9] pt-4 mb-6">
                 <div className="flex justify-between text-[#64748B]">
-                  <span>Subtotal ({totalItems} items)</span>
+                  <span>Subtotal ({totalItems} item)</span>
                   <span className="font-semibold text-[#070F18]">
-                    IDR {totalIdr.toLocaleString('id-ID')}
+                    Rp {totalIdr.toLocaleString('id-ID')}
                   </span>
                 </div>
                 <div className="flex justify-between text-[#64748B]">
-                  <span>Domestic Courier Dispatch</span>
+                  <span>Ongkos Kirim</span>
                   <span className="font-semibold text-[#070F18]">
-                    {cart.length > 0 ? `IDR ${shippingFee.toLocaleString('id-ID')}` : 'IDR 0'}
+                    {cart.length > 0 ? `Rp ${shippingFee.toLocaleString('id-ID')}` : 'Rp 0'}
                   </span>
                 </div>
                 <div className="flex justify-between text-base font-bold text-[#070F18] pt-3 border-t border-[#E5E2D9]">
-                  <span>Total Amount</span>
+                  <span>Total Pembayaran</span>
                   <span className="text-[#0047AB]">
-                    IDR {grandTotal.toLocaleString('id-ID')}
+                    Rp {grandTotal.toLocaleString('id-ID')}
                   </span>
                 </div>
               </div>
@@ -357,13 +357,13 @@ export default function CheckoutPage() {
                 disabled={submitting || cart.length === 0}
                 className="w-full bg-[#070F18] hover:bg-[#0047AB] disabled:opacity-50 text-white py-4 text-xs font-bold tracking-[0.2em] uppercase rounded-xs transition-colors flex items-center justify-center gap-2 shadow-lg cursor-pointer"
               >
-                <span>{submitting ? 'AUTHORIZING DISPATCH...' : 'AUTHORIZE DISPATCH & PLACE ORDER'}</span>
+                <span>{submitting ? 'MEMPROSES PESANAN...' : 'LANJUTKAN KE PEMBAYARAN'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <div className="flex items-center justify-center gap-2 text-[10px] text-[#94A3B8] uppercase tracking-wider mt-4">
                 <Lock className="w-3 h-3 text-[#C5AA00]" />
-                <span>256-BIT ENCRYPTED SPECIMEN PROTOCOL</span>
+                <span>Transaksi aman &amp; terverifikasi</span>
               </div>
             </div>
           </div>

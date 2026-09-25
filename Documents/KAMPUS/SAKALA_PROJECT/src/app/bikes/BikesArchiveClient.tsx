@@ -25,22 +25,22 @@ export default function BikesArchiveClient({ initialBikes }: BikesArchiveClientP
       {/* Archive Header */}
       <div className="mb-10 pb-8 border-b border-[#E5E2D9]">
         <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
-          BUILDS — THE ATELIER
+          GARASI MOTOR
         </span>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="font-serif-editorial text-4xl sm:text-6xl font-black text-[#070F18] tracking-tight leading-tight mb-3">
-              THE SAKALA GARAGE
+              GARASI MOTOR SAKALA
             </h1>
             <p className="text-xs sm:text-sm text-[#64748B] max-w-2xl leading-relaxed">
-              Every motorcycle built within our Bandung guild is an uncompromising synthesis of Indonesian heritage and raw displacement. Built for mountain passes, monsoon squalls, and lifelong brotherhood.
+              Koleksi motor garasi Sakala Motorcycle Club Bandung. Dicatat untuk merekam perjalanan, spesifikasi, dan kegiatan berkendara.
             </p>
           </div>
 
           {/* Status Filter Buttons */}
           <div className="flex flex-wrap items-center gap-2">
             {[
-              { id: 'all', label: 'ALL BUILDS' },
+              { id: 'all', label: 'SEMUA MOTOR' },
               { id: 'archival', label: 'ARCHIVAL' },
               { id: 'commissioned', label: 'COMMISSIONED' },
               { id: 'private_collection', label: 'PRIVATE COLLECTION' },
@@ -120,7 +120,7 @@ export default function BikesArchiveClient({ initialBikes }: BikesArchiveClientP
                   href={`/bikes/${bike.id}`}
                   className="w-full inline-flex items-center justify-center gap-2 bg-[#070F18] group-hover:bg-[#0047AB] text-white py-3 text-[10px] font-bold tracking-[0.2em] uppercase rounded-xs transition-colors btn-tactile"
                 >
-                  <span>EXPLORE DETAIL GALLERY</span>
+                  <span>LIHAT DETAIL MOTOR</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200" />
                 </Link>
               </div>

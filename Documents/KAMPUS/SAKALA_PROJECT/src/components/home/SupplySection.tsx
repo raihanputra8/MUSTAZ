@@ -58,13 +58,13 @@ export default function SupplySection({ initialProducts }: { initialProducts: Pr
         <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-10 gap-4">
           <div>
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
-              03 / MERCHANDISE — SAKALA SUPPLY
+              MERCHANDISE RESMI
             </span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#070F18] tracking-tight leading-tight">
-              OFFICIAL GOODS
+              SAKALA SUPPLY
             </h2>
             <p className="text-xs sm:text-sm text-[#64748B] mt-1.5">
-              Heavyweight apparel and handcrafted garage essentials.
+              Pakaian dan perlengkapan resmi Sakala Motorcycle Club.
             </p>
           </div>
 
@@ -193,7 +193,7 @@ export default function SupplySection({ initialProducts }: { initialProducts: Pr
             href="/shop"
             className="inline-flex items-center gap-2 bg-[#070F18] hover:bg-[#0047AB] text-white px-7 py-3 text-xs font-bold tracking-[0.18em] uppercase rounded-xs transition-all duration-300 shadow-md group btn-tactile"
           >
-            <span>VIEW ALL MERCHANDISE</span>
+            <span>LIHAT SEMUA PRODUK</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200" />
           </Link>
         </ScrollReveal>

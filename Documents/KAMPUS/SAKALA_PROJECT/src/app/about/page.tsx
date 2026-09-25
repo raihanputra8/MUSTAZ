@@ -13,81 +13,81 @@ export default function AboutPage() {
 
   // Dynamic Content with live CMS updates
   const heroContent = getContent('about_hero', {
-    label: 'FOUNDED IN BANDUNG • EST. 2026',
-    title: 'THE MANIFEST REALM, & BROTHERHOOD.',
-    description: 'Founded in Bandung in 2026 by Adil Lothar Hasan. We are an exclusive brotherhood that honors the humanity in every member. We are motorcycle-agnostic and character-selective. A circle, not a crowd.',
-    cta_text: 'DISCOVER ORIGIN',
+    label: 'BANDUNG, JAWA BARAT',
+    title: 'TENTANG SAKALA',
+    description: 'Sakala adalah persaudaraan pengendara motor dari Bandung yang memegang prinsip kekeluargaan dan saling menghargai. Kami terbuka untuk beragam jenis dan cerita di balik setiap motor, dengan mengutamakan karakter dan kebersamaan.',
+    cta_text: 'PELAJARI FILOSOFI',
   });
 
   const heroImgContent = getContent('about_hero_image', {
     image_url: '/assets/sakala_emblem.png',
-    label: 'Hero Visual Display',
-    title: 'SAKALA Official Graphic',
+    label: 'Logo Sakala',
+    title: 'Sakala Motorcycle Club',
   });
 
   const originImgContent = getContent('about_origin_image', {
     image_url: '/assets/sakala_emblem.png',
     label: 'Cakra Rahayu Kencana',
-    title: 'Ancient Sunda-Galuh Symbolism',
+    title: 'Simbol Sakala',
   });
 
   const sanskritContent = getContent('about_sanskrit', {
-    label: '01. SANSKRIT TRADITION',
+    label: '01. ASAL KATA',
     title: 'Sa + Kala',
-    description: 'The manifest, tangible, complete realm where spirit becomes action. Deliberate manifestation in the world.',
+    description: 'Berasal dari konsep perwujudan nyata dalam tindakan, mewakili komitmen yang diekspresikan melalui perbuatan.',
   });
 
   const kawiContent = getContent('about_kawi', {
-    label: '02. KAWI TRADITION',
-    title: 'The Actionable World',
-    description: 'The realm of deeds that can be witnessed, measured, and recorded. Virtue rendered visible through action.',
+    label: '02. TINDAKAN NYATA',
+    title: 'Laku & Bukti',
+    description: 'Prinsip bahwa nilai seseorang tercermin dari apa yang dilakukannya di jalan dan di tengah masyarakat.',
   });
 
   const sundaContent = getContent('about_sunda', {
-    label: '03. SUNDANESE PHILOSOPHY',
-    title: 'Presence & Completion',
-    description: 'Rhymes with the Sundanese ethic of “Cageur, Bageur, Bener, Pinter, Singer” — wholeness of character expressed in the visible world.',
+    label: '03. FILOSOFI SUNDA',
+    title: 'Cageur, Bageur, Bener, Pinter, Singer',
+    description: 'Berakar pada nilai luhur Sunda yang mengutamakan kebaikan budi pekerti, kejujuran, dan keutuhan karakter.',
   });
 
   const pillar1 = getContent('about_pillar_1', {
-    label: 'PILLAR 01',
-    title: 'Loyalty',
-    description: 'The bond is non-negotiable. You do not join and receive brotherhood. You demonstrate loyalty and earn the circle. Loyalty means showing up when it is inconvenient, telling a brother the truth when a lie is easier.',
+    label: 'PRINSIP 01',
+    title: 'Loyalitas',
+    description: 'Komitmen terhadap persaudaraan, hadir saat dibutuhkan, dan saling menjaga kejujuran di antara sesama anggota.',
   });
 
   const pillar2 = getContent('about_pillar_2', {
-    label: 'PILLAR 02',
+    label: 'PRINSIP 02',
     title: 'Memanusiakan Manusia',
-    description: "To honor the humanity in another. Not a slogan but a lived daily expectation. Every interaction with members, sponsors, strangers on the road is conducted as if the other person's dignity is non-negotiable.",
+    description: 'Menghargai martabat sesama anggota, mitra, maupun pengendara lain di jalan raya tanpa terkecuali.',
   });
 
   const pillar3 = getContent('about_pillar_3', {
-    label: 'PILLAR 03',
-    title: 'Kesejahteraan Circle',
-    description: "Active investment in each other's future. When a brother builds, the circle invests. When a brother falters, the circle lifts. Welfare is not charity — it is mutual commitment, operationalized.",
+    label: 'PRINSIP 03',
+    title: 'Kesejahteraan Bersama',
+    description: 'Saling mendukung dalam karya dan kehidupan sehari-hari, tumbuh bersama sebagai satu lingkaran keluarga.',
   });
 
   const pillar4 = getContent('about_pillar_4', {
-    label: 'PILLAR 04',
-    title: 'Professionalism',
-    description: "We hold the line, always. Events are produced to industry standard. Partnerships are honored to the letter. SAKALA's word is binding. Memanusiakan Manusia is not suspended for commercial relationships.",
+    label: 'PRINSIP 04',
+    title: 'Integritas & Sikap',
+    description: 'Menjaga kehormatan nama baik, menghargai komitmen, dan bertanggung jawab dalam setiap kegiatan.',
   });
 
   const div1 = getContent('about_div_1', {
-    label: 'DIVISION 01',
-    title: 'Motor Division',
-    description: 'Weekend rides, long-distance touring, charity runs, and annual gatherings. Motor-agnostic: any brand welcome — what matters is the story behind the build. Member profile: Urban professional, 28–45. Any motorcycle. Character-first.',
+    label: 'KEGIATAN 01',
+    title: 'Divisi Motor',
+    description: 'Touring akhir pekan, perjalanan jarak jauh, bakti sosial, dan silaturahmi. Terbuka untuk semua merek motor dengan mengutamakan cerita di balik motor dan karakter pengendara.',
   });
 
   const div2 = getContent('about_div_2', {
-    label: 'DIVISION 02',
+    label: 'KEGIATAN 02',
     title: 'Tactical Airsoft',
-    description: 'MilSim operations, recreational skirmish, tactical training, and INASSOC-sanctioned tournaments. Affiliated directly with INASSOC Jabar & KORMI for institutional legitimacy and tournament eligibility.',
+    description: 'Latihan taktis, simulasi, dan kegiatan olahraga airsoft yang terafiliasi dengan INASSOC Jabar & KORMI.',
   });
 
   const quoteContent = getContent('about_quote', {
-    label: '— THE ROAD. THE RANGE. SAKALA.',
-    title: '“We do not ride for an audience. We ride because the sound of four pistons singing in unison through a Bandung valley mist at dawn is the only thing that silences the modern world.”',
+    label: 'SAKALA MOTORCYCLE CLUB',
+    title: '“Dibangun di Bandung untuk mencatat perjalanan, motor, dan kegiatan persaudaraan Sakala.”',
   });
 
   return (
@@ -95,10 +95,10 @@ export default function AboutPage() {
       <Navbar />
 
       <main className="flex-1">
-        {/* SECTION 1: HERO — THE MANIFEST REALM & BROTHERHOOD */}
+        {/* SECTION 1: HERO */}
         <section className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 lg:pt-24 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Left Column: Editorial Headline & Origin Statement */}
+            {/* Left Column: Headline */}
             <div className="lg:col-span-7">
               <EditableWrapper
                 item={{
@@ -125,7 +125,7 @@ export default function AboutPage() {
                       href="#origin"
                       className="inline-block bg-[#070F18] text-white text-[11px] font-bold tracking-[0.25em] px-8 py-4 hover:bg-[#0050A0] transition-colors uppercase shadow-sm"
                     >
-                      {heroContent.cta_text || 'DISCOVER ORIGIN'}
+                      {heroContent.cta_text || 'PELAJARI FILOSOFI'}
                     </a>
                   </div>
                 </div>
@@ -157,17 +157,17 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION 2: THE ALCHEMY OF SAKALA PHILOSOPHY */}
+        {/* SECTION 2: FILOSOFI SAKALA */}
         <section id="origin" className="border-t border-[#E5E2D9] pt-20 pb-24">
           <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-12">
             <div>
               <h2 className="font-serif-editorial text-2xl sm:text-3xl font-bold tracking-wider text-[#070F18] uppercase">
-                THE ALCHEMY OF SAKALA PHILOSOPHY
+                FILOSOFI SAKALA
               </h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-              {/* Left Column: Full Emblem / Graphic Showcase (No text underneath) */}
+              {/* Left Column: Emblem */}
               <div className="lg:col-span-5">
                 <EditableWrapper
                   item={{
@@ -180,7 +180,7 @@ export default function AboutPage() {
                     <div className="relative w-full h-full">
                       <Image
                         src={originImgContent.image_url || '/assets/sakala_emblem.png'}
-                        alt={originImgContent.title || 'Cakra Rahayu Kencana'}
+                        alt={originImgContent.title || 'Simbol Sakala'}
                         fill
                         className="object-contain drop-shadow-[0_20px_45px_rgba(240,208,0,0.25)] transition-transform duration-500 group-hover:scale-105"
                       />
@@ -189,9 +189,9 @@ export default function AboutPage() {
                 </EditableWrapper>
               </div>
 
-              {/* Right Column: 3 Historical Traditions */}
+              {/* Right Column: 3 Traditions */}
               <div className="lg:col-span-7 space-y-8">
-                {/* 01 Sanskrit Tradition */}
+                {/* 01 Asal Kata */}
                 <EditableWrapper
                   item={{
                     type: 'content',
@@ -212,7 +212,7 @@ export default function AboutPage() {
                   </div>
                 </EditableWrapper>
 
-                {/* 02 Kawi Tradition */}
+                {/* 02 Tindakan Nyata */}
                 <EditableWrapper
                   item={{
                     type: 'content',
@@ -233,7 +233,7 @@ export default function AboutPage() {
                   </div>
                 </EditableWrapper>
 
-                {/* 03 Sundanese Philosophy */}
+                {/* 03 Filosofi Sunda */}
                 <EditableWrapper
                   item={{
                     type: 'content',
@@ -258,68 +258,12 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION 3: CHAPTER II: IDENTITY ELEMENTS (COLOR STRUCTURE) */}
-        <section className="border-t border-[#E5E2D9] pt-20 pb-24 bg-[#FAF9F5]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-10">
-            <span className="text-[10px] font-bold tracking-[0.25em] text-[#64748B] uppercase block">
-              CHAPTER II: IDENTITY ELEMENTS
-            </span>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Card 1: Grounding Black */}
-              <div className="bg-white border border-[#E5E2D9] p-6 shadow-xs flex flex-col justify-between">
-                <div>
-                  <div className="w-full h-36 bg-[#000000] mb-6 shadow-inner" />
-                  <h3 className="text-sm font-bold text-[#070F18] mb-1">
-                    Grounding Black <span className="text-[#64748B] font-mono text-xs font-normal">(#000000)</span>
-                  </h3>
-                </div>
-                <ul className="space-y-1.5 text-xs text-[#475569] uppercase font-semibold tracking-wider pt-4 border-t border-[#E5E2D9]">
-                  <li>• STRUCTURE</li>
-                  <li>• AUTHORITY</li>
-                  <li>• STABILITY</li>
-                </ul>
-              </div>
-
-              {/* Card 2: Sakala Royal Blue */}
-              <div className="bg-white border border-[#E5E2D9] p-6 shadow-xs flex flex-col justify-between">
-                <div>
-                  <div className="w-full h-36 bg-[#0050A0] mb-6 shadow-inner" />
-                  <h3 className="text-sm font-bold text-[#070F18] mb-1">
-                    Sakala Royal Blue <span className="text-[#64748B] font-mono text-xs font-normal">(#0050A0)</span>
-                  </h3>
-                </div>
-                <ul className="space-y-1.5 text-xs text-[#475569] uppercase font-semibold tracking-wider pt-4 border-t border-[#E5E2D9]">
-                  <li>• CALM BUT POWERFUL</li>
-                  <li>• LOYALTY &amp; DISCIPLINE</li>
-                  <li>• DEPTH / CONTROL</li>
-                </ul>
-              </div>
-
-              {/* Card 3: Golden Yellow */}
-              <div className="bg-white border border-[#E5E2D9] p-6 shadow-xs flex flex-col justify-between">
-                <div>
-                  <div className="w-full h-36 bg-[#F0D000] mb-6 shadow-inner" />
-                  <h3 className="text-sm font-bold text-[#070F18] mb-1">
-                    Golden Yellow <span className="text-[#64748B] font-mono text-xs font-normal">(#F0D000)</span>
-                  </h3>
-                </div>
-                <ul className="space-y-1.5 text-xs text-[#475569] uppercase font-semibold tracking-wider pt-4 border-t border-[#E5E2D9]">
-                  <li>• ACHIEVEMENT</li>
-                  <li>• BROTHERHOOD</li>
-                  <li>• HONOR / VALUE</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 4: THE FOUNDATION & DIVISIONS */}
+        {/* SECTION 3: PRINSIP & KEGIATAN */}
         <section id="values" className="border-t border-[#E5E2D9] pt-20 pb-24">
           <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-12">
             <div>
               <h2 className="font-serif-editorial text-2xl sm:text-3xl font-bold tracking-wider text-[#070F18] uppercase">
-                THE FOUNDATION &amp; DIVISIONS
+                PRINSIP &amp; KEGIATAN
               </h2>
             </div>
 
@@ -417,7 +361,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION 5: GIANT DARK NAVY QUOTE SECTION */}
+        {/* SECTION 4: QUOTE SECTION */}
         <section className="bg-[#070F18] text-white py-24 lg:py-32 border-t border-[#1E293B] text-center px-6">
           <EditableWrapper
             item={{
@@ -440,13 +384,13 @@ export default function AboutPage() {
                   href="/bikes"
                   className="w-full sm:w-auto px-8 py-4 border border-white/40 text-white text-xs font-bold tracking-[0.2em] uppercase hover:border-[#F0D000] hover:text-[#F0D000] transition-colors"
                 >
-                  EXPLORE GARAGE
+                  LIHAT MOTOR
                 </Link>
                 <Link
                   href="/shop"
                   className="w-full sm:w-auto px-8 py-4 bg-[#F0D000] text-[#070F18] text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#C5AA00] transition-colors"
                 >
-                  ENTER STORE
+                  MERCHANDISE
                 </Link>
               </div>
             </div>
