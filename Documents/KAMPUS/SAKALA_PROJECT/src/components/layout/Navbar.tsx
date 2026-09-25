@@ -75,8 +75,19 @@ export default function Navbar() {
           <Link 
             href="/" 
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 group z-50"
+            className="flex items-center gap-2.5 sm:gap-3 group z-50 py-1"
           >
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 transition-transform duration-300 group-hover:scale-105">
+              <Image
+                src="/assets/sakala_mc_patch.png"
+                alt="SAKALA Motorcycle Club Indonesia"
+                fill
+                sizes="48px"
+                className="object-contain"
+                priority
+              />
+            </div>
+
             <div className="flex flex-col transition-transform duration-200 group-hover:translate-x-0.5">
               <span className="font-serif-editorial text-2xl font-bold tracking-[0.18em] text-[#070F18] leading-none group-hover:text-[#C5AA00] transition-colors">
                 SAKALA
