@@ -2,7 +2,6 @@ import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import PillarsGatewaySection from '@/components/home/PillarsGatewaySection';
 import HeroSection from '@/components/home/HeroSection';
-import ManifestoSection from '@/components/home/ManifestoSection';
 import GarageSection from '@/components/home/GarageSection';
 import SupplySection from '@/components/home/SupplySection';
 import CultureSection from '@/components/home/CultureSection';
@@ -26,7 +25,6 @@ export default async function HomePage() {
       <main className="flex-1">
         <PillarsGatewaySection />
         <HeroSection />
-        <ManifestoSection />
         <GarageSection bikes={bikes} />
         <SupplySection initialProducts={products} />
         <CultureSection />

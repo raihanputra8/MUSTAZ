@@ -52,10 +52,10 @@ export default function SupplySection({ initialProducts }: { initialProducts: Pr
       : products.filter((p) => p.category.toLowerCase() === activeCategory.toLowerCase());
 
   return (
-    <section id="supply" className="bg-[#F5F4EF] py-16 lg:py-24 border-b border-[#E5E2D9]">
+    <section id="supply" className="bg-[#F5F4EF] py-12 sm:py-16 lg:py-24 border-b border-[#E5E2D9]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Header & Category Filters */}
-        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-10 gap-4">
           <div>
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
               03 / MERCHANDISE — SAKALA SUPPLY
@@ -68,34 +68,40 @@ export default function SupplySection({ initialProducts }: { initialProducts: Pr
             </p>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`text-[9px] font-bold tracking-[0.16em] uppercase px-3 py-1.5 rounded-xs transition-all duration-200 btn-tactile ${
-                  activeCategory === cat.id
-                    ? 'bg-[#070F18] text-white shadow-xs'
-                    : 'bg-white text-[#475569] border border-[#E5E2D9] hover:border-[#070F18]'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
+            <span className="sm:hidden text-[10px] font-semibold tracking-wider text-[#94A3B8] uppercase">
+              ← Geser Produk →
+            </span>
+            {/* Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`text-[9px] font-bold tracking-[0.16em] uppercase px-3 py-1.5 rounded-xs transition-all duration-200 btn-tactile ${
+                    activeCategory === cat.id
+                      ? 'bg-[#070F18] text-white shadow-xs'
+                      : 'bg-white text-[#475569] border border-[#E5E2D9] hover:border-[#070F18]'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
         </ScrollReveal>
 
-        {/* 4 Products Grid with Staggered ScrollReveal */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        {/* 4 Products: Horizontal Swipe on Mobile, 2/4-Col Grid on Desktop */}
+        <div className="flex sm:grid overflow-x-auto snap-x snap-mandatory no-scrollbar sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 pb-3 -mx-6 px-6 sm:mx-0 sm:px-0 mb-8 sm:mb-10">
           {filteredProducts.map((product, idx) => {
             const isWaitlist = product.stock_status === 'waitlist';
 
             return (
-              <ScrollReveal key={product.id} direction="up" delay={60 + (idx % 4) * 80}>
-                <EditableWrapper
-                  item={{ type: 'product', id: product.id, data: product as unknown as Record<string, unknown> }}
-                >
+              <div key={product.id} className="w-[72vw] sm:w-auto shrink-0 snap-center">
+                <ScrollReveal direction="up" delay={60 + (idx % 4) * 80}>
+                  <EditableWrapper
+                    item={{ type: 'product', id: product.id, data: product as unknown as Record<string, unknown> }}
+                  >
                   <div className="bg-white border border-[#E5E2D9] rounded-xs overflow-hidden shadow-xs card-interactive flex flex-col justify-between group h-full hover:border-[#070F18]">
                     {/* Image Container */}
                     <div className="relative h-56 w-full bg-[#FAF9F5] p-5 flex items-center justify-center border-b border-[#E5E2D9] overflow-hidden">
@@ -176,9 +182,10 @@ export default function SupplySection({ initialProducts }: { initialProducts: Pr
                   </div>
                 </EditableWrapper>
               </ScrollReveal>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
 
         {/* View All Supply CTA */}
         <ScrollReveal direction="up" delay={150} className="flex justify-center">

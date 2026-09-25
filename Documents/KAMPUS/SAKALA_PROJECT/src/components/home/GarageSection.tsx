@@ -36,10 +36,10 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
   }, [refreshKey, refetchBikes]);
 
   return (
-    <section id="garage" className="bg-[#FAF9F5] py-16 lg:py-24 border-b border-[#E5E2D9]">
+    <section id="garage" className="bg-[#FAF9F5] py-12 sm:py-16 lg:py-24 border-b border-[#E5E2D9]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header */}
-        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <ScrollReveal direction="up" delay={50} className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-10 gap-4">
           <div>
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#0047AB] uppercase mb-2 block">
               02 / BUILDS — THE ATELIER
@@ -52,22 +52,28 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
             </p>
           </div>
 
-          <Link
-            href="/bikes/bike-01"
-            className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-[#070F18] hover:text-[#0047AB] transition-colors uppercase flex-shrink-0 group"
-          >
-            <span>ALL BUILDS</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
-          </Link>
+          <div className="flex items-center justify-between md:justify-end gap-4">
+            <span className="md:hidden text-[10px] font-semibold tracking-wider text-[#94A3B8] uppercase">
+              ← Geser Motor →
+            </span>
+            <Link
+              href="/bikes/bike-01"
+              className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-[#070F18] hover:text-[#0047AB] transition-colors uppercase flex-shrink-0 group"
+            >
+              <span>ALL BUILDS</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
+            </Link>
+          </div>
         </ScrollReveal>
 
-        {/* 3 Bikes Grid with Staggered ScrollReveal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 3 Bikes: Horizontal Swipe on Mobile, 3-Col Grid on Desktop */}
+        <div className="flex md:grid overflow-x-auto snap-x snap-mandatory no-scrollbar md:grid-cols-3 gap-5 md:gap-6 pb-4 -mx-6 px-6 md:mx-0 md:px-0">
           {bikes.map((bike, idx) => (
-            <ScrollReveal key={bike.id} direction="up" delay={100 + idx * 100}>
-              <EditableWrapper
-                item={{ type: 'bike', id: bike.id, data: bike as unknown as Record<string, unknown> }}
-              >
+            <div key={bike.id} className="w-[82vw] sm:w-[330px] md:w-auto shrink-0 snap-center">
+              <ScrollReveal direction="up" delay={100 + idx * 100}>
+                <EditableWrapper
+                  item={{ type: 'bike', id: bike.id, data: bike as unknown as Record<string, unknown> }}
+                >
                 <div className="bg-white border border-[#E5E2D9] rounded-xs overflow-hidden shadow-xs card-interactive flex flex-col group h-full hover:border-[#070F18]">
                   {/* Bike Image Container */}
                   <div className="relative h-56 w-full bg-[#EFECE6] overflow-hidden border-b border-[#E5E2D9]">
@@ -119,8 +125,9 @@ export default function GarageSection({ bikes: initialBikes }: { bikes: Bike[] }
                 </div>
               </EditableWrapper>
             </ScrollReveal>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
       </div>
 
       {/* Build Specs Modal with Smooth Animation */}
