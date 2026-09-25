@@ -66,7 +66,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/about" className="hover:text-white transition-colors">
-                  The Motor Story Protocol
+                  Philosophy & Ethos
                 </Link>
               </li>
               <li>
