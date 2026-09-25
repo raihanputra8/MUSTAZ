@@ -38,10 +38,6 @@ export function InlineCMSProvider({ children }: { children: React.ReactNode }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  // Can edit if admin or local development
-  const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const canEdit = isAdmin || isDev;
-
   const toggleEditMode = useCallback(() => {
     setIsEditMode((prev) => !prev);
     setEditingItem(null);
@@ -55,26 +51,6 @@ export function InlineCMSProvider({ children }: { children: React.ReactNode }) {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   }, []);
-
-  // Provide CMS capabilities
-  if (!canEdit) {
-    return (
-      <InlineCMSContext.Provider
-        value={{
-          isEditMode: false,
-          toggleEditMode: () => {},
-          editingItem: null,
-          setEditingItem: () => {},
-          refreshKey: 0,
-          triggerRefresh: () => {},
-          showToast: () => {},
-          toast: null,
-        }}
-      >
-        {children}
-      </InlineCMSContext.Provider>
-    );
-  }
 
   return (
     <InlineCMSContext.Provider

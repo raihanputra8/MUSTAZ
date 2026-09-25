@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Pencil, Power, X, Check } from 'lucide-react';
 import { useInlineCMS } from '@/context/InlineCMSContext';
 import { useAuth } from '@/context/AuthContext';
@@ -8,6 +8,13 @@ import { useAuth } from '@/context/AuthContext';
 export default function InlineCMSToolbar() {
   const { isAdmin } = useAuth();
   const { isEditMode, toggleEditMode, toast } = useInlineCMS();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
   if (!isAdmin && !isDev) return null;
